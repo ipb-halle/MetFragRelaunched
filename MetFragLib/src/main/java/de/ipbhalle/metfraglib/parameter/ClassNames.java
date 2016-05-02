@@ -32,9 +32,6 @@ import de.ipbhalle.metfraglib.database.OnlineMetaCycDatabase;
 import de.ipbhalle.metfraglib.database.OnlinePubChemDatabase;
 import de.ipbhalle.metfraglib.score.CandidatePropertyScore;
 import de.ipbhalle.metfraglib.score.CombinedReferenceScore;
-import de.ipbhalle.metfraglib.score.HDExchangedHydrogendsScore;
-import de.ipbhalle.metfraglib.score.HDFragmentPairScore;
-import de.ipbhalle.metfraglib.score.HDNewFragmenterScore;
 import de.ipbhalle.metfraglib.score.IndividualMoNASpectralSimilarity;
 import de.ipbhalle.metfraglib.score.MatchSpectrumCosineSimilarityScore;
 import de.ipbhalle.metfraglib.score.NewFragmenterHierarchicalScore;
@@ -62,7 +59,6 @@ import de.ipbhalle.metfraglib.writer.CandidateListWriterFragmentSmilesPSV;
 import de.ipbhalle.metfraglib.writer.CandidateListWriterSDF;
 import de.ipbhalle.metfraglib.writer.CandidateListWriterXLS;
 import de.ipbhalle.metfraglib.writer.FragmentListWriterSDF;
-import de.ipbhalle.metfraglib.writer.HDCandidateListWriterPSV;
 
 public class ClassNames {
 
@@ -90,14 +86,8 @@ public class ClassNames {
 		scoreNameToClassName.put("CombinedReferenceScore", CombinedReferenceScore.class.getName());
 		scoreNameToClassName.put("SimScore", MatchSpectrumCosineSimilarityScore.class.getName());
 		
-		//scoreNameToClassName.put("ExactMoNAScore", ExactMoNASpectralSimilarity.class.getName());
-		//scoreNameToClassName.put("MetFusionMoNAScore", MetFusionMoNASpectralSimilarity.class.getName());
 		scoreNameToClassName.put("IndividualMoNAScore", IndividualMoNASpectralSimilarity.class.getName());
 		scoreNameToClassName.put("OfflineMetFusionScore", OfflineMetFusionSpectralSimilarityScore.class.getName());
-		
-		scoreNameToClassName.put("HDFragmenterScore", HDNewFragmenterScore.class.getName());
-		scoreNameToClassName.put("HDFragmentPairScore", HDFragmentPairScore.class.getName());
-		scoreNameToClassName.put("HDExchangedHydrogendsScore", HDExchangedHydrogendsScore.class.getName());
 		
 		/*
 		 * each score needs its global init class to set shared objects once
@@ -113,15 +103,9 @@ public class ClassNames {
 		scoreNameToScoreInitialiserClassName.put("RetentionTimeScore", RetentionTimeScoreInitialiser.class.getName());
 		scoreNameToScoreInitialiserClassName.put("CombinedReferenceScore", DefaultScoreInitialiser.class.getName());
 		
-		//scoreNameToClassName.put("ExactMoNAScore", ExactMoNASpectralSimilarityInitialiser.class.getName());
-		//scoreNameToClassName.put("MetFusionMoNAScore", MetFusionMoNASpectralSimilarityInitialiser.class.getName());
 		scoreNameToScoreInitialiserClassName.put("IndividualMoNAScore", IndividualMoNASpectralSimilarityInitialiser.class.getName());
 		scoreNameToScoreInitialiserClassName.put("OfflineMetFusionScore", OfflineMetFusionSpectralSimilarityScoreInitialiser.class.getName());
 		scoreNameToScoreInitialiserClassName.put("MatchSpectrumCosineSimilarityScore", DefaultScoreInitialiser.class.getName());
-		
-		scoreNameToScoreInitialiserClassName.put("HDFragmenterScore", DefaultScoreInitialiser.class.getName());
-		scoreNameToScoreInitialiserClassName.put("HDFragmentPairScore", DefaultScoreInitialiser.class.getName());
-		scoreNameToScoreInitialiserClassName.put("HDExchangedHydrogendsScore", DefaultScoreInitialiser.class.getName());
 		
 		/*
 		 * new implemented databases have to be added here
@@ -153,7 +137,6 @@ public class ClassNames {
 		candidateListWriterNameToClassName.put("CSV", CandidateListWriterCSV.class.getName());
 		candidateListWriterNameToClassName.put("PSV", CandidateListWriterPSV.class.getName());
 		candidateListWriterNameToClassName.put("ExtendedPSV", CandidateListWriterExtendedPSV.class.getName());
-		candidateListWriterNameToClassName.put("HDCSV", HDCandidateListWriterPSV.class.getName());
 		candidateListWriterNameToClassName.put("FragmentSmilesPSV", CandidateListWriterFragmentSmilesPSV.class.getName());
 		candidateListWriterNameToClassName.put("SDF", CandidateListWriterSDF.class.getName());
 		candidateListWriterNameToClassName.put("XLS", CandidateListWriterXLS.class.getName());
@@ -178,7 +161,6 @@ public class ClassNames {
 		 */
 		postProcessingCandidateFilterNameToClassName = new java.util.HashMap<String, String>();
 		postProcessingCandidateFilterNameToClassName.put("InChIKeyFilter", PostProcessingCandidateInChIKeyFilter.class.getName());
-		postProcessingCandidateFilterNameToClassName.put("HDGroupFlagFilter", PostProcessingCandidateHDGroupFlagFilter.class.getName());
 		
 		fragmentListWriterNameToClassName = new java.util.HashMap<String, String>();
 		fragmentListWriterNameToClassName.put("SDF", FragmentListWriterSDF.class.getName());

@@ -86,10 +86,10 @@ MetFragWeb
 ##### Configuration
  - rename file settings.properties.template in MetFragWeb/src/main/webapp/resources to settings.properties and set necessary parameters<br>
 
- ## define chemspider token to query ChemSpider database<br>
+ \#\# define chemspider token to query ChemSpider database<br>
  ChemSpiderToken = ...<br>
 
- ## if MetFragWeb host is connected via proxy to the internet provide proxy settings for different web services<br>
+ \#\# if MetFragWeb host is connected via proxy to the internet provide proxy settings for different web services<br>
  MoNAProxyServer = ...<br>
  MoNAProxyPort = ...<br>
 
@@ -99,7 +99,7 @@ MetFragWeb
  MetaCycProxyServer = ...<br>
  MetaCycProxyPort = ...<br>
 
- ## to speed up database queries you can set up local repositories by setting up MySQL or PostgreSQL databases<br>
+ \#\# to speed up database queries you can set up local repositories by setting up MySQL or PostgreSQL databases<br>
  LocalPubChemDatabase = ...<br>
  LocalPubChemDatabaseCompoundsTable = ...<br>
  LocalPubChemDatabasePortNumber = ...<br>
