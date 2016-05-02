@@ -57,20 +57,22 @@ public class CommandLineTool {
 			logger.error("Error reading parameter file " + parameterFile);
 			System.exit(1);
 		}
-			
+		//check settings with SettingsChecker	
 		SettingsChecker settingsChecker = new SettingsChecker();
 		if(!settingsChecker.check(settings)) return;
-
+		//init the MetFrag process
 		CombinedMetFragProcess mp = new CombinedMetFragProcess(settings);
-
+		
+		//retrieve candidates from database
 		try {
 			boolean candidatesRetrieved = mp.retrieveCompounds();
-			if(!candidatesRetrieved) System.exit(0);
+			if(!candidatesRetrieved) throw new Exception();
 		} catch (Exception e1) {
 			e1.printStackTrace();
 			logger.error("Error when retrieving compounds.");
 			System.exit(2);
 		}
+		//run the MetFrag process -> in silico fragmentation, fragment-peak-assignment, scoring
 		try {
 			mp.run();
 		} catch (Exception e1) {
@@ -78,14 +80,14 @@ public class CommandLineTool {
 			logger.error("Error when processing compounds.");
 			System.exit(3);
 		}
-
+		//fetch the scored candidate list
 		CandidateList scoredCandidateList = mp.getCandidateList();
 		/*
 		 * store the results
 		 */
 		try {
 			/*
-			 * store candidates in your specified ascii format
+			 * store candidates in your specified format
 			 */
 			if(settings.get(VariableNames.METFRAG_CANDIDATE_WRITER_NAME) != null) {
 				String[] candidateWriterNames = (String[])settings.get(VariableNames.METFRAG_CANDIDATE_WRITER_NAME);
@@ -101,7 +103,7 @@ public class CommandLineTool {
 				}
 			}
 			/*
-			 * store candidates fragments in your specified ascii format
+			 * store candidates fragments in your specified format
 			 */
 			if(settings.get(VariableNames.METFRAG_CANDIDATE_FRAGMENT_WRITER_NAME) != null) {
 				IWriter candidateWriter = (IWriter) Class.forName(ClassNames.getClassNameOfFragmentListWriter((String)settings.get(VariableNames.METFRAG_CANDIDATE_FRAGMENT_WRITER_NAME))).getConstructor().newInstance();

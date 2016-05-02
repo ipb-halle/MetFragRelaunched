@@ -1,6 +1,5 @@
 package de.ipbhalle.metfraglib.parameter;
 
-import de.ipbhalle.metfraglib.candidatefilter.PostProcessingCandidateHDGroupFlagFilter;
 import de.ipbhalle.metfraglib.candidatefilter.PostProcessingCandidateInChIKeyFilter;
 import de.ipbhalle.metfraglib.candidatefilter.PreProcessingCandidateElementExclusionFilter;
 import de.ipbhalle.metfraglib.candidatefilter.PreProcessingCandidateElementInclusionExclusiveFilter;
