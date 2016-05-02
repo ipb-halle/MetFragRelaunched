@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<h:body>
+	<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+		xmlns:h="http://java.sun.com/jsf/html"
+		xmlns:f="http://java.sun.com/jsf/core"
+		xmlns:c="http://java.sun.com/jsp/jstl/core"
+		xmlns:p="http://primefaces.org/ui">
+
+		<h:form id="landingPageForm" enctype="multipart/form-data">
+			<h:outputText
+				style="font-family: 'Lato', sans-serif; color: #4F4F4F;"
+				value="Submitted values" />
+			<br />
+			<br />
+			<p:dataTable value="#{metFragLandingBean.parameters}" var="value"
+				style="padding-left: 10px; padding-bottom: 20px"
+				rendered="#{not metFragLandingBean.errorOccured}">
+				<p:column headerText="Name">
+					<h:outputText value="#{value.key}" />
+				</p:column>
+				<p:column headerText="Value">
+					<h:outputText value="#{value.value}" />
+				</p:column>
+			</p:dataTable>
+			<h:panelGroup layout="block"
+				styleClass="ui-messages ui-widget" style="padding-top: 10px"
+				rendered="#{metFragLandingBean.errorOccured}">
+				<h:panelGroup styleClass="ui-messages-error-user ui-corner-all"
+					layout="block">
+					<h:panelGrid columns="2">
+						<h:panelGroup styleClass="ui-messages-error-icon-user" />
+						<h:outputText style="margin-left: 0px !important;" styleClass="ui-messages-error-detail-user"
+							value="#{metFragLandingBean.errorString}" />
+					</h:panelGrid>
+				</h:panelGroup>
+			</h:panelGroup>
+			<h:panelGroup
+				style="font-family: 'Lato', sans-serif; color: #4F4F4F;"
+				rendered="#{not metFragLandingBean.errorOccured}">
+				Wait for redirect after 5 seconds or go directly to <a href="/MetFragWeb/index.xhtml">MetFragWeb</a>.
+			</h:panelGroup>
+		</h:form>
+
+	</ui:composition>
+</h:body>
+
+</html>

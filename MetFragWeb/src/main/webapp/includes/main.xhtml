@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<h:body>
+
+	<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+		xmlns:h="http://java.sun.com/jsf/html"
+		xmlns:f="http://java.sun.com/jsf/core"
+		xmlns:c="http://java.sun.com/jsp/jstl/core"
+		xmlns:p="http://primefaces.org/ui">
+
+		<h:form id="mainForm" enctype="multipart/form-data">
+			
+			<p:accordionPanel id="mainAccordion" activeIndex="0,2,4" multiple="true" widgetVar="mainAccordion">
+				<!-- 
+					parameter fields
+				 -->
+				<p:tab title="Database Settings" >
+					<ui:insert name="databaseParameter">
+						<ui:include src="databasePrime.xhtml" />
+					</ui:insert>
+				</p:tab>
+				
+				<p:tab title="Candidate Filter &amp; Score Settings" titleStyleClass="advancedTab"
+					disabled="#{metFragWebBean.numberCompoundsRetrieved == 0}">
+					<ui:insert name="compoundFiltersScores">
+						<ui:include src="candidateFiltersScoresPrime.xhtml" />
+					</ui:insert>
+				</p:tab>
+
+				<p:tab title="Fragmentation Settings &amp; Processing" id="fragmentationParameters">
+					<ui:insert name="fragmentationParameter">
+						<ui:include src="fragmentationPrime.xhtml" />
+					</ui:insert>
+				</p:tab>
+				<p:tab title="Statistics" titleStyleClass="advancedTab"
+					id="statistics" rendered="#{metFragWebBean.resultsAvailable}" disabled="#{not metFragWebBean.scoreDistributionModelAvailable}">
+					<ui:insert name="statistics">
+						<ui:include src="statistics.xhtml" />
+					</ui:insert>
+				</p:tab>
+				<p:tab title="Results"
+					id="resultTable" rendered="#{metFragWebBean.resultsAvailable}">
+					<ui:insert name="resultTable">
+						<ui:include src="resultTable.xhtml" />
+					</ui:insert>
+				</p:tab>
+			</p:accordionPanel>
+			<p:idleMonitor timeout="1800000" >
+				<p:ajax event="idle" listener="#{metFragWebBean.viewExpiredListener}"/>
+			</p:idleMonitor>
+		</h:form>
+
+		<ui:insert name="dialogs">
+			<ui:include src="dialogs/retrieveCandidatesProgressDialog.xhtml" />
+			<ui:include src="dialogs/downloadCandidatesDialog.xhtml" />
+			<ui:include src="dialogs/downloadParametersDialog.xhtml" />
+			<ui:include src="dialogs/processCandidatesProgressDialog.xhtml" />
+			<ui:include src="dialogs/downloadResultsDialog.xhtml" />
+			<ui:include src="dialogs/spectrumViewDialog.xhtml" />
+			<ui:include src="dialogs/fragmentsViewDialog.xhtml" />
+			<ui:include src="dialogs/scoresViewDialog.xhtml" />
+			<ui:include src="dialogs/expiredSessionDialog.xhtml" />
+		</ui:insert>
+		
+		
+	</ui:composition>
+	
+</h:body>
+
+</html>

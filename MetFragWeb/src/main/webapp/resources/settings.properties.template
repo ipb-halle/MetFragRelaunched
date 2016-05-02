@@ -1,0 +1,66 @@
+## define chemspider token
+ChemSpiderToken =
+
+# NumberThreads =
+
+## default candidate writer
+# MetFragCandidateWriter =
+
+# FeedbackEmailTo =
+# FeedbackEmailHost =
+
+# MoNAProxyServer =
+# MoNAProxyPort =
+
+# KeggProxyServer =
+# KeggProxyPort =
+
+# MetaCycProxyServer =
+# MetaCycProxyPort =
+
+## local pubchem database
+# LocalPubChemDatabase =
+# LocalPubChemDatabaseCompoundsTable =
+# LocalPubChemDatabasePortNumber =
+# LocalPubChemDatabaseServerIp =
+# LocalPubChemDatabaseMassColumn =
+# LocalPubChemDatabaseFormulaColumn =
+# LocalPubChemDatabaseInChIColumn =
+# LocalPubChemDatabaseInChIKey1Column =
+# LocalPubChemDatabaseInChIKey2Column =
+# LocalPubChemDatabaseCidColumn =
+# LocalPubChemDatabaseSmilesColumn =
+# LocalPubChemDatabaseUser =
+# LocalPubChemDatabasePassword =
+# LocalPubChemDatabaseCompoundNameColumn =
+
+## Local kegg database
+# LocalKeggDatabase =
+# LocalKeggDatabaseCompoundsTable =
+# LocalKeggDatabasePortNumber =
+# LocalKeggDatabaseServerIp =
+# LocalKeggDatabaseMassColumn =
+# LocalKeggDatabaseFormulaColumn =
+# LocalKeggDatabaseInChIColumn =
+# LocalKeggDatabaseInChIKey1Column =
+# LocalKeggDatabaseInChIKey2Column =
+# LocalKeggDatabaseCidColumn =
+# LocalKeggDatabaseSmilesColumn =
+# LocalKeggDatabaseUser =
+# LocalKeggDatabasePassword =
+# LocalKeggDatabaseCompoundNameColumn =
+
+## local lipidmaps database
+# LocalLipidMapsDatabase =
+# LocalLipidMapsDatabaseCompoundsTable =
+# LocalLipidMapsDatabasePortNumber =
+# LocalLipidMapsDatabaseServerIp =
+# LocalLipidMapsDatabaseMassColumn =
+# LocalLipidMapsDatabaseInChIColumn =
+# LocalLipidMapsDatabaseFormulaColumn =
+# LocalLipidMapsDatabaseInChIKey1Column =
+# LocalLipidMapsDatabaseInChIKey2Column =
+# LocalLipidMapsDatabaseCidColumn =
+# LocalLipidMapsDatabaseSmilesColumn =
+# LocalLipidMapsDatabaseUser =
+# LocalLipidMapsDatabasePassword =

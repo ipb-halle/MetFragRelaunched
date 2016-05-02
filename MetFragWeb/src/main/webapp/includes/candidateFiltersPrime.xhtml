@@ -1,0 +1,390 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<h:body>
+	<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+		xmlns:h="http://java.sun.com/jsf/html"
+		xmlns:f="http://java.sun.com/jsf/core"
+		xmlns:p="http://primefaces.org/ui">
+
+		<h:panelGroup id="filterSettingsPanel"
+			rendered="#{metFragWebBean.numberCompoundsRetrieved > 0}">
+			<h:outputText value="Candidate Filters:"
+				style="font-weight: bold; padding-bottom: 10px" />
+			<br />
+			<h:panelGrid columns="2" width="80%" style="vertical-align:top;"
+				cellspacing="4" cellpadding="4" styleClass="mainPanel"
+				columnClasses="firstColumnSimple,secondColumnSimple">
+				<p:selectBooleanCheckbox id="elementInclusionFilterEnabled"
+					value="#{metFragWebBean.elementInclusionFilterEnabled}">
+					<p:ajax update="elementInclusionFilterPanel" />
+				</p:selectBooleanCheckbox>
+				<h:outputLabel id="elementInclusionFilterLabel"
+					value="Element Inclusion" />
+			</h:panelGrid>
+			<h:panelGrid id="elementInclusionFilterPanel">
+				<h:panelGrid columns="1" style="vertical-align:top;" cellspacing="4"
+					cellpadding="4" styleClass="subPanel"
+					rendered="#{metFragWebBean.elementInclusionFilterEnabled}">
+					<h:panelGrid columns="3">
+						<h:outputLabel value="Element List:" />
+						<p:inputText id="includedFilterElements" required="false"
+							value="#{metFragWebBean.includedFilterElements}">
+							<p:ajax event="blur" update="elementInclusionFilterPanel" />
+						</p:inputText>
+						<h:panelGrid columns="2" style="padding-left:10px">
+							<h:outputText id="exclusive" value="Exclusive" />
+							<p:selectBooleanCheckbox
+								id="elementInclusionExclusiveFilterEnabled"
+								value="#{metFragWebBean.elementInclusionExclusiveFilterEnabled}">
+								<p:ajax />
+							</p:selectBooleanCheckbox>
+						</h:panelGrid>
+					</h:panelGrid>
+					<h:panelGroup style="max-width: -moz-fit-content; padding-top: 5px" id="includedFilterElementsError" layout="block"
+						styleClass="ui-messages ui-widget"
+						rendered="#{metFragWebBean.isErrorMessage('includedFilterElementsError')}">
+						<h:panelGroup styleClass="ui-messages-error-user ui-corner-all"
+							layout="block">
+							<h:panelGrid columns="2">
+								<h:panelGroup styleClass="ui-messages-error-icon-user" />
+								<h:outputText styleClass="ui-messages-error-detail-user"
+									value="#{metFragWebBean.getErrorMessage('includedFilterElementsError')}" />
+							</h:panelGrid>
+						</h:panelGroup>
+					</h:panelGroup>
+				</h:panelGrid>
+				<h:panelGrid
+					rendered="#{not metFragWebBean.elementInclusionFilterEnabled}">
+				</h:panelGrid>
+			</h:panelGrid>
+
+			<h:panelGrid columns="2" width="80%" style="vertical-align:top;"
+				cellspacing="4" cellpadding="4" styleClass="mainPanel"
+				columnClasses="firstColumnSimple,secondColumnSimple">
+				<p:selectBooleanCheckbox id="elementExclusionFilterEnabled"
+					value="#{metFragWebBean.elementExclusionFilterEnabled}"
+					required="false" labelPosition="left">
+					<p:ajax update="elementExclusionFilterPanel" />
+				</p:selectBooleanCheckbox>
+				<h:outputText id="elementExclusionFilterLabel"
+					value="Element Exclusion" />
+			</h:panelGrid>
+			<h:panelGrid id="elementExclusionFilterPanel">
+				<h:panelGrid columns="1" style="vertical-align:top;" cellspacing="4"
+					cellpadding="4" styleClass="subPanel"
+					rendered="#{metFragWebBean.elementExclusionFilterEnabled}">
+					<h:panelGrid columns="2">
+						<h:outputLabel value="Element List:" />
+						<p:inputText id="excludedFilterElements"
+							value="#{metFragWebBean.excludedElements}" label="Element List"
+							labelPosition="left" required="false" indicatorPosition="right">
+							<p:ajax event="blur" update="elementExclusionFilterPanel" />
+						</p:inputText>
+					</h:panelGrid>
+					<h:panelGroup style="max-width: -moz-fit-content; padding-top: 5px" id="excludedFilterElementsError" layout="block"
+						styleClass="ui-messages ui-widget"
+						rendered="#{metFragWebBean.isErrorMessage('excludedFilterElementsError')}">
+						<h:panelGroup styleClass="ui-messages-error-user ui-corner-all"
+							layout="block">
+							<h:panelGrid columns="2">
+								<h:panelGroup styleClass="ui-messages-error-icon-user" />
+								<h:outputText styleClass="ui-messages-error-detail-user"
+									value="#{metFragWebBean.getErrorMessage('excludedFilterElementsError')}" />
+							</h:panelGrid>
+						</h:panelGroup>
+					</h:panelGroup>
+				</h:panelGrid>
+				<h:panelGrid
+					rendered="#{not metFragWebBean.elementExclusionFilterEnabled}">
+				</h:panelGrid>
+			</h:panelGrid>
+
+			<h:panelGrid columns="2" width="80%" style="vertical-align:top;"
+				cellspacing="4" cellpadding="4" styleClass="mainPanel"
+				columnClasses="firstColumnSimple,secondColumnSimple">
+				<p:selectBooleanCheckbox id="smartsInclusionFilterEnabled"
+					value="#{metFragWebBean.smartsInclusionFilterEnabled}"
+					required="false" labelPosition="left">
+					<p:ajax update="smartsInclusionFilterPanel" />
+				</p:selectBooleanCheckbox>
+				<h:outputText id="smartsInclusionFilterLabel"
+					value="Substructure Inclusion" />
+			</h:panelGrid>
+			<h:panelGrid id="smartsInclusionFilterPanel">
+				<h:panelGrid columns="1" style="vertical-align:top;" cellspacing="4"
+					cellpadding="4" styleClass="subPanel"
+					rendered="#{metFragWebBean.smartsInclusionFilterEnabled}">
+					<h:panelGrid columns="2">
+						<p:selectCheckboxMenu id="smartsInclusionFilterMenu" value="#{metFragWebBean.smartsFilterInclusion}" 
+							label="Pre-defined Substructures" panelStyle="width:250px" showHeader="false">
+           					<f:selectItems value="#{metFragWebBean.availableSubstructureSmarts}" />
+           					<p:ajax update="smartsInclusionFilterMenuLabel additionalSmartsInclusionFilterPanel" />
+       					</p:selectCheckboxMenu>
+       					<h:outputText style="padding-left: 10px" id="smartsInclusionFilterMenuLabel" value="#{metFragWebBean.smartsFilterInclusionLabel}" />
+       				</h:panelGrid>
+					<h:panelGrid columns="1" id="additionalSmartsInclusionFilterPanel">
+						<h:panelGrid columns="2">
+							<h:outputLabel value="Additional Substructures:" />
+							<p:inputText id="includedFilterSmarts" required="false"
+								value="#{metFragWebBean.additionalSmartsFilterInclusion}">
+								<p:ajax event="blur" update="smartsInclusionFilterPanel" />
+							</p:inputText>
+							<p:watermark for="includedFilterSmarts" value="as SMARTS e.g. c1ccccc1" id="includedFilterSmartsWatermark" />
+						</h:panelGrid>
+						<h:panelGroup style="max-width: -moz-fit-content; padding-top: 5px; padding-bottom: 10px" id="includedFilterSmartsError" layout="block"
+							styleClass="ui-messages ui-widget"
+							rendered="#{metFragWebBean.isErrorMessage('includedFilterSmartsError')}">
+							<h:panelGroup styleClass="ui-messages-error-user ui-corner-all"
+								layout="block">
+								<h:panelGrid columns="2">
+									<h:panelGroup styleClass="ui-messages-error-icon-user" />
+									<h:outputText styleClass="ui-messages-error-detail-user"
+										value="#{metFragWebBean.getErrorMessage('includedFilterSmartsError')}" />
+								</h:panelGrid>
+							</h:panelGroup>
+						</h:panelGroup>
+					</h:panelGrid>
+					<h:panelGroup style="padding-left: 10px; font-size: 9">
+						(Find out more about <a
+							href="http://www.daylight.com/dayhtml/doc/theory/theory.smarts.html">SMARTS</a>)
+					</h:panelGroup>
+				</h:panelGrid>
+				<h:panelGrid
+					rendered="#{not metFragWebBean.smartsInclusionFilterEnabled}">
+				</h:panelGrid>
+			</h:panelGrid>
+
+			<h:panelGrid columns="2" width="80%" style="vertical-align:top;"
+				cellspacing="4" cellpadding="4" styleClass="mainPanel"
+				columnClasses="firstColumnSimple,secondColumnSimple">
+				<p:selectBooleanCheckbox id="smartsExclusionFilterEnabled"
+					value="#{metFragWebBean.smartsExclusionFilterEnabled}"
+					required="false" labelPosition="left">
+					<p:ajax update="smartsExclusionFilterPanel" />
+				</p:selectBooleanCheckbox>
+				<h:outputText id="smartsExclusionFilterLabel"
+					value="Substructure Exclusion" />
+			</h:panelGrid>
+			<h:panelGrid id="smartsExclusionFilterPanel">
+				<h:panelGrid columns="1" style="vertical-align:top;" cellspacing="4"
+					cellpadding="4" styleClass="subPanel"
+					rendered="#{metFragWebBean.smartsExclusionFilterEnabled}">
+					<h:panelGrid columns="2">
+						<p:selectCheckboxMenu id="smartsExclusionFilterMenu" value="#{metFragWebBean.smartsFilterExclusion}" 
+							label="Pre-defined Substructures" panelStyle="width:250px" showHeader="false">
+           					<f:selectItems value="#{metFragWebBean.availableSubstructureSmarts}" />
+           					<p:ajax update="smartsExclusionFilterMenuLabel additionalSmartsExclusionFilterPanel" />
+       					</p:selectCheckboxMenu>
+       					<h:outputText style="padding-left: 10px" id="smartsExclusionFilterMenuLabel" value="#{metFragWebBean.smartsFilterExclusionLabel}" />
+       				</h:panelGrid>
+					<h:panelGrid columns="1" id="additionalSmartsExclusionFilterPanel">
+						<h:panelGrid columns="2">
+							<h:outputLabel value="Additional Substructures:" />
+							<p:inputText id="excludedFilterSmarts" required="false"
+								value="#{metFragWebBean.additionalSmartsFilterExclusion}">
+								<p:ajax event="blur" update="smartsExclusionFilterPanel" />
+							</p:inputText>
+							<p:watermark for="excludedFilterSmarts" value="as SMARTS e.g. c1ccccc1" id="excludedFilterSmartsWatermark" />
+						</h:panelGrid>
+						<h:panelGroup style="max-width: -moz-fit-content; padding-top: 5px; padding-bottom: 10px" id="excludedFilterSmartsError" layout="block"
+							styleClass="ui-messages ui-widget"
+							rendered="#{metFragWebBean.isErrorMessage('excludedFilterSmartsError')}">
+							<h:panelGroup styleClass="ui-messages-error-user ui-corner-all"
+								layout="block">
+								<h:panelGrid columns="2">
+									<h:panelGroup styleClass="ui-messages-error-icon-user" />
+									<h:outputText styleClass="ui-messages-error-detail-user"
+										value="#{metFragWebBean.getErrorMessage('excludedFilterSmartsError')}" />
+								</h:panelGrid>
+							</h:panelGroup>
+						</h:panelGroup>
+					</h:panelGrid>
+					<h:panelGroup style="padding-left: 10px; font-size: 9">
+						(Find out more about <a
+							href="http://www.daylight.com/dayhtml/doc/theory/theory.smarts.html">SMARTS</a>)
+					</h:panelGroup>
+				</h:panelGrid>
+				<h:panelGrid
+					rendered="#{not metFragWebBean.smartsExclusionFilterEnabled}">
+				</h:panelGrid>
+			</h:panelGrid>
+
+			<h:panelGrid columns="2" width="80%" style="vertical-align:top;"
+				cellspacing="4" cellpadding="4" styleClass="mainPanel"
+				columnClasses="firstColumnSimple,secondColumnSimple">
+				<p:selectBooleanCheckbox id="elementMinimumNumberFilterEnabled"
+					value="#{metFragWebBean.elementMinimumElementsFilterEnabled}"
+					required="false" labelPosition="left">
+					<p:ajax update="elementMinimumNumberFilterPanel" />
+				</p:selectBooleanCheckbox>
+				<h:outputText id="elementMinimumNumberFilterLabel"
+					value="Minimum Number Elements" />
+			</h:panelGrid>
+			<h:panelGrid id="elementMinimumNumberFilterPanel">
+				<h:panelGrid columns="1" style="vertical-align:top;" cellspacing="4"
+					cellpadding="4" styleClass="subPanel"
+					rendered="#{metFragWebBean.elementMinimumElementsFilterEnabled}">
+					<h:panelGrid columns="2">
+						<h:outputLabel value="Sub-formula:" />
+						<p:inputText id="includedFilterMinimumElements"
+							value="#{metFragWebBean.includedMinimumElements}"
+							required="false"
+							indicatorPosition="right">
+							<p:ajax event="blur" update="elementMinimumNumberFilterPanel" />
+						</p:inputText>
+					</h:panelGrid>
+					<h:panelGroup style="max-width: -moz-fit-content; padding-top: 5px" id="includedFilterMinimumElementsError"
+						layout="block" styleClass="ui-messages ui-widget"
+						rendered="#{metFragWebBean.isErrorMessage('includedFilterMinimumElementsError')}">
+						<h:panelGroup styleClass="ui-messages-error-user ui-corner-all"
+							layout="block">
+							<h:panelGrid columns="2">
+								<h:panelGroup styleClass="ui-messages-error-icon-user" />
+								<h:outputText styleClass="ui-messages-error-detail-user"
+									value="#{metFragWebBean.getErrorMessage('includedFilterMinimumElementsError')}" />
+							</h:panelGrid>
+						</h:panelGroup>
+					</h:panelGroup>
+				</h:panelGrid>
+				<h:panelGrid
+					rendered="#{not metFragWebBean.elementMinimumElementsFilterEnabled}">
+				</h:panelGrid>
+			</h:panelGrid>
+
+			<h:panelGrid columns="2" width="80%" style="vertical-align:top;"
+				cellspacing="4" cellpadding="4" styleClass="mainPanel"
+				columnClasses="firstColumnSimple,secondColumnSimple">
+				<p:selectBooleanCheckbox id="elementMaximumNumberFilterEnabled"
+					value="#{metFragWebBean.elementMaximumElementsFilterEnabled}"
+					required="false" labelPosition="left">
+					<p:ajax update="elementMaximumNumberFilterPanel" />
+				</p:selectBooleanCheckbox>
+				<h:outputText id="elementMaximumNumberFilterLabel"
+					value="Maximum Number Elements" />
+			</h:panelGrid>
+			<h:panelGrid id="elementMaximumNumberFilterPanel">
+				<h:panelGrid columns="1" style="vertical-align:top;" cellspacing="4"
+					cellpadding="4" styleClass="subPanel"
+					rendered="#{metFragWebBean.elementMaximumElementsFilterEnabled}">
+					<h:panelGrid columns="2">
+						<h:outputLabel value="Sub-formula:" />
+						<p:inputText id="includedFilterMaximumElements"
+							value="#{metFragWebBean.includedMaximumElements}"
+							label="Sub-formula" labelPosition="left" required="false"
+							indicatorPosition="right">
+							<p:ajax event="blur" update="elementMaximumNumberFilterPanel" />
+						</p:inputText>
+					</h:panelGrid>	
+					<h:panelGroup style="max-width: -moz-fit-content; padding-top: 5px" id="includedFilterMaximumElementsError"
+						layout="block" styleClass="ui-messages ui-widget"
+						rendered="#{metFragWebBean.isErrorMessage('includedFilterMaximumElementsError')}">
+						<h:panelGroup styleClass="ui-messages-error-user ui-corner-all"
+							layout="block">
+							<h:panelGrid columns="2">
+								<h:panelGroup styleClass="ui-messages-error-icon-user" />
+								<h:outputText styleClass="ui-messages-error-detail-user"
+									value="#{metFragWebBean.getErrorMessage('includedFilterMaximumElementsError')}" />
+							</h:panelGrid>
+						</h:panelGroup>
+					</h:panelGroup>
+				</h:panelGrid>
+				<h:panelGrid
+					rendered="#{not metFragWebBean.elementMaximumElementsFilterEnabled}">
+				</h:panelGrid>
+			</h:panelGrid>
+
+			<h:panelGrid columns="2" width="80%" style="vertical-align:top;"
+				cellspacing="4" cellpadding="4" styleClass="mainPanel"
+				columnClasses="firstColumnSimple,secondColumnSimple">
+				<p:selectBooleanCheckbox id="suspectListInclusionFilterEnabled"
+					value="#{metFragWebBean.suspectListInclusionFilterEnabled}"
+					required="false" labelPosition="left">
+					<p:ajax update="suspectListInclusionFilterPanel" />
+				</p:selectBooleanCheckbox>
+				<h:outputText id="suspectListInclusionFilterLabel"
+					value="Suspect Inclusion Lists" />
+			</h:panelGrid>
+			<h:panelGrid id="suspectListInclusionFilterPanel">
+				<h:panelGrid columns="1" style="vertical-align:top; width: 90%"
+					cellspacing="4" cellpadding="4" styleClass="subPanel"
+					rendered="#{metFragWebBean.suspectListInclusionFilterEnabled}">
+					<p:fileUpload id="suspectListsFilter"
+						fileUploadListener="#{metFragWebBean.suspectListFilterUploadListener}"
+						auto="true" mode="advanced" maxFileCount="10"
+						maxFileSize="20000000" autoUpload="true" multiple="false"
+						required="false" update="suspectListInclusionFilterPanel">
+					</p:fileUpload>
+
+					<p:dataTable id="uploadedSuspectListFilterFiles"
+						value="#{metFragWebBean.suspectListFilterFileContainer}"
+						var="suspectListFilterFile">
+						<f:facet name="header">
+							<h:panelGrid columns="1">
+								<h:outputText value="Uploaded suspect lists" />
+							</h:panelGrid>
+						</f:facet>
+						<p:column headerText="Suspect List Name"
+							style="word-wrap: break-word; overflow-wrap: break-word;">
+							<h:outputText value="#{suspectListFilterFile.name}" />
+						</p:column>
+						<p:column headerText="Number Entries" style="text-align: center; ">
+							<h:outputText value="#{suspectListFilterFile.numberEntries}" />
+						</p:column>
+						<p:column style="text-align: center">
+							<p:commandButton value="Remove"
+								actionListener="#{metFragWebBean.removeFromSuspectListFilterContainer}"
+								update="mainForm:mainAccordion:suspectListInclusionFilterPanel">
+								<f:attribute name="currentSuspectListFilterElementId"
+									value="#{suspectListFilterFile.id}" />
+							</p:commandButton>
+						</p:column>
+
+						<f:facet name="footer">
+							<h:panelGrid columns="1">
+								<h:outputText
+									value="#{metFragWebBean.globalSuspectListFilterInfo}" />
+							</h:panelGrid>
+						</f:facet>
+					</p:dataTable>
+					<h:panelGrid columns="1" style="padding-top: 10px;">
+						<h:outputText value="Predefined Suspect Lists:" />
+						<h:panelGrid columns="2" style="padding-top: 10px; padding-left: 10px;">
+							<p:selectBooleanCheckbox id="forIdentSuspectListInclusionFilterEnabled"
+								value="#{metFragWebBean.forIdentSuspectListInclusionFilterEnabled}"
+								required="false" labelPosition="left">
+								<p:ajax update="suspectListInclusionFilterPanel" />
+							</p:selectBooleanCheckbox>
+							<h:outputText escape="false" id="forIdentSuspectListInclusionFilterLabel"
+							value="ForIdent (Find out more about &lt;a href='http://for-ident.hswt.de/pages/en/home.php?lang=EN'&gt;ForIdent&lt;/a&gt;)" />
+						</h:panelGrid>
+					</h:panelGrid>
+					<h:panelGroup style="max-width: -moz-fit-content; padding-top: 5px" id="suspectListsFilterError" layout="block"
+						styleClass="ui-messages ui-widget"
+						rendered="#{metFragWebBean.isErrorMessage('suspectListsFilterError')}">
+						<h:panelGroup styleClass="ui-messages-error-user ui-corner-all"
+							layout="block">
+							<h:panelGrid columns="2">
+								<h:panelGroup styleClass="ui-messages-error-icon-user" />
+								<h:outputText styleClass="ui-messages-error-detail-user"
+									value="#{metFragWebBean.getErrorMessage('suspectListsFilterError')}" />
+							</h:panelGrid>
+						</h:panelGroup>
+					</h:panelGroup>
+				</h:panelGrid>
+				<h:panelGrid
+					rendered="#{not metFragWebBean.suspectListInclusionFilterEnabled}">
+				</h:panelGrid>
+			</h:panelGrid>
+
+			<ui:insert name="filterPrimeTooltips">
+				<ui:include src="tooltips/filterPrimeTooltips.xhtml" />
+			</ui:insert>
+		</h:panelGroup>
+	</ui:composition>
+</h:body>
+
+</html>

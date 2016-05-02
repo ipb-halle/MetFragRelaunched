@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core">
+
+<h:body>
+	<h:outputScript library="primefaces" name="jquery/jquery.js"
+		target="head" />
+	<h:outputScript library="primefaces" name="jquery/jquery-plugins.js" target="head" />
+	<p:dialog dynamic="true" height="550" width="650"
+		visible="#{metFragWebBean.fragmentsViewActive}"
+		id="fragmentsViewDialog" header="Fragments View"
+		widgetVar="fragmentsViewDialog" modal="true" resizable="false"
+		position="center" showEffect="fade">
+		<p:ajax event="close" listener="#{metFragWebBean.closeFragmentsView}" />
+		<h:panelGrid columns="2" id="selectedFragmentsPeakTextLabel"
+			style="font-family: Tato, sans-serif; font-size: 0.7em; width: 100%">
+			<h:panelGrid columns="1">
+				<h:outputText value="Select area to zoom in. Double click to return." />
+				<h:outputText value="Click on apex of explained peak to select fragment." />
+			</h:panelGrid>
+			<h:panelGroup style="font-family: Tato, sans-serif; font-size: 0.9em">
+				<h:panelGrid columns="2">
+					<h:panelGroup layout="block" style="padding: 5px; background-color: #66cc66;"/>
+					<h:outputText value="matched" />
+				</h:panelGrid>
+				<h:panelGrid columns="2">
+					<h:panelGroup layout="block" style="padding: 5px; background-color: #00749f;"/>
+					<h:outputText value="not matched" />
+				</h:panelGrid>
+				<h:panelGrid columns="2">
+					<h:panelGroup layout="block" style="padding: 5px; background-color: #808080;"/>
+					<h:outputText value="excluded" />
+				</h:panelGrid>
+			</h:panelGroup>
+		</h:panelGrid>
+		<h:form id="fragmentsViewForm">
+			<h:panelGroup id="fragmentsViewPanel">
+				<p:chart style="height:250px; width:600px;" type="line"
+					model="#{metFragWebBean.fragmentsModelView}">
+					<p:ajax event="itemSelect"
+						listener="#{metFragWebBean.fragmentsViewItemSelect}" />
+					<script type="text/javascript">
+						function fragmentsViewExtender() {
+							this.cfg.seriesDefaults = {
+								rendererOptions : {
+									lineWidth : 1
+								},
+								markerOptions : {
+									show : true,
+									style : 'dash',
+									lineWidth : 1.5,
+									size : 4,
+									shadow : true
+								},
+							},
+							this.cfg.cursor = {
+								show : true,
+								zoom : true,
+								constrainZoomTo : 'x'
+							},
+							this.cfg.highlighter = {
+								show : true,
+								showMarker : false,
+								tooltipAxes : 'xy',
+								yvalues : 2,
+								formatString : '<table style="background-color: white;" class="jqplot-highlighter"> \
+							          <tr><td>m/z:</td><td>%s</td></tr> \
+							          <tr><td>int:</td><td>%s</td></tr></table>'
+							};
+						}
+					</script>
+				</p:chart>
+				<br />
+				<p:dataScroller id="fragmentsViewScroller" height="150"
+					rendered="#{metFragWebBean.currentFragmentsAvailable}"
+					var="fragment" chunkSize="100" mode="inline" scrollHeight="150"
+					value="#{metFragWebBean.currentFragments}">
+					<f:facet name="header">
+	            		Fragments
+	       			</f:facet>
+					<h:panelGrid columns="2">
+						<h:panelGrid columns="2" style="border: none;" columnClasses="resultImageFirst,resultImageSecond">
+							<p:graphicImage id="fragmentImageCell"
+								value="#{fragment.fragmentImage}" cache="false" width="150"/>
+							<h:panelGroup>
+								<h:graphicImage id="magnifierFragment" name="images/icons/magni3.png" />
+								<p:tooltip id="fragmentImageLarge" for="magnifierFragment">
+        							<p:graphicImage cache="false" alt="images/ajaxloadingbar.gif" value="#{fragment.fragmentImage}" />
+        						</p:tooltip>
+    						</h:panelGroup>
+						</h:panelGrid>
+						<h:panelGrid columns="1" columnClasses="fragmentColumns">
+							<h:outputText style="font-weight: bold"
+								value="Fragment #{fragment.id}" />
+							<h:panelGrid columns="2"
+								columnClasses="fragmentSubColumns,fragmentSubColumns">
+								<h:outputText value="Peak m/z:" />
+								<h:outputText id="fragmentPeakMassCell"
+									value="#{fragment.peakMass}" />
+								<h:outputText value="Fragment Mass:" />
+								<h:outputText id="fragmentMassCell" value="#{fragment.mass} Da" />
+								<h:outputText value="Fragment Formula:" />
+								<h:outputText id="fragmentFormulaCell"
+									value="#{fragment.molecularFormula}" escape="false" />
+							</h:panelGrid>
+						</h:panelGrid>
+					</h:panelGrid>
+				</p:dataScroller>
+				<br />
+			</h:panelGroup>
+		</h:form>
+	</p:dialog>
+</h:body>
+
+</html>

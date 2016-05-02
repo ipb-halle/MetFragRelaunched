@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:body>
+	<!--  -->
+	<p:tooltip styleClass="tooltip" escape="false" id="elementInclusionFilterPanelTooltip" for="elementInclusionFilterLabel" >
+		<h:outputText value="Filter out candidates by missing chemical elements. Per default candidates are filtered out which do not
+			contain all the elements set. If 'Exclusive' is set
+			candidates are filtered out which contain further
+			elements." />
+	</p:tooltip>
+	<p:tooltip styleClass="tooltip" escape="false" id="elementExclusionFilterPanelTooltip" for="elementExclusionFilterLabel" >
+		<h:outputText value="Filter out candidates by present chemical elements. Candidates containing one of the elements set are
+		filtered out."/>
+	</p:tooltip>
+	<p:tooltip styleClass="tooltip" escape="false" id="smartsInclusionFilterLabelTooltip" for="smartsInclusionFilterLabel" >
+		<h:outputText value="Filter out candidates by missing chemical substructures.
+			Candidates containing one of the substructures set are filtered out. 
+			Substructures are set via SMARTS strings."/>
+	</p:tooltip>
+	<p:tooltip styleClass="tooltip" escape="false" id="smartsExclusionFilterLabelTooltip" for="smartsExclusionFilterLabel" >
+		<h:outputText value="Filter out candidates by present chemical substructures.
+				Candidates which do not contain one of the substructures
+				set are filtered out. Substructures are set via SMARTS
+				strings" />
+	</p:tooltip>
+	
+	<p:tooltip styleClass="tooltip" escape="false" id="elementMinimumNumberFilterLabelTooltip" for="elementMinimumNumberFilterLabel" >
+		<h:outputText value="Filter out candidates by a minimum number of chemical
+			elements. Candidates which do not contain the minimum
+			number of elements set are filtered out."/>
+	</p:tooltip>
+	<p:tooltip styleClass="tooltip" escape="false" id="elementMaximumNumberFilterLabelTooltip" for="elementMaximumNumberFilterLabel" >
+		<h:outputText value="Filter out candidates by a maximum number of chemical
+			elements. Candidates containing more than the maximum 
+			number of elements set are filtered out."/>
+	</p:tooltip>
+	<p:tooltip styleClass="tooltip" escape="false" id="suspectListInclusionFilterLabelTooltip" for="suspectListInclusionFilterLabel" >
+		<h:outputText value="Filter out candidates that are not present in defined
+			suspect lists. Suspect lists can be uploaded and contain
+			InChIKeys one per line."/>
+	</p:tooltip>
+</h:body>
+
+</html>

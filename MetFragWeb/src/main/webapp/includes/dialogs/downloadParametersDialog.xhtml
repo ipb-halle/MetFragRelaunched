@@ -1,0 +1,36 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:body>
+	<ui:composition>
+		<p:dialog id="downloadParametersDialog" header="Download Parameters" 
+			widgetVar="downloadParametersDialog"
+			modal="true" resizable="false" style="text-align: center;">
+			<h:form id="downloadParametersForm" enctype="multipart/form-data">
+				<p:commandLink ajax="false" onclick="PrimeFaces.monitorDownload(startDownloadParameters, stopDownloadParameters);" >
+					<h:graphicImage name="images/icons/zip.png" width="64" height="64" />
+					<p:fileDownload value="#{metFragWebBean.downloadParameters}" />
+				</p:commandLink>
+			</h:form>
+			<p:dialog id="downloadParametersStatusDialog" modal="true" widgetVar="downloadParametersStatusDialog"
+				header="Creating Parameter Files" draggable="false" closable="false" resizable="false">
+				<p:graphicImage name="images/ajaxloadingbar.gif" />
+			</p:dialog>
+			<script type="text/javascript">
+				function startDownloadParameters() {
+					PF('downloadParametersStatusDialog').show();
+				}
+	
+				function stopDownloadParameters() {
+					PF('downloadParametersStatusDialog').hide();
+				}
+			</script>
+		</p:dialog>
+	</ui:composition>
+</h:body>
+
+</html>

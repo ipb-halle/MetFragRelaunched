@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<h:body>
+
+	<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+		xmlns:h="http://java.sun.com/jsf/html"
+		xmlns:f="http://java.sun.com/jsf/core"
+		xmlns:c="http://java.sun.com/jsp/jstl/core"
+		xmlns:p="http://primefaces.org/ui">
+		<h:panelGrid style="width: 100%;" columns="1"
+			rendered="#{metFragWebBean.scoreDistributionModelAvailable}">
+			<p:chart responsive="true" id="scoreDistributionPlot"
+				widgetVar="scoreDistributionPlot" type="line"
+				model="#{metFragWebBean.scoreDistributionModelView}"
+				style="min-height: 500px; width: auto;" extender="extenderScore">
+				<p:ajax event="itemSelect"
+					listener="#{metFragWebBean.candidatesViewItemSelect}" />
+				<h:outputScript library="js" name="jqplot.pointLabels.min.js" />
+				<script type="text/javascript">
+						function extenderScore() {
+							this.cfg.cursor = {
+								show: true,
+								zoom:true,
+						    	constrainZoomTo: 'y',
+						    	showTooltip: true,
+						    	looseZoom: true
+							},
+							this.cfg.axes.yaxis = {
+								min : 0.0,
+								label: "Candidate Index",
+								tickOptions: {
+									formatString:'%d'
+						        }
+							},
+							this.cfg.seriesDefaults = {
+								lineWidth: 1, 
+								shadow: false,
+								rendererOptions: { 
+									smooth: false 
+								},
+								markerOptions: { 
+									show: true, 
+									shadow: false, 
+									size: 7 
+								},
+					            pointLabels : { 
+					            	location: 'e',
+					            	show: false,
+					            	labels: #{metFragWebBean.scoreDistributionModelPointLabels}
+					            }
+						    };
+						}
+					</script>
+			</p:chart>
+		</h:panelGrid>
+	</ui:composition>
+</h:body>
+
+</html>

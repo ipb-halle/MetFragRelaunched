@@ -1,0 +1,24 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:body>
+
+	<h:form>
+		<p:dialog id="expiredSessionDialog" header="Session expired" widgetVar="expiredSessionDialog" modal="true" resizable="false" closable="false">
+			Your session has expired. Reload
+			<br />
+			page to continue.
+			<br />
+			<br />
+			<p:commandButton style="height: 22px; font-size: 0.7em" value="Reload" id="ReloadMetFrag" onclick="PF('expiredSessionDialog').hide(); document.location.href = document.location.href;" />
+			<br />
+		</p:dialog>
+	</h:form>
+	
+</h:body>
+
+</html>

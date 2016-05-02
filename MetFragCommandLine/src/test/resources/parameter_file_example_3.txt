@@ -1,0 +1,19 @@
+FragmentPeakMatchAbsoluteMassDeviation = 0.01
+FragmentPeakMatchRelativeMassDeviation = 10
+PrecursorCompoundIDs = C00509
+MaximumTreeDepth = 2
+PrecursorIonMode = 1
+IsPositiveIonMode = True
+ConsiderHydrogenShifts = True
+MetFragDatabaseType = KEGG
+MetFragPostProcessingCandidateFilter = InChIKeyFilter
+MetFragScoreTypes = FragmenterScore
+MetFragScoreWeights = 1.0
+MaximumNumberOfAFragmentAddedToQueue = 2
+NumberThreads = 1
+NeutralPrecursorMass = 272.06847
+SampleName = example_3
+MetFragCandidateWriter = CSV
+
+# KeggProxyServer =
+# KeggProxyPort =

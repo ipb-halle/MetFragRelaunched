@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:body>
+	<p:tooltip styleClass="tooltip" escape="false" id="smartsInclusionScoreLabelTooltip" for="smartsInclusionScoreLabel" >
+		<h:outputText value="Score candidates by the presence of chemical substructures.
+			Candidates containing a higher number of the substructures defined
+			are scored better than candidates with less matches.
+			Substructures are set via SMARTS strings."/>
+	</p:tooltip>
+	<p:tooltip styleClass="tooltip" escape="false" id="smartsExclusionScoreLabelTooltip" for="smartsExclusionScoreLabel" >
+		<h:outputText value="Score candidates by the absence of chemical substructures.
+				Candidates containing less substructures defined
+				are scored better than candidates with a higher number of matches. Substructures are set via SMARTS
+				strings" />
+	</p:tooltip>
+	<p:tooltip styleClass="tooltip" escape="false" id="retentionTimeScoreLabelTooltip" for="retentionTimeScoreLabel" >
+		<h:outputText value="Score candidates by using retention time information from revered phase liquid chromatography. 
+			This is based on the correlation of retention times and logP values."/>
+	</p:tooltip>
+	<!-- 
+	<p:tooltip styleClass="tooltip" escape="false" id="spectralSimilarityScoreLabelTooltip" for="spectralSimilarityScoreLabel" >
+		<h:outputText escape="false" value="Score candidates by spectral similarity based on the MetFusion approach (Gerlich et al., 2013). 
+			The query spectrum is matched against spectra from MassBank of North America (MoNA)."/>
+	</p:tooltip>
+	 -->
+	<p:tooltip styleClass="tooltip" escape="false" id="spectralSimilarityScoreLabelTooltip" for="spectralSimilarityScoreLabel" >
+		<h:outputText escape="false" value="Score candidates by spectral similarity based on cosine similarity. 
+			The query spectrum is matched against spectra from MassBank of North America (MoNA)."/>
+	</p:tooltip>
+	<p:tooltip styleClass="tooltip" escape="false" id="suspectListInclusionScoreLabelTooltip" for="suspectListInclusionScoreLabel" >
+		<h:outputText value="Score candidates by the presence in defined
+			suspect lists. Suspect lists can be uploaded and contain
+			InChIKeys one per line."/>
+	</p:tooltip>
+</h:body>
+
+</html>

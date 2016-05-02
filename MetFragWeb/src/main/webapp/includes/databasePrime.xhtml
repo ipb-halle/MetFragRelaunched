@@ -1,0 +1,283 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<h:body>
+
+	<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+		xmlns:h="http://java.sun.com/jsf/html"
+		xmlns:f="http://java.sun.com/jsf/core"
+		xmlns:c="http://java.sun.com/jsp/jstl/core"
+		xmlns:p="http://primefaces.org/ui">
+		<div class="ui-grid">
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-6-user">
+					<h:panelGrid columns="2" style="vertical-align:top;"
+						cellspacing="4" cellpadding="4"
+						columnClasses="firstColumnDatabase,secondColumnDatabase"
+						id="databaseParameters">
+						<h:outputLabel value="Database:" id="selectDatabaseLabel"/>
+						<h:panelGrid columns="3">
+							<p:selectOneMenu id="selectDatabase"
+								value="#{metFragWebBean.database}">
+								<f:selectItems value="#{metFragWebBean.availableDatabases}" />
+								<p:ajax update="mainForm:mainAccordion" />
+							</p:selectOneMenu>
+							<h:panelGroup style="padding-bottom:  5px;">
+								<h:outputLabel value="Include references:"
+									style="padding-left: 10px"
+									rendered="#{metFragWebBean.database == 'PubChem'}" width="20%" />
+							</h:panelGroup>
+							<h:panelGrid columns="1"
+								rendered="#{metFragWebBean.database == 'PubChem'}">
+								<p:selectBooleanCheckbox id="checkIncludeReferences"
+									value="#{metFragWebBean.includeReferences}"
+									rendered="#{metFragWebBean.database == 'PubChem'}" >
+									<p:ajax update="checkIncludeReferences" />
+								</p:selectBooleanCheckbox>
+							</h:panelGrid>
+						</h:panelGrid>
+
+						<h:outputLabel value="Upload File:"
+							rendered="#{metFragWebBean.localDatabaseDefined}" id="candidateFileUploadLabel"/>
+						<h:panelGrid columns="2" width="100%"
+							rendered="#{metFragWebBean.localDatabaseDefined}">
+							<h:panelGrid columns="1"
+								rendered="#{metFragWebBean.localDatabaseDefined}">
+								<p:fileUpload update="mainForm:mainAccordion" id="candidateFileUpload"
+									fileUploadListener="#{metFragWebBean.candidateFileUploadListener}"
+									auto="true" mode="advanced">
+								</p:fileUpload>
+								<h:panelGroup id="candidateFileName" layout="block"
+									styleClass="ui-messages ui-widget" style="padding-top: 10px"
+									rendered="#{metFragWebBean.candidateFileName != ''}">
+									<h:panelGroup styleClass="ui-messages-info-user ui-corner-all"
+										layout="block">
+										<h:panelGrid columns="2">
+											<h:panelGroup styleClass="ui-messages-info-icon-user" />
+											<h:outputText styleClass="ui-messages-info-detail-user"
+												value="Uploaded #{metFragWebBean.candidateFileNamePart}" />
+										</h:panelGrid>
+									</h:panelGroup>
+								</h:panelGroup>
+								<h:panelGroup id="candidateFileError" style="padding-top: 10px"
+									layout="block" styleClass="ui-messages ui-widget"
+									rendered="#{metFragWebBean.isErrorMessage('candidateFileError')}">
+									<h:panelGroup styleClass="ui-messages-error-user ui-corner-all"
+										layout="block">
+										<h:panelGrid columns="2">
+											<h:panelGroup styleClass="ui-messages-error-icon-user" />
+											<h:outputText styleClass="ui-messages-error-detail-user"
+												value="#{metFragWebBean.getErrorMessage('candidateFileError')}" />
+										</h:panelGrid>
+									</h:panelGroup>
+								</h:panelGroup>
+							</h:panelGrid>
+						</h:panelGrid>
+
+						<h:outputLabel value="Neutral Mass:" width="15%" id="inputNeutralMonoisotopicMassLabel"/>
+						<h:panelGrid columns="2">
+							<h:panelGroup>
+								<p:inputText id="inputNeutralMonoisotopicMass" required="false"
+									size="10" value="#{metFragWebBean.neutralMonoisotopicMass}">
+									<p:ajax event="blur" update="databaseParameters" />
+								</p:inputText>
+								<h:outputLabel id="inputDatabaseRelativeMassDeviationLabel" rendered="#{metFragWebBean.massSearchAvailable}"
+									value=" Search ppm: " />
+								<p:inputText id="inputDatabaseRelativeMassDeviation"
+									required="false" size="4"
+									value="#{metFragWebBean.databaseRelativeMassDeviation}"
+									rendered="#{metFragWebBean.massSearchAvailable}">
+									<p:ajax event="blur" update="databaseParameters" />
+								</p:inputText>
+							</h:panelGroup>
+							<h:panelGrid columns="2"
+								id="inputNeutralMonoisotopicMassDatabaseRelativeMassDeviationError">
+								<h:panelGroup id="inputNeutralMonoisotopicMassError"
+									layout="block" styleClass="ui-messages ui-widget"
+									rendered="#{metFragWebBean.isErrorMessage('inputNeutralMonoisotopicMassError')}">
+									<h:panelGroup styleClass="ui-messages-error-user ui-corner-all"
+										layout="block">
+										<h:panelGrid columns="2">
+											<h:panelGroup styleClass="ui-messages-error-icon-user" />
+											<h:outputText styleClass="ui-messages-error-detail-user"
+												value="#{metFragWebBean.getErrorMessage('inputNeutralMonoisotopicMassError')}" />
+										</h:panelGrid>
+									</h:panelGroup>
+								</h:panelGroup>
+								<h:panelGroup id="inputDatabaseRelativeMassDeviationError"
+									layout="block" styleClass="ui-messages ui-widget"
+									rendered="#{metFragWebBean.isErrorMessage('inputDatabaseRelativeMassDeviationError')}">
+									<h:panelGroup styleClass="ui-messages-error-user ui-corner-all"
+										layout="block">
+										<h:panelGrid columns="2">
+											<h:panelGroup styleClass="ui-messages-error-icon-user" />
+											<h:outputText styleClass="ui-messages-error-detail-user"
+												value="#{metFragWebBean.getErrorMessage('inputDatabaseRelativeMassDeviationError')}" />
+										</h:panelGrid>
+									</h:panelGroup>
+								</h:panelGroup>
+							</h:panelGrid>
+						</h:panelGrid>
+					
+						<h:outputLabel rendered="#{metFragWebBean.formulaSearchAvailable}"
+							value="Formula:" id="inputFormulaLabel"/>
+						<h:panelGrid columns="2"
+							rendered="#{metFragWebBean.formulaSearchAvailable}">
+							<p:inputText id="inputFormula" required="false"
+								value="#{metFragWebBean.formula}"
+								rendered="#{metFragWebBean.formulaSearchAvailable}">
+								<p:ajax event="blur"
+									update="parentIonCalculationPanel databaseParameters" />
+							</p:inputText>
+							<h:panelGroup id="formulaError" layout="block"
+								styleClass="ui-messages ui-widget"
+								rendered="#{metFragWebBean.isErrorMessage('formulaError')}">
+								<h:panelGroup styleClass="ui-messages-error-user ui-corner-all"
+									layout="block">
+									<h:panelGrid columns="2">
+										<h:panelGroup styleClass="ui-messages-error-icon-user" />
+										<h:outputText styleClass="ui-messages-error-detail-user"
+											value="#{metFragWebBean.getErrorMessage('formulaError')}" />
+									</h:panelGrid>
+								</h:panelGroup>
+							</h:panelGroup>
+						</h:panelGrid>
+						
+						<h:outputLabel
+							rendered="#{metFragWebBean.identifierSearchAvailable}"
+							value="Identifiers:" id="inputIdentifiersLabel" />
+						<h:panelGrid columns="2"
+							rendered="#{metFragWebBean.identifierSearchAvailable}">
+							<p:inputText id="inputIdentifiers" required="false"
+								value="#{metFragWebBean.identifiers}"
+								rendered="#{metFragWebBean.identifierSearchAvailable}">
+								<p:ajax event="blur" update="databaseParameters" />
+							</p:inputText>
+							<h:panelGroup id="identifierError" layout="block"
+								styleClass="ui-messages ui-widget"
+								rendered="#{metFragWebBean.isErrorMessage('identifierError')}">
+								<h:panelGroup styleClass="ui-messages-error-user ui-corner-all"
+									layout="block">
+									<h:panelGrid columns="2">
+										<h:panelGroup styleClass="ui-messages-error-icon-user" />
+										<h:outputText styleClass="ui-messages-error-detail-user"
+											value="#{metFragWebBean.getErrorMessage('identifierError')}" />
+									</h:panelGrid>
+								</h:panelGroup>
+							</h:panelGroup>
+						</h:panelGrid>
+					</h:panelGrid>
+				</div>
+				<div class="ui-grid-col-4-user">
+					<h:panelGrid columns="2" style="vertical-align:top;"
+						cellspacing="4" cellpadding="4" id="parentIonCalculationPanel">
+						<h:outputLabel value="Parent Ion:" id="inputMeasuredMassLabel" />
+						<h:panelGrid columns="3">
+							<p:inputText id="inputMeasuredMass" required="false" size="10"
+								value="#{metFragWebBean.measuredMass}">
+								<p:ajax event="blur" update="parentIonCalculationPanel" />
+							</p:inputText>
+							<p:selectOneMenu id="selectMeasuredMassMode"
+								value="#{metFragWebBean.measuredMassMode}"
+								style="margin-top: 3px;" immediate="true" >
+								<p:ajax />
+								<f:selectItems value="#{metFragWebBean.precursorModes}" />
+							</p:selectOneMenu>
+							<p:commandButton
+								disabled="#{metFragWebBean.validMolecularFormulaDefined}"
+								value="Calculate" id="buttonCalculateMass" process="parentIonCalculationPanel"
+								update="inputNeutralMonoisotopicMass parentIonCalculationPanel"
+								action="#{metFragWebBean.calculateNeutralMonoisotopicMass}">
+							</p:commandButton>
+						</h:panelGrid>
+						<h:panelGroup></h:panelGroup>
+						<h:panelGroup id="inputMeasuredMassError" layout="block"
+							styleClass="ui-messages ui-widget"
+							rendered="#{metFragWebBean.isErrorMessage('inputMeasuredMassError')}">
+							<h:panelGroup styleClass="ui-messages-error-user ui-corner-all"
+								layout="block">
+								<h:panelGrid columns="2">
+									<h:panelGroup styleClass="ui-messages-error-icon-user" />
+									<h:outputText styleClass="ui-messages-error-detail-user"
+										value="#{metFragWebBean.getErrorMessage('inputMeasuredMassError')}" />
+								</h:panelGrid>
+							</h:panelGroup>
+						</h:panelGroup>
+					</h:panelGrid>
+				</div>
+			</div>
+		</div>
+		<div class="ui-grid" style="margin-top: 10px;">
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-6">
+					<h:panelGrid columns="2">
+						<p:commandButton 
+							value="#{metFragWebBean.retrieveCompoundsButtonLabel}"
+							id="buttonRetrieveCompounds" update="mainForm:mainAccordion"
+							actionListener="#{metFragWebBean.retrieveCompounds}"
+							disabled="#{not metFragWebBean.candidateFilePathDefined and metFragWebBean.localDatabaseDefined}">
+						</p:commandButton>
+						<h:panelGroup id="retrieveCompoundsError" layout="block"
+							styleClass="ui-messages ui-widget"
+							rendered="#{metFragWebBean.isErrorMessage('retrieveCompoundsError')}">
+							<h:panelGroup styleClass="ui-messages-error-user ui-corner-all"
+								layout="block">
+								<h:panelGrid columns="2">
+									<h:panelGroup styleClass="ui-messages-error-icon-user" />
+									<h:outputText styleClass="ui-messages-error-detail-user"
+										value="#{metFragWebBean.getErrorMessage('retrieveCompoundsError')}" />
+								</h:panelGrid>
+							</h:panelGroup>
+						</h:panelGroup>
+						<h:panelGroup id="numberCompoundsLabel" layout="block"
+							styleClass="ui-messages ui-widget"
+							rendered="#{metFragWebBean.isInfoMessage('retrieveCompoundsInfo')}">
+							<h:panelGroup styleClass="ui-messages-info-user ui-corner-all"
+								layout="block">
+								<h:panelGrid columns="2">
+									<h:panelGroup styleClass="ui-messages-info-icon-user" />
+									<h:outputText styleClass="ui-messages-info-detail-user"
+										value="#{metFragWebBean.getInfoMessage('retrieveCompoundsInfo')}" />
+								</h:panelGrid>
+							</h:panelGroup>
+						</h:panelGroup>
+					</h:panelGrid>
+				</div>
+				<div class="ui-grid-col-6">
+					<h:panelGrid columns="2">
+						<!-- candidate download -->
+						<p:commandButton value="Download Candidates"
+							id="buttonDownloadCompounds"
+							onclick="PF('downloadCandidatesDialog').show();"
+							disabled="#{metFragWebBean.numberCompoundsRetrieved == 0}">
+						</p:commandButton>
+						<h:panelGroup id="buttonDownloadCompoundsError" layout="block"
+							styleClass="ui-messages ui-widget"
+							rendered="#{metFragWebBean.isErrorMessage('buttonDownloadCompoundsError')}">
+							<h:panelGroup styleClass="ui-messages-error-user ui-corner-all"
+								layout="block">
+								<h:panelGrid columns="2">
+									<h:panelGroup styleClass="ui-messages-error-icon-user" />
+									<h:outputText styleClass="ui-messages-error-detail-user"
+										value="#{metFragWebBean.getErrorMessage('buttonDownloadCompoundsError')}" />
+								</h:panelGrid>
+							</h:panelGroup>
+						</h:panelGroup>
+					</h:panelGrid>
+				</div>
+			</div>
+		</div>
+		
+		<p:growl id="databaseGrowl" showDetail="true" escape="false" />  
+		
+		<ui:insert name="databasePrimeTooltips">
+			<ui:include src="tooltips/databasePrimeTooltips.xhtml" />
+		</ui:insert>
+		
+	</ui:composition>
+</h:body>
+
+</html>

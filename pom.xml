@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>de.ipbhalle.metfrag</groupId>
+  <artifactId>MetFrag</artifactId>
+  <version>2.3</version>
+  <packaging>pom</packaging>
+  <name>MetFrag</name>
+  <modules>
+    <module>MetFragLib</module>
+    <module>MetFragCommandLine</module>
+    <module>MetFragWeb</module>
+    <module>MetFragR</module>
+  </modules>
+  <dependencyManagement>
+  	<dependencies>
+  		<dependency>
+  			<groupId>de.ipbhalle.metfraglib</groupId>
+  			<artifactId>MetFragLib</artifactId>
+  			<version>2.3</version>
+  		</dependency>
+  	</dependencies>
+  </dependencyManagement>
+</project>

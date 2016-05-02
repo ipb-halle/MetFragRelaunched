@@ -1,0 +1,80 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<h:body>
+
+	<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+		xmlns:h="http://java.sun.com/jsf/html"
+		xmlns:f="http://java.sun.com/jsf/core"
+		xmlns:c="http://java.sun.com/jsp/jstl/core"
+		xmlns:p="http://primefaces.org/ui">
+
+		<h:form id="uploadParametersForm" enctype="multipart/form-data">
+			<h:panelGrid id="uploadParametersPanel" columns="1" style="width: 100%">
+				<h:outputText
+					style="font-family: 'Lato', sans-serif; color: #4F4F4F;"
+					value="Upload parameters as ZIP file" />
+				<br />
+				<p:fileUpload update="uploadParametersPanel" id="parametersUpload"
+					fileUploadListener="#{metFragWebBean.parametersUploadListener}"
+					auto="true" mode="advanced">
+				</p:fileUpload>
+				<h:panelGroup id="uploadParametersError" style="padding-top: 10px"
+					layout="block" styleClass="ui-messages ui-widget"
+					rendered="#{metFragWebBean.isErrorMessage('uploadParametersError')}">
+					<h:panelGroup styleClass="ui-messages-error-user ui-corner-all"
+						layout="block">
+						<h:panelGrid columns="2">
+							<h:panelGroup styleClass="ui-messages-error-icon-user" />
+							<h:outputText style="margin-left: 0px" styleClass="ui-messages-error-detail-user"
+								escape="false" value="#{metFragWebBean.getErrorMessage('uploadParametersError')}" />
+						</h:panelGrid>
+					</h:panelGroup>
+				</h:panelGroup>
+				<h:panelGroup id="uploadParametersInfo" layout="block"
+					styleClass="ui-messages ui-widget" style="padding-top: 10px; padding-bottom: 20px;" 
+					rendered="#{metFragWebBean.isInfoMessage('uploadParametersInfo')}">
+					<h:panelGroup styleClass="ui-messages-info-user ui-corner-all"
+						layout="block">
+						<h:panelGrid columns="2">
+							<h:panelGroup styleClass="ui-messages-info-icon-user" />
+							<h:outputText escape="false" style="margin-left: 0px" styleClass="ui-messages-info-detail-user"
+								value="#{metFragWebBean.getInfoMessage('uploadParametersInfo')}" />
+						</h:panelGrid>
+					</h:panelGroup>
+				</h:panelGroup>
+				<h:panelGroup style="font-family: 'Lato', sans-serif; color: #4F4F4F;" rendered="#{metFragWebBean.isInfoMessage('uploadParametersInfo')}">
+					Parameters uploaded. Go to <a href="/MetFragWeb/index.xhtml">MetFragWeb</a>
+				</h:panelGroup>
+				<br />
+				<h:outputText
+					style="font-family: 'Lato', sans-serif; color: #4F4F4F;"
+					value="Example Content:" />
+				<br />
+				<h:panelGrid columns="1" style="padding-left: 20px">
+					<h:outputText
+						style="font-family: 'Lato', sans-serif; color: #4F4F4F;"
+						value="MetFragWeb_Parameters/MetFragWeb_Parameters.cfg" />
+					<h:outputText
+						style="font-family: 'Lato', sans-serif; color: #4F4F4F;"
+						value="MetFragWeb_Parameters/MetFragWeb_Peaklist.txt" />
+					<h:outputText
+						style="font-family: 'Lato', sans-serif; color: #4F4F4F;"
+						value="MetFragWeb_Parameters/retentiontimescore (optional)" />
+					<h:outputText
+						style="font-family: 'Lato', sans-serif; color: #4F4F4F;"
+						value="MetFragWeb_Parameters/suspectlistsscore (optional)" />
+					<h:outputText
+						style="font-family: 'Lato', sans-serif; color: #4F4F4F;"
+						value="MetFragWeb_Parameters/suspectlistsfilter (optional)" />
+				</h:panelGrid>
+			</h:panelGrid>
+		</h:form>
+
+	</ui:composition>
+</h:body>
+
+</html>

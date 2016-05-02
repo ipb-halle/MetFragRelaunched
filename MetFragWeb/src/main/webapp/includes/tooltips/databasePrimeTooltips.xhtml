@@ -1,0 +1,40 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:body>
+	<!--  -->
+	<p:tooltip styleClass="tooltip" escape="false" id="selectDatabaseLabelTooltip" for="selectDatabaseLabel" >
+		<h:outputText value="Define database type." escape="false" />
+	</p:tooltip>
+	<p:tooltip styleClass="tooltip" escape="false" id="inputNeutralMonoisotopicMassLabelTooltip" for="inputNeutralMonoisotopicMassLabel" >
+		<h:outputText value="Monoisotopic mass of the neutral precursor. This can be calculated by using the
+			'Parent Ion' information or by setting the Molecular 'Formula'."/>
+	</p:tooltip>
+	<p:tooltip styleClass="tooltip" escape="false" id="inputDatabaseRelativeMassDeviationLabelTooltip" for="inputDatabaseRelativeMassDeviationLabel" >
+		<h:outputText value="Relative mass deviation (ppm) used
+			to perform candidate search by mass."/>
+	</p:tooltip>
+	<p:tooltip styleClass="tooltip" escape="false" id="inputFormulaLabelTooltip" for="inputFormulaLabel" >
+		<h:outputText value="Molecular formula of the neutral precursor
+			used to perform candidate search." />
+	</p:tooltip>
+	<p:tooltip styleClass="tooltip" escape="false" id="inputIdentifierLabelTooltip" for="inputIdentifiersLabel" >
+		<h:outputText value="Database specific identifiers used
+			to perform candidate search. Example for PubChem: 932,7023,911	
+			Example for KEGG: C00509,C00029" />
+	</p:tooltip>
+	<p:tooltip styleClass="tooltip" escape="false" id="inputMeasuredMassLabelTooltip" for="inputMeasuredMassLabel" >
+		<h:outputText value="Calculate the neutral mass from the measured
+			precursor m/z and the adduct type." />
+	</p:tooltip>
+	<!-- button tooltips -->
+	<p:tooltip styleClass="tooltip" escape="false" id="buttonDownloadCompoundsTooltip" for="buttonDownloadCompounds" >
+		<h:outputText value="Download retrieved candidates as CSV, SDF or XLS file." />
+	</p:tooltip>
+</h:body>
+
+</html>

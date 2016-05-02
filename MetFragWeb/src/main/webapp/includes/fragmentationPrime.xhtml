@@ -1,0 +1,237 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<h:body>
+
+
+	<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+		xmlns:h="http://java.sun.com/jsf/html"
+		xmlns:f="http://java.sun.com/jsf/core"
+		xmlns:c="http://java.sun.com/jsp/jstl/core"
+		xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui">
+
+		<div class="ui-grid">
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-6-user">
+					<h:panelGrid columns="2" cellspacing="4" cellpadding="4"
+						style="vertical-align: top;" id="fragmenterParametersPanel"
+						columnClasses="firstColumnDatabase,secondColumnDatabase">
+						<h:outputLabel id="inputMzPpmLabel" value="Mzppm:" />
+						<h:panelGrid columns="2">
+							<p:inputText id="inputMzPpm" required="false"
+								value="#{metFragWebBean.relativeMassDeviation}" size="5">
+								<p:ajax event="blur" update="fragmenterParametersPanel" />
+							</p:inputText>
+							<h:panelGroup id="inputMzPpmError" layout="block"
+								styleClass="ui-messages ui-widget"
+								rendered="#{metFragWebBean.isErrorMessage('inputMzPpmError')}">
+								<h:panelGroup styleClass="ui-messages-error-user ui-corner-all"
+									layout="block">
+									<h:panelGrid columns="2">
+										<h:panelGroup styleClass="ui-messages-error-icon-user" />
+										<h:outputText styleClass="ui-messages-error-detail-user"
+											value="#{metFragWebBean.getErrorMessage('inputMzPpmError')}" />
+									</h:panelGrid>
+								</h:panelGroup>
+							</h:panelGroup>
+						</h:panelGrid>
+
+						<h:outputLabel id="inputMzAbsLabel" value="Mzabs:" />
+						<h:panelGrid columns="2">
+							<p:inputText id="inputMzAbs" required="false"
+								value="#{metFragWebBean.absoluteMassDeviation}" size="5">
+								<p:ajax event="blur" update="fragmenterParametersPanel" />
+							</p:inputText>
+							<h:panelGroup id="inputMzAbsError" layout="block"
+								styleClass="ui-messages ui-widget"
+								rendered="#{metFragWebBean.isErrorMessage('inputMzAbsError')}">
+								<h:panelGroup styleClass="ui-messages-error-user ui-corner-all"
+									layout="block">
+									<h:panelGrid columns="2">
+										<h:panelGroup styleClass="ui-messages-error-icon-user" />
+										<h:outputText styleClass="ui-messages-error-detail-user"
+											value="#{metFragWebBean.getErrorMessage('inputMzAbsError')}" />
+									</h:panelGrid>
+								</h:panelGroup>
+							</h:panelGroup>
+						</h:panelGrid>
+
+						<h:outputLabel id="modeLabel" value="Mode:" />
+						<h:panelGrid columns="2">
+							<p:selectOneMenu id="selectMode" value="#{metFragWebBean.mode}"
+								immediate="true">
+								<f:selectItems value="#{metFragWebBean.precursorModes}" />
+								<p:ajax event="valueChange" />
+							</p:selectOneMenu>
+						</h:panelGrid>
+					</h:panelGrid>
+				</div>
+				<div class="ui-grid-col-6-user">
+					<h:panelGroup id="peakListPanel">
+						<h:panelGrid columns="1">
+							<h:outputText  id="peaklistLabel" value="MS/MS Peak list" />
+							<p:inputTextarea rows="10" cols="20" autoResize="false"
+								value="#{metFragWebBean.peakList}" required="false"
+								style="resize: none" id="peakListInput">
+								<p:ajax event="blur" update="peakListPanel" />
+							</p:inputTextarea>
+							<p:commandButton style="height: 25px; font-size: 0.9em" 
+								value="Show Spectrum"
+								actionListener="#{metFragWebBean.generateSpectrumModelViewListener}"
+								id="showSpectrumView" onclick=""
+								update="fragmenterParametersPanel">
+							</p:commandButton>
+						</h:panelGrid>
+						<h:panelGroup id="peakListInputError" layout="block"
+							styleClass="ui-messages ui-widget"
+							style="width: 250px; padding-top: 10px; padding-bottom: 10px;"
+							rendered="#{metFragWebBean.isErrorMessage('peakListInputError')}">
+							<h:panelGroup styleClass="ui-messages-error-user ui-corner-all"
+								layout="block">
+								<h:panelGrid columns="2">
+									<h:panelGroup styleClass="ui-messages-error-icon-user" />
+									<h:outputText styleClass="ui-messages-error-detail-user"
+										value="#{metFragWebBean.getErrorMessage('peakListInputError')}" />
+								</h:panelGrid>
+							</h:panelGroup>
+						</h:panelGroup>
+					</h:panelGroup>
+				</div>
+			</div>
+		</div>
+
+		<div class="ui-grid" style="margin-top: 10px;">
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-6">
+					<h:panelGrid columns="1" width="100%" style="vertical-align:top;"
+						cellspacing="4" cellpadding="4" id="processCompoundsPanel">
+						<h:panelGrid columns="2">
+							<p:commandButton value="Process Candidates"
+								actionListener="#{metFragWebBean.processCompounds}"
+								id="processCompounds" 
+								disabled="#{metFragWebBean.numberCompoundsRetrieved == 0}"
+								update="processCompoundsPanel downloadParametersPanel">
+							</p:commandButton>
+							<h:panelGroup id="buttonProcessCompoundsError" layout="block"
+								styleClass="ui-messages ui-widget" style="padding-top: 5px"
+								rendered="#{metFragWebBean.isErrorMessage('buttonProcessCompoundsError')}">
+								<h:panelGroup styleClass="ui-messages-error-user ui-corner-all"
+									layout="block">
+									<h:panelGrid columns="2">
+										<h:panelGroup styleClass="ui-messages-error-icon-user" />
+										<h:outputText styleClass="ui-messages-error-detail-user"
+											value="#{metFragWebBean.getErrorMessage('buttonProcessCompoundsError')}" />
+									</h:panelGrid>
+								</h:panelGroup>
+							</h:panelGroup>
+							<h:panelGroup id="processingProcessedCandidatesInfo" layout="block"
+								styleClass="ui-messages ui-widget"
+								rendered="#{metFragWebBean.isInfoMessage('processingProcessedCandidatesInfo')}">
+								<h:panelGroup styleClass="ui-messages-info-user ui-corner-all"
+									layout="block">
+									<h:panelGrid columns="2">
+										<h:panelGroup styleClass="ui-messages-info-icon-user" />
+										<h:outputText styleClass="ui-messages-info-detail-user"
+											value="#{metFragWebBean.getInfoMessage('processingProcessedCandidatesInfo')}" />
+									</h:panelGrid>
+								</h:panelGroup>
+							</h:panelGroup>
+						</h:panelGrid>
+						<h:panelGrid columns="1" id="buttonProcessCompoundsErrors">
+							<h:panelGroup id="buttonProcessCompoundsFilterError"
+								layout="block" styleClass="ui-messages ui-widget"
+								style="padding-top: 5px"
+								rendered="#{metFragWebBean.isErrorMessage('buttonProcessCompoundsFilterError')}">
+								<h:panelGroup styleClass="ui-messages-error-user ui-corner-all"
+									layout="block">
+									<h:panelGrid columns="2">
+										<h:panelGroup styleClass="ui-messages-error-icon-user" />
+										<h:outputText styleClass="ui-messages-error-detail-user"
+											value="#{metFragWebBean.getErrorMessage('buttonProcessCompoundsFilterError')}" />
+									</h:panelGrid>
+								</h:panelGroup>
+							</h:panelGroup>
+							<h:panelGroup id="buttonProcessCompoundsScoreError"
+								layout="block" styleClass="ui-messages ui-widget"
+								style="padding-top: 20px"
+								rendered="#{metFragWebBean.isErrorMessage('buttonProcessCompoundsScoreError')}">
+								<h:panelGroup styleClass="ui-messages-error-user ui-corner-all"
+									layout="block">
+									<h:panelGrid columns="2">
+										<h:panelGroup styleClass="ui-messages-error-icon-user" />
+										<h:outputText styleClass="ui-messages-error-detail-user"
+											value="#{metFragWebBean.getErrorMessage('buttonProcessCompoundsScoreError')}" />
+									</h:panelGrid>
+								</h:panelGroup>
+							</h:panelGroup>
+						</h:panelGrid>
+					</h:panelGrid>
+				</div>
+				<div class="ui-grid-col-6">
+					<h:panelGrid columns="1" width="100%" style="vertical-align:top;"
+						cellspacing="4" cellpadding="4" id="downloadParametersPanel">
+						<h:panelGrid columns="2">
+							<p:commandButton value="Download Parameters"
+								actionListener="#{metFragWebBean.checkParametersForDownload}"
+								id="buttonDownloadParameters"
+								update="processCompoundsPanel downloadParametersPanel databaseParameters 
+									parentIonCalculationPanel scoreSettingsPanel filterSettingsPanel" 
+								disabled="#{metFragWebBean.numberCompoundsRetrieved == 0}">
+							</p:commandButton> 
+							<h:panelGroup id="buttonDownloadParametersDatabaseError"
+								layout="block" styleClass="ui-messages ui-widget"
+								rendered="#{metFragWebBean.isErrorMessage('buttonDownloadParametersDatabaseError')}">
+								<h:panelGroup styleClass="ui-messages-error-user ui-corner-all"
+									layout="block">
+									<h:panelGrid columns="2">
+										<h:panelGroup styleClass="ui-messages-error-icon-user" />
+										<h:outputText styleClass="ui-messages-error-detail-user"
+											value="#{metFragWebBean.getErrorMessage('buttonDownloadParametersDatabaseError')}" />
+									</h:panelGrid>
+								</h:panelGroup>
+							</h:panelGroup>
+						</h:panelGrid>
+						<h:panelGrid columns="1" id="buttonDownloadParametersErrors">
+							<h:panelGroup id="buttonDownloadParametersFilterError"
+								layout="block" styleClass="ui-messages ui-widget"
+								style="padding-top: 5px"
+								rendered="#{metFragWebBean.isErrorMessage('buttonDownloadParametersFilterError')}">
+								<h:panelGroup styleClass="ui-messages-error-user ui-corner-all"
+									layout="block">
+									<h:panelGrid columns="2">
+										<h:panelGroup styleClass="ui-messages-error-icon-user" />
+										<h:outputText styleClass="ui-messages-error-detail-user"
+											value="#{metFragWebBean.getErrorMessage('buttonDownloadParametersFilterError')}" />
+									</h:panelGrid>
+								</h:panelGroup>
+							</h:panelGroup>
+							<h:panelGroup id="buttonDownloadParametersScoreError"
+								layout="block" styleClass="ui-messages ui-widget"
+								style="padding-top: 5px"
+								rendered="#{metFragWebBean.isErrorMessage('buttonDownloadParametersScoreError')}">
+								<h:panelGroup styleClass="ui-messages-error-user ui-corner-all"
+									layout="block">
+									<h:panelGrid columns="2">
+										<h:panelGroup styleClass="ui-messages-error-icon-user" />
+										<h:outputText styleClass="ui-messages-error-detail-user"
+											value="#{metFragWebBean.getErrorMessage('buttonDownloadParametersScoreError')}" />
+									</h:panelGrid>
+								</h:panelGroup>
+							</h:panelGroup>
+						</h:panelGrid>
+					</h:panelGrid>
+				</div>
+			</div>
+		</div>
+		<p:growl id="fragmenterGrowl" showDetail="true" escape="false" />  
+		
+		<ui:insert name="fragmentationPrimeTooltips">
+			<ui:include src="tooltips/fragmentationPrimeTooltips.xhtml" />
+		</ui:insert>
+	</ui:composition>
+</h:body>
+
+</html>

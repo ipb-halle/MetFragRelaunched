@@ -1,0 +1,150 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core">
+
+<h:body>
+	<h:form id="feedbackDialogForm">
+		<p:dialog id="feedbackDialog" header="Submit Feedback"
+			visible="#{metFragWebBean.feedbackDialogVisible}"
+			widgetVar="feedbackDialog" modal="true" resizable="false"
+			closable="false" width="600" heigh="300">
+			<h:panelGrid columns="2" style="vertical-align:top;" cellspacing="4"
+				cellpadding="4"
+				columnClasses="firstColumnDatabase,secondColumnDatabase">
+				<h:outputLabel value="Email:" id="inputEmailLabel" />
+				<h:panelGrid columns="1">
+					<p:inputText id="inputEmail" required="false" size="20"
+						value="#{metFragWebBean.feedbackEmail}" />
+					<h:panelGroup id="inputEmailError" style="padding-top: 10px"
+						layout="block" styleClass="ui-messages ui-widget"
+						rendered="#{metFragWebBean.isErrorMessage('inputEmailError')}">
+						<h:panelGroup styleClass="ui-messages-error-user ui-corner-all"
+							layout="block">
+							<h:panelGrid columns="2">
+								<h:panelGroup styleClass="ui-messages-error-icon-user" />
+								<h:outputText styleClass="ui-messages-error-detail-user"
+									value="#{metFragWebBean.getErrorMessage('inputEmailError')}" />
+							</h:panelGrid>
+						</h:panelGroup>
+					</h:panelGroup>
+				</h:panelGrid>
+
+				<h:outputLabel value="Comment:" id="inputCommentLabel" />
+				<h:panelGrid columns="1">
+					<p:inputTextarea rows="10" cols="30" autoResize="false"
+						required="false" style="resize: none" id="commentInput"
+						value="#{metFragWebBean.feedbackComment}">
+					</p:inputTextarea>
+					<h:panelGroup id="inputCommentError" style="padding-top: 10px"
+						layout="block" styleClass="ui-messages ui-widget"
+						rendered="#{metFragWebBean.isErrorMessage('inputCommentError')}">
+						<h:panelGroup styleClass="ui-messages-error-user ui-corner-all"
+							layout="block">
+							<h:panelGrid columns="2">
+								<h:panelGroup styleClass="ui-messages-error-icon-user" />
+								<h:outputText styleClass="ui-messages-error-detail-user"
+									value="#{metFragWebBean.getErrorMessage('inputCommentError')}" />
+							</h:panelGrid>
+						</h:panelGroup>
+					</h:panelGroup>
+				</h:panelGrid>
+
+				<h:outputLabel value="Type:" id="selectTypeLabel" />
+				<h:panelGrid columns="1">
+					<p:selectOneMenu id="typeSelect"
+						value="#{metFragWebBean.feedbackType}" style="width:125px">
+						<f:selectItem itemLabel="Issue" itemValue="issue" />
+						<f:selectItem itemLabel="Feature Request" itemValue="feature" />
+						<f:selectItem itemLabel="Other" itemValue="other" />
+					</p:selectOneMenu>
+					<h:panelGroup id="selectTypeError" style="padding-top: 10px"
+						layout="block" styleClass="ui-messages ui-widget"
+						rendered="#{metFragWebBean.isErrorMessage('selectTypeError')}">
+						<h:panelGroup styleClass="ui-messages-error-user ui-corner-all"
+							layout="block">
+							<h:panelGrid columns="2">
+								<h:panelGroup styleClass="ui-messages-error-icon-user" />
+								<h:outputText styleClass="ui-messages-error-detail-user"
+									value="#{metFragWebBean.getErrorMessage('selectTypeError')}" />
+							</h:panelGrid>
+						</h:panelGroup>
+					</h:panelGroup>
+				</h:panelGrid>
+			</h:panelGrid>
+			<h:panelGrid columns="1" style="vertical-align:top;" cellspacing="4"
+				cellpadding="4">
+				<h:outputText
+					value="With submitting feedback to the MetFrag developers you can give permission to store the input data on the MetFrag server. 
+						This is necessary as it helps to reproduce and fix an arisen error. "
+					id="selectPermitDataStoreLabel" />
+				<h:panelGrid style="margin-bottom: -15px;">
+					<p:selectOneRadio id="dataStorePermission" value="#{metFragWebBean.dataStorePermission}" columns="1" layout="grid">
+            			<f:selectItem itemLabel="Yes, I accept that the submitted data is stored on the MetFrag server." itemValue="yes" />
+            			<f:selectItem itemLabel="No, I don't give permission to store the submitted data." itemValue="no" />
+        			</p:selectOneRadio>
+				</h:panelGrid>
+				<h:panelGrid columns="1" style="margin-bottom: 20px">
+					<h:panelGroup id="selectPermitDataStoreError"
+						style="padding-top: 10px" layout="block"
+						styleClass="ui-messages ui-widget"
+						rendered="#{metFragWebBean.isErrorMessage('selectPermitDataStoreError')}">
+						<h:panelGroup styleClass="ui-messages-error-user ui-corner-all"
+							layout="block">
+							<h:panelGrid columns="2">
+								<h:panelGroup styleClass="ui-messages-error-icon-user" />
+								<h:outputText styleClass="ui-messages-error-detail-user"
+									value="#{metFragWebBean.getErrorMessage('selectPermitDataStoreError')}" />
+							</h:panelGrid>
+						</h:panelGroup>
+					</h:panelGroup>
+				</h:panelGrid>
+
+				<h:panelGrid columns="2">
+					<p:commandButton value="Submit" icon="ui-icon-check"
+						update="feedbackDialog" onclick="PF('submitFeedbackStatusDialog').show();" process="feedbackDialogForm"
+						actionListener="#{metFragWebBean.submitFeedbackListener}" oncomplete="PF('submitFeedbackStatusDialog').hide();" 
+						onerror="PF('submitFeedbackStatusDialog').hide();"/>
+					<p:commandButton value="Close" icon="ui-icon-close" actionListener="#{metFragWebBean.closeFeedbackDialogListener}" 
+						oncomplete="PF('feedbackDialog').hide();" onerror="PF('feedbackDialog').show();" />
+				</h:panelGrid>
+				<h:panelGrid columns="1">
+					<h:panelGroup id="feedbackSubmitButtonInfo" layout="block"
+						styleClass="ui-messages ui-widget"
+						rendered="#{metFragWebBean.isInfoMessage('feedbackSubmitButtonInfo')}">
+						<h:panelGroup styleClass="ui-messages-info-user ui-corner-all"
+							layout="block">
+							<h:panelGrid columns="2">
+								<h:panelGroup styleClass="ui-messages-info-icon-user" />
+								<h:outputText styleClass="ui-messages-info-detail-user"
+									value="#{metFragWebBean.getInfoMessage('feedbackSubmitButtonInfo')}" />
+							</h:panelGrid>
+						</h:panelGroup>
+					</h:panelGroup>
+					<h:panelGroup id="feedbackSubmitButtonError" layout="block"
+						styleClass="ui-messages ui-widget"
+						rendered="#{metFragWebBean.isErrorMessage('feedbackSubmitButtonError')}">
+						<h:panelGroup styleClass="ui-messages-error-user ui-corner-all"
+							layout="block">
+							<h:panelGrid columns="2">
+								<h:panelGroup styleClass="ui-messages-error-icon-user" />
+								<h:outputText styleClass="ui-messages-error-detail-user"
+									value="#{metFragWebBean.getErrorMessage('feedbackSubmitButtonError')}" />
+							</h:panelGrid>
+						</h:panelGroup>
+					</h:panelGroup>
+				</h:panelGrid>
+			</h:panelGrid>
+		</p:dialog>
+	</h:form>
+	<p:dialog id="submitFeedbackStatusDialog" modal="true"
+		widgetVar="submitFeedbackStatusDialog" header="Sending Feedback"
+		draggable="false" closable="false" resizable="false">
+		<p:graphicImage name="images/ajaxloadingbar.gif" />
+	</p:dialog>
+</h:body>
+
+</html>

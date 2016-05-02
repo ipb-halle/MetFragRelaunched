@@ -1,0 +1,20 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core">
+
+<h:body>
+	<h:panelGroup columns="1" style="height: 100px; width: 30px;" styleClass="ui-dialog-user" layout="block">
+		<h:form>
+			<p:commandLink actionListener="#{metFragWebBean.feedbackButtonListener}" update="feedbackDialogForm:feedbackDialog"
+				oncomplete="PF('feedbackDialog').show();">
+       			<p:graphicImage url="#{resource['images/feedback.png']}" />
+   			</p:commandLink>
+  		</h:form>
+   	</h:panelGroup>
+</h:body>
+
+</html>

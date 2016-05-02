@@ -1,0 +1,26 @@
+CHANGES IN VERSION 2.0
+------------------------
+ o Functions in metfRag.R redesigned due to various problems
+ o database.R removed as database search is enabled directly within the java library
+ o java library updated to newest version 2.3
+
+CHANGES IN VERSION 1.0.4
+------------------------
+ o Add parameterized image resolution to plotMol()
+ o Modify rectangle plotting in dendrogram to support k=N "clusters"
+
+CHANGES IN VERSION 1.0.3
+------------------------
+ o Added vignette, visualisation of cluster representatives
+
+CHANGES IN VERSION 1.0.2
+------------------------
+ o Allow parameters to be passed down to dendromat()
+
+CHANGES IN VERSION 1.0.1
+------------------------
+ o Added plotCluster() function
+
+CHANGES IN VERSION 1.0.0
+------------------------
+ o Initial release

@@ -1,0 +1,362 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<h:body>
+	<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+		xmlns:h="http://java.sun.com/jsf/html"
+		xmlns:f="http://java.sun.com/jsf/core"
+		xmlns:c="http://java.sun.com/jsp/jstl/core"
+		xmlns:p="http://primefaces.org/ui">
+		<h:panelGroup id="scoreSettingsPanel"
+			rendered="#{metFragWebBean.numberCompoundsRetrieved > 0}">
+			<h:outputText value="MetFrag Scoring Terms:"
+				style="font-weight: bold; padding-bottom: 10px" />
+			<br />
+			<h:panelGrid columns="2" width="80%" style="vertical-align:top;"
+				cellspacing="4" cellpadding="4" styleClass="mainPanel"
+				columnClasses="firstColumnSimple,secondColumnSimple">
+				<p:selectBooleanCheckbox
+					id="smartsSubstructureInclusionScoreEnabled"
+					value="#{metFragWebBean.smartsInclusionScoreEnabled}">
+					<p:ajax update="smartsInclusionScorePanel" />
+				</p:selectBooleanCheckbox>
+				<h:outputText id="smartsInclusionScoreLabel"
+					value="Substructure Inclusion" />
+			</h:panelGrid>
+			<h:panelGrid id="smartsInclusionScorePanel">
+				<h:panelGrid columns="1" style="vertical-align:top;" cellspacing="4"
+					cellpadding="4" styleClass="subPanel"
+					rendered="#{metFragWebBean.smartsInclusionScoreEnabled}">
+					<h:panelGrid columns="2">
+						<p:selectCheckboxMenu id="smartsInclusionScoreMenu" value="#{metFragWebBean.smartsScoreInclusion}" 
+							label="Pre-defined Substructures" panelStyle="width:250px" showHeader="false">
+           					<f:selectItems value="#{metFragWebBean.availableSubstructureSmarts}" />
+           					<p:ajax update="smartsInclusionScoreMenuLabel additionalSmartsInclusionScorePanel" />
+       					</p:selectCheckboxMenu>
+       					<h:outputText style="padding-left: 10px" id="smartsInclusionScoreMenuLabel" value="#{metFragWebBean.smartsScoreInclusionLabel}" />
+       				</h:panelGrid>
+					<h:panelGrid columns="1" id="additionalSmartsInclusionScorePanel">
+						<h:panelGrid columns="2">
+							<h:outputLabel value="Additional Substructures:" />
+							<p:inputText id="includedScoreSmarts" required="false"
+								value="#{metFragWebBean.additionalSmartsScoreInclusion}">
+								<p:ajax event="blur" update="smartsInclusionScorePanel" />
+							</p:inputText>
+							<p:watermark for="includedScoreSmarts" value="as SMARTS e.g. c1ccccc1" id="includedScoreSmartsWatermark" />
+						</h:panelGrid>
+						<h:panelGroup style="max-width: -moz-fit-content; padding-top: 5px; padding-bottom: 10px" id="includedScoreSmartsError" layout="block"
+							styleClass="ui-messages ui-widget"
+							rendered="#{metFragWebBean.isErrorMessage('includedScoreSmartsError')}">
+							<h:panelGroup styleClass="ui-messages-error-user ui-corner-all"
+								layout="block">
+								<h:panelGrid columns="2">
+									<h:panelGroup styleClass="ui-messages-error-icon-user" />
+									<h:outputText styleClass="ui-messages-error-detail-user"
+										value="#{metFragWebBean.getErrorMessage('includedScoreSmartsError')}" />
+								</h:panelGrid>
+							</h:panelGroup>
+						</h:panelGroup>
+					</h:panelGrid>
+					<h:panelGroup style="padding-left: 10px; font-size: 9">
+						(Find out more about <a
+							href="http://www.daylight.com/dayhtml/doc/theory/theory.smarts.html">SMARTS</a>)
+					</h:panelGroup>
+				</h:panelGrid>
+				<h:panelGrid
+					rendered="#{not metFragWebBean.smartsInclusionScoreEnabled}">
+				</h:panelGrid>
+			</h:panelGrid>
+
+			<h:panelGrid columns="2" width="80%" style="vertical-align:top;"
+				cellspacing="4" cellpadding="4" styleClass="mainPanel"
+				columnClasses="firstColumnSimple,secondColumnSimple">
+				<p:selectBooleanCheckbox
+					id="smartsSubstructureExclusionScoreEnabled"
+					value="#{metFragWebBean.smartsExclusionScoreEnabled}">
+					<p:ajax update="smartsExclusionScorePanel" />
+				</p:selectBooleanCheckbox>
+				<h:outputText id="smartsExclusionScoreLabel"
+					value="Substructure Exclusion" />
+			</h:panelGrid>
+			<h:panelGrid id="smartsExclusionScorePanel">
+				<h:panelGrid columns="1" style="vertical-align:top;" cellspacing="4"
+					cellpadding="4" styleClass="subPanel"
+					rendered="#{metFragWebBean.smartsExclusionScoreEnabled}">
+					<h:panelGrid columns="2">
+						<p:selectCheckboxMenu id="smartsExclusionScoreMenu" value="#{metFragWebBean.smartsScoreExclusion}" 
+							label="Pre-defined Substructures" panelStyle="width:250px" showHeader="false">
+           					<f:selectItems value="#{metFragWebBean.availableSubstructureSmarts}" />
+           					<p:ajax update="smartsExclusionScoreMenuLabel additionalSmartsExclusionScorePanel" />
+       					</p:selectCheckboxMenu>
+       					<h:outputText style="padding-left: 10px" id="smartsExclusionScoreMenuLabel" value="#{metFragWebBean.smartsScoreExclusionLabel}" />
+       				</h:panelGrid>
+					<h:panelGrid columns="1" id="additionalSmartsExclusionScorePanel">
+						<h:panelGrid columns="2">
+							<h:outputLabel value="Additional Substructures:" />
+							<p:inputText id="excludedScoreSmarts" required="false"
+								value="#{metFragWebBean.additionalSmartsScoreExclusion}">
+								<p:ajax event="blur" update="smartsExclusionScorePanel" />
+							</p:inputText>
+							<p:watermark for="excludedScoreSmarts" value="as SMARTS e.g. c1ccccc1" id="excludedScoreSmartsWatermark" />
+						</h:panelGrid>
+						<h:panelGroup style="max-width: -moz-fit-content; padding-top: 5px; padding-bottom: 10px" id="excludedScoreSmartsError" layout="block"
+							styleClass="ui-messages ui-widget"
+							rendered="#{metFragWebBean.isErrorMessage('excludedScoreSmartsError')}">
+							<h:panelGroup styleClass="ui-messages-error-user ui-corner-all"
+								layout="block">
+								<h:panelGrid columns="2">
+									<h:panelGroup styleClass="ui-messages-error-icon-user" />
+									<h:outputText styleClass="ui-messages-error-detail-user"
+										value="#{metFragWebBean.getErrorMessage('excludedScoreSmartsError')}" />
+								</h:panelGrid>
+							</h:panelGroup>
+						</h:panelGroup>
+					</h:panelGrid>
+					<h:panelGroup style="padding-left: 10px; font-size: 9">
+						(Find out more about <a
+							href="http://www.daylight.com/dayhtml/doc/theory/theory.smarts.html">SMARTS</a>)
+					</h:panelGroup>
+				</h:panelGrid>
+				<h:panelGrid
+					rendered="#{not metFragWebBean.smartsExclusionScoreEnabled}">
+				</h:panelGrid>
+			</h:panelGrid>
+
+			<h:panelGrid columns="2" width="80%" style="vertical-align:top;"
+				cellspacing="4" cellpadding="4" styleClass="mainPanel"
+				columnClasses="firstColumnSimple,secondColumnSimple">
+				<p:selectBooleanCheckbox id="retentionTimeScoreEnabled"
+					value="#{metFragWebBean.retentionTimeScoreEnabled}">
+					<p:ajax update="retentionTimeScorePanel" />
+				</p:selectBooleanCheckbox>
+				<h:outputText id="retentionTimeScoreLabel" value="Retention Time" />
+			</h:panelGrid>
+			<h:panelGrid id="retentionTimeScorePanel">
+				<h:panelGrid columns="2" style="vertical-align:top;" cellspacing="4"
+					cellpadding="4" styleClass="subPanel"
+					rendered="#{metFragWebBean.retentionTimeScoreEnabled}"
+					columnClasses="firstColumnScore,secondColumnScore">
+					<h:outputLabel id="retentionTimeScoreUploadFileLabel"
+						value="Upload file:" />
+					<h:panelGrid columns="2">
+						<h:panelGrid columns="1">
+							<p:fileUpload update="retentionTimeScorePanel"
+								id="retentionTimeTrainingFile"
+								fileUploadListener="#{metFragWebBean.retentionTimeFileUploadListener}"
+								auto="true" mode="advanced" maxFileCount="10"
+								maxFileSize="20000000" autoUpload="true" multiple="false">
+							</p:fileUpload>
+							<h:panelGroup id="retentionTimeFileName" layout="block"
+								styleClass="ui-messages ui-widget" style="padding-top: 10px"
+								rendered="#{metFragWebBean.retentionTimeScoreTrainingFileName != ''}">
+								<h:panelGroup styleClass="ui-messages-info-user ui-corner-all"
+									layout="block">
+									<h:panelGrid columns="2">
+										<h:panelGroup styleClass="ui-messages-info-icon-user" />
+										<h:outputText styleClass="ui-messages-info-detail-user"
+											value="Uploaded #{metFragWebBean.retentionTimeScoreTrainingFileNamePart}" />
+									</h:panelGrid>
+								</h:panelGroup>
+							</h:panelGroup>
+							<p:tooltip styleClass="tooltip" escape="false"
+								id="retentionTimeScoreUploadFileLabelTooltip"
+								for="retentionTimeScoreUploadFileLabel">
+								<h:outputText
+									value="Upload file containing retention times and logP values as csv ('|' separated). 
+									Instead of logP values InChIs can be defined to use the build in CDK logP prediction. It's important
+									that the logP values in the candidate list and the training file are predicted based on the same model." />
+							</p:tooltip>
+							<h:panelGroup id="retentionTimeTrainingFileError" layout="block"
+								styleClass="ui-messages ui-widget"
+								rendered="#{metFragWebBean.isErrorMessage('retentionTimeTrainingFileError')}">
+								<h:panelGroup styleClass="ui-messages-error-user ui-corner-all"
+									layout="block">
+									<h:panelGrid columns="2">
+										<h:panelGroup styleClass="ui-messages-error-icon-user" />
+										<h:outputText styleClass="ui-messages-error-detail-user"
+											value="#{metFragWebBean.getErrorMessage('retentionTimeTrainingFileError')}" />
+									</h:panelGrid>
+								</h:panelGroup>
+							</h:panelGroup>
+						</h:panelGrid>
+					</h:panelGrid>
+
+					<h:outputLabel id="experimentalRetentionTimeLabelLabel"
+						value="Experimental RT: " />
+					<h:panelGrid columns="3" width="100%">
+						<p:inputText id="experimentalRetentionTime" required="false"
+							value="#{metFragWebBean.experimentalRetentionTimeValue}" size="4">
+							<p:ajax event="blur" update="retentionTimeScorePanel" />
+						</p:inputText>
+						<p:tooltip styleClass="tooltip" escape="false"
+							id="experimentalRetentionTimeLabelTooltip"
+							for="experimentalRetentionTimeLabelLabel">
+							<h:outputText
+								value="Define the retention time of the precursor measured in the experiment." />
+						</p:tooltip>
+						<h:panelGroup id="experimentalRetentionTimeValueError"
+							layout="block" styleClass="ui-messages ui-widget"
+							rendered="#{metFragWebBean.isErrorMessage('experimentalRetentionTimeValueError')}">
+							<h:panelGroup styleClass="ui-messages-error-user ui-corner-all"
+								layout="block">
+								<h:panelGrid columns="2">
+									<h:panelGroup styleClass="ui-messages-error-icon-user" />
+									<h:outputText style="margin-left: 0px"
+										styleClass="ui-messages-error-detail-user"
+										value="#{metFragWebBean.getErrorMessage('experimentalRetentionTimeValueError')}" />
+								</h:panelGrid>
+							</h:panelGroup>
+						</h:panelGroup>
+					</h:panelGrid>
+
+					<h:outputLabel value="Partitioning Coefficient: "
+						rendered="#{metFragWebBean.availablePartitioningCoefficientsExist}" />
+					<h:panelGrid columns="1">
+						<p:selectOneMenu id="selectPartitioningCoefficient"
+							value="#{metFragWebBean.partitioningCoefficientColumnName}"
+							rendered="#{metFragWebBean.availablePartitioningCoefficientsExist}">
+							<f:selectItems
+								value="#{metFragWebBean.availablePartitioningCoefficients}" />
+							<p:ajax update="selectPartitioningCoefficient" />
+						</p:selectOneMenu>
+					</h:panelGrid>
+				</h:panelGrid>
+				<h:panelGrid
+					rendered="#{not metFragWebBean.retentionTimeScoreEnabled }">
+				</h:panelGrid>
+			</h:panelGrid>
+
+			<h:panelGrid columns="2" width="80%" style="vertical-align:top;"
+				cellspacing="4" cellpadding="4" styleClass="mainPanel"
+				columnClasses="firstColumnSimple,secondColumnSimple">
+				<p:selectBooleanCheckbox id="suspectListInclusionScoreEnabled"
+					value="#{metFragWebBean.suspectListInclusionScoreEnabled}">
+					<p:ajax update="suspectListInclusionScorePanel" />
+				</p:selectBooleanCheckbox>
+				<h:outputText id="suspectListInclusionScoreLabel"
+					value="Suspect Inclusion Lists" />
+			</h:panelGrid>
+			<h:panelGrid id="suspectListInclusionScorePanel">
+				<h:panelGrid columns="1" style="vertical-align:top; width: 90%"
+					cellspacing="4" cellpadding="4" styleClass="subPanel"
+					rendered="#{metFragWebBean.suspectListInclusionScoreEnabled}">
+					<p:fileUpload id="suspectListsScore"
+						fileUploadListener="#{metFragWebBean.suspectListScoreUploadListener}"
+						auto="true" mode="advanced" maxFileCount="10"
+						maxFileSize="20000000" autoUpload="true" multiple="false"
+						required="false" update="suspectListInclusionScorePanel">
+					</p:fileUpload>
+					<p:dataTable id="uploadedSuspectListScoreFiles"
+						value="#{metFragWebBean.suspectListScoreFileContainer}"
+						var="suspectListScoreFile">
+						<f:facet name="header">
+							<h:panelGrid columns="1">
+								<h:outputText value="Uploaded suspect lists" />
+							</h:panelGrid>
+						</f:facet>
+						<p:column headerText="Suspect List Name"
+							style="word-wrap: break-word; overflow-wrap: break-word;">
+							<h:outputText value="#{suspectListScoreFile.name}" />
+						</p:column>
+						<p:column headerText="Number Entries" style="text-align: center; ">
+							<h:outputText value="#{suspectListScoreFile.numberEntries}" />
+						</p:column>
+						<p:column style="text-align: center; ">
+							<p:commandButton value="Remove"
+								actionListener="#{metFragWebBean.removeFromSuspectListScoreContainer}"
+								update="mainForm:mainAccordion:suspectListInclusionScorePanel">
+								<f:attribute name="currentSuspectListScoreElementId"
+									value="#{suspectListScoreFile.id}" />
+							</p:commandButton>
+						</p:column>
+
+						<f:facet name="footer">
+							<h:panelGrid columns="1">
+								<h:outputText
+									value="#{metFragWebBean.globalSuspectListScoreInfo}" />
+							</h:panelGrid>
+						</f:facet>
+					</p:dataTable>
+					<h:panelGrid columns="1" style="padding-top: 10px;">
+						<h:outputText value="Predefined Suspect Lists:" />
+						<h:panelGrid columns="2" style="padding-top: 10px; padding-left: 10px;">
+							<p:selectBooleanCheckbox id="forIdentSuspectListInclusionScoreEnabled"
+								value="#{metFragWebBean.forIdentSuspectListInclusionScoreEnabled}"
+								required="false" labelPosition="left">
+								<p:ajax update="suspectListInclusionScorePanel" />
+							</p:selectBooleanCheckbox>
+							<h:outputText escape="false" id="forIdentSuspectListInclusionScoreLabel"
+							value="ForIdent (Find out more about &lt;a href='http://for-ident.hswt.de/pages/en/home.php?lang=EN'&gt;ForIdent&lt;/a&gt;)" />
+						</h:panelGrid>
+					</h:panelGrid>
+					<h:panelGroup id="suspectListsScoreError" layout="block"
+						styleClass="ui-messages ui-widget" style="padding-top: 5px;"
+						rendered="#{metFragWebBean.isErrorMessage('suspectListsScoreError')}">
+						<h:panelGroup styleClass="ui-messages-error-user ui-corner-all"
+							layout="block">
+							<h:panelGrid columns="2">
+								<h:panelGroup styleClass="ui-messages-error-icon-user" />
+								<h:outputText styleClass="ui-messages-error-detail-user"
+									value="#{metFragWebBean.getErrorMessage('suspectListsScoreError')}" />
+							</h:panelGrid>
+						</h:panelGroup>
+					</h:panelGroup>
+				</h:panelGrid>
+				<h:panelGrid
+					rendered="#{not metFragWebBean.suspectListInclusionScoreEnabled}">
+				</h:panelGrid>
+			</h:panelGrid>
+
+			<h:panelGrid columns="2" width="80%" style="vertical-align:top;"
+				cellspacing="4" cellpadding="4" styleClass="mainPanel"
+				columnClasses="firstColumnSimple,secondColumnSimple">
+				<p:selectBooleanCheckbox id="spectralSimilarityScoreEnabled"
+					value="#{metFragWebBean.spectralSimilarityScoreEnabled}">
+					<p:ajax update="spectralSimilarityScorePanel" />
+				</p:selectBooleanCheckbox>
+				<h:outputText id="spectralSimilarityScoreLabel"
+					value="Spectral Similarity (MoNA)" />
+			</h:panelGrid>
+			<h:panelGrid id="spectralSimilarityScorePanel">
+				<h:panelGrid columns="2" style="vertical-align:top;" cellspacing="4"
+					cellpadding="4" styleClass="subPanel" rendered="false">
+
+				</h:panelGrid>
+			</h:panelGrid>
+
+			<br />
+			<h:panelGrid columns="1">
+				<h:panelGroup layout="block" style="padding-top: 10px;">
+					<h:outputText value="Database Scoring Terms:"
+						style="font-weight: bold"
+						rendered="#{metFragWebBean.availableDatabaseScoresExist}" />
+				</h:panelGroup>
+				<h:panelGroup layout="block" style="padding-left: 2px;">
+					<h:dataTable styleClass="availableScoreTable"
+						id="availableDatabaseScoresTable"
+						value="#{metFragWebBean.availableDatabaseScores}"
+						var="availableScore"
+						rendered="#{metFragWebBean.availableDatabaseScoresExist}">
+						<h:column style="padding-top: 5px;">
+							<p:selectBooleanCheckbox value="#{availableScore.selected}">
+								<p:ajax />
+							</p:selectBooleanCheckbox>
+						</h:column>
+						<h:column>
+					#{availableScore.label}
+				</h:column>
+					</h:dataTable>
+				</h:panelGroup>
+			</h:panelGrid>
+
+			<ui:insert name="scorePrimeTooltips">
+				<ui:include src="tooltips/scorePrimeTooltips.xhtml" />
+			</ui:insert>
+		</h:panelGroup>
+	</ui:composition>
+</h:body>
+
+</html>

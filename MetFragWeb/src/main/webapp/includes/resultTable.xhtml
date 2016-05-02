@@ -1,0 +1,342 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<h:body>
+
+	<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+		xmlns:h="http://java.sun.com/jsf/html"
+		xmlns:f="http://java.sun.com/jsf/core"
+		xmlns:c="http://java.sun.com/jsp/jstl/core"
+		xmlns:p="http://primefaces.org/ui">
+		<h:panelGroup id="resultsTablePanel"
+			rendered="#{metFragWebBean.resultsAvailable}">
+			<h:panelGrid columns="2" width="100%"
+				style="vertical-align:bottom; text-align: left; padding-bottom: 5px;"
+				cellspacing="0" cellpadding="0">
+				<p:dataTable rendered="#{metFragWebBean.renderWeights}"
+					widgetVar="weightsTable" id="weightsSliderTable" paginator="false"
+					value="#{metFragWebBean.weights}" var="weight" disabled="true"
+					style="width: 500px; border: none;" styleClass="blankTable">
+					<f:facet name="header">
+		        				Weights
+		    				</f:facet>
+					<p:column id="weightName" headerText=""
+						style="border: none; width: auto; word-wrap: break-word; overflow-wrap: break-word;">
+						<h:outputText id="idCell" value="#{weight.name}" />
+					</p:column>
+
+					<p:column id="weightSlider" headerText=""
+						style="border: none; width: 100px; padding-right: 20px;">
+						<p:slider for="sliderValue" id="slider">
+							<p:ajax event="slideEnd" process="sliderValue slider"
+								update="mainForm:mainAccordion:MetFragResultsTable mainForm:mainAccordion:scoreDistributionPlot"
+								listener="#{metFragWebBean.weightsSliderValueChanged}" />
+						</p:slider>
+					</p:column>
+
+					<p:column id="weightValue" headerText=""
+						style="border: none; padding-left: 10px; padding-right: 20px; width: 40px;">
+						<p:inputText id="sliderValue" required="false" size="2"
+							value="#{weight.value}" style="text-align: center;">
+							<p:ajax event="blur"
+								update="mainForm:mainAccordion:MetFragResultsTable mainForm:mainAccordion:scoreDistributionPlot"
+								listener="#{metFragWebBean.weightsTextInputValueChanged}" />
+						</p:inputText>
+					</p:column>
+
+					<p:column id="weightPercent" headerText=""
+						style="border: none; padding-left: 1px; padding-right:0px; width: 20px">
+						<h:outputText value="%" />
+					</p:column>
+				</p:dataTable>
+				<h:panelGroup rendered="#{not metFragWebBean.renderWeights}">
+				</h:panelGroup>
+				<h:panelGrid columns="1">
+					<h:panelGrid columns="1">
+						<p:commandButton value="Download Results"
+							id="buttonDownloadResults"
+							onclick="PF('downloadResultsDialog').show();">
+						</p:commandButton>
+						<h:panelGroup id="buttonDownloadResultsError" layout="block"
+							styleClass="ui-messages ui-widget"
+							rendered="#{metFragWebBean.isErrorMessage('buttonDownloadResultsError')}">
+							<h:panelGroup styleClass="ui-messages-error-user ui-corner-all"
+								layout="block">
+								<h:panelGrid columns="2">
+									<h:panelGroup styleClass="ui-messages-error-icon-user" />
+									<h:outputText styleClass="ui-messages-error-detail-user"
+										value="#{metFragWebBean.getErrorMessage('buttonDownloadResultsError')}" />
+								</h:panelGrid>
+							</h:panelGroup>
+						</h:panelGroup>
+					</h:panelGrid>
+					<h:panelGrid columns="1" style="padding-top: 10px; padding-bottom: 10px;">
+						<h:outputLabel value="Filter Candidates by explained MS/MS Peaks" />
+						<h:panelGrid columns="3" style="padding-left: 20px; padding-bottom: 10px;">
+							<p:selectCheckboxMenu id="explainedPeaksFilterMenu" value="#{metFragWebBean.explainedPeaksFilter}" 
+									label="MS/MS Peaks" panelStyle="width:250px" showHeader="false">
+		          					<f:selectItems value="#{metFragWebBean.availableExplainedPeaks}" />
+		       				</p:selectCheckboxMenu>
+		       				<p:commandButton value="Filter Candidates"
+								id="filterCandidatesResults"
+								actionListener="#{metFragWebBean.filterMetFragResultsByExplainedPeaksListener}">
+							</p:commandButton>
+							<h:panelGroup id="filterCompoundsLabel" layout="block"
+								styleClass="ui-messages ui-widget"
+								rendered="#{metFragWebBean.isInfoMessage('filterCompoundsInfo')}">
+								<h:panelGroup styleClass="ui-messages-info-user ui-corner-all"
+									layout="block">
+									<h:panelGrid columns="2">
+										<h:panelGroup styleClass="ui-messages-info-icon-user" />
+										<h:outputText styleClass="ui-messages-info-detail-user"
+											value="#{metFragWebBean.getInfoMessage('filterCompoundsInfo')}" />
+									</h:panelGrid>
+								</h:panelGroup>
+							</h:panelGroup>
+						</h:panelGrid>
+					</h:panelGrid>
+				</h:panelGrid>
+			</h:panelGrid>
+
+			<div class="ui-grid ui-grid-responsive">
+				<div class="ui-grid-row">
+					<div>
+							<p:dataTable id="MetFragResultsTable" 
+								widgetVar="MetFragResultsTable"
+								value="#{metFragWebBean.filteredMetFragResults}" var="metFragResult" rows="10"
+								styleClass="resultsTable" rowIndexVar="rowIndex"
+								scrollable="true" scrollHeight="600" paginator="true"
+								first="#{metFragWebBean.selectedCandidate}">
+								<!--<p:column style="width:16px">
+							<p:rowToggler rendered="#{metFragResult.hasMolecules}" />
+						</p:column>-->
+								<p:column id="index" headerText="#"
+									style="text-align: center; width: 20px; max-width: 20px;">
+								#{rowIndex+1}
+							</p:column>
+	
+								<p:column id="imageWithFilter" headerText="Molecule"
+									style="text-align: center; word-wrap: break-word; overflow-wrap: break-word; width: 150px; max-width: 150px;"
+									rendered="#{metFragWebBean.compoundNameAvailable}">
+									<h:panelGrid columns="2" style="border: none;"
+										columnClasses="resultImageFirst,resultImageSecond">
+										<h:panelGroup>
+											<h:graphicImage alt="#{metFragResult.identifier}" width="100%"
+												id="imageCellNames" value="#{metFragResult.imageAddress}" />
+											<br />
+											<h:outputText
+												rendered="#{metFragWebBean.compoundNameAvailable}"
+												id="idName" value="#{metFragResult.name}" />
+										</h:panelGroup>
+										<h:panelGroup>
+											<h:graphicImage id="magnifierMol_1"
+												name="images/icons/magni3.png" />
+											<p:tooltip id="molImageLarge1" for="magnifierMol_1">
+												<p:graphicImage alt="images/ajaxloadingbar.gif"
+													value="#{metFragResult.imageAddress}" />
+											</p:tooltip>
+										</h:panelGroup>
+									</h:panelGrid>
+								</p:column>
+	
+								<p:column id="imageWithoutFilter" headerText="Molecule"
+									style="text-align: center; word-wrap: break-word; overflow-wrap: break-word; width: 150px; max-width: 150px;"
+									rendered="#{not metFragWebBean.compoundNameAvailable}">
+									<h:panelGrid columns="2" style="border: none;"
+										columnClasses="resultImageFirst,resultImageSecond">
+										<h:panelGroup>
+											<h:graphicImage alt="#{metFragResult.identifier}"
+												id="imageCell" value="#{metFragResult.imageAddress}"
+												width="100%" />
+										</h:panelGroup>
+										<h:panelGroup>
+											<h:graphicImage id="magnifierMol_2"
+												name="images/icons/magni3.png" />
+											<p:tooltip id="molImageLarge2" for="magnifierMol_2">
+												<p:graphicImage alt="images/ajaxloadingbar.gif"
+													value="#{metFragResult.imageAddress}" />
+											</p:tooltip>
+										</h:panelGroup>
+									</h:panelGrid>
+								</p:column>
+	
+								<p:column id="identifier" headerText="Identifier"
+									style="text-align: center; word-wrap: break-word; width: 130px; max-width: 130px;">
+									<!-- 	<f:facet name="filterIdentifier">
+								<p:inputText style="width: 90px;" onchange="PF('MetFragResultsTable').filter()" />
+							</f:facet> -->
+									<h:outputText
+										rendered="#{not metFragResult.databaseLinkAvailable}"
+										id="idCell" value="#{metFragResult.identifier}" />
+									<p:link rendered="#{metFragResult.databaseLinkAvailable}"
+										href="#{metFragResult.databaseLink}"
+										value="#{metFragResult.identifier}" />
+									<p:dataScroller scrollHeight="100px" mode="inline"
+										styleClass="dataScroller"
+										rendered="#{metFragResult.hasMolecules}"
+										value="#{metFragResult.molecules}" var="subResult"
+										chunkSize="10">
+										<h:outputText
+											rendered="#{not metFragResult.databaseLinkAvailable}"
+											id="idCell" value="#{subResult.identifier}" />
+										<p:link rendered="#{metFragResult.databaseLinkAvailable}"
+											href="#{subResult.databaseLink}"
+											value="#{subResult.identifier}" />
+									</p:dataScroller>
+									<br />
+									<br />
+									<h:outputText value="InChIKeyBlock1 = " />
+									<h:outputText
+										rendered="#{not metFragResult.inChIKeyLinkAvailable}"
+										value="#{metFragResult.inchikey1}" />
+									<p:link rendered="#{metFragResult.inChIKeyLinkAvailable}"
+										href="#{metFragResult.inChIKeyLink}"
+										value="#{metFragResult.inchikey1}" />
+								</p:column>
+	
+								<p:column id="mass" width="100" headerText="Mass"
+									style="text-align: center; width: 50px; max-width: 50px;">
+									<h:outputText id="massCell" value="#{metFragResult.roundedMass}" />
+								</p:column>
+	
+								<p:column colspan="1" rowspan="1" id="formula"
+									style="text-align: center; width: 70px; max-width: 70px;"
+									headerText="Formula">
+									<h:outputText id="formulaCell"
+										value="#{metFragResult.displayFormula}" escape="false" />
+								</p:column>
+	
+								<p:column id="scores" headerText="Normalized Scores"
+									style="width: 200px; max-width: 200px;"
+									rendered="#{metFragWebBean.renderWeights}">
+									<p:chart id="scoreChart" type="bar" extender="extender"
+										model="#{metFragResult.horizontalScoreModel}"
+										style="height:170px; width:200px; border: none; display: block; margin: 0px auto;">
+										<h:outputScript library="js"
+											name="jqplot.canvasAxisTickRenderer.min.js" />
+										<script type="text/javascript">
+											function extender() {
+												this.cfg.axes.xaxis = {
+													ticks : [
+															0.0,
+															0.2,
+															0.4,
+															0.6,
+															0.8,
+															1.0,
+															{
+																value : 1.05,
+																showLabel : false,
+																showMark : false,
+																showGridline : false
+															} ],
+													min : 0.0,
+													max : 1.0
+												};
+											}
+										</script>
+									</p:chart>
+								</p:column>
+								<p:column id="score" headerText="FinalScore"
+									style="text-align: center; width: 50px; max-width: 50px;">
+									<h:outputText id="scoreCell" value="#{metFragResult.score}" />
+								</p:column>
+	
+								<p:column id="simscore" headerText="SimScore" rendered="#{metFragWebBean.simScoreAvailable}"
+									style="text-align: center; width: 50px; max-width: 50px;">
+									<h:outputText id="simScoreCell" value="#{metFragResult.simScore}" />
+								</p:column>
+	
+								<p:column id="metfrag" headerText="Details" width="100"
+									style="text-align: center">
+									<h:outputText id="metfragCell"
+										value="Peaks: #{metFragResult.numberPeaksExplained} / #{metFragWebBean.numberPeaksUsed}" />
+									<br />
+									<br />
+									<p:commandButton
+										onclick="PF('generateFragmentsStatusDialog').show();"
+										disabled="#{metFragResult.numberPeaksExplained == 0}"
+										style="width: 90px;height: 22px; font-size: 0.7em"
+										value="Fragments" id="showFragments"
+										action="#{metFragWebBean.generateFragmentsModelViewListener}"
+										update="fragmentsViewDialog"
+										oncomplete="PF('fragmentsViewDialog').show();PF('generateFragmentsStatusDialog').hide(); "
+										onerror="PF('generateFragmentsStatusDialog').hide();">
+										<f:setPropertyActionListener
+											target="#{metFragWebBean.currentScoreCandidate}"
+											value="#{metFragResult}" />
+									</p:commandButton>
+									<br />
+									<br />
+									<p:commandButton
+										style="width: 90px;height: 22px; font-size: 0.7em"
+										value="Scores" id="showScores"
+										action="#{metFragWebBean.generateScoresViewListener}"
+										oncomplete="PF('scoresViewDialog').show();"
+										update="scoresViewDialog">
+										<f:setPropertyActionListener
+											target="#{metFragWebBean.currentScoreCandidate}"
+											value="#{metFragResult}" />
+									</p:commandButton>
+									<br />
+									<br />
+									<p:commandButton 
+										style="width: 90px;height: 22px; font-size: 0.7em"
+										value="Download" id="downloadFragments"
+										onclick="PrimeFaces.monitorDownload(startDownloadCandidate, stopDownloadCandidate);"
+										ajax="false">
+										<f:setPropertyActionListener
+											target="#{metFragWebBean.currentScoreCandidate}"
+											value="#{metFragResult}" />
+										<p:fileDownload value="#{metFragWebBean.generateCandidateDownloadFile()}" />
+									</p:commandButton>
+									<br />
+								</p:column>
+							</p:dataTable>
+
+						<p:dialog id="generateFragmentsStatusDialog" modal="true"
+							widgetVar="generateFragmentsStatusDialog"
+							header="Rendering Fragments" draggable="false" closable="false"
+							resizable="false">
+							<p:graphicImage name="images/ajaxloadingbar.gif" />
+						</p:dialog>
+						
+						<p:dialog id="generateCandidateDownloadStatusDialog" modal="true"
+							widgetVar="generateCandidateDownloadStatusDialog"
+							header="Generating Candidate File" draggable="false" closable="false"
+							resizable="false">
+							<p:graphicImage name="images/ajaxloadingbar.gif" />
+						</p:dialog>
+						
+						<script type="text/javascript">
+							function startDownloadCandidate() {
+								PF('generateCandidateDownloadStatusDialog').show();
+							}
+				
+							function stopDownloadCandidate() {
+								PF('generateCandidateDownloadStatusDialog').hide();
+							}
+						</script>
+					</div>
+					<!-- 
+					<div class="ui-grid-col-3" style="width: auto !important">
+						<p:panel id="horizontal" header="Candidate Score Distribution"
+							toggleable="true" toggleOrientation="horizontal" style="width: 350px" rendered="false"> 
+							<h:panelGrid columns="1" style="width: 100%">
+								<ui:insert name="footer">
+									<ui:include src="candiateScoreDistribution.xhtml" />
+								</ui:insert>
+							</h:panelGrid>
+						</p:panel>
+					</div>
+					-->
+				</div>
+			</div>
+		</h:panelGroup>
+	</ui:composition>
+</h:body>
+
+</html>

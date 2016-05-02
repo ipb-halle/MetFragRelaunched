@@ -1,0 +1,341 @@
+%
+% NOTE -- ONLY EDIT THE .Rnw FILE!!!  The .tex file is
+% likely to be overwritten.
+%
+% \VignetteIndexEntry{Metabolite Identification with MetFrag in R}
+% \VignetteKeywords{mass spectrometry, tandemms, metabolite identification}
+% \VignettePackage{metfRag}
+\documentclass[12pt, a4paper]{scrartcl}
+
+%Neue Pakete
+\usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage[backend=bibtex, sorting=none]{biblatex}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{pdfpages}
+
+\usepackage{csquotes}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+
+\usepackage{tikz}
+\usetikzlibrary{positioning,shapes,backgrounds}
+
+\usepackage[a4paper,left=5cm,right=1cm,top=2cm,bottom=2cm]{geometry}
+\usepackage{fullpage}
+\setlength{\headsep}{1em}
+\setlength{\parindent}{0em}
+\setlength{\headheight}{13.87178pt}
+
+\renewcaptionname{ngerman}{\contentsname}{Table of Contents}
+\renewcaptionname{ngerman}{\listfigurename}{Figures}
+\renewcaptionname{ngerman}{\listtablename}{Tables}
+\renewcaptionname{ngerman}{\figurename}{Figure}
+\renewcaptionname{ngerman}{\tablename}{Table}
+
+\newcommand{\Robject}[1]{{\texttt{#1}}}
+\newcommand{\Rfunction}[1]{{\texttt{#1}}}
+\newcommand{\Rpackage}[1]{{\textit{#1}}}
+\newcommand{\Rclass}[1]{{\textit{#1}}}
+\newcommand{\Rmethod}[1]{{\textit{#1}}}
+\newcommand{\Rfunarg}[1]{{\textit{#1}}}
+
+\bibliography{references.bib}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+%\SweaveOpts{concordance=TRUE}
+\title{Metabolite Identification with MetFrag in R}
+\author{C. Ruttkies, S. Neumann, A. Helmchen}
+\maketitle
+
+\newpage
+\tableofcontents
+
+\newpage
+\section{Introduction}
+In this section the MetFragR package is introduced and described.
+For a better understanding the functionality of a mass spectrometer (MS/MS) was outlined. 
+Initially, the package shall be loaded.
+
+<<LibraryPreloade,warning=FALSE,message=FALSE>>=
+library(metfRag)
+@
+
+For the understanding of the metabolism of several organisms different analysis methods
+are necessary. One of these methods is referred as mass spectrometry to detect and identify compounds 
+in samples \cite{Dunn2008}. These compounds are partially unknown and have to be determined and annotated
+to understand other metabolic circles and pathways. On the other hand mass spectrometry can help to 
+identify known proteins or posttranslational modifications (PTMs) like alteration caused by phosphate. \\[0.5em]
+Actually, to obtain applicable results of an unknown molecule tandem mass spectrometry MS/MS or \(\text{MS}^\text{2}\) 
+is used, because additional structural hints and the exact mass of fragments of a compound are delivered \cite{Wolf2010}.
+Hence, two mass spectrometers are combined. In the first MS based on a given mass a single precursor ion is selected. 
+The molecule is colliding with a neutral gas (collision-induced dissociation (CID)). This compound is then cleaved into
+several fragments which can be distinguished by a given mass \cite{Jeol2006}. \\[0.5em]
+This results in a MS/MS spectrum which contains only product ions from selected precursor ion. 
+The spectra indicate the mass-to-charge ratio (m/z ratio) which used by the MS/MS to deflect specific ions to the analysator. 
+The ion detector data produce a fragmentation spectrum with the m/z ratio against the abundance of each compound. \\[0.5em]
+Hence, to use the statistical power of R we write the package \Rpackage{metfRag} which expand the features of 
+MetFrag by the capabilities of R. Metfrag performs an in silico refragmentation of compounds. 
+Therefor, compound libraries are compared with spectra of unknown metabolites \cite{Wolf2010}.
+Metfrag is written in Java so that it was integrated in metfRag by using \Rpackage{rJava} \cite{Urbanek2013}
+The package 'metfRag' uses the precursor mass, the compound id or the formula to obtain a candidate list of compounds 
+from KEGG or PubChem. Additionally, it provides functions to process the obtained candidate list and calculates ranking parameters
+like the optimistic, the pessimistic or the relative rank.
+
+\newpage
+\section{Methods of the MetFragR package}
+In this section the functions of this package are described. Firstly, the loading of compounds
+and the processing are explained. Then a ranking procedure is introduced to generate own ranking methods by
+using own properties or functions. Additionally, an example illustrates the functional principle
+on mentioned methods. 
+\subsection{Structure file preparation}
+To load compounds from a chemical table file like SDF you can directly use the 
+function from \Rpackage{rcdk}. In the example below a metfRag system file is used. The included SDF 
+is the result of MetFusion processing of the MS/MS spectrum of the CASMI 2014 challenge 5 \cite{Guha2007}.
+<<loadStructures,warning=FALSE,message=FALSE>>=
+file <- "sdf/MetFrag_Candidates.sdf"
+sdf <- system.file(file, package = "metfRag")
+molecules <- load.molecules(sdf)
+@
+\newpage
+\subsection{Scoring structures with MetFrag}
+To score received compounds from a database MetFragR uses two options. On the one hand scoring of a chemical table format SDF or mol file. For this option metfRag needs a path. Obligatory this package needs the mass-to-charge ratio values from the peak list, the intensity values and the exact mass of the 
+precursor ion. 
+
+<<scoreMetfrag, warning=FALSE, message=FALSE>>=
+file <- "sdf/MetFrag_Peaklist.mf"
+queryfile <- system.file(file, package = "metfRag")
+peaktable <- read.table(queryfile, sep=" ", col.names=c("mz", "int"))
+
+scored.molecules <- score.molecules.from.sdf(sdf, 
+                                       mzs=peaktable[,"mz"], 
+                                       ints=peaktable[,"int"], 
+                                       exact.mass=290.0646, 
+                                       number.threads = 1,
+                                       mz.abs=0.001, 
+                                       mz.ppm=5, 
+                                       search.ppm=5, 
+                                       pos.charge=TRUE, 
+                                       mode=1, 
+                                       tree.depth=2)
+@
+
+These example values are extracted from the MetFrag Website \cite{Metfrag2014}. A MS/MS spectrum was generated by using the entered parameters (Figure \ref{fragSpec}).
+\newpage
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.5]{./figure/Metfrag_screenshot.png}
+  \caption{MS/MS spectrum of the MetFrag Website with the neutral mass 272.06847 and the example 
+  values for each peak. They are characterised by the mass-to-charge values (m/z), the absolute intensities (abs.int)
+  and the relative intensities (rel.int).}
+  \label{fragSpec}
+\end{figure}
+
+On the other hand the molecules can be passed as IAtomContainer list which is loaded by \Rpackage{rcdk}. 
+For this reason the optional search.ppm parameter is not necessary. Previously, the compound list could have been
+generated with help of the database functions \Rfunction{db.kegg.getMoleculeContainer} or
+\Rfunction{db.pubchem.getMoleculeContainer} mentioned before in section 2.2.
+
+<<scoreMetfragContainer>>=
+  scored.molecules <- score.molecules.from.container(
+    molecules,
+    mzs=peaktable[,"mz"],
+    ints=peaktable[,"int"],
+    exact.mass=290.0646)
+@
+
+\newpage
+After the scoring new properties are available e.g. FragmenterScore and molecular formulas of explained peaks.
+
+<<exampleScoringParameters>>=
+  get.property(scored.molecules[[1]], "FragmenterScore")
+  get.property(scored.molecules[[1]], "FormulasOfExplPeaks")
+@
+
+\newpage
+\subsection{Rank molecules among a given function or IAtomContainer properties}
+If we want like to rank given molcules we need to specify the ranking parameters.
+Accordingly, the values BC (candidates with a better score), WC (candiates
+with a worse score), EC (candidates with equal score) and TC (total number of candidates) were introduced. \\[0.5em]
+With given parameters we can rank our molecules and determine the optimistic rank (OR), 
+the pessimistic rank (PR) and the relative rank (RRP) of a molecule based on the condition \cite{Wolf2010}.
+\begin{align*}
+  PR &= BC + EC + 1 \\
+  OR &= BC + 1 \\
+  RRP &= 0.5 \cdot (1-\frac{BC-WC}{TC-1})
+\end{align*}
+For example we have a list of molecules. These molecules should be ranked 
+by numeric molecule properties. Therefore we need a numeric property used to sort/rank the candidates and 
+the condition of the candidate of which the rank is to be determined. The first is called sorting, which can be 
+for example the FragmenterScore, and the 
+second condition parameter, which can be for example the first part of the InChIKey.
+
+<<scoring, eval=TRUE>>=
+  sorting <- list("FragmenterScore")
+  condition <- list(InChIKey1="MEFQWPUMEMWTJP")
+  scoring.getRanks(scored.molecules, sorting, condition)
+@
+
+We get a list with the ranking results based on the molecule with the condition properties
+sorted by the sorting parameters.
+
+\newpage
+Additionally, we can rank by an own function. Hence, we declare a list as mentioned before.
+In contrast to the previous example a new list, including the defined scoring function, is added into the existing list.
+The first parameters are the sorting properties which used in the anonymous function. In our example the list was ordered by the PeakScore, the Score and the own function. We can force the splitting of compound properties with a split parameter which explained in section 2.3.
+<<scoringFunc, eval=TRUE>>=
+  scoring.getRanks(scored.molecules,
+                   list("FragmenterScore",
+                        "Score",
+                        list("FragmenterScore", "Score", function(x, y) x*y)),
+                   list(InChIKey="MEFQWPUMEMWTJP"),
+                   list(sep="-", pos=1))
+@
+
+\subsection{Get fragments of a compound}
+To get fragments of a compound a rcdk AtomContainer object is needed that can be easily obtained from 
+its SMILES string. Hence, the compound is fragmented by using the MetFrag fragmenter which use the most 
+common substructure. The SMILES is available from the compound properties \cite{Wolf2010}.
+The fragments can be visualised by calling \Rfunction{view.molecule.2d}.
+<<fragmentSmiles,eval=FALSE>>=
+  smiles <- "CN(C)CC(C1=C=C(C=C1)OC)C2(CCCCC2)O"
+  mol<-parse.smiles(smiles)[[1]]
+  frag.generateFragments(mol)
+@
+
+Be aware that depending on the precursor structures hundreds or thousands of fragment can be generated.
+\newpage
+\section{Visualisation of Results}
+\subsection{Score distribution}
+First, we check the score distribution. Hence, we extract the numeric values of a list of molecules
+and save them in a list. These are displayed as a dot plot (Figure \ref{fig:plotScores}) whereby the axis of ordinates shows the score values and the axis of abscissas shows the position of the scored values.
+<<plotScores, fig=TRUE, eps=FALSE, fig.width=5, fig.height=5, fig.align='center', warning=FALSE, message=FALSE, fig.pos='h!', fig.cap='Illustration of the score distribution. The score and the respective position was plotted against each other.'>>=
+  scores <- getScores(scored.molecules, scoreprop="Score")
+  plot(scores)
+@
+
+\newpage
+\subsection{Plotting Maximum Common Substructure}
+To calculate the MCSS for given clusters the function \Rfunction{getClusterMCSS} is used. This describes a 
+a 1:1 atom correspondence between two compounds. The bond connection and atom types are equal
+in both molecules in addition to the largest number of bonds or atoms. Such structural similarities
+are often used to predict bioactive compounds \cite{Cao2008}.
+<<calcClusterFirst, warning=FALSE, message=FALSE, include=FALSE>>=
+scored.molecules.subset <- scored.molecules[1:min(50, length(scored.molecules))]
+cluster <- hclust.mols(mols=scored.molecules.subset, 
+                       scoreprop="Score", 
+                       idprop="Identifier")
+@
+
+<<numberDendrogram>>=
+  clusterreps <- getClusterMCSS(cluster, mols=scored.molecules.subset, k=7, which=1:7)
+@
+
+Each MCSS of a cluster can be plotted separately - with an overlay of the 
+cluster number with the function \Rfunction{plotMol}. This function requires i. a. molecules as IAtomContainer 
+objects and an optional watermark (Figure \ref{fig:clusterep}). 
+<<plotClusterPseudo, include = TRUE, eval=FALSE, eps=FALSE, warning=FALSE, message=FALSE>>=
+  plotMol(clusterreps[[1]], watermark=1)
+  plotMol(clusterreps[[2]], watermark=2)
+  ...
+@
+<<plotClusterReps, fig=TRUE, include = FALSE, eps=FALSE, warning=FALSE, message=FALSE>>=
+  plotMol(clusterreps[[1]], watermark=1)
+  plotMol(clusterreps[[2]], watermark=2)
+  plotMol(clusterreps[[3]], watermark=3)
+  plotMol(clusterreps[[4]], watermark=4)
+  plotMol(clusterreps[[5]], watermark=5)
+  plotMol(clusterreps[[6]], watermark=6)
+  plotMol(clusterreps[[7]], watermark=7)
+@
+
+\setkeys{Gin}{width=0.3\textwidth}
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.25\textwidth]{./figure/plotClusterReps1.pdf}%
+\includegraphics[width=0.25\textwidth]{./figure/plotClusterReps2.pdf}%
+\includegraphics[width=0.25\textwidth]{./figure/plotClusterReps3.pdf}
+\includegraphics[width=0.25\textwidth]{./figure/plotClusterReps4.pdf}%
+\includegraphics[width=0.25\textwidth]{./figure/plotClusterReps5.pdf}%
+\includegraphics[width=0.25\textwidth]{./figure/plotClusterReps6.pdf}
+\includegraphics[width=0.25\textwidth]{./figure/plotClusterReps7.pdf}%
+\caption{Plot of the most common substructure of each cluster with the number overlaid.}
+\label{fig:clusterep}
+\end{figure}
+\setkeys{Gin}{width=0.8\textwidth}
+
+\newpage
+\subsection{Candidate Clustering}
+\subsubsection{Clustering with displayed cluster numbers}
+If we want to plot similar compounds in a dendrogram, firstly we have to create clusters. On that point we restrict the length of the list to the first 50 molecules and group them based on structural similarity. We could use a SDF file or a list of compounds with the score property and the database property. In this example we get 10 groups.
+
+<<calcCluster, warning=FALSE, message=FALSE>>=
+cluster <- hclust.mols(mols=scored.molecules.subset, 
+                       scoreprop="Score", 
+                       idprop="Identifier")
+@
+To plot the molecule cluster as a dendrogram with cluster numbers overlaid, firstly we create a plot
+either by applying \Rfunction{plot} or by using \Rfunction{hclust}. Then we create the numbers of each cluster.
+For this purpose the maximum common substructure (MCSS) is calculated with $k=7$ clusters whereby all 7 
+clusters are framed with a rectangle with a black border color. \\[0.5em]
+Thereto, the clusters are drawn into the
+consisting plot (Figure \ref{fig:plotNumDendro}). Hence, the height are referred as Tanimoto 
+distance which formal formulated as \cite{Rogers1960}
+\[
+  T_d(X,Y) = -\log_2\left(\frac{\sum_i(X_i \land Y_i)}{\sum_i(X_I \lor Y_i)}\right)
+\]
+In our case, this describe the structural similarity of two different compounds to a third compound. 
+
+\newpage
+<<plotNumDendro, fig=TRUE, fig.width=5, fig.height=5, fig.align='center', eps=FALSE, warning=FALSE, message=FALSE, fig.cap='Example plot of clustered compounds. If the MCSS is most similar two of 50 molecules joined into a single cluster illustrate by a vertical line. In contrast to that if a cluster split into new cluster the horizontal bar illustrate the dissimilarity. The cluster can numbered and marked with a coloured border.', fig.pos='h!'>>=
+plot(cluster, hang=-1)
+myimages.clustNumbers(cluster, k=7, which=1:7, border=2)
+@
+
+\newpage
+\subsubsection{Clustering with displayed MCSS}
+If we want to plot the clusters with the most common substructure overlaid instead of a cluster
+number, we create a cluster dendrogram as mentioned before. In the following, we use the function 
+\Rfunction{myimages.hclust} to create MCSS below the cluster dendrogram (Figure \ref{fig:plotMCSSDendrogram}).
+
+<<plotMCSSDendrogram, fig=TRUE, fig.width=5, fig.height=5, fig.align='center', eps=FALSE, warning=FALSE, message=FALSE, fig.cap='Cluster dendrogram of 50 sample compounds with given coloured border to mark a specific cluster.', fig.pos='h!'>>=
+plot(cluster, hang=-1)
+myimages.hclust(cluster, mols=scored.molecules.subset, k=7, which=1:7, border=2)
+@
+
+\newpage
+\subsubsection{Clustering with displayed Scores}
+Instead of the MCSS or the cluster numbers we can plot the score and the color gradient, respectively.
+Therefor, the function \Rfunction{plotCluster} is used. The function expects i. a. the list of the molecules
+and the score which are listed in the properties of molecules.
+
+<<plotScoredDendrogramPseudo, fig=FALSE, eps=FALSE, warning=FALSE, message=FALSE, eval=FALSE>>=
+plotCluster(scoredMols, score="Score", h=0.2, scoreprop="FragmenterScore")
+@
+
+The color indicates the level of a score of the compounds where a light red color indicates a high and a black
+color a low score. Each compound contains a score which is plotted at the bottom of the figure as a red-black gradient. The height of the dendrogram is given as Tanimoto distance which is explained in section 3.3.1.
+
+<<plotScoredDendrogram, fig.width=5, fig.height=5, fig.align='center', fig.pos='h!', echo=FALSE, eps=FALSE, warning=FALSE, message=FALSE>>=
+plotCluster(scored.molecules.subset, score="Score", h=0.2, scoreprop="FragmenterScore")
+@
+
+\newpage
+\section{Summary}
+In this manual the package 'metfRag' was described. Besides \textit{in silico} fragmentation and scoring
+functionality of ranking of retrieved candidates is implemented. A scored compound list can be classified while 
+numeric properties are used to rank the molecules to a specific order. Additionally, the user
+can write own functions which use molecule properties to calculate new values with which 
+the ranking is determined. The optimistic and pessimistic rank as well 
+as the relative rank can be calculated. \\[0.5em]
+The scoring of a list of compounds performed by MetFrag which is written in Java and
+integrated through \emph{rJava}.
+
+\newpage
+\printbibliography
+
+\end{document}

@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:body>
+	<p:dialog id="downloadCandidatesDialog" header="Select format" widgetVar="downloadCandidatesDialog"
+		modal="true" resizable="false" >
+		<h:panelGrid columns="3" style="margin: 0 auto; vertical-align: top;">
+			<h:form id="downloadCandidatesFormCSV" enctype="multipart/form-data">
+				<p:commandLink ajax="false" onclick="PrimeFaces.monitorDownload(startDownloadCandidates, stopDownloadCandidates); ">
+					<h:graphicImage name="images/icons/csv.png" width="64" height="64" />
+					<p:fileDownload
+						value="#{metFragWebBean.createCandidatesToDownload('csv')}" />
+				</p:commandLink>
+			</h:form>
+			<h:form id="downloadCandidatesFormXLS" enctype="multipart/form-data">
+				<p:commandLink onclick="PrimeFaces.monitorDownload(startDownloadCandidates, stopDownloadCandidates); " ajax="false">
+					<h:graphicImage name="images/icons/xls.png" width="64" height="64" />
+					<p:fileDownload
+						value="#{metFragWebBean.createCandidatesToDownload('xls')}" />
+				</p:commandLink>
+			</h:form>
+			<h:form id="downloadCandidatesFormSDF" enctype="multipart/form-data">
+				<p:commandLink onclick="PrimeFaces.monitorDownload(startDownloadCandidates, stopDownloadCandidates); " ajax="false">
+					<h:graphicImage name="images/icons/sdf.png" width="64" height="64" />
+					<p:fileDownload
+						value="#{metFragWebBean.createCandidatesToDownload('sdf')}" />
+				</p:commandLink>
+			</h:form>
+		</h:panelGrid>
+		<p:dialog id="downloadCandidatesStatusDialog" modal="true" widgetVar="downloadCandidatesStatusDialog"
+			header="Status" draggable="false" closable="false" resizable="false">
+			<p:graphicImage name="images/ajaxloadingbar.gif" />
+		</p:dialog>
+		<script type="text/javascript">
+			function startDownloadCandidates() {
+				PF('downloadCandidatesStatusDialog').show();
+			}
+
+			function stopDownloadCandidates() {
+				PF('downloadCandidatesStatusDialog').hide();
+			}
+		</script>
+	</p:dialog>
+</h:body>
+
+</html>

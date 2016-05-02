@@ -1,0 +1,31 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<h:body>
+	<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+		xmlns:h="http://java.sun.com/jsf/html"
+		xmlns:f="http://java.sun.com/jsf/core"
+		xmlns:p="http://primefaces.org/ui">
+		<div class="ui-grid">
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-6">
+					<ui:insert name="compoundFilters">
+						<ui:include src="candidateFiltersPrime.xhtml" />
+					</ui:insert>
+				</div>
+
+				<div class="ui-grid-col-6">
+					<ui:insert name="compoundScores">
+						<ui:include src="candidateScoresPrime.xhtml" />
+					</ui:insert>
+				</div>
+			</div>
+		</div>
+
+	</ui:composition>
+</h:body>
+
+</html>

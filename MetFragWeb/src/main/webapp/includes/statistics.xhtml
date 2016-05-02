@@ -1,0 +1,141 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<h:body>
+
+	<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+		xmlns:h="http://java.sun.com/jsf/html"
+		xmlns:f="http://java.sun.com/jsf/core"
+		xmlns:c="http://java.sun.com/jsp/jstl/core"
+		xmlns:p="http://primefaces.org/ui">
+		<h:panelGroup id="statisticsPanel"
+			rendered="#{metFragWebBean.scoreDistributionModelAvailable}">
+			<h:panelGroup layout="block" style=" padding-bottom: 10px">
+				<h:outputLabel style="font-weight: bold;"
+					value="Candidate Score Distribution" />
+			</h:panelGroup>
+			<h:panelGrid style="width: 100%;"
+				columnClasses="statisticsColumn1,statisticsColumn2" columns="2">
+				<h:panelGrid columns="1" style="width: 100%;">
+					<p:chart responsive="true" id="scoreDistributionPlot"
+						widgetVar="scoreDistributionPlot" type="line"
+						model="#{metFragWebBean.scoreDistributionModelView}"
+						style="height:300px;" extender="extenderScore">
+						<p:ajax event="itemSelect"
+							listener="#{metFragWebBean.candidatesViewItemSelect}" />
+						<script type="text/javascript">
+							function extenderScore() {
+								this.cfg.cursor = {
+									show: true,
+									zoom:true,
+							    	constrainZoomTo: 'x',
+							    	showTooltip: false,
+							    	looseZoom: true
+								},
+								this.cfg.axes.xaxis = {
+									min : 0.0,
+									label: "Candidate Index",
+									tickOptions: {
+							        	formatString: '%d'
+							        }
+								},
+								this.cfg.legend = {
+									location: 'ne',
+									show: true,
+									background: '#ffffff',
+									labels: #{metFragWebBean.scoreDistributionModelLegendLabels}
+								},
+								this.cfg.seriesDefaults = {
+									lineWidth: 2, 
+									shadow: false,
+									rendererOptions: { 
+										smooth: false 
+									},
+									markerOptions: { 
+										show: false, 
+										shadow: false, 
+										size: 7 
+									}
+							    },
+							    this.cfg.series = [
+									{
+										markerOptions: { 
+											show: true, 
+											shadow: false, 
+											size: 7 
+										},
+										showLine: false,
+										pointLabels : { 
+											show: #{metFragWebBean.showScoreDistributionPointLabels},
+						            		labels: #{metFragWebBean.scoreDistributionModelPointLabels}
+										}
+									}
+								];
+							}
+						</script>
+					</p:chart>
+					<p:panelGrid columns="3" layout="grid">
+						<h:panelGroup>
+							<p:commandButton type="button" value="Export"
+								icon="ui-icon-extlink" onclick="exportChart()" rendered="true" />
+							<script type="text/javascript">
+								function exportChart() {
+								    //export image
+								    //$('#scoreDistributionPlotOutput').empty().append(PF('scoreDistributionPlot').exportAsImage());
+								    var div = $('#mainForm').children('div').eq(0).children('div').eq(3).children('span').eq(0)
+								    .children('table').eq(0).children('tbody').eq(0).children('tr').eq(0).children('td').eq(0)
+								    .children('table').eq(0).children('tbody').eq(0).children('tr').eq(1).children('td').eq(0)
+								    .children('div').eq(0).children('div').eq(0).children('div').eq(0).children('div').eq(0).children('div').eq(0)
+								    .children('div').eq(1).children('div').eq(0);
+								    //show the dialog
+								    div.empty().append(PF('scoreDistributionPlot').exportAsImage());
+								    PF('dlg').show();
+								}
+							</script>
+							<p:dialog widgetVar="dlg" modal="false" position="left" showEffect="fade"
+								header="Candidate Score Distribution as Image" resizable="false"
+								style="width: auto; height: auto" id="statisticsImageDialog">
+								<p:outputPanel id="scoreDistributionPlotOutput" layout="block"
+									style="height:auto;width:auto" />
+							</p:dialog>
+						</h:panelGroup>
+						<h:panelGroup>	
+						</h:panelGroup>
+						<h:panelGrid columns="1" style="font-family: Tato, sans-serif; font-size: 0.7em;">
+							<h:outputText value="Select area to zoom in. Double click to return." />
+							<h:outputText value="Click on dot to scroll to candidate in the Results tab." />
+						</h:panelGrid>
+					</p:panelGrid>
+				</h:panelGrid>
+				<h:panelGroup>
+					<h:panelGrid style="width: 100%;" columns="2">
+						<p:selectBooleanCheckbox
+							id="checkShowScoreDistributionPointLabels"
+							value="#{metFragWebBean.showScoreDistributionPointLabels}">
+							<p:ajax
+								update="checkShowScoreDistributionPointLabels scoreDistributionPlot" />
+						</p:selectBooleanCheckbox>
+						<h:outputLabel value="Show Labels" />
+					</h:panelGrid>
+					<h:panelGrid columns="1" rendered="#{metFragWebBean.scoreNamesAvailable}"
+						style="padding-top: 10px;">
+						<h:outputLabel value="Display Score Graphs" />
+						<p:selectCheckboxMenu id="showScoreGraphsSelectionMenu"
+							value="#{metFragWebBean.showScoreGraphs}"
+							showHeader="false" label="Scores">
+							<f:selectItems value="#{metFragWebBean.availableScoreNamesForScoreGraph}" />
+							<p:ajax
+								listener="#{metFragWebBean.generateScoreDistributionModelView}"
+								update="scoreDistributionPlot" />
+						</p:selectCheckboxMenu>
+					</h:panelGrid>
+				</h:panelGroup>
+			</h:panelGrid>
+		</h:panelGroup>
+	</ui:composition>
+</h:body>
+
+</html>

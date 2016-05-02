@@ -1,0 +1,24 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:body>
+	<!--  -->
+	<p:tooltip styleClass="tooltip" escape="false" id="inputMzPpmLabelTooltip" for="inputMzPpmLabel" >
+		<h:outputText value="Relative mass deviation to match generated fragments against MS/MS peaks. Mzppm and Mzabs are additive." escape="false" />
+	</p:tooltip>
+	<p:tooltip styleClass="tooltip" escape="false" id="inputMzAbsLabelTooltip" for="inputMzAbsLabel" >
+		<h:outputText value="Absolute mass deviation to match generated fragments against MS/MS peaks. Mzppm and Mzabs are additive." escape="false" />
+	</p:tooltip>
+	<p:tooltip styleClass="tooltip" escape="false" id="modeLabelTooltip" for="modeLabel" >
+		<h:outputText value="Select adduct type of the precursor ion." escape="false" />
+	</p:tooltip>
+	<p:tooltip styleClass="tooltip" escape="false" id="peaklistLabelTooltip" for="peaklistLabel" >
+		<h:outputText value="MS/MS peak list containing m/z intensity pairs one per line." escape="false" />
+	</p:tooltip>
+</h:body>
+
+</html>

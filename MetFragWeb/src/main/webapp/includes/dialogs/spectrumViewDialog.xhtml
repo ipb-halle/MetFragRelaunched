@@ -1,0 +1,73 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:body>
+	<p:dialog visible="#{metFragWebBean.spectrumViewActive}" id="spectrumViewDialog" header="Spectrum View" widgetVar="spectrumViewDialog"
+		modal="true" resizable="false" style="width: 750px; height: 400px" position="center" showEffect="fade">
+	  	<p:ajax event="close" listener="#{metFragWebBean.closeSpectrumView}" />
+		<h:panelGrid columns="1" id="selectedPeakTextLabel" style="font-family: Tato, sans-serif; font-size: 0.7em">
+			<h:outputText value="Select area to zoom in. Double click to return." />
+		</h:panelGrid>
+	  	<h:form id="spectrumViewForm">
+	  		<h:panelGrid columns="1">
+		  		<p:chart style="height:300px; width:700px;" type="line" model="#{metFragWebBean.spectrumModelView}" widgetVar="spectrumChart">
+		  			<script type="text/javascript">
+						function spectrumViewExtender() {
+							this.cfg.seriesDefaults = {
+								rendererOptions: {
+									lineWidth: 1
+								},
+								markerOptions: {
+						            show: true,
+						            style: 'dash',
+						            lineWidth: 1.5,
+						            size: 4,
+						            shadow: true
+						        },
+							},
+							this.cfg.cursor = {
+								show: true,
+								zoom:true,
+						    	constrainZoomTo: 'x'
+							},
+							this.cfg.highlighter = {
+						        show: true,
+						        showMarker:false,
+						        tooltipAxes: 'xy',
+						        yvalues: 2,
+						        formatString:'<table style="background-color: white;" class="jqplot-highlighter"> \
+						        <tr><td>m/z:</td><td>%.2f</td></tr> \
+						        <tr><td>int:</td><td>%s</td></tr></table>'
+						    }
+						}
+					</script>
+				</p:chart>
+				<p:commandButton type="button" value="Export" icon="ui-icon-extlink" onclick="exportSpectrumViewDialog()"/>
+	 
+				<p:dialog widgetVar="spectrumViewDialogExport" showEffect="fade" modal="false" header="Spectrum View as Image" resizable="false">
+	    			<p:outputPanel id="spectrumViewDialogImage" layout="block" style="width:auto;height:auto"/>
+				</p:dialog>
+	 
+				<script type="text/javascript">
+					function exportSpectrumViewDialog() {
+					    //export image
+					    //$("#spectrumViewDialogImage").empty().append(PF("spectrumChart").exportAsImage());
+					    //var div = $('#spectrumViewForm').children('table').eq(0).children('tbody').eq(0).children('tr').eq(2).children('td').eq(0);
+					    var div = $('#spectrumViewForm').children('table').eq(0).children('tbody')
+					    	.eq(0).children('tr').eq(2).children('td').eq(0).children('div').eq(0)
+					    	.children('div').eq(1).children('div').eq(0);
+					    div.empty().append(PF("spectrumChart").exportAsImage());
+					    //show the dialog
+					    PF("spectrumViewDialogExport").show();
+					}
+				</script>
+			</h:panelGrid>
+	  	</h:form> 
+	</p:dialog>
+</h:body>
+
+</html>
