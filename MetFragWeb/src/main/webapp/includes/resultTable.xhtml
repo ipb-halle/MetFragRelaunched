@@ -125,7 +125,7 @@
 										columnClasses="resultImageFirst,resultImageSecond">
 										<h:panelGroup>
 											<h:graphicImage alt="#{metFragResult.identifier}" width="100%"
-												id="imageCellNames" value="#{metFragResult.imageAddress}" />
+												id="imageCellNames" value="#{metFragResult.imageAddress}" cache="false" />
 											<br />
 											<h:outputText
 												rendered="#{metFragWebBean.compoundNameAvailable}"
@@ -150,7 +150,7 @@
 										<h:panelGroup>
 											<h:graphicImage alt="#{metFragResult.identifier}"
 												id="imageCell" value="#{metFragResult.imageAddress}"
-												width="100%" />
+												width="100%" cache="false" />
 										</h:panelGroup>
 										<h:panelGroup>
 											<h:graphicImage id="magnifierMol_2"
