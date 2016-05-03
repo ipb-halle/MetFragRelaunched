@@ -6,6 +6,7 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.apache.log4j.Logger;
 
+import de.ipbhalle.metfrag.plugins.HydrogenDeuteriumPlugin;
 import de.ipbhalle.metfraglib.fragment.DefaultBitArrayFragment;
 import de.ipbhalle.metfraglib.interfaces.IImageGenerator;
 import de.ipbhalle.metfraglib.interfaces.IWriter;
@@ -60,6 +61,13 @@ public class CommandLineTool {
 		//check settings with SettingsChecker	
 		SettingsChecker settingsChecker = new SettingsChecker();
 		if(!settingsChecker.check(settings)) return;
+		
+		/*
+		 * load hd plugin
+		 */
+		HydrogenDeuteriumPlugin hdPlugin = new HydrogenDeuteriumPlugin();
+		if(!hdPlugin.load(settings)) return;
+
 		//init the MetFrag process
 		CombinedMetFragProcess mp = new CombinedMetFragProcess(settings);
 		
