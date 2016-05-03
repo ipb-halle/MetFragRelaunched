@@ -1,0 +1,27 @@
+MetFragDatabaseType = PubChem
+IonizedPrecursorMass = 268.10
+DatabaseSearchRelativeMassDeviation = 10
+PrecursorCompoundIDs = 60961
+NeutralPrecursorMolecularFormula = C10H13N5O4
+
+FragmentPeakMatchAbsoluteMassDeviation = 0.01
+FragmentPeakMatchRelativeMassDeviation = 10
+PrecursorIonMode = 1
+IsPositiveIonMode = True
+
+MetFragScoreTypes = FragmenterScore,HDFragmenterScore,HDFragmentPairScore,HDExchangedHydrogendsScore
+MetFragScoreWeights = 1.0,0,0,0
+
+MetFragCandidateWriter = HDCSV
+SampleName = Adenosin
+
+MaximumTreeDepth = 2
+MetFragPreProcessingCandidateFilter = UnconnectedCompoundFilter,IsotopeFilter
+
+#hd stuff
+HDIonizedPrecursorMass = 274.14
+HDPrecursorIonMode = 2
+HDGroupFlagFilterEnabled = False
+
+# InchiKey: OIRDTQYFTABQOQ
+# PubChem: 60961
