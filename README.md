@@ -120,16 +120,34 @@ LocalPubChemDatabaseCompoundNameColumn = ...
 
 ##### Build and Run
 ```bash
-mvn clean -Dcontainer=tomcat7 tomcat:run-war -pl MetFragWeb -am
+mvn clean tomcat7:run-war -pl MetFragWeb
 ```
 
 - skipping test during build by<br>
 ```bash
-mvn clean -Dcontainer=tomcat7 tomcat:run-war -pl MetFragWeb -am -DskipTests
+mvn clean tomcat7:run-war -pl MetFragWeb -DskipTests
 ```
 
 - after the successful build Tomcat web server runs on port 8080<br>
-- MetFragWeb can be accessed via pointing to http://localhost:8080/MetFragWeb/index.xhtml in the web browser<br>
+- MetFragWeb can be accessed via pointing to http://localhost:8080 in the web browser<br>
+
+##### Build
+- if you just want to build the war file to transfer it to another Tomcat instance, run:
+
+```bash
+mvn package -pl MetFragWeb
+```
+
+- after the successful build the war file is located in MetFragWeb/target/MetFragWeb.war
+
+##### Run
+- after the war file has been built once you can just run the embedded Tomcat server:
+
+```bash
+mvn tomcat7:run-war-only -pl MetFragWeb
+```
+
+- point your browser to http://localhost:8080 to use the running MetFragWeb instance
 
 Additionals
 -----------
