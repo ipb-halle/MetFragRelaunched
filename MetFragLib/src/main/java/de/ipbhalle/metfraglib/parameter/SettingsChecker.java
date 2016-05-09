@@ -459,7 +459,7 @@ public class SettingsChecker {
 					}
 					else {
 						String RetentionTimeTrainingFilePathName = (String)RetentionTimeTrainingFile;
-						if(checkPositive) checkPositive = checkFile(VariableNames.LOCAL_DATABASE_PATH_NAME, RetentionTimeTrainingFilePathName);
+						if(checkPositive) checkPositive = checkFile(VariableNames.RETENTION_TIME_TRAINING_FILE_NAME, RetentionTimeTrainingFilePathName);
 					}
 					if(ExperimentalRetentionTimeValue == null) {
 						this.logger.error(VariableNames.EXPERIMENTAL_RETENTION_TIME_VALUE_NAME + " is not defined!");
