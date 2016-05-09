@@ -48,6 +48,13 @@ public class RetentionTimeScore extends AbstractScore {
 			try {
 				this.logValue = Double.parseDouble((String)this.scoredCandidate.getProperty((String)this.settings.get(VariableNames.USER_LOG_P_VALUE_NAME)));
 			}
+			catch (java.lang.ClassCastException e) {
+				try {
+					this.logValue = (Double)this.scoredCandidate.getProperty((String)this.settings.get(VariableNames.USER_LOG_P_VALUE_NAME));
+				} catch(Exception e1) {
+					this.logValue = null;
+				}
+			}
 			catch (NumberFormatException e) {
 				this.logValue = null;
 			}

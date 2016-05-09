@@ -1,16 +1,13 @@
 package de.ipbhalle.metfraglib.model;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.qsar.DescriptorValue;
 import org.openscience.cdk.qsar.result.IDescriptorResult;
 
 import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
+import de.ipbhalle.metfraglib.database.LocalPropertyFileDatabase;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
+import de.ipbhalle.metfraglib.list.CandidateList;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.settings.Settings;
 
@@ -46,9 +43,24 @@ public class LinearRetentionTimeModel extends AbstractModel {
 	 */
 	private void initialise() {
 		String modelFileName = (String)this.settings.get(VariableNames.RETENTION_TIME_TRAINING_FILE_NAME);
-		File file = new File(modelFileName);
-		if(!file.exists()) return;
-		if(!file.canRead()) return;
+		
+		Settings settings = new Settings();
+		settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, modelFileName);
+		if(this.settings.containsKey(VariableNames.USER_LOG_P_VALUE_NAME) && this.settings.get(VariableNames.USER_LOG_P_VALUE_NAME) != null)
+			settings.set(VariableNames.USER_LOG_P_VALUE_NAME, (String)this.settings.get(VariableNames.USER_LOG_P_VALUE_NAME));
+
+		LocalPropertyFileDatabase database = new LocalPropertyFileDatabase(settings);
+		java.util.Vector<String> identifiers;
+		CandidateList candidateList = null;
+		try {
+			identifiers = database.getCandidateIdentifiers();
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			return;
+		}
+		candidateList = database.getCandidateByIdentifier(identifiers);
+
+		if(candidateList.getNumberElements() == 0) return;
 		this.xlogp = new org.openscience.cdk.qsar.descriptors.molecular.XLogPDescriptor();
 		try {
 			this.xlogp.setParameters(new Boolean[] {true, true});
@@ -61,56 +73,38 @@ public class LinearRetentionTimeModel extends AbstractModel {
 		/*
 		 * reading the retention time information for training process
 		 */
-		try {
-			java.io.BufferedReader breader = new java.io.BufferedReader(new FileReader(file));
-			String header = breader.readLine();
-			java.util.Hashtable<String, Integer> nameToIndex = new java.util.Hashtable<String, Integer>();
-			String[] tmp = header.trim().split("\\|");
-			for(int i = 0; i < tmp.length; i++) 
-				nameToIndex.put(tmp[i].trim(), i);
-			if(!nameToIndex.containsKey(VariableNames.RETENTION_TIME_NAME) || 
-					(!nameToIndex.containsKey(VariableNames.INCHI_NAME) && !nameToIndex.containsKey((String)settings.get(VariableNames.USER_LOG_P_VALUE_NAME)))) {
-				breader.close();
-				return;
-			}
-			String line = "";
-			int lineNumber = 0;
-			
-			boolean enableInChI = false;
-			if(settings.containsKey(VariableNames.USER_LOG_P_VALUE_NAME) 
-					&& settings.get(VariableNames.USER_LOG_P_VALUE_NAME) != null
-					&& ((String)settings.get(VariableNames.USER_LOG_P_VALUE_NAME)).trim().length() != 0 
-					&& nameToIndex.containsKey((String)settings.get(VariableNames.USER_LOG_P_VALUE_NAME))) 
-			{
-				this.enableUserLogP = true;
-			}
-			else if(nameToIndex.containsKey(VariableNames.INCHI_NAME)) {
-				enableInChI = true;
-			}
-			while((line = breader.readLine()) != null) {
-				lineNumber++;
-				line = line.trim();
-				if(line.startsWith("#")) continue;
-				tmp = line.split("\\|");
-				if(tmp.length >= 2) {
-					try {
-						if(this.enableUserLogP) 
-							userLogPs.add(Double.parseDouble(tmp[nameToIndex.get((String)settings.get(VariableNames.USER_LOG_P_VALUE_NAME))]));
-						else if(enableInChI)
-							inchis.add(tmp[nameToIndex.get(VariableNames.INCHI_NAME)]);
-						rt_values.add(Double.parseDouble(tmp[nameToIndex.get(VariableNames.RETENTION_TIME_NAME)]));
-					}
-					catch(Exception e) {
-						System.err.println("no valid value in " + VariableNames.RETENTION_TIME_TRAINING_FILE_NAME + " in line " + (lineNumber + 1) + ": " + tmp[nameToIndex.get(VariableNames.RETENTION_TIME_NAME)]);
-						continue;
-					}
+		ICandidate candidate = candidateList.getElement(0);
+		if(!candidate.getProperties().containsKey(VariableNames.RETENTION_TIME_NAME) || 
+				(!candidate.getProperties().containsKey(VariableNames.INCHI_NAME) 
+						&& !candidate.getProperties().containsKey((String)settings.get(VariableNames.USER_LOG_P_VALUE_NAME)))) {
+			return;
+		}
+		boolean enableInChI = false;
+		if(settings.containsKey(VariableNames.USER_LOG_P_VALUE_NAME) 
+				&& settings.get(VariableNames.USER_LOG_P_VALUE_NAME) != null
+				&& ((String)settings.get(VariableNames.USER_LOG_P_VALUE_NAME)).trim().length() != 0 
+				&& candidate.getProperties().containsKey((String)settings.get(VariableNames.USER_LOG_P_VALUE_NAME))) 
+		{
+			this.enableUserLogP = true;
+		}
+		else if(candidate.getProperties().containsKey(VariableNames.INCHI_NAME)) {
+			enableInChI = true;
+		}
+		for(int i = 0; i < candidateList.getNumberElements(); i++) {
+			candidate = candidateList.getElement(i);
+			try {
+				if(this.enableUserLogP) {
+					userLogPs.add(Double.parseDouble((String)candidate.getProperties().get(this.settings.get(VariableNames.USER_LOG_P_VALUE_NAME))));
 				}
+				else if(enableInChI) {
+					inchis.add((String)candidate.getProperties().get(VariableNames.INCHI_NAME));
+				}
+				rt_values.add(Double.parseDouble((String)candidate.getProperties().get(VariableNames.RETENTION_TIME_NAME)));
 			}
-			breader.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+			catch(Exception e) {
+				System.err.println("no valid value in " + VariableNames.RETENTION_TIME_TRAINING_FILE_NAME + " in line " + (i + 1) + ": " + (String)candidate.getProperties().get(VariableNames.RETENTION_TIME_NAME));
+				continue;
+			}
 		}
 		Double[] logp_values = null;
 		/*

@@ -103,7 +103,13 @@ public class Settings {
 	public void set(String variableName, Double[] obj) {
 		this.map.put(variableName, obj);
 	}
-	
+
+	public void set(String variableName, double[] obj) {
+		Double[] values = new Double[obj.length];
+		for(int i = 0; i < obj.length; i++) values[i] = obj[i]; 
+		this.map.put(variableName, values);
+	}
+
 	public void set(String variableName, Boolean obj) {
 		this.map.put(variableName, obj);
 	}

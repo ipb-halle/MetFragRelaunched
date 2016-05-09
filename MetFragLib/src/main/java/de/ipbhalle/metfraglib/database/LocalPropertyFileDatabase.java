@@ -2,8 +2,11 @@ package de.ipbhalle.metfraglib.database;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.Vector;
+
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 
 import de.ipbhalle.metfraglib.additionals.MathTools;
 import de.ipbhalle.metfraglib.candidate.TopDownPrecursorCandidate;
@@ -140,86 +143,60 @@ public class LocalPropertyFileDatabase extends AbstractDatabase {
 
 	public void nullify() {
 	}
-
-	/**
-	 * @throws MultipleHeadersFoundInInputDatabaseException
-	 * @throws IOException
-	 * 
-	 */
-	private void readCandidatesFromFile()
-			throws MultipleHeadersFoundInInputDatabaseException, Exception {
+	
+	private void readCandidatesFromFile() throws MultipleHeadersFoundInInputDatabaseException, Exception {
 		this.candidates = new java.util.Vector<ICandidate>();
-		java.io.File f = new java.io.File(
-				(String) this.settings
-						.get(VariableNames.LOCAL_DATABASE_PATH_NAME));
+		java.io.File f = new java.io.File((String) this.settings.get(VariableNames.LOCAL_DATABASE_PATH_NAME));
+		java.util.List<String> propertyNames = new java.util.ArrayList<String>();
+		
 		BufferedReader reader = null;
 		if (f.isFile()) {
 			reader = new BufferedReader(new FileReader(f));
-			/*
-			 * skip first line as header
-			 */
-			String header = reader.readLine();
-			String[] colNames = header.split("\\|");
-			java.util.HashMap<String, Integer> propNameToIndex = new java.util.HashMap<String, Integer>();
-			for (int i = 0; i < colNames.length; i++) {
-				if (propNameToIndex.get(colNames[i]) != null) {
-					if (reader != null)
-						reader.close();
-					throw new MultipleHeadersFoundInInputDatabaseException(
-							"Found " + colNames[i]
-									+ " several times in header!");
-				}
-				propNameToIndex.put(colNames[i], i);
+			CSVParser parser = new CSVParser(reader, CSVFormat.EXCEL.withHeader());
+			java.util.Iterator<?> it = parser.getHeaderMap().keySet().iterator();
+			boolean identifierColDefined = false;
+			boolean inchiColDefined = false;
+			while(it.hasNext()) {
+				String colname = (String)it.next();
+				propertyNames.add(colname);
+				if(colname.equals(VariableNames.IDENTIFIER_NAME)) identifierColDefined = true;
+				if(colname.equals(VariableNames.INCHI_NAME)) inchiColDefined = true;
 			}
-			String line = "";
-			int id = 1;
-			while ((line = reader.readLine()) != null) {
-				String[] tmp = line.split("\\|");
-				String inchi = propNameToIndex.containsKey(VariableNames.INCHI_NAME) ? tmp[propNameToIndex.get(VariableNames.INCHI_NAME)] : "";
-				String identifier = propNameToIndex
-						.containsKey(VariableNames.IDENTIFIER_NAME) ? tmp[propNameToIndex
-						.get(VariableNames.IDENTIFIER_NAME)] : String
-						.valueOf(id);
-
+			int recordNumber = 0;
+			for(CSVRecord record : parser) {
+				recordNumber++;
+				String inchi = inchiColDefined ? record.get(VariableNames.INCHI_NAME) : "";
+				String identifier = identifierColDefined ? record.get(VariableNames.IDENTIFIER_NAME) : 
+					String.valueOf(recordNumber);
 				ICandidate precursorCandidate = new TopDownPrecursorCandidate(
 						inchi, identifier);
-				if (inchi.equals(""))
-					precursorCandidate.getProperties().remove(
-							VariableNames.INCHI_NAME);
-
-				id++;
-				/*
-				 * store all read property fields within the candidate container
-				 */
-				for (int k = 0; k < colNames.length; k++) {
-					if ((propNameToIndex.get(VariableNames.MONOISOTOPIC_MASS_NAME) != null && k == propNameToIndex.get(VariableNames.MONOISOTOPIC_MASS_NAME))
-							|| (propNameToIndex.get(VariableNames.IDENTIFIER_NAME) != null && k == propNameToIndex.get(VariableNames.IDENTIFIER_NAME)))
-						continue;
-					if (propNameToIndex
-							.get(VariableNames.MONOISOTOPIC_MASS_NAME) != null
-							&& k == propNameToIndex
-									.get(VariableNames.MONOISOTOPIC_MASS_NAME))
-						precursorCandidate.setProperty(colNames[k], Double
-								.parseDouble(tmp[propNameToIndex
-										.get(colNames[k])]));
-					else if (propNameToIndex
-							.get(VariableNames.VARIABLE_DEUTERIUM_COUNT_NAME) != null
-							&& k == propNameToIndex
-									.get(VariableNames.VARIABLE_DEUTERIUM_COUNT_NAME))
-						precursorCandidate.setProperty(colNames[k],
-								Byte.parseByte(tmp[propNameToIndex
-										.get(colNames[k])]));
-					else
-						precursorCandidate.setProperty(colNames[k],
-								tmp[propNameToIndex.get(colNames[k])]);
+				if(!inchiColDefined)
+					precursorCandidate.getProperties().remove(VariableNames.INCHI_NAME);
+				
+				for(int ii = 0; ii < propertyNames.size(); ii++) {
+					String colname = propertyNames.get(ii);
+					if(!colname.equals(VariableNames.INCHI_NAME) && !colname.equals(VariableNames.IDENTIFIER_NAME)) {
+						if(colname.equals(VariableNames.MONOISOTOPIC_MASS_NAME))
+							precursorCandidate.setProperty(VariableNames.MONOISOTOPIC_MASS_NAME, Double.parseDouble(record.get(VariableNames.MONOISOTOPIC_MASS_NAME)));
+						else if (colname.equals(VariableNames.VARIABLE_DEUTERIUM_COUNT_NAME))
+							precursorCandidate.setProperty(colname, Byte.parseByte(record.get(colname)));
+						else {
+							precursorCandidate.setProperty(colname, record.get(colname));
+						}
+					}	
 				}
 				this.candidates.add(precursorCandidate);
+			
 			}
-		}
-		if (reader != null)
+			
+			parser.close();
 			reader.close();
+			
+			return;
+		}
+		throw new Exception();
 	}
-
+	
 	/**
 	 * 
 	 * @param identifier
