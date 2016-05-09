@@ -42,13 +42,13 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.axis2</groupId>
-			<artifactId>axis2</artifactId>
-			<version>1.6.2</version>
+			<artifactId>axis2-kernel</artifactId>
+			<version>1.6.4</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.axis2</groupId>
 			<artifactId>axis2-transport-local</artifactId>
-			<version>1.6.2</version>
+			<version>1.6.4</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>commons-logging</artifactId>
@@ -64,12 +64,7 @@
 		<dependency>
 			<groupId>org.apache.axis2</groupId>
 			<artifactId>axis2-transport-http</artifactId>
-			<version>1.6.1</version>
-		</dependency>
-		<dependency>
-			<groupId>axis</groupId>
-			<artifactId>axis-wsdl4j</artifactId>
-			<version>1.5.1</version>
+			<version>1.6.4</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openscience.cdk</groupId>
@@ -80,6 +75,17 @@
 			<groupId>org.openscience.cdk</groupId>
 			<artifactId>cdk-formula</artifactId>
 			<version>${cdk.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.ws.commons.axiom</groupId>
+			<artifactId>axiom-api</artifactId>
+			<version>1.2.14</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>commons-logging</artifactId>
+					<groupId>commons-logging</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.ws.commons.axiom</groupId>

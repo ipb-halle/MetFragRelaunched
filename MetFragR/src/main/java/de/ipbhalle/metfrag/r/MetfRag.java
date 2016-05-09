@@ -32,13 +32,14 @@ class MetfRag {
 			return candidateList;
 		}
 
-		//PubChem
 		Logger.getLogger("net.sf.jnati.deploy.artefact.ConfigManager").setLevel(Level.ERROR);
 		Logger.getLogger("net.sf.jnati.deploy.repository.ClasspathRepository").setLevel(Level.ERROR);
 		Logger.getLogger("net.sf.jnati.deploy.repository.LocalRepository").setLevel(Level.ERROR);
 		Logger.getLogger("net.sf.jnati.deploy.artefact.ManifestReader").setLevel(Level.ERROR);
 		Logger.getLogger("net.sf.jnati.deploy.NativeArtefactLocator").setLevel(Level.ERROR);
 		Logger.getLogger("net.sf.jnati.deploy.NativeLibraryLoader").setLevel(Level.ERROR);
+		Logger.getLogger("net.sf.jnati.deploy.resolver.ArtefactResolver").setLevel(Level.ERROR);
+		Logger.getLogger("net.sf.jnati.deploy.source.JarSource").setLevel(Level.ERROR);
 
 		//ChemSpider
 		Logger.getLogger("httpclient.wire.content").setLevel(Level.ERROR);
@@ -159,6 +160,8 @@ class MetfRag {
 		Logger.getLogger("net.sf.jnati.deploy.artefact.ManifestReader").setLevel(Level.ERROR);
 		Logger.getLogger("net.sf.jnati.deploy.NativeArtefactLocator").setLevel(Level.ERROR);
 		Logger.getLogger("net.sf.jnati.deploy.NativeLibraryLoader").setLevel(Level.ERROR);
+		Logger.getLogger("net.sf.jnati.deploy.resolver.ArtefactResolver").setLevel(Level.ERROR);
+		Logger.getLogger("net.sf.jnati.deploy.source.JarSource").setLevel(Level.ERROR);
 		
 		double mzabs = _mzabs;
 		double mzppm = _mzppm;
@@ -308,6 +311,8 @@ class MetfRag {
 		Logger.getLogger("net.sf.jnati.deploy.artefact.ManifestReader").setLevel(Level.ERROR);
 		Logger.getLogger("net.sf.jnati.deploy.NativeArtefactLocator").setLevel(Level.ERROR);
 		Logger.getLogger("net.sf.jnati.deploy.NativeLibraryLoader").setLevel(Level.ERROR);
+		Logger.getLogger("net.sf.jnati.deploy.resolver.ArtefactResolver").setLevel(Level.ERROR);
+		Logger.getLogger("net.sf.jnati.deploy.source.JarSource").setLevel(Level.ERROR);
 		
 		double mzabs = _mzabs;
 		double mzppm = _mzppm;
