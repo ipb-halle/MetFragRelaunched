@@ -32,12 +32,83 @@ class MetfRag {
 			return candidateList;
 		}
 
+		//PubChem
 		Logger.getLogger("net.sf.jnati.deploy.artefact.ConfigManager").setLevel(Level.ERROR);
 		Logger.getLogger("net.sf.jnati.deploy.repository.ClasspathRepository").setLevel(Level.ERROR);
 		Logger.getLogger("net.sf.jnati.deploy.repository.LocalRepository").setLevel(Level.ERROR);
 		Logger.getLogger("net.sf.jnati.deploy.artefact.ManifestReader").setLevel(Level.ERROR);
 		Logger.getLogger("net.sf.jnati.deploy.NativeArtefactLocator").setLevel(Level.ERROR);
 		Logger.getLogger("net.sf.jnati.deploy.NativeLibraryLoader").setLevel(Level.ERROR);
+
+		//ChemSpider
+		Logger.getLogger("httpclient.wire.content").setLevel(Level.ERROR);
+		Logger.getLogger("httpclient.wire.header").setLevel(Level.ERROR);
+		
+		Logger.getLogger("org.apache.commons.httpclient.HeaderElement").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.commons.httpclient.HttpConnection").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.commons.httpclient.HttpMethodBase").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.commons.httpclient.HttpClient").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.commons.httpclient.util.IdleConnectionHandler").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.commons.httpclient.MultiThreadedHttpConnectionManager").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.commons.httpclient.HttpClient").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.commons.httpclient.HeaderElement").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.commons.httpclient.HttpParser").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.commons.httpclient.methods.EntityEnclosingMethod").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.commons.httpclient.methods.PostMethod").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.commons.httpclient.methods.EntityEnclosingMethod").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.commons.httpclient.cookie.CookieSpec").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.commons.httpclient.HttpState").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.commons.httpclient.methods.ExpectContinueMethod").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.commons.httpclient.methods.EntityEnclosingMethod").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.commons.httpclient.HttpMethodDirector").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.commons.httpclient.params.DefaultHttpParams").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.commons.httpclient.methods.PostMethod").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.commons.httpclient.HttpParser").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.commons.httpclient.methods.EntityEnclosingMethod").setLevel(Level.ERROR);
+		
+		Logger.getLogger("org.apache.axis2.description.AxisOperation").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.axiom.om.impl.llom.OMElementImpl").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.axis2.engine.Phase").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.axis2.transport.http.CommonsHTTPTransportSender").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.axis2.context.ConfigurationContext").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.axis2.addressing.AddressingHelper").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.axis2.dispatchers.AddressingBasedDispatcher").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.axis2.engine.AxisEngine").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.axis2.builder.BuilderUtil").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.axis2.transport.TransportUtils").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.axis2.client.Options").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.axis2.context.MessageContext").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.axis2.transport.http.HTTPSender").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.axis2.transport.http.SOAPMessageFormatter").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.axis2.description.AxisOperation").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.axis2.engine.AxisConfiguration").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.axis2.description.OutInAxisOperationClient").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.axis2.description.AxisService").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.axis2.addressing.EndpointReference").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.axis2.transport.http.AbstractHTTPSendere").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.axis2.i18n.ProjectResourceBundle").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.axis2.description.ParameterIncludeImpl").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.axis2.deployment.ModuleBuilder").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.axis2.handlers.addressing.AddressingInHandler").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.axis2.deployment.DeploymentEngine").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.axis2.deployment.ModuleDeployer").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.axis2.transport.http.AbstractHTTPSender").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.axis2.util.Loader").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.axis2.deployment.RepositoryListener").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.axis2.context.AbstractContext").setLevel(Level.ERROR);
+		
+		Logger.getLogger("org.apache.axiom.om.impl.builder.StAXOMBuilder").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.axiom.locator.DefaultOMMetaFactoryLocator").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.axiom.om.util.StAXUtils").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.axiom.soap.impl.builder.StAXSOAPModelBuilder").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.axiom.om.impl.MTOMXMLStreamWriter").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.axiom.om.OMOutputFormat").setLevel(Level.ERROR);		
+		Logger.getLogger("org.apache.axiom.soap.impl.llom.SOAPEnvelopeImpl").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.axiom.om.impl.llom.OMContainerHelper").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.axiom.locator.ImplementationFactory").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.axiom.om.impl.llom.factory.OMLinkedListMetaFactory").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.axiom.locator.PriorityBasedOMMetaFactoryLocator").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.axiom.locator.ImplementationFactory").setLevel(Level.ERROR);
 		
 		settings.set(VariableNames.LOG_LEVEL_NAME, Level.INFO);
 		
