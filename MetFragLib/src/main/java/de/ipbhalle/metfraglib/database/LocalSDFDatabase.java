@@ -2,12 +2,10 @@ package de.ipbhalle.metfraglib.database;
 
 import java.util.Vector;
 
-import org.openscience.cdk.ChemObject;
 import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.io.iterator.IteratingSDFReader;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
-import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 
 import de.ipbhalle.metfraglib.additionals.MathTools;
 import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
@@ -16,6 +14,7 @@ import de.ipbhalle.metfraglib.exceptions.AtomTypeNotKnownFromInputListException;
 import de.ipbhalle.metfraglib.exceptions.DatabaseIdentifierNotFoundException;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.list.CandidateList;
+import de.ipbhalle.metfraglib.molecularformula.ByteMolecularFormula;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.settings.Settings;
 
@@ -61,15 +60,15 @@ public class LocalSDFDatabase extends AbstractDatabase {
 		if (this.candidates == null)
 			this.readCandidatesFromFile();
 		Vector<String> identifiers = new Vector<String>();
-		org.openscience.cdk.interfaces.IMolecularFormula queryFormula = MolecularFormulaManipulator.getMolecularFormula(molecularFormula, new ChemObject().getBuilder());
+		ByteMolecularFormula queryFormula = new ByteMolecularFormula(molecularFormula);
 		for (int i = 0; i < this.candidates.size(); i++) {
-			org.openscience.cdk.interfaces.IMolecularFormula currentFormula = null;
+			ByteMolecularFormula currentFormula = null;
 			try {
-				currentFormula = MolecularFormulaManipulator.getMolecularFormula(MoleculeFunctions.convertExplicitToImplicitHydrogens(this.candidates.get(i).getAtomContainer()));
+				currentFormula = new ByteMolecularFormula((String)this.candidates.get(i).getProperty(VariableNames.MOLECULAR_FORMULA_NAME));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			if (queryFormula.equals(currentFormula))
+			if (queryFormula.compareTo(currentFormula))
 				identifiers.add(this.candidates.get(i).getIdentifier());
 		}
 		return identifiers;
