@@ -66,6 +66,7 @@ import de.ipbhalle.metfragweb.validator.SmartsValidator;
 @SessionScoped
 public class MetFragWebBean {
 
+	private final String version = "v2.0";
 	/*
 	 * combines all the settings
 	 */
@@ -2759,6 +2760,10 @@ public class MetFragWebBean {
                 return "";
         }
         return hostname;
+	}
+	
+	public String getServerPlusVersion() {
+		return this.getServerName() + " " + this.version;
 	}
 }
 
