@@ -9,6 +9,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Hashtable;
 
+import de.ipbhalle.metfraglib.exceptions.AtomTypeNotKnownFromInputListException;
+import de.ipbhalle.metfraglib.molecularformula.ByteMolecularFormula;
+import de.ipbhalle.metfraglib.parameter.Constants;
+
 public class ConvertMSPtoMetFragRecord {
 
 	public static Hashtable<String, String> parameterConversion;
@@ -72,7 +76,7 @@ public class ConvertMSPtoMetFragRecord {
 		chargeTypes.put("NEGATIVE", "False");
 	}
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws AtomTypeNotKnownFromInputListException {
 		if(args.length != 2) {
 			System.err.println("MSP input file needed. MetFrag record output file needed.");
 			System.exit(1);
@@ -90,6 +94,7 @@ public class ConvertMSPtoMetFragRecord {
 			System.exit(2);
 		}
 		java.util.Vector<String> lines = new java.util.Vector<String>();
+		java.util.Vector<Entry> entries = new java.util.Vector<Entry>();
 		try {
 			BufferedReader breader = new BufferedReader(new FileReader(mspfile));
 			String line = "";
@@ -98,6 +103,7 @@ public class ConvertMSPtoMetFragRecord {
 			String lastInChI = "";
 			String lastInChIKey = "";
 			String lastFormula = "";
+			Entry currentEntry = new ConvertMSPtoMetFragRecord().new Entry();
 			while((line = breader.readLine()) != null) {
 				//get param name and value
 				line = line.trim();
@@ -114,36 +120,66 @@ public class ConvertMSPtoMetFragRecord {
 					}
 					paramname = paramname.trim();
 					value = value.trim();
-					if(paramname.equals("InChI:")) lastInChI = value;
-					if(paramname.equals("formula:")) lastFormula = value;
-					if(paramname.equals("InChIKey:")) lastInChIKey = value;
+					if(paramname.equals("InChI:")) {
+						lastInChI = value;
+						currentEntry.inchi = lastInChI;
+					}
+					if(paramname.equals("formula:")) {
+						lastFormula = value;
+						currentEntry.formula = lastFormula;
+					}
+					if(paramname.equals("InChIKey:")) {
+						lastInChIKey = value;
+						currentEntry.inchikey = lastInChIKey;
+					}
 					//start check param name
 					if(parametersFound.contains(paramname)) continue;
 					if(parameterConversion.containsKey(paramname)) {
 						parametersFound.add(paramname);
 						if(paramname.equals("ion mode:")) {
-							lines.add(parameterConversion.get(paramname) + chargeTypes.get(value));
+							String ionmode = chargeTypes.get(value);
+							lines.add(parameterConversion.get(paramname) + ionmode);
+							currentEntry.ionmode = ionmode;
 						}
 						else if(paramname.equals("precursor type:")) {
-							if(adductTypes.containsKey(value))
-								lines.add(parameterConversion.get(paramname) + adductTypes.get(value));
+							if(adductTypes.containsKey(value)) {
+								String adductType = adductTypes.get(value);
+								lines.add(parameterConversion.get(paramname) + adductType);
+								currentEntry.adducttype = adductType;
+							}
 							else {
 								lines.add(parameterConversion.get(paramname) + "0");
+								currentEntry.adducttype = "0";
+								currentEntry.ionmode = "True";
 							}
 						}
 						else if(paramname.equals("Num Peaks:")) {
 							numberPeaks = Integer.parseInt(value);
 							lines.add(parameterConversion.get(paramname) + value);
+							currentEntry.numpeaks = value;
 							if(numberPeaks == 0) {
 								lines.add("");
-								checkInChIFormula(lastInChI, lastFormula, lastInChIKey);
+								boolean entryFine = checkInChIFormula(lastInChI, lastFormula, lastInChIKey);
 								lastInChI = "";
 								lastFormula = "";
 								lastInChIKey = "";
+								if(entryFine) {
+									if(currentEntry.ionmode == null) {
+										if(Constants.ADDUCT_CHARGES.get(Constants.ADDUCT_NOMINAL_MASSES.indexOf(Integer.parseInt(currentEntry.adducttype))))
+											currentEntry.ionmode = "True";
+										else
+											currentEntry.ionmode = "False";
+									}
+									entries.add(currentEntry);
+								}
+								currentEntry = new ConvertMSPtoMetFragRecord().new Entry();
 							}
 						}
 						else {
 							lines.add(parameterConversion.get(paramname) + value);
+							if(paramname.equals("Name:")) currentEntry.sampleName = value;
+							else if(paramname.equals("ms level:")) currentEntry.mslevel = value;
+							else if(paramname.equals("mass error:")) currentEntry.masserror = value;
 						}
 					}
 				}
@@ -151,14 +187,25 @@ public class ConvertMSPtoMetFragRecord {
 					//read peak
 					String[] peaks = line.split("\\s+");
 					lines.add(peaks[0] + " " + peaks[1]);
+					currentEntry.addPeak(peaks[0], peaks[1]);
 					numberPeaks--;
 					if(numberPeaks == 0) {
 						parametersFound = new java.util.Vector<String>();
 						lines.add("");
-						checkInChIFormula(lastInChI, lastFormula, lastInChIKey);
+						boolean entryFine = checkInChIFormula(lastInChI, lastFormula, lastInChIKey);
 						lastInChI = "";
 						lastFormula = "";
 						lastInChIKey = "";
+						if(entryFine) {
+							if(currentEntry.ionmode == null) {
+								if(Constants.ADDUCT_CHARGES.get(Constants.ADDUCT_NOMINAL_MASSES.indexOf(Integer.parseInt(currentEntry.adducttype))))
+									currentEntry.ionmode = "True";
+								else
+									currentEntry.ionmode = "False";
+							}
+							entries.add(currentEntry);
+						}
+						currentEntry = new ConvertMSPtoMetFragRecord().new Entry();
 					}
 				}
 			}
@@ -169,6 +216,7 @@ public class ConvertMSPtoMetFragRecord {
 			e.printStackTrace();
 		}
 	
+		/*
 		try {
 			BufferedWriter bwriter = new BufferedWriter(new FileWriter(metfragfile));
 			for(int i = 0; i < lines.size(); i++) {
@@ -180,12 +228,72 @@ public class ConvertMSPtoMetFragRecord {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		*/
+		try {
+			BufferedWriter bwriter = new BufferedWriter(new FileWriter(metfragfile));
+			for(int i = 0; i < entries.size(); i++) {
+				bwriter.write(entries.get(i).toString());
+				bwriter.newLine();
+			}
+			
+			bwriter.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 	}
 	
-	public static void checkInChIFormula(String inchi, String formula, String inchikey) {
-		String inchiFormula = inchi.split("/")[1];
-		if(!inchiFormula.equals(formula))
+	public static boolean checkInChIFormula(String inchi, String formula, String inchikey) throws AtomTypeNotKnownFromInputListException {
+		ByteMolecularFormula inchiFormula = new ByteMolecularFormula(inchi.split("/")[1]);
+		ByteMolecularFormula queryFormula = new ByteMolecularFormula(formula);
+		if(!inchiFormula.compareToWithoutHydrogen(queryFormula)) {
 			System.out.println("Mismatch " + inchi + " " + formula + " " + inchikey);
+			return false;
+		}
+		return true;
 	}
 	
+	class Entry {
+		public String sampleName;
+		public String inchi;
+		public String inchikey;
+		public String adducttype;
+		public String rt;
+		public String mass;
+		public String formula;
+		public String ionizedmass;
+		public String numpeaks;
+		public String ionmode;
+		public String masserror;
+		public String mslevel;
+		public java.util.Vector<String> mzs;
+		public java.util.Vector<String> ints;
+		
+		public void addPeak(String mz, String intensity) {
+			if(mzs == null) mzs = new java.util.Vector<String>();
+			if(ints == null) ints = new java.util.Vector<String>();
+			mzs.add(mz);
+			ints.add(intensity);
+		}
+		
+		public String toString() {
+			String string = "# SampleName = " + sampleName + "\n";
+			if(inchi != null) string += "# InChI = " + inchi + "\n";
+			if(inchikey != null) string += "# InChIKey = " + inchikey + "\n";
+			if(rt != null) string += "# RetentionTime = " + rt + "\n";
+			if(ionmode != null) string += "# IsPositiveIonMode = " + ionmode + "\n";
+			if(adducttype != null) string += "# PrecursorIonMode = " + adducttype + "\n";
+			if(mass != null) string += "# NeutralPrecursorMass = " + mass + "\n";
+			if(masserror != null) string += "# MassError = " + masserror + "\n";
+			if(mslevel != null) string += "# MSLevel = " + mslevel + "\n";
+			if(ionizedmass != null) string += "# IonizedPrecursorMass = " + ionizedmass + "\n";
+			if(numpeaks != null) string += "# NumPeaks = " + numpeaks + "\n";
+			if(mzs != null && ints != null) {
+				for(int i = 0; i < ints.size(); i++) {
+					string += mzs.get(i) + " " + ints.get(i) + "\n";
+				}
+			}
+			return string;
+		}
+	}
 }
