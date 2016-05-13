@@ -17,6 +17,17 @@ public class PeakToSmartGroupListCollection extends DefaultList {
 	}
 	
 	public PeakToSmartGroupList getElement(int index) {
-		return (PeakToSmartGroupList)this.getElement(index);
+		return (PeakToSmartGroupList)this.list.get(index);
+	}
+	
+	public void print() {
+		for(int i = 0; i < this.list.size(); i++) {
+			PeakToSmartGroupList peakToSmartGroupList = this.getElement(i);
+			System.out.println(peakToSmartGroupList.getPeakmz());
+			for(int j = 0; j < peakToSmartGroupList.getNumberElements(); j++) {
+				System.out.print("\t");
+				peakToSmartGroupList.getElement(j).print();
+			}
+		}
 	}
 }

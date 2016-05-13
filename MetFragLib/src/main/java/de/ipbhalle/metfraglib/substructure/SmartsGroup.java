@@ -56,4 +56,12 @@ public class SmartsGroup extends DefaultList {
 		}
 		return false;
 	}
+	
+	public void print() {
+		System.out.print(this.probability);
+		for(int i = 0; i < this.list.size(); i++) {
+			System.out.print(" " + ((SMARTSQueryTool)this.list.get(i)).getSmarts());
+		}
+		System.out.println();
+	}
 }
