@@ -12,7 +12,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.tools.CDKHydrogenAdder;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
-import de.ipbhalle.metfraglib.database.LocalPSVDatabase;
+import de.ipbhalle.metfraglib.database.LocalCSVDatabase;
 import de.ipbhalle.metfraglib.exceptions.MultipleHeadersFoundInInputDatabaseException;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.list.CandidateList;
@@ -60,7 +60,7 @@ public class GetRankOfCandidateCSV {
 
 		MetFragGlobalSettings settings = new MetFragGlobalSettings();
 		settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, resultCSVFilename);
-		LocalPSVDatabase db = new LocalPSVDatabase(settings);
+		LocalCSVDatabase db = new LocalCSVDatabase(settings);
 
 		Vector<String> identifiers = null;
 		try {
