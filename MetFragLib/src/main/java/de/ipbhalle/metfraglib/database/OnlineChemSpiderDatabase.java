@@ -60,6 +60,7 @@ public class OnlineChemSpiderDatabase extends AbstractDatabase {
 			stub = new MassSpecAPIStub();
 		} catch (AxisFault e) {
 			this.logger.error("Error: Could not perform database query. This could be caused by a temporal database timeout. Try again later.");
+			e.printStackTrace();
 			throw new Exception();
 		}
 		stub._getServiceClient().getOptions().setProperty(HTTPConstants.CHUNKED, false);
@@ -229,6 +230,7 @@ public class OnlineChemSpiderDatabase extends AbstractDatabase {
 			stub = new MassSpecAPIStub();
 		} catch (AxisFault e1) {
 			this.logger.error("Error: Could not perform database query. This could be caused by a temporal database timeout. Try again later.");
+			e1.printStackTrace();
 			throw new Exception();
 		}
         stub._getServiceClient().getOptions().setProperty(HTTPConstants.CHUNKED, false);
@@ -268,6 +270,7 @@ public class OnlineChemSpiderDatabase extends AbstractDatabase {
 			rid = thisSearchStub.asyncSimpleSearch(ass).getAsyncSimpleSearchResult();
 		} catch (RemoteException e2) {
 			this.logger.error("Error: Could not perform database query. This could be caused by a temporal database timeout. Try again later.");
+			e2.printStackTrace();
 			throw new Exception();
 		}			
 		while (csids == null) {

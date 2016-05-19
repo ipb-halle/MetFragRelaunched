@@ -110,6 +110,10 @@ class MetfRag {
 		Logger.getLogger("org.apache.axiom.om.impl.llom.factory.OMLinkedListMetaFactory").setLevel(Level.ERROR);
 		Logger.getLogger("org.apache.axiom.locator.PriorityBasedOMMetaFactoryLocator").setLevel(Level.ERROR);
 		Logger.getLogger("org.apache.axiom.locator.ImplementationFactory").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.axiom.om.impl.common.AxiomContainerSupport").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.axiom.om.impl.common.serializer.pull.PullSerializer").setLevel(Level.ERROR);
+		Logger.getLogger("org.apache.axiom.om.impl.common.serializer.pull.Navigator").setLevel(Level.ERROR);	
+		Logger.getLogger("org.apache.axiom.om.impl.builder.StAXBuilder").setLevel(Level.ERROR);	
 		
 		settings.set(VariableNames.LOG_LEVEL_NAME, Level.INFO);
 		
