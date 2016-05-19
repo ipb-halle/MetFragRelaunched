@@ -41,30 +41,9 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.axis2</groupId>
-			<artifactId>axis2-kernel</artifactId>
-			<version>1.6.4</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.axis2</groupId>
-			<artifactId>axis2-transport-local</artifactId>
-			<version>1.6.4</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>commons-logging</artifactId>
-					<groupId>commons-logging</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
     		<groupId>org.apache.commons</groupId>
     		<artifactId>commons-csv</artifactId>
     		<version>1.2</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.axis2</groupId>
-			<artifactId>axis2-transport-http</artifactId>
-			<version>1.6.4</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openscience.cdk</groupId>
@@ -75,28 +54,6 @@
 			<groupId>org.openscience.cdk</groupId>
 			<artifactId>cdk-formula</artifactId>
 			<version>${cdk.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.ws.commons.axiom</groupId>
-			<artifactId>axiom-api</artifactId>
-			<version>1.2.14</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>commons-logging</artifactId>
-					<groupId>commons-logging</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.ws.commons.axiom</groupId>
-			<artifactId>axiom-impl</artifactId>
-			<version>1.2.14</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>commons-logging</artifactId>
-					<groupId>commons-logging</groupId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.ws.commons.schema</groupId>
@@ -216,12 +173,7 @@
 		<dependency>
 			<groupId>com.chemspider.www</groupId>
 			<artifactId>chemspider_webservices</artifactId>
-			<version>0.0.1</version>
-		</dependency>
-		<dependency>
-			<groupId>massbank</groupId>
-			<artifactId>massbank_services</artifactId>
-			<version>0.0.1</version>
+			<version>1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>jexcelapi</groupId>
@@ -252,9 +204,9 @@
 
 	<repositories>
 		<repository>
-			<id>rforrocks</id>
+			<id>msbi</id>
 			<url>
-    			http://www.rforrocks.de/maven2
+    			http://msbi.ipb-halle.de/~cruttkie/maven2
 			</url>
 		</repository>
 		<repository>
