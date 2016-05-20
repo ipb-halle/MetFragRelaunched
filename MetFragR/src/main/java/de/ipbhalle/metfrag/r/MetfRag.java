@@ -120,7 +120,8 @@ class MetfRag {
 		CombinedMetFragProcess mp = new CombinedMetFragProcess(settings);
 		
 		try {
-			mp.retrieveCompounds();
+			boolean candidatesRetrieved = mp.retrieveCompounds();
+			if(!candidatesRetrieved) return new CandidateList();
 		} catch (Exception e2) {
 			System.err.println("Error retrieving candidates");
 			e2.printStackTrace();
