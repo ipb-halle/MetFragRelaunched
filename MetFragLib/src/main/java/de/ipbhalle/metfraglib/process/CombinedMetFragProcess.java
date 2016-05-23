@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import de.ipbhalle.metfraglib.additionals.BondEnergies;
 import de.ipbhalle.metfraglib.collection.PostProcessingCandidateFilterCollection;
 import de.ipbhalle.metfraglib.collection.PreProcessingCandidateFilterCollection;
+import de.ipbhalle.metfraglib.database.LocalPropertyFileDatabase;
 import de.ipbhalle.metfraglib.exceptions.ScorePropertyNotDefinedException;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.interfaces.IDatabase;
@@ -86,6 +87,15 @@ public class CombinedMetFragProcess implements Runnable {
 		this.database.nullify();
 		numberCandidatesBeforeFilter = this.sortedScoredCandidateList.getNumberElements();
 		this.logger.info("Got " + numberCandidatesBeforeFilter + " candidate(s)");
+		//in case external property file is defined, initialise external property values
+		//TODO: ExternalPropertyPath needs to be added to VariableNames
+		if(this.globalSettings.containsKey("ExternalPropertyPath") && this.globalSettings.get("ExternalPropertyPath") != null) {
+			this.initExternalProperties(
+					(String)this.globalSettings.get("ExternalPropertyPath"),
+					this.sortedScoredCandidateList,
+					(String[])this.globalSettings.get(VariableNames.METFRAG_SCORE_TYPES_NAME)
+			);
+		}
 		return true;
 	}
 	
@@ -411,5 +421,80 @@ public class CombinedMetFragProcess implements Runnable {
 
 	public void setThreadStoppedExternally(boolean threadStoppedExternally) {
 		this.threadStoppedExternally = threadStoppedExternally;
+	}
+
+	/**
+	 * 
+	 * @param path
+	 * @param candidateList
+	 * @return
+	 */
+	private boolean initExternalProperties(String path, CandidateList candidateList, String[] propertyValuesToScore) {
+		Settings settings = new Settings();
+		settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, path);
+		LocalPropertyFileDatabase propertyDatabase = new LocalPropertyFileDatabase(settings);
+		java.util.Vector<String> externalInChIKeys = new java.util.Vector<String>();
+		java.util.Vector<String> externalPropertiesDefined = new java.util.Vector<String>();
+		java.util.Vector<String> ids = null;
+		try {
+			ids = propertyDatabase.getCandidateIdentifiers();
+		} catch(Exception e) {
+			this.logger.error("Error: Problems reading ExternalPropertyFile: " + path);
+			return false;
+		}
+		CandidateList externalCandidates = propertyDatabase.getCandidateByIdentifier(ids);
+		for(int i = 0; i < externalCandidates.getNumberElements(); i++) {
+			ICandidate externalCandidate = externalCandidates.getElement(i);
+			if(!externalCandidate.getProperties().containsKey(VariableNames.INCHI_KEY_1_NAME) || externalCandidate.getProperty(VariableNames.INCHI_KEY_1_NAME) == null) {
+				this.logger.error("Error: InChIKey1 field not defined for all candidate in ExternalPropertyFile: " + path);
+				return false;
+			}
+			String externalInChIKey1 = (String)externalCandidate.getProperty(VariableNames.INCHI_KEY_1_NAME);
+			if(externalInChIKeys.contains(externalInChIKey1)) {
+				this.logger.error("Error: InChIKey1 " + externalInChIKey1 + " defined more than once in ExternalPropertyFile: " + path);
+				return false;
+			}
+			else externalInChIKeys.add(externalInChIKey1);
+			//try to set external values
+			for(int j = 0; j < candidateList.getNumberElements(); j++) {
+				ICandidate candidate = candidateList.getElement(j);
+				String candidateInChIKey1 =  (String)candidate.getProperty(VariableNames.INCHI_KEY_1_NAME);
+				if(externalInChIKey1.equals(candidateInChIKey1)) {
+					java.util.Enumeration<?> externalKeys = externalCandidate.getProperties().keys();
+					while(externalKeys.hasMoreElements()) {
+						String currentKey = (String)externalKeys.nextElement();
+						for(int k = 0; k < propertyValuesToScore.length; k++) {
+							if(propertyValuesToScore[k].equals(currentKey)) {
+								if(!externalPropertiesDefined.contains(currentKey)) externalPropertiesDefined.add(currentKey);
+								Double value = null;
+								try {
+									value = (Double)externalCandidate.getProperty(currentKey);
+								}
+								catch(Exception e1) {
+									try {
+										value = Double.parseDouble((String)externalCandidate.getProperty(currentKey));
+									}
+									catch(Exception e2) {
+										this.logger.error("Error: Invalid value for candidate " + externalInChIKey1 +  " for column " + currentKey + " in ExternalPropertyFile: " + path);
+										return false;
+									}
+								}
+								candidate.setProperty(currentKey, value);
+							}
+						}
+					}
+				}
+			}
+		}
+		//set property to zero (neutral element) in case not defined
+		for(int i = 0; i < candidateList.getNumberElements(); i++) {
+			ICandidate candidate = candidateList.getElement(i);
+			for(int j = 0; j < externalPropertiesDefined.size(); j++) {
+				if(!candidate.getProperties().containsKey(externalPropertiesDefined.get(j)) || candidate.getProperty(externalPropertiesDefined.get(j)) == null) {
+					candidate.setProperty(externalPropertiesDefined.get(j), 0.0);
+				}
+			}
+		}
+		return true;
 	}
 }
