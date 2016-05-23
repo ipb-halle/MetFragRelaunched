@@ -5,8 +5,10 @@ import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.smiles.smarts.SMARTSQueryTool;
 
+import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.list.DefaultList;
+import de.ipbhalle.metfraglib.similarity.TanimotoSimilarity;
 
 public class SmartsGroup extends DefaultList {
 
@@ -17,6 +19,17 @@ public class SmartsGroup extends DefaultList {
 		this.probability = probability;
 	}
 
+	public double getBestSimilarity(String smarts) {
+		double maxSimilarity = 0.0;
+		IAtomContainer con = MoleculeFunctions.parseSmiles(smarts);
+		for(int i = 0; i < this.list.size(); i++) {
+			String currentSmarts = ((SMARTSQueryTool)this.list.get(i)).getSmarts();
+			double currentSimilarity = TanimotoSimilarity.calculateSimilarity(con, MoleculeFunctions.parseSmiles(currentSmarts));
+			if(currentSimilarity > maxSimilarity) maxSimilarity = currentSimilarity;
+		}
+		return maxSimilarity;
+	}
+	
 	public double getProbability() {
 		return probability;
 	}

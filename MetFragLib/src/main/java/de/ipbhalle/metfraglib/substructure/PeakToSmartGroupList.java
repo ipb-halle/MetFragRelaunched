@@ -35,6 +35,20 @@ public class PeakToSmartGroupList extends DefaultList {
 		this.list.add(index, obj);
 	}
 
+	public SmartsGroup getElementBySmiles(String smiles, double similarityThreshold) {
+		double maxSimilarity = 0.0;
+		SmartsGroup bestMatch = null;
+		for(int i = 0; i < this.list.size(); i++) {
+			SmartsGroup smartsGroup = (SmartsGroup)this.list.get(i);
+			double currentSimilarity = smartsGroup.getBestSimilarity(smiles);
+			if(currentSimilarity > maxSimilarity) {
+				maxSimilarity = currentSimilarity;
+				if(currentSimilarity >= similarityThreshold) bestMatch = smartsGroup;
+			}
+		}
+		return bestMatch;
+	}
+	
 	public Double getPeakmz() {
 		return peakmz;
 	}

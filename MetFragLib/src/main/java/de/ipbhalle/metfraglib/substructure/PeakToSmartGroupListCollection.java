@@ -1,5 +1,6 @@
 package de.ipbhalle.metfraglib.substructure;
 
+import de.ipbhalle.metfraglib.additionals.MathTools;
 import de.ipbhalle.metfraglib.list.DefaultList;
 
 public class PeakToSmartGroupListCollection extends DefaultList {
@@ -18,6 +19,23 @@ public class PeakToSmartGroupListCollection extends DefaultList {
 	
 	public PeakToSmartGroupList getElement(int index) {
 		return (PeakToSmartGroupList)this.list.get(index);
+	}
+	
+	public PeakToSmartGroupList getElementByPeak(Double mzValue, Double mzppm, Double mzabs) {
+		double dev = MathTools.calculateAbsoluteDeviation(mzValue, mzppm) + mzabs;
+		double minDev = Integer.MAX_VALUE;
+		PeakToSmartGroupList bestMatch = null;
+		for(int i = 0; i < this.list.size(); i++) {
+			PeakToSmartGroupList peakToSmartGroupList = (PeakToSmartGroupList)this.list.get(i);
+			double currentDev = Math.abs(peakToSmartGroupList.getPeakmz() - mzValue);
+			if(currentDev <= dev) {
+				if(currentDev < minDev) {
+					minDev = currentDev;
+					bestMatch = peakToSmartGroupList;
+				}
+			}
+		}
+		return bestMatch;
 	}
 	
 	public void print() {
