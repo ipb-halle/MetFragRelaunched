@@ -5,7 +5,6 @@ import org.openscience.cdk.fingerprint.IBitFingerprint;
 import org.openscience.cdk.fingerprint.MACCSFingerprinter;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.similarity.Tanimoto;
-import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
 import com.apporiented.algorithm.clustering.AverageLinkageStrategy;
 import com.apporiented.algorithm.clustering.ClusteringAlgorithm;
@@ -17,15 +16,14 @@ import de.ipbhalle.metfraglib.parameter.VariableNames;
 
 public class TanimotoSimilarity {
 
-	private static final MACCSFingerprinter fingerprinter = new MACCSFingerprinter();
+	protected static final MACCSFingerprinter fingerprinter = new MACCSFingerprinter();
 	
-	private IBitFingerprint[] fingerprints;
+	protected IBitFingerprint[] fingerprints;
 	
 	public TanimotoSimilarity(IAtomContainer con) {
-		IAtomContainer structure = AtomContainerManipulator.removeHydrogens(con);
 		this.fingerprints = new IBitFingerprint[1];
 		try {
-			this.fingerprints[0] = fingerprinter.getBitFingerprint(structure);
+			this.fingerprints[0] = fingerprinter.getBitFingerprint(con);
 		} catch (CDKException e) {
 			this.fingerprints[0] = null;
 		}
@@ -35,9 +33,8 @@ public class TanimotoSimilarity {
 		this.fingerprints = new IBitFingerprint[cons.length];
 		for(int i = 0; i < this.fingerprints.length; i++) 
 		{
-			IAtomContainer structure = AtomContainerManipulator.removeHydrogens(cons[i]);
 			try {
-				this.fingerprints[i] = fingerprinter.getBitFingerprint(structure);
+				this.fingerprints[i] = fingerprinter.getBitFingerprint(cons[i]);
 			} catch (CDKException e) {
 				this.fingerprints[i] = null;
 			}
@@ -79,14 +76,11 @@ public class TanimotoSimilarity {
 	}
 	
 	public static double calculateSimilarity(IAtomContainer s1, IAtomContainer s2) {
-		IAtomContainer con1 = AtomContainerManipulator.removeHydrogens(s1);
-		IAtomContainer con2 = AtomContainerManipulator.removeHydrogens(s2);
-		
 		IBitFingerprint f1 = null;
 		IBitFingerprint f2 = null;
 		try {
-			f1 = fingerprinter.getBitFingerprint(con1);
-			f2 = fingerprinter.getBitFingerprint(con2);
+			f1 = fingerprinter.getBitFingerprint(s1);
+			f2 = fingerprinter.getBitFingerprint(s2);
 		} catch (CDKException e) {
 			return 0.0;
 		}
@@ -100,7 +94,7 @@ public class TanimotoSimilarity {
 	 * @return
 	 * @throws Exception
 	 */
-	public static TanimotoClusterWrapper generateCluster(ICandidate[] candidates) throws Exception {
+	public static ClusterWrapper generateCluster(ICandidate[] candidates) throws Exception {
 		String[] names = new String[candidates.length];
 		for(int i = 0; i < candidates.length; i++) {
 			if(candidates[i].getProperties().containsKey(VariableNames.FINGERPRINT_NAME_NAME) || candidates[i].getProperty(VariableNames.FINGERPRINT_NAME_NAME) == null) {
@@ -127,7 +121,7 @@ public class TanimotoSimilarity {
 	    };
 
 		ClusteringAlgorithm alg = new PDistClusteringAlgorithm();
-		return new TanimotoClusterWrapper(alg.performClustering(pdist, names, new AverageLinkageStrategy()));
+		return new ClusterWrapper(alg.performClustering(pdist, names, new AverageLinkageStrategy()));
 	}
 
 	/**
@@ -136,7 +130,7 @@ public class TanimotoSimilarity {
 	 * @return
 	 * @throws Exception
 	 */
-	public static TanimotoClusterWrapper generateCluster(CandidateList candidates) throws Exception {
+	public static ClusterWrapper generateCluster(CandidateList candidates) throws Exception {
 		String[] names = new String[candidates.getNumberElements()];
 		for(int i = 0; i < candidates.getNumberElements(); i++) {
 			if(candidates.getElement(i).getProperties().containsKey(VariableNames.FINGERPRINT_NAME_NAME) || candidates.getElement(i).getProperty(VariableNames.FINGERPRINT_NAME_NAME) == null) {
@@ -167,7 +161,7 @@ public class TanimotoSimilarity {
 			System.out.println(distValues[i]);
 		
 		ClusteringAlgorithm alg = new PDistClusteringAlgorithm();
-		return new TanimotoClusterWrapper(alg.performClustering(pdist, names, new AverageLinkageStrategy()));
+		return new ClusterWrapper(alg.performClustering(pdist, names, new AverageLinkageStrategy()));
 	}
 	
 	public static void main(String[] args) {
