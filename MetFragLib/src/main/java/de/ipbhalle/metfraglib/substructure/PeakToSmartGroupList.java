@@ -16,7 +16,7 @@ public class PeakToSmartGroupList extends DefaultList {
 		double maxProbability = 0.0;
 		for(int i = 0; i < this.list.size(); i++) {
 			SmartsGroup smartsGroup = (SmartsGroup)this.list.get(i);
-			if(smartsGroup.smartsMatches(candidate) && smartsGroup.getProbability() > maxProbability) {
+			if(smartsGroup.getProbability() > maxProbability && smartsGroup.smartsMatches(candidate)) {
 				maxProbability = smartsGroup.getProbability();
 			}
 		}
@@ -56,5 +56,25 @@ public class PeakToSmartGroupList extends DefaultList {
 	public void setPeakmz(Double peakmz) {
 		this.peakmz = peakmz;
 	}
+
+	public void updateProbabilities() {
+		int numberSubstructures = 0;
+		for(int i = 0; i < this.list.size(); i++) {
+			numberSubstructures += ((SmartsGroup)this.list.get(i)).getNumberElements();
+		}
+		for(int i = 0; i < this.list.size(); i++) {
+			SmartsGroup smartsGroup = (SmartsGroup)this.list.get(i);
+			smartsGroup.setProbability((double)smartsGroup.getNumberElements() / (double)numberSubstructures);
+		}
+	}
 	
+	public String toString() {
+		String string = "";
+		if(this.list.size() > 0) string += this.getElement(0).toString();
+		for(int i = 1; i < this.list.size(); i++) {
+			SmartsGroup smartGroup = this.getElement(i);
+			string += " " + smartGroup.toString();
+		}
+		return string + "\n";
+	}
 }

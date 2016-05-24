@@ -34,7 +34,6 @@ public class CandidateListWriterCSV implements IWriter {
 
 		File file = new File(path + Constants.OS_SPECIFIC_FILE_SEPARATOR + filename + ".csv");
 		java.io.Writer writer = new java.io.OutputStreamWriter(new java.io.FileOutputStream(file), Charset.forName("UTF-8"));
-		System.out.println(Constants.OS_LINE_SEPARATOR);
 		CSVPrinter csvFilePrinter = new CSVPrinter(writer, CSVFormat.EXCEL);
 		java.util.List<Object> header = new java.util.ArrayList<Object>();
 		for(int i = 0; i < candidateList.getNumberElements(); i++) {

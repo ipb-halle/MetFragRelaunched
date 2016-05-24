@@ -13,18 +13,24 @@ import de.ipbhalle.metfraglib.similarity.TanimotoSimilarity;
 public class SmartsGroup extends DefaultList {
 
 	private double probability;
+	private java.util.Vector<String> smiles;
 	
 	public SmartsGroup(double probability) {
 		super();
 		this.probability = probability;
 	}
 
-	public double getBestSimilarity(String smarts) {
+	public void addSmiles(String smiles) {
+		if(this.smiles == null) this.smiles = new java.util.Vector<String>();
+		this.smiles.add(smiles);
+	}
+	
+	public double getBestSimilarity(String smiles) {
 		double maxSimilarity = 0.0;
-		IAtomContainer con = MoleculeFunctions.parseSmiles(smarts);
+		IAtomContainer con = MoleculeFunctions.parseSmiles(smiles);
 		for(int i = 0; i < this.list.size(); i++) {
-			String currentSmarts = ((SMARTSQueryTool)this.list.get(i)).getSmarts();
-			double currentSimilarity = TanimotoSimilarity.calculateSimilarity(con, MoleculeFunctions.parseSmiles(currentSmarts));
+			String currentSmiles = this.smiles.get(i);
+			double currentSimilarity = TanimotoSimilarity.calculateSimilarity(con, MoleculeFunctions.parseSmiles(currentSmiles));
 			if(currentSimilarity > maxSimilarity) maxSimilarity = currentSimilarity;
 		}
 		return maxSimilarity;
@@ -76,5 +82,13 @@ public class SmartsGroup extends DefaultList {
 			System.out.print(" " + ((SMARTSQueryTool)this.list.get(i)).getSmarts());
 		}
 		System.out.println();
+	}
+	
+	public String toString() {
+		String string = this.probability + "";
+		for(int i = 0; i < this.list.size(); i++) {
+			string += " " + ((SMARTSQueryTool)this.list.get(i)).getSmarts();
+		}
+		return string;
 	}
 }

@@ -49,6 +49,7 @@ public class CandidateListWriterFragmentSmilesPSV implements IWriter {
 			String peaksExplained = "";
 			String sumFormulasOfFragmentsExplainedPeaks = "";
 			String smilesOfFragmentsExplainedPeaks = "";
+			String aromaticSmilesOfFragmentsExplainedPeaks = "";
 			
 			if(scoredCandidate.getMatchList() != null) 
 			{
@@ -64,19 +65,23 @@ public class CandidateListWriterFragmentSmilesPSV implements IWriter {
 					String formula = scoredCandidate.getMatchList().getElement(ii).getModifiedFormulaStringOfBestMatchedFragment();
 					
 					sumFormulasOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + formula + ";";
-					smilesOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + scoredCandidate.getMatchList().getElement(ii).getBestMatchedFragment().getAromaticSmiles() + ";";
+					smilesOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + scoredCandidate.getMatchList().getElement(ii).getBestMatchedFragment().getSmiles() + ";";
+					aromaticSmilesOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + scoredCandidate.getMatchList().getElement(ii).getBestMatchedFragment().getAromaticSmiles() + ";";
 				}
 				if(sumFormulasOfFragmentsExplainedPeaks.length() != 0) sumFormulasOfFragmentsExplainedPeaks = sumFormulasOfFragmentsExplainedPeaks.substring(0, sumFormulasOfFragmentsExplainedPeaks.length() - 1);
 				if(peaksExplained.length() != 0) peaksExplained = peaksExplained.substring(0, peaksExplained.length() - 1);
 				if(smilesOfFragmentsExplainedPeaks.length() != 0) smilesOfFragmentsExplainedPeaks = smilesOfFragmentsExplainedPeaks.substring(0, smilesOfFragmentsExplainedPeaks.length() - 1);
+				if(aromaticSmilesOfFragmentsExplainedPeaks.length() != 0) aromaticSmilesOfFragmentsExplainedPeaks = aromaticSmilesOfFragmentsExplainedPeaks.substring(0, aromaticSmilesOfFragmentsExplainedPeaks.length() - 1);
 				
 				if(peaksExplained.length() == 0) peaksExplained = "NA";
 				if(sumFormulasOfFragmentsExplainedPeaks.length() == 0) sumFormulasOfFragmentsExplainedPeaks = "NA";
 				if(smilesOfFragmentsExplainedPeaks.length() == 0) smilesOfFragmentsExplainedPeaks = "NA";
+				if(aromaticSmilesOfFragmentsExplainedPeaks.length() == 0) aromaticSmilesOfFragmentsExplainedPeaks = "NA";
 				
 				scoredCandidate.setProperty("ExplPeaks", peaksExplained);
 				scoredCandidate.setProperty("FormulasOfExplPeaks", sumFormulasOfFragmentsExplainedPeaks);
 				scoredCandidate.setProperty("SmilesOfExplPeaks", smilesOfFragmentsExplainedPeaks);
+				scoredCandidate.setProperty("AromaticSmilesOfExplPeaks", aromaticSmilesOfFragmentsExplainedPeaks);
 				scoredCandidate.setProperty("NumberPeaksUsed", numberOfPeaksUsed);
 				scoredCandidate.setProperty("NoExplPeaks", countExplainedPeaks);
 			}
