@@ -55,6 +55,7 @@ import de.ipbhalle.metfraglib.scoreinitialisation.RetentionTimeScoreInitialiser;
 import de.ipbhalle.metfraglib.scoreinitialisation.SmartsSubstructureExclusionScoreInitialiser;
 import de.ipbhalle.metfraglib.scoreinitialisation.SmartsSubstructureInclusionScoreInitialiser;
 import de.ipbhalle.metfraglib.scoreinitialisation.SuspectListScoreInitialiser;
+import de.ipbhalle.metfraglib.writer.CandidateListWriterLossFragmentSmilesPSV;
 import de.ipbhalle.metfraglib.writer.CandidateListWriterPSV;
 import de.ipbhalle.metfraglib.writer.CandidateListWriterCSV;
 import de.ipbhalle.metfraglib.writer.CandidateListWriterExtendedPSV;
@@ -165,6 +166,7 @@ public class ClassNames {
 		candidateListWriterNameToClassName.put("PSV", CandidateListWriterPSV.class.getName());
 		candidateListWriterNameToClassName.put("ExtendedPSV", CandidateListWriterExtendedPSV.class.getName());
 		candidateListWriterNameToClassName.put("FragmentSmilesPSV", CandidateListWriterFragmentSmilesPSV.class.getName());
+		candidateListWriterNameToClassName.put("LossFragmentSmilesPSV", CandidateListWriterLossFragmentSmilesPSV.class.getName());
 		candidateListWriterNameToClassName.put("SDF", CandidateListWriterSDF.class.getName());
 		candidateListWriterNameToClassName.put("XLS", CandidateListWriterXLS.class.getName());
 		candidateListWriterNameToClassName.put("ExtendedXLS", CandidateListWriterExtendedXLS.class.getName());

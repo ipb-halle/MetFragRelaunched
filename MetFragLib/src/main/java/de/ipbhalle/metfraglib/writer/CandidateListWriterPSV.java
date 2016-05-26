@@ -14,8 +14,13 @@ import de.ipbhalle.metfraglib.list.ScoredCandidateList;
 import de.ipbhalle.metfraglib.list.SortedScoredCandidateList;
 import de.ipbhalle.metfraglib.parameter.Constants;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
+import de.ipbhalle.metfraglib.settings.Settings;
 
 public class CandidateListWriterPSV implements IWriter {
+
+	public boolean write(IList list, String filename, String path, Settings settings) throws Exception {
+		return this.write(list, filename, path);
+	}
 	
 	public boolean write(IList list, String filename, String path) throws IOException {
 		CandidateList candidateList = null;

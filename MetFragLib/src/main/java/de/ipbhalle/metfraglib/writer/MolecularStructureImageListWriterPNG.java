@@ -10,9 +10,14 @@ import de.ipbhalle.metfraglib.interfaces.IList;
 import de.ipbhalle.metfraglib.interfaces.IWriter;
 import de.ipbhalle.metfraglib.list.DefaultList;
 import de.ipbhalle.metfraglib.parameter.Constants;
+import de.ipbhalle.metfraglib.settings.Settings;
 
 public class MolecularStructureImageListWriterPNG implements IWriter {
 
+	public boolean write(IList list, String filename, String path, Settings settings) throws Exception {
+		return this.write(list, filename, path);
+	}
+	
 	public boolean write(IList list, String filename, String path) {
 		if(list.getNumberElements() == 0) {
 			System.out.println("Warning: No image in the given list. Nothing to write.");

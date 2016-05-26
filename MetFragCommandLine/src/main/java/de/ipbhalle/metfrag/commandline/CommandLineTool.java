@@ -102,7 +102,7 @@ public class CommandLineTool {
 				for(int k = 0; k < candidateWriterNames.length; k++) {
 					IWriter candidateWriter = (IWriter) Class.forName(ClassNames.getClassNameOfCandidateListWriter(candidateWriterNames[k])).getConstructor().newInstance();
 					try {
-						candidateWriter.write(scoredCandidateList, (String)settings.get(VariableNames.SAMPLE_NAME), (String)settings.get(VariableNames.STORE_RESULTS_PATH_NAME));
+						candidateWriter.write(scoredCandidateList, (String)settings.get(VariableNames.SAMPLE_NAME), (String)settings.get(VariableNames.STORE_RESULTS_PATH_NAME), settings);
 					} catch (Exception e) {
 						e.printStackTrace();
 						logger.error("Error: Could not write candidate file.");
@@ -116,7 +116,7 @@ public class CommandLineTool {
 			if(settings.get(VariableNames.METFRAG_CANDIDATE_FRAGMENT_WRITER_NAME) != null) {
 				IWriter candidateWriter = (IWriter) Class.forName(ClassNames.getClassNameOfFragmentListWriter((String)settings.get(VariableNames.METFRAG_CANDIDATE_FRAGMENT_WRITER_NAME))).getConstructor().newInstance();
 				try {
-					candidateWriter.write(scoredCandidateList, (String)settings.get(VariableNames.SAMPLE_NAME), (String)settings.get(VariableNames.STORE_RESULTS_PATH_NAME));
+					candidateWriter.write(scoredCandidateList, (String)settings.get(VariableNames.SAMPLE_NAME), (String)settings.get(VariableNames.STORE_RESULTS_PATH_NAME), settings);
 				} catch (Exception e) {
 					logger.error("Error: Could not write fragment files.");
 					System.exit(5);

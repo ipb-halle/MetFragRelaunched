@@ -91,4 +91,12 @@ public class SmartsGroup extends DefaultList {
 		}
 		return string;
 	}
+	
+	public String toStringSmiles() {
+		String string = this.probability + "";
+		for(int i = 0; i < this.smiles.size(); i++) {
+			string += " " + this.smiles.get(i);
+		}
+		return string;
+	}
 }

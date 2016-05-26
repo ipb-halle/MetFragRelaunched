@@ -77,4 +77,14 @@ public class PeakToSmartGroupList extends DefaultList {
 		}
 		return string + "\n";
 	}
+	
+	public String toStringSmiles() {
+		String string = "";
+		if(this.list.size() > 0) string += this.getElement(0).toStringSmiles();
+		for(int i = 1; i < this.list.size(); i++) {
+			SmartsGroup smartGroup = this.getElement(i);
+			string += " " + smartGroup.toStringSmiles();
+		}
+		return string + "\n";
+	}
 }

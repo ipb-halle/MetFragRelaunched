@@ -5,9 +5,14 @@ import java.io.IOException;
 import de.ipbhalle.metfraglib.interfaces.IList;
 import de.ipbhalle.metfraglib.interfaces.IWriter;
 import de.ipbhalle.metfraglib.parameter.Constants;
+import de.ipbhalle.metfraglib.settings.Settings;
 
 public class StringWriterTXT implements IWriter {
 
+	public boolean write(IList list, String filename, String path, Settings settings) throws Exception {
+		return this.write(list, filename, path);
+	}
+	
 	public boolean write(IList list, String filename, String path) {
 		try {
 			java.io.BufferedWriter bwriter = 

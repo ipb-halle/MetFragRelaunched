@@ -439,6 +439,40 @@ public class DefaultBitArrayFragment extends AbstractFragment {
 		return this.atomsBitArray.toString();
 	}
 
+	public IFragment getDifferenceFragment(IFragment molecularStructure) {
+		BitArray diffBitArray = this.getAtomsBitArray().getDiff(((DefaultBitArrayFragment)molecularStructure).getAtomsBitArray());
+		DefaultBitArrayFragment diffFragment = new DefaultBitArrayFragment((BitArrayPrecursor)this.precursorMolecule, diffBitArray);
+		if(!diffFragment.isConnected()) return null;
+		return diffFragment;
+	}
+
+	public IFragment getDifferenceFragment() {
+		BitArray complete = new BitArray(this.getAtomsBitArray().getSize(), true);
+		BitArray diffBitArray = complete.getDiff(this.getAtomsBitArray());
+		DefaultBitArrayFragment diffFragment = new DefaultBitArrayFragment((BitArrayPrecursor)this.precursorMolecule, diffBitArray);
+		if(!diffFragment.isConnected()) return null;
+		return diffFragment;
+	}
+	
+	public boolean isConnected() {
+		BitArrayPrecursor pre = (BitArrayPrecursor)this.precursorMolecule;
+		BitArray foundAtoms = new BitArray(this.atomsBitArray.getSize(), false);
+		java.util.LinkedList<Integer> toCheck = new java.util.LinkedList<Integer>();
+		toCheck.add(this.atomsBitArray.getFirstSetBit());
+		while(toCheck.size() != 0) {
+			int currentAtomIndex = toCheck.poll();
+			short[] neighbors = pre.getConnectedAtomIndecesOfAtomIndex((short)currentAtomIndex);
+			for(int k = 0; k < neighbors.length; k++) {
+				if(this.atomsBitArray.get(neighbors[k]) && !foundAtoms.get(neighbors[k])) { 
+					foundAtoms.set(neighbors[k]);
+					toCheck.add((int)neighbors[k]);
+				}
+			}
+		}
+		if(foundAtoms.equals(this.atomsBitArray)) return true;
+		return false;
+	}
+	
 	@Override
 	public String getBondsInfo() {
 		return this.bondsBitArray.toString();

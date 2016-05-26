@@ -21,7 +21,9 @@ public class WriteSubstructureAnnotationFile {
 		Double mzppm = Double.parseDouble(args[1]);
 		Double mzabs = Double.parseDouble(args[2]);
 		String output = null;
-		if(args.length == 4) output = args[3];
+		String outputSmiles = null;
+		if(args.length >= 4) output = args[3];
+		if(args.length == 5) outputSmiles = args[4];
 		Settings settings = new Settings();
 		settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, filename);
 		LocalPSVDatabase db = new LocalPSVDatabase(settings);
@@ -32,6 +34,7 @@ public class WriteSubstructureAnnotationFile {
 		for(int i = 0; i < candidateList.getNumberElements(); i++) {
 			ICandidate candidate = candidateList.getElement(i);
 			String smilesOfExplPeaks = (String)candidate.getProperty("SmilesOfExplPeaks");
+			System.out.println(smilesOfExplPeaks);
 			String aromaticSmilesOfExplPeaks = (String)candidate.getProperty("AromaticSmilesOfExplPeaks");
 			smilesOfExplPeaks = smilesOfExplPeaks.trim();
 			aromaticSmilesOfExplPeaks = aromaticSmilesOfExplPeaks.trim();
@@ -85,6 +88,11 @@ public class WriteSubstructureAnnotationFile {
 		else {
 			BufferedWriter bwriter = new BufferedWriter(new FileWriter(new File(output)));
 			bwriter.write(peakToSmartGroupListCollection.toString());
+			bwriter.close();
+		}
+		if(outputSmiles != null) {
+			BufferedWriter bwriter = new BufferedWriter(new FileWriter(new File(outputSmiles)));
+			bwriter.write(peakToSmartGroupListCollection.toStringSmiles());
 			bwriter.close();
 		}
 	}

@@ -154,12 +154,12 @@ public class LocalPSVDatabase extends AbstractDatabase {
 				String[] tmp = line.split("\\|");
 				ICandidate precursorCandidate = null;
 				String identifier = tmp[propNameToIndex.get(VariableNames.IDENTIFIER_NAME)].trim();
-				/*
+				
 				if(identifiers.contains(identifier)) {
 					reader.close();
 					throw new Exception();
 				}
-				*/
+				
 				identifiers.add(identifier);
 				precursorCandidate = new TopDownPrecursorCandidate(tmp[propNameToIndex.get(VariableNames.INCHI_NAME)].trim(), identifier);
 				/*

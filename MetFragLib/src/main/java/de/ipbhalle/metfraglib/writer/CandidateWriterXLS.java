@@ -27,6 +27,7 @@ import de.ipbhalle.metfraglib.parameter.Constants;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.process.CombinedMetFragProcess;
 import de.ipbhalle.metfraglib.settings.MetFragGlobalSettings;
+import de.ipbhalle.metfraglib.settings.Settings;
 
 /**
  * writes single information from a single candidate into a XLS file 
@@ -36,6 +37,10 @@ import de.ipbhalle.metfraglib.settings.MetFragGlobalSettings;
  */
 public class CandidateWriterXLS implements IWriter {
 
+	public boolean write(IList list, String filename, String path, Settings settings) throws Exception {
+		return this.write(list, filename, path);
+	}
+	
 	@Override
 	public boolean write(IList list, String filename, String path) throws Exception {
 

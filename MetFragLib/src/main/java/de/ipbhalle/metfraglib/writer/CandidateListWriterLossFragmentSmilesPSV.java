@@ -6,22 +6,25 @@ import java.io.IOException;
 
 import de.ipbhalle.metfraglib.exceptions.RelativeIntensityNotDefinedException;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
+import de.ipbhalle.metfraglib.interfaces.IFragment;
 import de.ipbhalle.metfraglib.interfaces.IList;
+import de.ipbhalle.metfraglib.interfaces.IMatch;
 import de.ipbhalle.metfraglib.interfaces.IWriter;
 import de.ipbhalle.metfraglib.list.CandidateList;
 import de.ipbhalle.metfraglib.list.MatchList;
 import de.ipbhalle.metfraglib.list.ScoredCandidateList;
 import de.ipbhalle.metfraglib.list.SortedScoredCandidateList;
 import de.ipbhalle.metfraglib.parameter.Constants;
+import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.settings.Settings;
 
-public class CandidateListWriterFragmentSmilesPSV implements IWriter {
-
-	public boolean write(IList list, String filename, String path, Settings settings) throws Exception {
-		return this.write(list, filename, path);
-	}
+public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 	
 	public boolean write(IList list, String filename, String path) {
+		return write(list, filename, path, null);
+	}
+	
+	public boolean write(IList list, String filename, String path, Settings settings) {
 		CandidateList candidateList = null;
 		int numberOfPeaksUsed = 0;
 		if(list instanceof ScoredCandidateList || list instanceof SortedScoredCandidateList) {
@@ -89,6 +92,12 @@ public class CandidateListWriterFragmentSmilesPSV implements IWriter {
 				scoredCandidate.setProperty("AromaticSmilesOfExplPeaks", aromaticSmilesOfFragmentsExplainedPeaks);
 				scoredCandidate.setProperty("NumberPeaksUsed", numberOfPeaksUsed);
 				scoredCandidate.setProperty("NoExplPeaks", countExplainedPeaks);
+				//add loss information
+				if(settings != null) {
+					String[] lossesInformation = createLossAnnotations(scoredCandidate.getMatchList(), settings);
+					scoredCandidate.setProperty("LossSmilesOfExplPeaks", lossesInformation[0]);
+					scoredCandidate.setProperty("LossAromaticSmilesOfExplPeaks", lossesInformation[1]);
+				}
 			}
 	
 			java.util.Enumeration<String> keys = scoredCandidate.getProperties().keys();
@@ -119,6 +128,66 @@ public class CandidateListWriterFragmentSmilesPSV implements IWriter {
 		}
 		
 		return false;
+	}
+	
+	/**
+	 * 
+	 * @param matchList
+	 * @param settings
+	 */
+	private String[] createLossAnnotations(MatchList matchList, Settings settings) {
+		java.util.Vector<String> lossSmiles = new java.util.Vector<String>();
+		java.util.Vector<String> lossSmarts = new java.util.Vector<String>();
+		java.util.Vector<Double> lossMassDiff = new java.util.Vector<Double>();
+		
+		//for the precursor ion
+		int ionmode = (Integer)settings.get(VariableNames.PRECURSOR_ION_MODE_NAME);
+		boolean ispositive = (Boolean)settings.get(VariableNames.IS_POSITIVE_ION_MODE_NAME);
+		
+		double adductMass = Constants.getIonisationTypeMassCorrection(Constants.ADDUCT_NOMINAL_MASSES.indexOf(ionmode), ispositive);
+		double precursorMass = (Double)settings.get(VariableNames.PRECURSOR_NEUTRAL_MASS_NAME);
+		
+		double ionmass = precursorMass + adductMass ;
+		
+		//check all matches
+		for(int i = 0; i < matchList.getNumberElements(); i++) {
+			IMatch matchI = matchList.getElement(i);
+			IFragment fragmentI = matchI.getBestMatchedFragment();
+			double peakMassI = matchI.getMatchedPeak().getMass();
+			//compare with mathes with greater mass than the current one
+			for(int j = i + 1; j < matchList.getNumberElements(); j++) {
+				IMatch matchJ = matchList.getElement(i);
+				double peakMassJ = matchJ.getMatchedPeak().getMass();
+				IFragment fragmentJ = matchJ.getBestMatchedFragment();
+				if(fragmentJ.isRealSubStructure(fragmentI)) {
+					double diff = peakMassJ - peakMassI;
+					IFragment diffFragment = fragmentJ.getDifferenceFragment(fragmentI);
+					if(diffFragment == null) continue;
+					lossSmiles.add(diffFragment.getSmiles());
+					lossSmarts.add(diffFragment.getAromaticSmiles());
+					lossMassDiff.add(diff);
+				}
+			}
+			//do the same for the precursor ion
+			double diff = ionmass - peakMassI;
+			IFragment diffFragment = fragmentI.getDifferenceFragment();
+			if(diffFragment == null) continue;
+			lossSmiles.add(diffFragment.getSmiles());
+			lossSmarts.add(diffFragment.getAromaticSmiles());
+			lossMassDiff.add(diff);
+		}
+
+		String diffSmiles = "NA";
+		String diffSmarts = "NA";
+		if(lossMassDiff.size() >= 1) {
+			diffSmiles = lossMassDiff.get(0) + ":" + lossSmiles.get(0);
+			diffSmarts = lossMassDiff.get(0) + ":" + lossSmarts.get(0);
+		}
+		for(int i = 1; i < lossMassDiff.size(); i++) {
+			diffSmiles += ";" + lossMassDiff.get(i) + ":" + lossSmiles.get(i);
+			diffSmarts += ";" + lossMassDiff.get(i) + ":" + lossSmarts.get(i);
+		}
+		return new String[] {diffSmiles, diffSmarts};
 	}
 	
 	public void nullify() {

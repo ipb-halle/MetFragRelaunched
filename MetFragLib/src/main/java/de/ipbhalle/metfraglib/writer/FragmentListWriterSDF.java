@@ -17,9 +17,14 @@ import de.ipbhalle.metfraglib.list.MatchList;
 import de.ipbhalle.metfraglib.list.ScoredCandidateList;
 import de.ipbhalle.metfraglib.parameter.Constants;
 import de.ipbhalle.metfraglib.precursor.BitArrayPrecursor;
+import de.ipbhalle.metfraglib.settings.Settings;
 
 public class FragmentListWriterSDF implements IWriter {
 
+	public boolean write(IList list, String filename, String path, Settings settings) throws Exception {
+		return this.write(list, filename, path);
+	}
+	
 	public boolean write(IList list, String filename, String path) {
 		if(list instanceof MatchList) {
 			MatchList matchList = (MatchList) list;

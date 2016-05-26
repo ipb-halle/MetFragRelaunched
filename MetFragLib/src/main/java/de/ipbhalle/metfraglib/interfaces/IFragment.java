@@ -94,7 +94,13 @@ public interface IFragment {
 	
 	public boolean isSubStructure(IFragment molecularStructure);
 	
+	public IFragment getDifferenceFragment(IFragment molecularStructure);
+
+	public IFragment getDifferenceFragment();
+	
 	public int[] getUniqueBrokenBondIndeces(IFragment molecularStructure);
+	
+	public boolean isConnected();
 	
 	public boolean hasMatched();
 	
