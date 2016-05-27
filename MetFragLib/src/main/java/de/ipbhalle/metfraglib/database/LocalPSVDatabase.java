@@ -150,16 +150,18 @@ public class LocalPSVDatabase extends AbstractDatabase {
 			}
 			java.util.Vector<String> identifiers = new java.util.Vector<String>();
 			String line = "";
+			//int internal_identifier = 0;
 			while ((line = reader.readLine()) != null) {
 				String[] tmp = line.split("\\|");
 				ICandidate precursorCandidate = null;
 				String identifier = tmp[propNameToIndex.get(VariableNames.IDENTIFIER_NAME)].trim();
-				
+				/*
 				if(identifiers.contains(identifier)) {
 					reader.close();
 					throw new Exception();
 				}
-				
+				*/
+				//identifier = String.valueOf(++internal_identifier);
 				identifiers.add(identifier);
 				precursorCandidate = new TopDownPrecursorCandidate(tmp[propNameToIndex.get(VariableNames.INCHI_NAME)].trim(), identifier);
 				/*

@@ -293,7 +293,14 @@ public class DefaultBitArrayFragment extends AbstractFragment {
 	public IAtomContainer getStructureAsAromaticIAtomContainer() {
 		IChemObjectBuilder builder = DefaultChemObjectBuilder.getInstance();
 		IAtomContainer fragmentStructure = builder.newInstance(IAtomContainer.class);
-		
+		if(this.atomsBitArray.cardinality() == 1) {
+			fragmentStructure.addAtom(this.precursorMolecule.getStructureAsIAtomContainer().getAtom(this.atomsBitArray.getFirstSetBit()));
+			if(this.precursorMolecule.getStructureAsIAtomContainer().getAtom(this.atomsBitArray.getFirstSetBit()).isAromatic())
+				fragmentStructure.getAtom(0).setIsAromatic(true);
+			else 
+				fragmentStructure.getAtom(0).setIsAromatic(false);
+			return fragmentStructure;
+		}
 		for(int i = 0; i < this.bondsBitArray.getSize(); i++) {
 			if(this.bondsBitArray.get(i)) {
 				IBond curBond = this.precursorMolecule.getStructureAsIAtomContainer().getBond(i);
@@ -315,7 +322,10 @@ public class DefaultBitArrayFragment extends AbstractFragment {
 	public IAtomContainer getStructureAsIAtomContainer() {
 		IChemObjectBuilder builder = DefaultChemObjectBuilder.getInstance();
 		IAtomContainer fragmentStructure = builder.newInstance(IAtomContainer.class);
-		
+		if(this.atomsBitArray.cardinality() == 1) {
+			fragmentStructure.addAtom(this.precursorMolecule.getStructureAsIAtomContainer().getAtom(this.atomsBitArray.getFirstSetBit()));
+			return fragmentStructure;
+		}
 		for(int i = 0; i < this.bondsBitArray.getSize(); i++) {
 			if(this.bondsBitArray.get(i)) {
 				IBond curBond = this.precursorMolecule.getStructureAsIAtomContainer().getBond(i);
@@ -455,6 +465,7 @@ public class DefaultBitArrayFragment extends AbstractFragment {
 	}
 	
 	public boolean isConnected() {
+		if(this.atomsBitArray.cardinality() == 1) return true;
 		BitArrayPrecursor pre = (BitArrayPrecursor)this.precursorMolecule;
 		BitArray foundAtoms = new BitArray(this.atomsBitArray.getSize(), false);
 		java.util.LinkedList<Integer> toCheck = new java.util.LinkedList<Integer>();

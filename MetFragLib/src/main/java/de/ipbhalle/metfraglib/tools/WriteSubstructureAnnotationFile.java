@@ -34,7 +34,6 @@ public class WriteSubstructureAnnotationFile {
 		for(int i = 0; i < candidateList.getNumberElements(); i++) {
 			ICandidate candidate = candidateList.getElement(i);
 			String smilesOfExplPeaks = (String)candidate.getProperty("SmilesOfExplPeaks");
-			System.out.println(smilesOfExplPeaks);
 			String aromaticSmilesOfExplPeaks = (String)candidate.getProperty("AromaticSmilesOfExplPeaks");
 			smilesOfExplPeaks = smilesOfExplPeaks.trim();
 			aromaticSmilesOfExplPeaks = aromaticSmilesOfExplPeaks.trim();

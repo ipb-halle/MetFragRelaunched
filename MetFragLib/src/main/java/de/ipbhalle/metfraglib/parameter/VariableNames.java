@@ -76,8 +76,9 @@ public class VariableNames {
 	 * substructure training
 	 */
 	public static final String SMARTS_PEAK_ANNOTATION_FILE_NAME				= "SmartsPeakAnnotationFile";
-	public static final String SMARTS_NEUTRAL_LOSS_ANNOTATION_FILE_NAME		= "SmartsNeutralLossAnnotationFile";
-	public static final String PEAK_TO_SMARTS_GROUP_LIST_COLLECTION_NAME	= "peakToSmartGroupListCollection";
+	public static final String SMARTS_LOSS_ANNOTATION_FILE_NAME				= "SmartsLossAnnotationFile";
+	public static final String PEAK_TO_SMARTS_GROUP_LIST_COLLECTION_NAME		= "peakToSmartGroupListCollection";
+	public static final String LOSS_TO_SMARTS_GROUP_LIST_COLLECTION_NAME		= "lossToSmartGroupListCollection";
 	
 	/*
 	 * single process thread settings
