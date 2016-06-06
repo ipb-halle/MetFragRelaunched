@@ -94,8 +94,6 @@ run.metfrag<-function(settingsObject) {
 	  else if(name == "NumberThreads") {return("byte")}
 	  else if(name == "ExperimentalRetentionTimeValue") {return("double")}
 	  else if(name == "MinimumAbsolutePeakIntensity") {return("double")}
-	  else if(name == "SmartsSubstructureExclusionScoreSmartsList") {return("array")}
-	  else if(name == "SmartsSubstructureInclusionScoreSmartsList") {return("array")}
 	  else if(name == "ScoreSmartsInclusionList") {return("array")}
 	  else if(name == "ScoreSmartsExclusionList") {return("array")}
 	  else if(name == "FilterSmartsInclusionList") {return("array")}
