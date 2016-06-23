@@ -51,7 +51,8 @@ public class ParameterDataTypes {
 		parameterDatatypes.put(	VariableNames.EXPERIMENTAL_RETENTION_TIME_VALUE_NAME, 					"Double"	);
 		parameterDatatypes.put(	VariableNames.LOG_LEVEL_NAME, 											"Level"		);
 		parameterDatatypes.put(	VariableNames.MONA_PRESENT_INCHIKEYS_FILE_NAME, 						"String"	);
-		
+		parameterDatatypes.put(	VariableNames.OFFLINE_SPECTRAL_DATABASE_FILE_NAME,						"String"	);
+				
 		/*
 		 * candidate filters
 		 */

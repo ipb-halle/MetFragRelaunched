@@ -13,10 +13,12 @@ public class OfflineMetFusionSpectralSimilarityScoreInitialiser implements IScor
 	public void initScoreParameters(Settings settings) throws Exception {
 		String offlineSpectralFilePath = "";
 		java.io.InputStream is = null;
-		if(settings.containsKey(VariableNames.OFFLINE_SPECTRAL_DATABASE_FILE_NAME) && settings.get(VariableNames.OFFLINE_SPECTRAL_DATABASE_FILE_NAME) != null)
+		if(settings.containsKey(VariableNames.OFFLINE_SPECTRAL_DATABASE_FILE_NAME) && settings.get(VariableNames.OFFLINE_SPECTRAL_DATABASE_FILE_NAME) != null) {
 			offlineSpectralFilePath = (String)settings.get(VariableNames.OFFLINE_SPECTRAL_DATABASE_FILE_NAME);
-		else 
+			is = new java.io.FileInputStream(offlineSpectralFilePath);
+		} else { 
 			is = OfflineMetFusionSpectralSimilarityScoreInitialiser.class.getResourceAsStream("/MoNA-export-LC-MS.mb");
+		}
 		//check whether MoNA InChIKeys are given as resource
 		MultipleTandemMassPeakListReader multiplePeakListReader = new MultipleTandemMassPeakListReader(settings);
 		SpectralPeakListCollection spectralPeakLists = null;
