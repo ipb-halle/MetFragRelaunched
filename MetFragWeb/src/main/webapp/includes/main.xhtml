@@ -49,7 +49,7 @@
 					</ui:insert>
 				</p:tab>
 			</p:accordionPanel>
-			<p:idleMonitor timeout="1800000" >
+			<p:idleMonitor timeout="3600000" >
 				<p:ajax event="idle" listener="#{metFragWebBean.viewExpiredListener}"/>
 			</p:idleMonitor>
 		</h:form>
