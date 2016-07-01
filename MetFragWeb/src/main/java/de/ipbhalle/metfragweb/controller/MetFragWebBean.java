@@ -2529,7 +2529,7 @@ public class MetFragWebBean {
 	 * response to idle monitor when session is over
 	 */
 	public void viewExpiredListener() {
-		System.out.println("session expired");
+		System.out.println("session expired " + this.beanSettingsContainer.getRootSessionFolder());
 		FacesContext fc = FacesContext.getCurrentInstance();
         java.util.Map<String, Object> requestMap = fc.getExternalContext().getRequestMap();
         javax.faces.application.NavigationHandler nav =
@@ -2543,6 +2543,14 @@ public class MetFragWebBean {
         
         RequestContext.getCurrentInstance().execute("PF('expiredSessionDialog').show();");
 
+        java.io.File sessionFolder = new java.io.File(this.beanSettingsContainer.getRootSessionFolder());
+        if(sessionFolder.exists())
+			try {
+				FileUtils.deleteDirectory(sessionFolder);
+			} catch (IOException e) {
+				System.err.println("Could not delete session folder.");
+			}
+        
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         HttpSession session = request.getSession(false);
         session.invalidate();

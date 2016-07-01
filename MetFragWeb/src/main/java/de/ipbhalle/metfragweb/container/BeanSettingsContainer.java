@@ -57,7 +57,7 @@ public class BeanSettingsContainer {
 	protected UserOutputDataHandler userOutputDataHandler;
 
 	protected AvailableParameters availableParameters;
-	protected String rootSeesionDir;
+	protected String rootSessionDir;
 	
 	/*
 	 * ##################
@@ -188,7 +188,7 @@ public class BeanSettingsContainer {
 	 */
 	public BeanSettingsContainer(String rootSessionDir) {
 		System.out.println("init BeanSettingsContainer");
-		this.rootSeesionDir = rootSessionDir;
+		this.rootSessionDir = rootSessionDir;
 		this.init();
 	}
 	
@@ -225,7 +225,7 @@ public class BeanSettingsContainer {
 	}
 	
 	public String getRootSessionFolder() {
-		return this.rootSeesionDir;
+		return this.rootSessionDir;
 	}
 	
 	protected void initScoreEnabled() {
