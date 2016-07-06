@@ -154,7 +154,7 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 			IMatch matchI = matchList.getElement(i);
 			IFragment fragmentI = matchI.getBestMatchedFragment();
 			double peakMassI = matchI.getMatchedPeak().getMass();
-			//compare with mathes with greater mass than the current one
+			//compare with matches with greater mass than the current one
 			for(int j = i + 1; j < matchList.getNumberElements(); j++) {
 				IMatch matchJ = matchList.getElement(i);
 				double peakMassJ = matchJ.getMatchedPeak().getMass();
