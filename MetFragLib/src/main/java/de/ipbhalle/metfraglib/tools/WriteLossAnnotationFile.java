@@ -14,7 +14,7 @@ import de.ipbhalle.metfraglib.substructure.PeakToSmartGroupList;
 import de.ipbhalle.metfraglib.substructure.PeakToSmartGroupListCollection;
 import de.ipbhalle.metfraglib.substructure.SmartsGroup;
 
-public class WriteSubstructureAnnotationFile {
+public class WriteLossAnnotationFile {
 
 	/*
 	 * write annotation file
@@ -22,9 +22,8 @@ public class WriteSubstructureAnnotationFile {
 	 * 1 - input file name
 	 * 2 - mzppm
 	 * 3 - mzabs
-	 * 4 - probability type: 1 - likelihood; 2 - posterior
-	 * 5 - output smarts
-	 * 6 - putput smiles
+	 * 4 - output smarts
+	 * 5 - putput smiles
 	 * 
 	 */
 	
@@ -46,8 +45,8 @@ public class WriteSubstructureAnnotationFile {
 		PeakToSmartGroupListCollection peakToSmartGroupListCollection = new PeakToSmartGroupListCollection();
 		for(int i = 0; i < candidateList.getNumberElements(); i++) {
 			ICandidate candidate = candidateList.getElement(i);
-			String smilesOfExplPeaks = (String)candidate.getProperty("SmilesOfExplPeaks");
-			String aromaticSmilesOfExplPeaks = (String)candidate.getProperty("AromaticSmilesOfExplPeaks");
+			String smilesOfExplPeaks = (String)candidate.getProperty("LossSmilesOfExplPeaks");
+			String aromaticSmilesOfExplPeaks = (String)candidate.getProperty("LossAromaticSmilesOfExplPeaks");
 			smilesOfExplPeaks = smilesOfExplPeaks.trim();
 			aromaticSmilesOfExplPeaks = aromaticSmilesOfExplPeaks.trim();
 			if(smilesOfExplPeaks.equals("NA") || aromaticSmilesOfExplPeaks.equals("NA")) continue;

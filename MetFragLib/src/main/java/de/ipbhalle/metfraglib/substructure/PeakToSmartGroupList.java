@@ -58,12 +58,14 @@ public class PeakToSmartGroupList extends DefaultList {
 	}
 
 	public void updateProbabilities() {
+		// numberSubstructures = how often we have seen the peak peakmz
 		int numberSubstructures = 0;
 		for(int i = 0; i < this.list.size(); i++) {
 			numberSubstructures += ((SmartsGroup)this.list.get(i)).getNumberElements();
 		}
 		for(int i = 0; i < this.list.size(); i++) {
 			SmartsGroup smartsGroup = (SmartsGroup)this.list.get(i);
+			// P ( substructure | peakmz ) = H( substructure , peakmz ) / H ( peakmz ) 
 			smartsGroup.setProbability((double)smartsGroup.getNumberElements() / (double)numberSubstructures);
 		}
 	}
@@ -76,6 +78,19 @@ public class PeakToSmartGroupList extends DefaultList {
 			string += " " + smartGroup.toString();
 		}
 		return string + "\n";
+	}
+	
+	/**
+	 * how often we have seen peakmz => H( peakmz )
+	 * 
+	 * @return
+	 */
+	public int getAbsolutePeakFrequency() {
+		int numberSubstructures = 0;
+		for(int i = 0; i < this.list.size(); i++) {
+			numberSubstructures += ((SmartsGroup)this.list.get(i)).getNumberElements();
+		}
+		return numberSubstructures;
 	}
 	
 	public String toStringSmiles() {

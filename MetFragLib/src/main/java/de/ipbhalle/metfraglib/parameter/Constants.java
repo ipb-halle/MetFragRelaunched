@@ -269,7 +269,10 @@ public class Constants {
 	public static boolean getIonisationChargeNameByNominalMassDifference(int nominalMassDifference) {
 		return ADDUCT_CHARGES.get(ADDUCT_NOMINAL_MASSES.indexOf(nominalMassDifference));
 	}
-	
+
+	public static double getIonisationMassByNominalMassDifference(int nominalMassDifference) {
+		return ADDUCT_MASSES.get(ADDUCT_NOMINAL_MASSES.indexOf(nominalMassDifference));
+	}
 	
 	public static final Vector<Method> METHODS = new Vector<Method>();
 	public static final Vector<String> METHOD_NAMES = new Vector<String>();

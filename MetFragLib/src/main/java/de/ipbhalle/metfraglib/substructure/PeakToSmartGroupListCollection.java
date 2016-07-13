@@ -5,6 +5,9 @@ import de.ipbhalle.metfraglib.list.DefaultList;
 
 public class PeakToSmartGroupListCollection extends DefaultList {
 	
+	// P ( p )
+	double[] peakProbabilities;
+	
 	public PeakToSmartGroupListCollection() {
 		super();
 	}
@@ -75,6 +78,49 @@ public class PeakToSmartGroupListCollection extends DefaultList {
 			string += peakToSmartGroupList.getPeakmz() + " " + peakToSmartGroupList.toStringSmiles();
 		}
 		return string;
+	}
+	
+	/**
+	 * calculate P ( p ) for every peak p
+	 * 
+	 */
+	public void calculatePeakProbabilities() {
+		this.peakProbabilities = new double[this.list.size()];
+		int totalNumber = 0;
+		for(int i = 0; i < this.list.size(); i++) {
+			totalNumber += this.getElement(i).getAbsolutePeakFrequency();
+			this.peakProbabilities[i] = (double)totalNumber;
+		}
+		for(int i = 0; i < this.peakProbabilities.length; i++) {
+			this.peakProbabilities[i] /= (double)totalNumber;
+		}
+	}
+	
+	public void calculatePosteriorProbabilites() {
+		double sumJointProbabilities = 0.0;
+		for(int i = 0; i < this.list.size(); i++) {
+			PeakToSmartGroupList currentPeakToSmartGroupList = this.getElement(i);
+			for(int j = 0; j < currentPeakToSmartGroupList.getNumberElements(); j++) {
+				SmartsGroup currentSmartsGroup = currentPeakToSmartGroupList.getElement(j);
+				// P ( s | p ) 
+				double currentLikelihood = currentSmartsGroup.getProbability();
+				// P ( s | p ) * P ( p )
+				double currentJointProbability = currentLikelihood * this.peakProbabilities[i];
+				currentSmartsGroup.setProbability(currentJointProbability);
+				sumJointProbabilities += currentJointProbability;
+			}
+		}
+		for(int i = 0; i < this.list.size(); i++) {
+			PeakToSmartGroupList currentPeakToSmartGroupList = this.getElement(i);
+			for(int j = 0; j < currentPeakToSmartGroupList.getNumberElements(); j++) {
+				SmartsGroup currentSmartsGroup = currentPeakToSmartGroupList.getElement(j);
+				// now P ( s , p ) 
+				double currentJointProbability = currentSmartsGroup.getProbability();
+				// P ( s , p ) / sum_p P ( s , p ) = P ( s , p ) / P ( s )
+				double currentPosteriorProbability = currentJointProbability / sumJointProbabilities;
+				currentSmartsGroup.setProbability(currentPosteriorProbability);
+			}
+		}
 	}
 	
 	public void updateProbabilities() {

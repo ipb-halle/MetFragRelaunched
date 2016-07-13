@@ -21,7 +21,7 @@ public class AutomatedLossAnnotationScore extends AbstractScore {
 	
 	public void calculate() {
 		this.value = 0.0;
-		PeakToSmartGroupListCollection peakToSmartGroupListCollection = (PeakToSmartGroupListCollection)this.settings.get(VariableNames.PEAK_TO_SMARTS_GROUP_LIST_COLLECTION_NAME);
+		PeakToSmartGroupListCollection peakToSmartGroupListCollection = (PeakToSmartGroupListCollection)this.settings.get(VariableNames.LOSS_TO_SMARTS_GROUP_LIST_COLLECTION_NAME);
 		for(int i = 0; i < peakToSmartGroupListCollection.getNumberElements(); i++) {
 			PeakToSmartGroupList peakToSmartsGroupList = peakToSmartGroupListCollection.getElement(i);
 			this.value += peakToSmartsGroupList.getMaximalMatchingProbability(this.candidate);
