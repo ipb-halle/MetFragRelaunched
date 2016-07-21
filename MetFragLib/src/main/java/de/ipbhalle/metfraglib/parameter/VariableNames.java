@@ -63,6 +63,11 @@ public class VariableNames {
 
 	public static final String SMARTS_SUBSTRUCTURE_EXCLUSION_SCORE_LIST_NAME = "SmartsSubstructureExclusionScoreSmartsList";
 	public static final String SMARTS_SUBSTRUCTURE_INCLUSION_SCORE_LIST_NAME = "SmartsSubstructureInclusionScoreSmartsList";
+	
+	public static final String PRE_CANDIDATE_FILTER_SMARTS_LIST_NAME 			= "SmartsSubstructureFilterSmartsList";
+	public static final String PRE_CANDIDATE_FILTER_SMARTS_FORMULA_NAME		= "SmartsSubstructureFilterSmartsFormula";
+	public static final String PRE_CANDIDATE_FILTER_SMARTS_STRING_NAME 		= "SmartsSubstructureFilterSmartsString";
+	
 	public static final String SUSPECTLIST_SCORE_LIST_NAME 		= "SuspectListScoreList";
 	
 	public static final String CHEMSPIDER_TOKEN_NAME					= 	"ChemSpiderToken";

@@ -9,6 +9,7 @@ import de.ipbhalle.metfraglib.candidatefilter.PreProcessingCandidateIsotopeFilte
 import de.ipbhalle.metfraglib.candidatefilter.PreProcessingCandidateMaximalElementFilter;
 import de.ipbhalle.metfraglib.candidatefilter.PreProcessingCandidateMinimalElementFilter;
 import de.ipbhalle.metfraglib.candidatefilter.PreProcessingCandidateSmartsExclusionFilter;
+import de.ipbhalle.metfraglib.candidatefilter.PreProcessingCandidateSmartsFilter;
 import de.ipbhalle.metfraglib.candidatefilter.PreProcessingCandidateSmartsInclusionFilter;
 import de.ipbhalle.metfraglib.candidatefilter.PreProcessingCandidateSuspectListFilter;
 import de.ipbhalle.metfraglib.candidatefilter.PreProcessingCandidateUnconnectedStructureFilter;
@@ -188,6 +189,7 @@ public class ClassNames {
 		preProcessingCandidateFilterNameToClassName.put("SuspectListFilter", PreProcessingCandidateSuspectListFilter.class.getName());
 		preProcessingCandidateFilterNameToClassName.put("MaximumElementsFilter", PreProcessingCandidateMaximalElementFilter.class.getName());
 		preProcessingCandidateFilterNameToClassName.put("MinimumElementsFilter", PreProcessingCandidateMinimalElementFilter.class.getName());
+		preProcessingCandidateFilterNameToClassName.put("PreProcessingCandidateSmartsFilter", PreProcessingCandidateSmartsFilter.class.getName());
 		/*
 		 * new implemented preProcessingCandidateFilter have to be added here
 		 */
