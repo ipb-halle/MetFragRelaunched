@@ -97,6 +97,7 @@ public class ParameterDataTypes {
 		parameterDatatypes.put(	VariableNames.LOCAL_DATABASE_SMILES_COLUMN_NAME, 						"String"	);
 		parameterDatatypes.put(	VariableNames.LOCAL_DATABASE_USER_NAME, 								"String"	);
 		parameterDatatypes.put(	VariableNames.LOCAL_DATABASE_PASSWORD_NAME, 							"String"	);
+		parameterDatatypes.put(	VariableNames.LOCAL_DATABASE_COMPOUND_NAME_COLUMN_NAME,					"String"	);
 
 		parameterDatatypes.put(	VariableNames.LOCAL_PUBCHEM_DATABASE_NAME, 								"String"	);
 		parameterDatatypes.put(	VariableNames.LOCAL_PUBCHEM_DATABASE_COMPOUND_TABLE_NAME, 				"String"	);

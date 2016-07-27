@@ -45,6 +45,7 @@ public class CalculateMassOfFormula {
 							System.out.println("discarded " + candidates.getElement(i).getIdentifier());
 							continue;
 						}
+						System.out.println((String)candidates.getElement(i).getProperty(VariableNames.MOLECULAR_FORMULA_NAME));
 						HDByteMolecularFormula formula = new HDByteMolecularFormula((String)candidates.getElement(i).getProperty(VariableNames.MOLECULAR_FORMULA_NAME));
 						java.util.Enumeration<String> keys = candidates.getElement(i).getProperties().keys();
 						String line = "";

@@ -156,7 +156,7 @@ public class ClassNames {
 		databaseNameToClassName.put("ForIdent", OnlineForIdentDatabase.class.getName());
 		databaseNameToClassName.put("LocalSDF", LocalSDFDatabase.class.getName());
 		databaseNameToClassName.put("LipidMaps", LocalLipidMapsDatabase.class.getName());
-		databaseNameToClassName.put("PostgresSQL", LocalPostgresDatabase.class.getName());
+		databaseNameToClassName.put("Postgres", LocalPostgresDatabase.class.getName());
 		databaseNameToClassName.put("MySQL", LocalMySQLDatabase.class.getName());
 		databaseNameToClassName.put("LocalKegg", LocalKeggDatabase.class.getName());
 		databaseNameToClassName.put("LocalDerivatisedKegg", LocalDerivatisedKeggDatabase.class.getName());
