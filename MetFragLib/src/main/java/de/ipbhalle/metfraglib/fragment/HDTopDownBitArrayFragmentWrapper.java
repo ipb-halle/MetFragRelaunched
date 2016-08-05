@@ -175,15 +175,17 @@ public class HDTopDownBitArrayFragmentWrapper extends AbstractTopDownBitArrayFra
 							+ (shifts[j]) * Constants.getMonoisotopicMassOfAtom("H") 
 							+ (Constants.getMonoisotopicMassOfAtom("D") * (double)k - Constants.getMonoisotopicMassOfAtom("H") * (double)k) 
 							+ (shifts[i] * Constants.getMonoisotopicMassOfAtom("D"));
-
+						
 						byte compareResult = ((TandemMassPeak)peak).matchesToMass(currentFragmentMass);
 						if(compareResult == 0) {
 							if(fragmentPeakMatch[0] != null) {
+								System.out.println("number hydrogens " + this.wrappedFragment.getNumberHydrogens());
 								((HDFragmentMassToPeakMatch)fragmentPeakMatch[0]).addMatchedFragment(this.wrappedFragment, (byte)shifts[j], (byte)shifts[i], currentFragmentMass, p == 0 ? (byte)precursorIonTypeIndex : (byte)0, k, numberDeuteriums);
 							}
 							else {
 								fragmentPeakMatch[0] = new HDFragmentMassToPeakMatch(peak);
 								fragmentPeakMatch[0].setIsPositiveCharge(isPositive);
+								System.out.println("number hydrogens " + this.wrappedFragment.getNumberHydrogens());
 								((HDFragmentMassToPeakMatch)fragmentPeakMatch[0]).addMatchedFragment(this.wrappedFragment, (byte)shifts[j], (byte)shifts[i], currentFragmentMass, p == 0 ? (byte)precursorIonTypeIndex : (byte)0, k, numberDeuteriums);
 							}
 							matched = true;
@@ -220,7 +222,6 @@ public class HDTopDownBitArrayFragmentWrapper extends AbstractTopDownBitArrayFra
 		for(int i = 0; i < this.wrappedFragment.getAtomsBitArray().getSize(); i++) 
 			if(this.wrappedFragment.getAtomsBitArray().get(i)) 
 				numberDeuteriums += currentPrecursor.getNumberDeuteriumsConnectedToAtomIndex(this.precursorIndex, i);
-		
 		return new HDFragmentMolecularFormulaWrapper(formula, numberDeuteriums);
 	}
 	

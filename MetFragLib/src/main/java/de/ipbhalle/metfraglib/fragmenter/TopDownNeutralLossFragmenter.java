@@ -142,7 +142,7 @@ public class TopDownNeutralLossFragmenter extends TopDownFragmenter {
 		for(int i = 0; i < this.detectedNeutralLosses.length; i++) {
 			for(int ii = 0; ii < this.detectedNeutralLosses[i].getNumberNeutralLosses(); ii++) {
 				if(newGeneratedTopDownFragments[0].getAtomsBitArray().equals(this.detectedNeutralLosses[i].getNeutralLossAtomBitArray(ii))) {
-					newGeneratedTopDownFragments[1].getMolecularFormula().setNumberHydrogens((short)(newGeneratedTopDownFragments[1].getMolecularFormula().getNumberHydrogens() + this.detectedNeutralLosses[i].getHydrogenDiffeence()));
+					newGeneratedTopDownFragments[1].getMolecularFormula().setNumberHydrogens((short)(newGeneratedTopDownFragments[1].getMolecularFormula().getNumberHydrogens() + this.detectedNeutralLosses[i].getHydrogenDifference()));
 				//	if(newGeneratedTopDownFragments[1].getTreeDepth() > 1) newGeneratedTopDownFragments[1].setTreeDepth((byte)(newGeneratedTopDownFragments[1].getTreeDepth() - 1));
 				//	newGeneratedTopDownFragments[1].setTreeDepth((byte)(newGeneratedTopDownFragments[1].getTreeDepth() - 1));
 					/*
@@ -159,13 +159,13 @@ public class TopDownNeutralLossFragmenter extends TopDownFragmenter {
 							continue;
 						}
 						if(index != -1) {
-							newGeneratedTopDownFragments[1].getMolecularFormula().setNumberHydrogens((short)(newGeneratedTopDownFragments[1].getMolecularFormula().getNumberHydrogens() + this.detectedNeutralLosses[this.neutralLossIndex.get(index)].getHydrogenDiffeence()));
+							newGeneratedTopDownFragments[1].getMolecularFormula().setNumberHydrogens((short)(newGeneratedTopDownFragments[1].getMolecularFormula().getNumberHydrogens() + this.detectedNeutralLosses[this.neutralLossIndex.get(index)].getHydrogenDifference()));
 						}
 					}
 					return true;
 				}
 				else if(newGeneratedTopDownFragments[1].getAtomsBitArray().equals(this.detectedNeutralLosses[i].getNeutralLossAtomBitArray(ii))) {
-					newGeneratedTopDownFragments[0].getMolecularFormula().setNumberHydrogens((short)(newGeneratedTopDownFragments[0].getMolecularFormula().getNumberHydrogens() + this.detectedNeutralLosses[i].getHydrogenDiffeence()));
+					newGeneratedTopDownFragments[0].getMolecularFormula().setNumberHydrogens((short)(newGeneratedTopDownFragments[0].getMolecularFormula().getNumberHydrogens() + this.detectedNeutralLosses[i].getHydrogenDifference()));
 				//	newGeneratedTopDownFragments[0].setTreeDepth((byte)(newGeneratedTopDownFragments[0].getTreeDepth() - 1));
 					/*
 					 * check for previous broken bonds caused by neutral loss
@@ -181,7 +181,7 @@ public class TopDownNeutralLossFragmenter extends TopDownFragmenter {
 							continue;
 						}
 						if(index != -1) {
-							newGeneratedTopDownFragments[0].getMolecularFormula().setNumberHydrogens((short)(newGeneratedTopDownFragments[0].getMolecularFormula().getNumberHydrogens() + this.detectedNeutralLosses[this.neutralLossIndex.get(index)].getHydrogenDiffeence()));
+							newGeneratedTopDownFragments[0].getMolecularFormula().setNumberHydrogens((short)(newGeneratedTopDownFragments[0].getMolecularFormula().getNumberHydrogens() + this.detectedNeutralLosses[this.neutralLossIndex.get(index)].getHydrogenDifference()));
 						}
 					}
 					return true;

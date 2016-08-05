@@ -74,6 +74,7 @@ public class HDFragmentPairScore extends AbstractScore {
 							countedPairs++;
 							matchFragments = true;
 							peaksPaired.set(index, true);
+					//		System.out.println("pair " + mass + " " + massHD);
 							break;
 						}
 					}
@@ -81,10 +82,9 @@ public class HDFragmentPairScore extends AbstractScore {
 				if(matchedPeaks && matchFragments) break;
 				if(mass > massHD) break;
 			}
-		
 		}
 		if(numberPeaksUsed == 0) this.value = 0.0; 
-		else this.value = (double)countedPairs / (double)numberPeaksUsed;
+		else this.value = (double)countedPairs / (double)numberPeaksUsed;		
 	}
 
 	/**
@@ -97,7 +97,7 @@ public class HDFragmentPairScore extends AbstractScore {
 	private boolean checkForMatchingFragments(MatchFragmentList fragmentList, MatchFragmentList fragmentListHD, int deuteriumShift) {
 		MatchFragmentNode node = fragmentList.getRootNode();
 		MatchFragmentNode nodeHD = fragmentListHD.getRootNode();
-
+		
 		while(node != null) {
 			while(nodeHD != null) {
 				for(int i = 0; i < node.getMatch().getMatchedFragmentsSize(); i++) {
@@ -114,6 +114,7 @@ public class HDFragmentPairScore extends AbstractScore {
 						numberDeuteriumsOfMatchedFragment = deuteriumsOfMatchedFragment + deuteriumDifferenceOfMatchedFragment + deuteriumFromCharge;
 						IFragment fragment = node.getMatch().getMatchedFragmentList().getElement(i);
 						IFragment fragmentHD = nodeHD.getMatch().getMatchedFragmentList().getElement(j);
+						
 						if(fragment.equals(fragmentHD) && numberDeuteriumsOfMatchedFragment == deuteriumShift) return true;
 					}
 				}

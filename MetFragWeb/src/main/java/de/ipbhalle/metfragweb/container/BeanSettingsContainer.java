@@ -104,6 +104,9 @@ public class BeanSettingsContainer {
 	protected boolean elementInclusionExclusiveFilterEnabled;
 	protected boolean elementInclusionFilterValid = true;
 	
+	protected String substructureInformationFilterExpression = "( not c1ccccc1 and not C1CCCCC1 ) or [CX3](=O)[OX2H1]";
+	protected String selectedInformationSmarts = "";
+	
 	protected SuspectListFileContainer suspectListFilterFileContainer;
 	
 	protected boolean forIdentSuspectListFilterEnabled = false;
@@ -269,6 +272,7 @@ public class BeanSettingsContainer {
 		this.filterEnabledMap.put("includedFilterSmarts", false);
 		this.filterEnabledMap.put("excludedFilterSmarts", false);
 		this.filterEnabledMap.put("suspectListsFilter", false);
+		this.filterEnabledMap.put("substructureInformationFilterExpression", false);
 		this.filterEnabledMap.put("unconnectedStructureExclusionFilter", true);
 		this.filterEnabledMap.put("isotopeFilter", true);
 	}
@@ -282,6 +286,7 @@ public class BeanSettingsContainer {
 		this.filterNamesMap.put("includedFilterSmarts", "SMARTS Inclusion");
 		this.filterNamesMap.put("excludedFilterSmarts", "SMARTS Exclusion");
 		this.filterNamesMap.put("suspectListsFilter", "Suspect Inclusion Lists");
+		this.filterNamesMap.put("substructureInformationFilterExpression", "Substructure Information");
 		this.filterNamesMap.put("unconnectedStructureExclusionFilter", "Unconnected Structure Exclusion");
 		this.filterNamesMap.put("isotopeFilter", "Isotope");
 	}
@@ -294,6 +299,7 @@ public class BeanSettingsContainer {
 		this.filterValidMap.put("includedFilterMinimumElements", true);
 		this.filterValidMap.put("includedFilterSmarts", true);
 		this.filterValidMap.put("excludedFilterSmarts", true);
+		this.filterValidMap.put("substructureInformationFilterExpression", true);
 		this.filterValidMap.put("suspectListsFilter", false);
 		this.filterValidMap.put("unconnectedStructureExclusionFilter", true);
 		this.filterValidMap.put("isotopeFilter", true);
@@ -731,6 +737,22 @@ public class BeanSettingsContainer {
 		this.elementInclusionExclusiveFilterEnabled = elementInclusionExclusiveFilterEnabled;
 	}
 		
+	public void setSubstructureInformationFilterExpression(String substructureInformationFilterExpression) {
+		this.substructureInformationFilterExpression = substructureInformationFilterExpression;
+	}
+	
+	public String getSubstructureInformationFilterExpression() {
+		return this.substructureInformationFilterExpression;
+	}
+	
+	public void setSelectedInformationSmarts(String selectedSmarts) {
+		this.selectedInformationSmarts = selectedSmarts;
+	}
+	
+	public String getSelectedInformationSmarts() {
+		return this.selectedInformationSmarts;
+	}
+	
 	public void preprocessRetentionTimeTrainingFile() throws Exception {
 		if(this.retentionTimeScoreTrainingFilePath == null || this.retentionTimeScoreTrainingFilePath.trim().length() == 0) return;
 		if(this.availableCandidatePartitioningCoefficients == null || this.availableCandidatePartitioningCoefficients.size() == 0) return;
@@ -1186,6 +1208,12 @@ public class BeanSettingsContainer {
 			this.metFragSettings.set(VariableNames.PRE_CANDIDATE_FILTER_SMARTS_EXCLUSION_LIST_NAME, ParameterDataTypes.getParameter(filterString, VariableNames.PRE_CANDIDATE_FILTER_SMARTS_EXCLUSION_LIST_NAME));				
 		}
 		else this.metFragSettings.remove(VariableNames.PRE_CANDIDATE_FILTER_SMARTS_EXCLUSION_LIST_NAME);
+		//substructure information
+		if(this.filterEnabledMap.get("substructureInformationFilterExpression") && this.filterValidMap.get("substructureInformationFilterExpression")) {
+			compoundPreFilters.add("SubstructureInformationFilter");
+			this.metFragSettings.set(VariableNames.PRE_CANDIDATE_FILTER_SMARTS_FORMULA_NAME, ParameterDataTypes.getParameter(this.substructureInformationFilterExpression, VariableNames.PRE_CANDIDATE_FILTER_SMARTS_FORMULA_NAME));				
+		}
+		else this.metFragSettings.remove(VariableNames.PRE_CANDIDATE_FILTER_SMARTS_FORMULA_NAME);
 		//suspect lists inclusion filter
 		if(this.filterEnabledMap.get("suspectListsFilter") && this.filterValidMap.get("suspectListsFilter")) {
 			compoundPreFilters.add("SuspectListFilter");
@@ -1504,7 +1532,21 @@ public class BeanSettingsContainer {
 		excludeKeys.add(VariableNames.LOCAL_DERIVATISED_KEGG_DATABASE_USER_NAME);
 		excludeKeys.add(VariableNames.LOCAL_DERIVATISED_KEGG_DATABASE_PASSWORD_NAME);
 		excludeKeys.add(VariableNames.LOCAL_DERIVATISED_KEGG_DATABASE_COMPOUND_NAME_COLUMN_NAME);
-		
+		//local chebi database
+		excludeKeys.add(VariableNames.LOCAL_CHEBI_DATABASE_NAME);
+		excludeKeys.add(VariableNames.LOCAL_CHEBI_DATABASE_COMPOUND_TABLE_NAME);
+		excludeKeys.add(VariableNames.LOCAL_CHEBI_DATABASE_PORT_NUMBER_NAME);
+		excludeKeys.add(VariableNames.LOCAL_CHEBI_DATABASE_SERVER_IP_NAME);
+		excludeKeys.add(VariableNames.LOCAL_CHEBI_DATABASE_MASS_COLUMN_NAME);
+		excludeKeys.add(VariableNames.LOCAL_CHEBI_DATABASE_FORMULA_COLUMN_NAME);
+		excludeKeys.add(VariableNames.LOCAL_CHEBI_DATABASE_INCHI_COLUMN_NAME);
+		excludeKeys.add(VariableNames.LOCAL_CHEBI_DATABASE_INCHIKEY1_COLUMN_NAME);
+		excludeKeys.add(VariableNames.LOCAL_CHEBI_DATABASE_INCHIKEY2_COLUMN_NAME);
+		excludeKeys.add(VariableNames.LOCAL_CHEBI_DATABASE_CID_COLUMN_NAME);
+		excludeKeys.add(VariableNames.LOCAL_CHEBI_DATABASE_SMILES_COLUMN_NAME);
+		excludeKeys.add(VariableNames.LOCAL_CHEBI_DATABASE_COMPOUND_NAME_COLUMN_NAME);
+		excludeKeys.add(VariableNames.LOCAL_CHEBI_DATABASE_USER_NAME);
+		excludeKeys.add(VariableNames.LOCAL_CHEBI_DATABASE_PASSWORD_NAME);
 		
 		return excludeKeys;
 	}

@@ -8,8 +8,6 @@ import de.ipbhalle.metfraglib.precursor.TopDownBitArrayPrecursor;
 
 public class TopDownBitArrayFragment extends de.ipbhalle.metfraglib.fragment.AbstractTopDownBitArrayFragment {
 
-	protected IMolecularFormula molecularFormula;
-	
 	/**
 	 * constructor setting all bits of atomsBitArray and bondsBitArray to true
 	 * entire structure is represented

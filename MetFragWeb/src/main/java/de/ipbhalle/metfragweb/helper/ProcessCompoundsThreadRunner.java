@@ -47,6 +47,7 @@ public class ProcessCompoundsThreadRunner extends ThreadRunner {
 	
 	@Override
 	public void run() {
+		System.out.println("ProcessCompoundsThreadRunner run");
 		this.infoMessages.removeKey("processingErrorCandidatesInfo");
 		this.infoMessages.removeKey("processingFilteredCandidatesInfo");
 		this.infoMessages.removeKey("processingProcessedCandidatesInfo");
@@ -54,6 +55,7 @@ public class ProcessCompoundsThreadRunner extends ThreadRunner {
 		try {
 			this.beanSettingsContainer.prepareSettingsObject();
 		} catch (Exception e) {
+			e.printStackTrace();
 			this.errorMessages.setMessage("buttonProcessCompoundsError", "Error: Setting parameters failed.");
 			return;
 		}
@@ -66,6 +68,7 @@ public class ProcessCompoundsThreadRunner extends ThreadRunner {
 		try {
 			this.beanSettingsContainer.startCandidateProcessing();
 		} catch (Exception e) {
+			e.printStackTrace();
 			this.errorMessages.setMessage("buttonProcessCompoundsError", "Error: Processing of candidates failed.");
 			return;
 		}

@@ -14,6 +14,7 @@ import de.ipbhalle.metfraglib.candidatefilter.PreProcessingCandidateSmartsInclus
 import de.ipbhalle.metfraglib.candidatefilter.PreProcessingCandidateSuspectListFilter;
 import de.ipbhalle.metfraglib.candidatefilter.PreProcessingCandidateUnconnectedStructureFilter;
 import de.ipbhalle.metfraglib.database.LocalCSVDatabase;
+import de.ipbhalle.metfraglib.database.LocalChEBIDatabase;
 import de.ipbhalle.metfraglib.database.LocalDerivatisedKeggDatabase;
 import de.ipbhalle.metfraglib.database.LocalExtendedPubChemDatabase;
 import de.ipbhalle.metfraglib.database.LocalInMemoryDatabase;
@@ -136,6 +137,7 @@ public class ClassNames {
 		
 		scoreNameToScoreInitialiserClassName.put("HDFragmenterScore", DefaultScoreInitialiser.class.getName());
 		scoreNameToScoreInitialiserClassName.put("HDFragmentPairScore", DefaultScoreInitialiser.class.getName());
+		scoreNameToScoreInitialiserClassName.put("HDFragmentPairScore2", DefaultScoreInitialiser.class.getName());
 		scoreNameToScoreInitialiserClassName.put("HDExchangedHydrogendsScore", DefaultScoreInitialiser.class.getName());
 		
 		candidateListWriterNameToClassName.put("HDCSV", HDCandidateListWriterPSV.class.getName());
@@ -163,6 +165,7 @@ public class ClassNames {
 		databaseNameToClassName.put("LocalPubChem", LocalPubChemDatabase.class.getName());
 		databaseNameToClassName.put("LocalExtendedPubChem", LocalExtendedPubChemDatabase.class.getName());
 		databaseNameToClassName.put("LocalInMemoryDatabase", LocalInMemoryDatabase.class.getName());
+		databaseNameToClassName.put("LocalChEBI", LocalChEBIDatabase.class.getName());
 		
 		/*
 		 * new implemented candidateListWriter have to be added here
@@ -189,7 +192,7 @@ public class ClassNames {
 		preProcessingCandidateFilterNameToClassName.put("SuspectListFilter", PreProcessingCandidateSuspectListFilter.class.getName());
 		preProcessingCandidateFilterNameToClassName.put("MaximumElementsFilter", PreProcessingCandidateMaximalElementFilter.class.getName());
 		preProcessingCandidateFilterNameToClassName.put("MinimumElementsFilter", PreProcessingCandidateMinimalElementFilter.class.getName());
-		preProcessingCandidateFilterNameToClassName.put("PreProcessingCandidateSmartsFilter", PreProcessingCandidateSmartsFilter.class.getName());
+		preProcessingCandidateFilterNameToClassName.put("SubstructureInformationFilter", PreProcessingCandidateSmartsFilter.class.getName());
 		/*
 		 * new implemented preProcessingCandidateFilter have to be added here
 		 */

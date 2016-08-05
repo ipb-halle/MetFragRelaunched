@@ -16,40 +16,42 @@ public class AutomatedSubstructureAnnotationScoreInitialiser  implements IScoreI
 
 	@Override
 	public void initScoreParameters(Settings settings) throws Exception {
-		PeakToSmartGroupListCollection peakToSmartGroupListCollection = new PeakToSmartGroupListCollection();
-		String filename = (String)settings.get(VariableNames.SMARTS_PEAK_ANNOTATION_FILE_NAME);
-		DefaultPeakList peakList = (DefaultPeakList)settings.get(VariableNames.PEAK_LIST_NAME);
-		Double mzppm = (Double)settings.get(VariableNames.RELATIVE_MASS_DEVIATION_NAME);
-		Double mzabs = (Double)settings.get(VariableNames.ABSOLUTE_MASS_DEVIATION_NAME);
-		
-		BufferedReader breader = new BufferedReader(new FileReader(new File(filename)));
-		String line = "";
-		while((line = breader.readLine()) != null) {
-			line = line.trim();
-			if(line.length() == 0) continue;
-			if(line.startsWith("#")) continue;
-			String[] tmp = line.split("\\s+");
-			Double peak = Double.parseDouble(tmp[0]);
-			if(!peakList.containsMass(peak, mzppm, mzabs)) continue;
-			PeakToSmartGroupList peakToSmartGroupList = new PeakToSmartGroupList(peak);
-			SmartsGroup smartsGroup = null;
-			for(int i = 1; i < tmp.length; i++) {
-				if(this.isDoubleValue(tmp[i])) {
-					if(smartsGroup != null) 
+		if(!settings.containsKey(VariableNames.PEAK_TO_SMARTS_GROUP_LIST_COLLECTION_NAME) || settings.get(VariableNames.PEAK_TO_SMARTS_GROUP_LIST_COLLECTION_NAME) == null) {
+			PeakToSmartGroupListCollection peakToSmartGroupListCollection = new PeakToSmartGroupListCollection();
+			String filename = (String)settings.get(VariableNames.SMARTS_PEAK_ANNOTATION_FILE_NAME);
+			DefaultPeakList peakList = (DefaultPeakList)settings.get(VariableNames.PEAK_LIST_NAME);
+			Double mzppm = (Double)settings.get(VariableNames.RELATIVE_MASS_DEVIATION_NAME);
+			Double mzabs = (Double)settings.get(VariableNames.ABSOLUTE_MASS_DEVIATION_NAME);
+			
+			BufferedReader breader = new BufferedReader(new FileReader(new File(filename)));
+			String line = "";
+			while((line = breader.readLine()) != null) {
+				line = line.trim();
+				if(line.length() == 0) continue;
+				if(line.startsWith("#")) continue;
+				String[] tmp = line.split("\\s+");
+				Double peak = Double.parseDouble(tmp[0]);
+				if(!peakList.containsMass(peak, mzppm, mzabs)) continue;
+				PeakToSmartGroupList peakToSmartGroupList = new PeakToSmartGroupList(peak);
+				SmartsGroup smartsGroup = null;
+				for(int i = 1; i < tmp.length; i++) {
+					if(this.isDoubleValue(tmp[i])) {
+						if(smartsGroup != null) 
+							peakToSmartGroupList.addElement(smartsGroup);
+						smartsGroup = new SmartsGroup(Double.parseDouble(tmp[i]));
+					}
+					else {
+						smartsGroup.addElement(tmp[i]);
+					}
+					if(i == (tmp.length - 1)) {
 						peakToSmartGroupList.addElement(smartsGroup);
-					smartsGroup = new SmartsGroup(Double.parseDouble(tmp[i]));
-				}
-				else {
-					smartsGroup.addElement(tmp[i]);
-				}
-				if(i == (tmp.length - 1)) {
-					peakToSmartGroupList.addElement(smartsGroup);
-					peakToSmartGroupListCollection.addElement(peakToSmartGroupList);
+						peakToSmartGroupListCollection.addElement(peakToSmartGroupList);
+					}
 				}
 			}
+			breader.close();
+			settings.set(VariableNames.PEAK_TO_SMARTS_GROUP_LIST_COLLECTION_NAME, peakToSmartGroupListCollection);
 		}
-		breader.close();
-		settings.set(VariableNames.PEAK_TO_SMARTS_GROUP_LIST_COLLECTION_NAME, peakToSmartGroupListCollection);
 	}
 	
 	private boolean isDoubleValue(String value) {

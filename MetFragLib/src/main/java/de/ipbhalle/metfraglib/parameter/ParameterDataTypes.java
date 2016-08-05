@@ -65,6 +65,7 @@ public class ParameterDataTypes {
 		parameterDatatypes.put( VariableNames.PRE_CANDIDATE_FILTER_SUSPECT_LIST_NAME, 					"String[]"  );
 		parameterDatatypes.put( VariableNames.PRE_CANDIDATE_FILTER_MAXIMUM_ELEMENTS_NAME, 				"String"  	);
 		parameterDatatypes.put( VariableNames.PRE_CANDIDATE_FILTER_MINIMUM_ELEMENTS_NAME, 				"String"  	);
+		parameterDatatypes.put( VariableNames.PRE_CANDIDATE_FILTER_SMARTS_FORMULA_NAME, 				"String"  	);
 
 		/*
 		 * candidate filters
@@ -158,7 +159,22 @@ public class ParameterDataTypes {
 		parameterDatatypes.put(	VariableNames.LOCAL_DERIVATISED_KEGG_DATABASE_USER_NAME, 							"String"	);
 		parameterDatatypes.put(	VariableNames.LOCAL_DERIVATISED_KEGG_DATABASE_PASSWORD_NAME, 						"String"	);
 		parameterDatatypes.put(	VariableNames.LOCAL_DERIVATISED_KEGG_DATABASE_COMPOUND_NAME_COLUMN_NAME,			"String"	);
-		
+
+		parameterDatatypes.put(	VariableNames.LOCAL_CHEBI_DATABASE_NAME, 								"String"	);
+		parameterDatatypes.put(	VariableNames.LOCAL_CHEBI_DATABASE_COMPOUND_TABLE_NAME, 				"String"	);
+		parameterDatatypes.put(	VariableNames.LOCAL_CHEBI_DATABASE_PORT_NUMBER_NAME, 					"String"	);
+		parameterDatatypes.put(	VariableNames.LOCAL_CHEBI_DATABASE_SERVER_IP_NAME, 						"String"	);
+		parameterDatatypes.put(	VariableNames.LOCAL_CHEBI_DATABASE_MASS_COLUMN_NAME, 					"String"	);
+		parameterDatatypes.put(	VariableNames.LOCAL_CHEBI_DATABASE_FORMULA_COLUMN_NAME, 				"String"	);
+		parameterDatatypes.put(	VariableNames.LOCAL_CHEBI_DATABASE_INCHI_COLUMN_NAME,		 			"String"	);
+		parameterDatatypes.put(	VariableNames.LOCAL_CHEBI_DATABASE_INCHIKEY1_COLUMN_NAME, 				"String"	);
+		parameterDatatypes.put(	VariableNames.LOCAL_CHEBI_DATABASE_INCHIKEY2_COLUMN_NAME, 				"String"	);
+		parameterDatatypes.put(	VariableNames.LOCAL_CHEBI_DATABASE_CID_COLUMN_NAME, 					"String"	);
+		parameterDatatypes.put(	VariableNames.LOCAL_CHEBI_DATABASE_SMILES_COLUMN_NAME, 					"String"	);
+		parameterDatatypes.put(	VariableNames.LOCAL_CHEBI_DATABASE_USER_NAME, 							"String"	);
+		parameterDatatypes.put(	VariableNames.LOCAL_CHEBI_DATABASE_PASSWORD_NAME, 						"String"	);
+		parameterDatatypes.put(	VariableNames.LOCAL_CHEBI_DATABASE_COMPOUND_NAME_COLUMN_NAME,			"String"	);
+
 		parameterDatatypes.put(	VariableNames.NUMBER_RANDOM_SPECTRA_NAME, 								"Integer"	);
 		parameterDatatypes.put(	VariableNames.ENABLE_DEUTERIUM_NAME, 									"Boolean"	);
 		/*

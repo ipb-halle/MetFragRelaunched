@@ -60,6 +60,7 @@ import de.ipbhalle.metfragweb.validator.ElementsValidator;
 import de.ipbhalle.metfragweb.validator.FormulaValidator;
 import de.ipbhalle.metfragweb.validator.PeakListValidator;
 import de.ipbhalle.metfragweb.validator.PositiveDoubleValueValidator;
+import de.ipbhalle.metfragweb.validator.SmartsExpressionValidator;
 import de.ipbhalle.metfragweb.validator.SmartsValidator;
 
 @ManagedBean
@@ -952,6 +953,79 @@ public class MetFragWebBean {
 		this.beanSettingsContainer.setSmartsFilterExclusion(smartsFilterExclusion);
 	}
 	
+	//substructure information
+	public boolean isSubstructureInformationFilterEnabled() {
+		return this.beanSettingsContainer.isFilterEnabled("substructureInformationFilterExpression");
+	}
+
+	public void setSubstructureInformationFilterEnabled(boolean substructureInformationFilterEnabled) {
+		this.beanSettingsContainer.setFilterEnabled(substructureInformationFilterEnabled, "substructureInformationFilterExpression");
+	}
+
+	public String getSubstructureInformationFilterExpression() {
+		return this.beanSettingsContainer.getSubstructureInformationFilterExpression();
+	}
+
+	public void setSubstructureInformationFilterExpression(String substructureInformationFilterExpression) {
+		try {
+			if (substructureInformationFilterExpression == null || substructureInformationFilterExpression.trim().length() == 0) {
+			//	this.errorMessages.setMessage("substructureInformationFilterExpressionError", "Error: No substructure expression set.");
+				this.errorMessages.removeKey("substructureInformationFilterExpressionError");
+			} else {
+				if (SmartsExpressionValidator.check(substructureInformationFilterExpression))
+					this.errorMessages.removeKey("substructureInformationFilterExpressionError");
+				else
+					throw new Exception();
+			}
+		} catch (Exception e) {
+			this.errorMessages.setMessage("substructureInformationFilterExpressionError", "Error: Invalid value.");
+		} finally {
+			this.beanSettingsContainer.setSubstructureInformationFilterExpression(substructureInformationFilterExpression);
+		}
+	}
+
+	public String getSelectedInformationSmarts() {
+		return this.beanSettingsContainer.getSelectedInformationSmarts();
+	}
+	
+	public void setSelectedInformationSmarts(String selectedSmarts) {
+		this.errorMessages.removeKey("selectedInformationSmartsError");
+		this.beanSettingsContainer.setSelectedInformationSmarts(selectedSmarts);
+	}
+	
+	public java.util.List<javax.faces.model.SelectItem> getAvailableSubstructureInformationSmarts() {
+		return this.beanSettingsContainer.getAvailableParameters().getSubstructureInformationSmarts();
+	}
+	
+	public void andSelectedInformationSmarts(ActionEvent action) {
+		if(this.beanSettingsContainer.getSelectedInformationSmarts() == null || this.beanSettingsContainer.getSelectedInformationSmarts().length() == 0) {
+			return;
+		}
+		String currentExpression = this.beanSettingsContainer.getSubstructureInformationFilterExpression().trim();
+		if(currentExpression.length() != 0) this.beanSettingsContainer.setSubstructureInformationFilterExpression(currentExpression + " and " + this.beanSettingsContainer.getSelectedInformationSmarts());
+		else this.beanSettingsContainer.setSubstructureInformationFilterExpression(this.beanSettingsContainer.getSelectedInformationSmarts());
+	}
+
+	public void orSelectedInformationSmarts(ActionEvent action) {
+		if(this.beanSettingsContainer.getSelectedInformationSmarts() == null || this.beanSettingsContainer.getSelectedInformationSmarts().length() == 0) {
+			return;
+		}
+		String currentExpression = this.beanSettingsContainer.getSubstructureInformationFilterExpression().trim();
+		if(currentExpression.length() != 0) this.beanSettingsContainer.setSubstructureInformationFilterExpression(currentExpression + " or " + this.beanSettingsContainer.getSelectedInformationSmarts());
+		else this.beanSettingsContainer.setSubstructureInformationFilterExpression(this.beanSettingsContainer.getSelectedInformationSmarts());
+	}
+	
+	public void notSelectedInformationSmarts(ActionEvent action) {
+		if(this.beanSettingsContainer.getSelectedInformationSmarts() == null || this.beanSettingsContainer.getSelectedInformationSmarts().length() == 0) {
+			return;
+		}
+		String currentExpression = this.beanSettingsContainer.getSubstructureInformationFilterExpression().trim();
+		if(currentExpression.length() != 0) this.beanSettingsContainer.setSubstructureInformationFilterExpression(currentExpression + " and not " + this.beanSettingsContainer.getSelectedInformationSmarts());
+		else this.beanSettingsContainer.setSubstructureInformationFilterExpression("not " + this.beanSettingsContainer.getSelectedInformationSmarts());
+	}
+	
+	
+	
 	//suspect list filter
 	public SuspectListFileContainer getSuspectListFilterFileContainer() {
 		return this.beanSettingsContainer.getSuspectListFilterFileContainer();
@@ -1128,6 +1202,23 @@ public class MetFragWebBean {
 			} else {
 				this.beanSettingsContainer.setFilterValid(false, "excludedFilterSmarts");
 				this.errorMessages.setMessage("excludedFilterSmartsError", "Error: No substructure set.");
+			} 
+		}
+		//substructure information filter
+		if (this.beanSettingsContainer.isFilterEnabled("substructureInformationFilterExpression")) {
+			if (this.beanSettingsContainer.getSubstructureInformationFilterExpression() != null && this.beanSettingsContainer.getSubstructureInformationFilterExpression().length() != 0) 
+			{
+				if(!SmartsExpressionValidator.check(this.beanSettingsContainer.getSubstructureInformationFilterExpression())) {
+					this.beanSettingsContainer.setFilterValid(false, "substructureInformationFilterExpression");
+					this.errorMessages.setMessage("substructureInformationFilterExpressionError", "Error: Invalid SMARTS Expression.");
+				}
+				else {
+					this.beanSettingsContainer.setFilterValid(true, "substructureInformationFilterExpression");
+					this.errorMessages.removeKey("substructureInformationFilterExpressionError");
+				}
+			} else {
+				this.beanSettingsContainer.setFilterValid(false, "substructureInformationFilterExpression");
+				this.errorMessages.setMessage("substructureInformationFilterExpressionError", "Error: No substructure expression set.");
 			} 
 		}
 		// suspect lists inclusion filter

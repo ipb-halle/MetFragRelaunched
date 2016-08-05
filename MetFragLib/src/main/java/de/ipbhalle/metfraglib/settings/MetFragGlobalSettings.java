@@ -34,6 +34,7 @@ public class MetFragGlobalSettings extends Settings {
 		this.defaults.put(VariableNames.PRECURSOR_DATABASE_IDS_NAME, Constants.DEFAULT_PRECURSOR_DATABASE_IDS);
 		this.defaults.put(VariableNames.PEAK_LIST_PATH_NAME, Constants.DEFAULT_PEAK_LIST_PATH);
 		this.defaults.put(VariableNames.MINIMUM_ABSOLUTE_PEAK_INTENSITY_NAME, Constants.DEFAULT_MINIMUM_ABSOLUTE_PEAK_INTENSITY);
+		this.defaults.put(VariableNames.HD_MINIMUM_ABSOLUTE_PEAK_INTENSITY_NAME, Constants.DEFAULT_MINIMUM_ABSOLUTE_PEAK_INTENSITY);
 
 		this.defaults.put(VariableNames.METFRAG_DATABASE_TYPE_NAME, Constants.DEFAULT_METFRAG_DATABASE_TYPE);
 		this.defaults.put(VariableNames.METFRAG_FRAGMENTER_TYPE_NAME, Constants.DEFAULT_METFRAG_FRAGMENTER_TYPE);

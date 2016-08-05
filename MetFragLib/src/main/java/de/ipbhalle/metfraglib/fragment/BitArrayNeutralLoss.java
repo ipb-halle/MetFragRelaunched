@@ -40,7 +40,7 @@ public class BitArrayNeutralLoss {
 		return NeutralLosses.getMassDifference(this.neutralLossIndex);
 	}
 	
-	public byte getHydrogenDiffeence() {
+	public byte getHydrogenDifference() {
 		return NeutralLosses.getHydrogenDifference(this.neutralLossIndex);
 	}
 	

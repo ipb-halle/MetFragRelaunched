@@ -146,39 +146,43 @@ public class HighlightSubStructureImageGenerator extends StandardSingleStructure
 		//IAtomContainer m = sp.parseSmiles("CC(C)c1ccc(cc1)S(=O)(=O)O");
 		IAtomContainer m = null;
 		try {
-			m = MoleculeFunctions.getAtomContainerFromInChI("InChI=1S/C10H22N2/c1-9(2)4-8(12)5-10(3,6-9)7-11/h8H,4-7,11-12H2,1-3H3");
+			m = MoleculeFunctions.getAtomContainerFromInChI("InChI=1S/C6H8N2O3S/c7-4-1-2-6(5(8)3-4)12(9,10)11/h1-3H,7-8H2,(H,9,10,11)");
 			MoleculeFunctions.prepareAtomContainer(m, false);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		HighlightSubStructureImageGenerator s = new HighlightSubStructureImageGenerator(new Font("Verdana", Font.BOLD, 18));
-		s.setImageHeight(500);
-		s.setImageWidth(500);
-		s.setStrokeRation(1.5);
+		s.setImageHeight(1500);
+		s.setImageWidth(1500);
+		s.setStrokeRation(1.2);
 		
 		BitArray bitArrayAtoms = new BitArray(m.getAtomCount());
 		BitArray bitArrayBonds = new BitArray(m.getBondCount());
-		bitArrayAtoms.set(0, true);
-		bitArrayAtoms.set(1, true);
-		bitArrayAtoms.set(2, true);
-		bitArrayAtoms.set(3, true);
+		bitArrayAtoms.set(0, false);
+		bitArrayAtoms.set(1, false);
+		bitArrayAtoms.set(2, false);
+		bitArrayAtoms.set(3, false);
 		bitArrayAtoms.set(4, true);
 		bitArrayAtoms.set(5, true);
-		bitArrayAtoms.set(6, true);
+		bitArrayAtoms.set(6, false);
 		bitArrayAtoms.set(7, true);
-		bitArrayAtoms.set(8, true);
+		bitArrayAtoms.set(8, false);
 		bitArrayAtoms.set(9, true);
+		bitArrayAtoms.set(10, true);
+		bitArrayAtoms.set(11, true);
 		
-		bitArrayBonds.set(0, true);
-		bitArrayBonds.set(1, true);
-		bitArrayBonds.set(2, true);
-		bitArrayBonds.set(3, true);
-		bitArrayBonds.set(4, true);
+		bitArrayBonds.set(0, false);
+		bitArrayBonds.set(1, false);
+		bitArrayBonds.set(2, false);
+		bitArrayBonds.set(3, false);
+		bitArrayBonds.set(4, false);
 		bitArrayBonds.set(5, true);
-		bitArrayBonds.set(6, true);
+		bitArrayBonds.set(6, false);
 		bitArrayBonds.set(7, true);
 		bitArrayBonds.set(8, true);
-		bitArrayBonds.set(9, true);
+		bitArrayBonds.set(9, false);
+		bitArrayBonds.set(10, true);
+		bitArrayBonds.set(11, true);
 
 		RenderedImage img = s.generateImage(bitArrayAtoms, bitArrayBonds, m);
 		ImageIO.write((RenderedImage) img, "PNG", new java.io.File("/tmp/file.png"));

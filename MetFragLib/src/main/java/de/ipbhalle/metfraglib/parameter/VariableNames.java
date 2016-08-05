@@ -175,6 +175,24 @@ public class VariableNames {
 	public static final String LOCAL_DERIVATISED_KEGG_DATABASE_USER_NAME						= 	"LocalDerivatisedKeggDatabaseUser";
 	public static final String LOCAL_DERIVATISED_KEGG_DATABASE_PASSWORD_NAME					= 	"LocalDerivatisedKeggDatabasePassword";
 	public static final String LOCAL_DERIVATISED_KEGG_DATABASE_COMPOUND_NAME_COLUMN_NAME		= 	"LocalDerivatisedKeggDatabaseCompoundNameColumn";
+	
+
+	public static final String LOCAL_CHEBI_DATABASE_NAME						= 	"LocalChEBIDatabase";
+	public static final String LOCAL_CHEBI_DATABASE_COMPOUND_TABLE_NAME		= 	"LocalChEBIDatabaseCompoundsTable";
+	public static final String LOCAL_CHEBI_DATABASE_PORT_NUMBER_NAME			= 	"LocalChEBIDatabasePortNumber";
+	public static final String LOCAL_CHEBI_DATABASE_SERVER_IP_NAME			= 	"LocalChEBIDatabaseServerIp";
+	public static final String LOCAL_CHEBI_DATABASE_MASS_COLUMN_NAME			= 	"LocalChEBIDatabaseMassColumn";
+	public static final String LOCAL_CHEBI_DATABASE_FORMULA_COLUMN_NAME		= 	"LocalChEBIDatabaseFormulaColumn";
+	public static final String LOCAL_CHEBI_DATABASE_INCHI_COLUMN_NAME			= 	"LocalChEBIDatabaseInChIColumn";
+	public static final String LOCAL_CHEBI_DATABASE_INCHIKEY1_COLUMN_NAME		= 	"LocalChEBIDatabaseInChIKey1Column";
+	public static final String LOCAL_CHEBI_DATABASE_INCHIKEY2_COLUMN_NAME		= 	"LocalChEBIDatabaseInChIKey2Column";
+	public static final String LOCAL_CHEBI_DATABASE_CID_COLUMN_NAME			= 	"LocalChEBIDatabaseCidColumn";
+	public static final String LOCAL_CHEBI_DATABASE_SMILES_COLUMN_NAME		= 	"LocalChEBIDatabaseSmilesColumn";
+	public static final String LOCAL_CHEBI_DATABASE_USER_NAME					= 	"LocalChEBIDatabaseUser";
+	public static final String LOCAL_CHEBI_DATABASE_PASSWORD_NAME				= 	"LocalChEBIDatabasePassword";
+	public static final String LOCAL_CHEBI_DATABASE_COMPOUND_NAME_COLUMN_NAME	= 	"LocalChEBIDatabaseCompoundNameColumn";
+
+	
 	/*
 	 * for MoNA
 	 */
@@ -265,6 +283,7 @@ public class VariableNames {
 	public static final String HD_PEAK_LIST_NAME 								= 	"HDPeakList";
 	public static final String HD_GROUP_FLAG_NAME 							= 	"HDGroupFlag";
 	public static final String HD_NUMBER_PEAKS_USED_COLUMN					=	"HDNumberPeaksUsed";
+	public static final String HD_MINIMUM_ABSOLUTE_PEAK_INTENSITY_NAME		=	"HDMinimumAbsolutePeakIntensity";
 	
 	public static final String PEAK_INDEX_TO_PEAK_MATCH_NAME					=	"PeakIndexToPeakMatch";
 	public static final String HD_PEAK_INDEX_TO_PEAK_MATCH_NAME				=	"HDPeakIndexToPeakMatch";

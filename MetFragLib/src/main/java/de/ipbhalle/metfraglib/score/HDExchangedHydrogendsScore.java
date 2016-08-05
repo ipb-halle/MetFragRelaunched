@@ -21,9 +21,10 @@ public class HDExchangedHydrogendsScore extends AbstractScore {
 		
 		double numberExchangedHydrogensInMolecule = candidatePrecursor.getNumberExchangedHydrogens();
 		double numberVariableHydrogens = candidatePrecursor.getNumberVariableDeuteriums();
-		
+		double numberExchangeableHydrogens = candidatePrecursor.getNumberExchangeableHydrogens();
 		double denominator = numberExchangedHydrogensInMolecule - numberHydrogensExperimentallyExchanged + 1;
 		if(numberVariableHydrogens > 0) denominator = numberVariableHydrogens + 1;
+		if(numberExchangeableHydrogens > numberExchangedHydrogensInMolecule) denominator = (numberExchangeableHydrogens - numberExchangedHydrogensInMolecule) + 1;
 		this.value = 1.0 / (double)denominator;
 		this.calculationFinished = true;
 	}

@@ -16,6 +16,7 @@ public class AvailableParameters {
 	protected java.util.HashMap<String, Boolean> databaseNeedsLocalFile;
 	protected java.util.List<SelectItem> precursorModes;
 	protected java.util.List<SelectItem> substructureSmarts;
+	protected java.util.List<SelectItem> substructureInformationSmarts;
 	protected Hashtable<String, java.util.List<AvailableScore>> databaseToScores;
 	protected java.util.Vector<String> preservedCompoundScoreProperties;
 	protected java.util.Vector<String> preservedCompoundPartitioningCoefficientProperties;
@@ -24,6 +25,7 @@ public class AvailableParameters {
 		this.initialiseDatabases();
 		this.initialisePrecusorModes();
 		this.initialiseSubstructureSmarts();
+		this.initialiseSubstructureInformationSmarts();
 		this.initialisePreservedCompoundProperties();
 	}
 
@@ -138,13 +140,38 @@ public class AvailableParameters {
 	
 	protected void initialiseSubstructureSmarts() {
 		this.substructureSmarts = new java.util.ArrayList<SelectItem>();
-		this.substructureSmarts.add(new SelectItem("[cR1]1[cR1][cR1][cR1][cR1][cR1]1", "Unfused benzene ring"));
 		this.substructureSmarts.add(new SelectItem("[CX3](=O)[OX2H1]", "Carboxyl"));
 		this.substructureSmarts.add(new SelectItem("[NX3][CX2]#[NX1]", "Cyanamide"));
 		this.substructureSmarts.add(new SelectItem("c12ccccc1cccc2", "Fused benzene rings"));
-		this.substructureSmarts.add(new SelectItem("[#6][CX3](=O)[#6]", "Ketone"));
 		this.substructureSmarts.add(new SelectItem("[OX2H]", "Hydroxyl"));
+		this.substructureSmarts.add(new SelectItem("[#6][CX3](=O)[#6]", "Ketone"));
 		this.substructureSmarts.add(new SelectItem("[#16X2H]", "Thiol"));
+		this.substructureSmarts.add(new SelectItem("[cR1]1[cR1][cR1][cR1][cR1][cR1]1", "Unfused benzene ring"));
+	}
+
+	protected void initialiseSubstructureInformationSmarts() {
+		this.substructureInformationSmarts = new java.util.ArrayList<SelectItem>();
+		this.substructureInformationSmarts.add(new SelectItem("[H,CX4,$(cc)][N+0]([$(cc)])[H,CX4,$(cc)]", "Aromatic amine"));
+		this.substructureInformationSmarts.add(new SelectItem("[H,#6]-[N]=[N]-[H,#6]", "Azo group"));
+		this.substructureInformationSmarts.add(new SelectItem("[#6]-[#6](-[OH1])=O", "-COOH"));
+		this.substructureInformationSmarts.add(new SelectItem("[NX3][CX2]#[NX1]", "Cyanamide"));
+		this.substructureInformationSmarts.add(new SelectItem("c12ccccc1cccc2", "Fused benzene ring"));
+		this.substructureInformationSmarts.add(new SelectItem("[OX2H]", "Hydroxyl"));
+		this.substructureInformationSmarts.add(new SelectItem("[C]=[N]-[C,$(cc)]", "Imine"));
+		this.substructureInformationSmarts.add(new SelectItem("[#6][CX3](=O)[#6]", "Ketone"));
+		this.substructureInformationSmarts.add(new SelectItem("[#7]-[#7](~[#8])=[#8]", "Nitroamine"));
+		this.substructureInformationSmarts.add(new SelectItem("[#6]-[#7]-[#7X2]=[#8]", "Nitrosamine"));
+		this.substructureInformationSmarts.add(new SelectItem("o1cc[n+0]c1", "Oxazol"));
+		this.substructureInformationSmarts.add(new SelectItem("[#6]=[NX2]-[OH]", "Oxime"));
+		this.substructureInformationSmarts.add(new SelectItem("[#6]=[NX2]-[O]-[#6]", "Oxime ether"));
+		this.substructureInformationSmarts.add(new SelectItem("c1c[n+0]cc[n+0]1", "Pyrazine"));
+		this.substructureInformationSmarts.add(new SelectItem("[n+0]1ccc[n+0]1", "Pyrazole"));
+		this.substructureInformationSmarts.add(new SelectItem("c1c[n+0][n+0]cc1", "Pyridazine"));
+		this.substructureInformationSmarts.add(new SelectItem("[#6,H]-c1cccc(-[#6,H])[n+0]1", "Pyridine"));
+		this.substructureInformationSmarts.add(new SelectItem("c1c[n+0]c[n+0]c1", "Pyrimidine"));
+		this.substructureInformationSmarts.add(new SelectItem("[#6,#8,H]-S(-[OH])(=O)=O", "-SO3H"));
+		this.substructureInformationSmarts.add(new SelectItem("[#6,#8,H]-S(-[O]-[#6])(=O)=O", "-SO3R"));
+		this.substructureInformationSmarts.add(new SelectItem("[cR1]1[cR1][cR1][cR1][cR1][cR1]1", "Unfused benzene ring"));
 	}
 	
 	protected void initialiseDatabases() {
@@ -155,7 +182,8 @@ public class AvailableParameters {
 			new SelectItem("MetaCyc", "MetaCyc"),
 			new SelectItem("ForIdent", "ForIdent"),
 			new SelectItem("LipidMaps", "LipidMaps"),
-			new SelectItem("LocalDerivatisedKegg", "KEGG (derivatised)")
+			new SelectItem("LocalDerivatisedKegg", "KEGG (derivatised)"),
+			new SelectItem("LocalChEBI", "ChEBI")
 		};
 		SelectItem[] filedbs = new SelectItem[] {
 			new SelectItem("LocalCSV", "CSV"), 
@@ -179,6 +207,7 @@ public class AvailableParameters {
 		this.databaseNeedsLocalFile.put("ForIdent", false);
 		this.databaseNeedsLocalFile.put("LipidMaps", false);
 		this.databaseNeedsLocalFile.put("LocalDerivatisedKegg", false);
+		this.databaseNeedsLocalFile.put("LocalChEBI", false);
 
 		this.databaseNeedsLocalFile.put("LocalCSV", true);
 		this.databaseNeedsLocalFile.put("LocalPSV", true);
@@ -199,5 +228,9 @@ public class AvailableParameters {
 		
 	public java.util.List<SelectItem> getSubstructureSmarts() {
 		return this.substructureSmarts;
+	}
+	
+	public java.util.List<SelectItem> getSubstructureInformationSmarts() {
+		return this.substructureInformationSmarts;
 	}
 }

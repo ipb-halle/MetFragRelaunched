@@ -14,6 +14,7 @@ public class HDFilteredTandemMassPeakListReader extends FilteredTandemMassPeakLi
 	
 	public HDFilteredTandemMassPeakListReader(Settings settings) {
 		super(settings);
+		this.minimumAbsolutePeakIntensity = (Double)settings.get(VariableNames.HD_MINIMUM_ABSOLUTE_PEAK_INTENSITY_NAME);
 	}
 
 	public DefaultPeakList read() {

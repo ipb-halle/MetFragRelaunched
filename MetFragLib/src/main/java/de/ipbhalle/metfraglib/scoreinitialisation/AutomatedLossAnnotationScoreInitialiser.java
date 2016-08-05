@@ -19,45 +19,47 @@ public class AutomatedLossAnnotationScoreInitialiser implements IScoreInitialise
 
 	@Override
 	public void initScoreParameters(Settings settings) throws Exception {
-		PeakToSmartGroupListCollection peakToSmartGroupListCollection = new PeakToSmartGroupListCollection();
-		String filename = (String)settings.get(VariableNames.SMARTS_LOSS_ANNOTATION_FILE_NAME);
-		DefaultPeakList peakList = (DefaultPeakList)settings.get(VariableNames.PEAK_LIST_NAME);
-		Double mzppm = (Double)settings.get(VariableNames.RELATIVE_MASS_DEVIATION_NAME);
-		Double mzabs = (Double)settings.get(VariableNames.ABSOLUTE_MASS_DEVIATION_NAME);
-		
-		Double neutralPrecursorMass = (Double)settings.get(VariableNames.PRECURSOR_NEUTRAL_MASS_NAME);
-		Double adductMass = Constants.getIonisationMassByNominalMassDifference((Integer)settings.get(VariableNames.PRECURSOR_ION_MODE_NAME));
-		
-		java.util.Vector<Double> massDifferences = calculatePeakDifferences(peakList, neutralPrecursorMass, adductMass);
-		
-		BufferedReader breader = new BufferedReader(new FileReader(new File(filename)));
-		String line = "";
-		while((line = breader.readLine()) != null) {
-			line = line.trim();
-			if(line.length() == 0) continue;
-			if(line.startsWith("#")) continue;
-			String[] tmp = line.split("\\s+");
-			Double peak = Double.parseDouble(tmp[0]);
-			if(!this.containsMass(peak, massDifferences, mzabs, mzppm)) continue;
-			PeakToSmartGroupList peakToSmartGroupList = new PeakToSmartGroupList(peak);
-			SmartsGroup smartsGroup = null;
-			for(int i = 1; i < tmp.length; i++) {
-				if(this.isDoubleValue(tmp[i])) {
-					if(smartsGroup != null) 
+		if(!settings.containsKey(VariableNames.LOSS_TO_SMARTS_GROUP_LIST_COLLECTION_NAME) || settings.get(VariableNames.LOSS_TO_SMARTS_GROUP_LIST_COLLECTION_NAME) == null) {
+			PeakToSmartGroupListCollection peakToSmartGroupListCollection = new PeakToSmartGroupListCollection();
+			String filename = (String)settings.get(VariableNames.SMARTS_LOSS_ANNOTATION_FILE_NAME);
+			DefaultPeakList peakList = (DefaultPeakList)settings.get(VariableNames.PEAK_LIST_NAME);
+			Double mzppm = (Double)settings.get(VariableNames.RELATIVE_MASS_DEVIATION_NAME);
+			Double mzabs = (Double)settings.get(VariableNames.ABSOLUTE_MASS_DEVIATION_NAME);
+			
+			Double neutralPrecursorMass = (Double)settings.get(VariableNames.PRECURSOR_NEUTRAL_MASS_NAME);
+			Double adductMass = Constants.getIonisationMassByNominalMassDifference((Integer)settings.get(VariableNames.PRECURSOR_ION_MODE_NAME));
+			
+			java.util.Vector<Double> massDifferences = calculatePeakDifferences(peakList, neutralPrecursorMass, adductMass);
+			
+			BufferedReader breader = new BufferedReader(new FileReader(new File(filename)));
+			String line = "";
+			while((line = breader.readLine()) != null) {
+				line = line.trim();
+				if(line.length() == 0) continue;
+				if(line.startsWith("#")) continue;
+				String[] tmp = line.split("\\s+");
+				Double peak = Double.parseDouble(tmp[0]);
+				if(!this.containsMass(peak, massDifferences, mzabs, mzppm)) continue;
+				PeakToSmartGroupList peakToSmartGroupList = new PeakToSmartGroupList(peak);
+				SmartsGroup smartsGroup = null;
+				for(int i = 1; i < tmp.length; i++) {
+					if(this.isDoubleValue(tmp[i])) {
+						if(smartsGroup != null) 
+							peakToSmartGroupList.addElement(smartsGroup);
+						smartsGroup = new SmartsGroup(Double.parseDouble(tmp[i]));
+					}
+					else {
+						smartsGroup.addElement(tmp[i]);
+					}
+					if(i == (tmp.length - 1)) {
 						peakToSmartGroupList.addElement(smartsGroup);
-					smartsGroup = new SmartsGroup(Double.parseDouble(tmp[i]));
-				}
-				else {
-					smartsGroup.addElement(tmp[i]);
-				}
-				if(i == (tmp.length - 1)) {
-					peakToSmartGroupList.addElement(smartsGroup);
-					peakToSmartGroupListCollection.addElement(peakToSmartGroupList);
+						peakToSmartGroupListCollection.addElement(peakToSmartGroupList);
+					}
 				}
 			}
+			breader.close();
+			settings.set(VariableNames.LOSS_TO_SMARTS_GROUP_LIST_COLLECTION_NAME, peakToSmartGroupListCollection);
 		}
-		breader.close();
-		settings.set(VariableNames.LOSS_TO_SMARTS_GROUP_LIST_COLLECTION_NAME, peakToSmartGroupListCollection);
 	}
 	
 	private boolean containsMass(double mass, java.util.Vector<Double> massVector, double mzabs, double mzppm) {

@@ -64,6 +64,7 @@ public class HDCandidateListWriterPSV implements IWriter {
 					} catch (RelativeIntensityNotDefinedException e1) {
 						continue;
 					}
+
 					String formula = scoredCandidate.getMatchList().getElement(ii).getModifiedFormulaStringOfBestMatchedFragment();
 					
 					sumFormulasOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + formula + ";";
