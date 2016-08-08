@@ -179,13 +179,11 @@ public class HDTopDownBitArrayFragmentWrapper extends AbstractTopDownBitArrayFra
 						byte compareResult = ((TandemMassPeak)peak).matchesToMass(currentFragmentMass);
 						if(compareResult == 0) {
 							if(fragmentPeakMatch[0] != null) {
-								System.out.println("number hydrogens " + this.wrappedFragment.getNumberHydrogens());
 								((HDFragmentMassToPeakMatch)fragmentPeakMatch[0]).addMatchedFragment(this.wrappedFragment, (byte)shifts[j], (byte)shifts[i], currentFragmentMass, p == 0 ? (byte)precursorIonTypeIndex : (byte)0, k, numberDeuteriums);
 							}
 							else {
 								fragmentPeakMatch[0] = new HDFragmentMassToPeakMatch(peak);
 								fragmentPeakMatch[0].setIsPositiveCharge(isPositive);
-								System.out.println("number hydrogens " + this.wrappedFragment.getNumberHydrogens());
 								((HDFragmentMassToPeakMatch)fragmentPeakMatch[0]).addMatchedFragment(this.wrappedFragment, (byte)shifts[j], (byte)shifts[i], currentFragmentMass, p == 0 ? (byte)precursorIonTypeIndex : (byte)0, k, numberDeuteriums);
 							}
 							matched = true;

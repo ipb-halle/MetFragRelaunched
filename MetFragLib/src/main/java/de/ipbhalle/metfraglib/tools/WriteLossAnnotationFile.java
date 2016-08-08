@@ -23,7 +23,7 @@ public class WriteLossAnnotationFile {
 	 * 2 - mzppm
 	 * 3 - mzabs
 	 * 4 - output smarts
-	 * 5 - putput smiles
+	 * 5 - output smiles
 	 * 
 	 */
 	
@@ -99,6 +99,7 @@ public class WriteLossAnnotationFile {
 			peakToSmartGroupListCollection.calculatePeakProbabilities();
 			peakToSmartGroupListCollection.calculatePosteriorProbabilites();
 		}
+		peakToSmartGroupListCollection.removeDuplicates();
 		if(output == null) peakToSmartGroupListCollection.print();
 		else {
 			BufferedWriter bwriter = new BufferedWriter(new FileWriter(new File(output)));

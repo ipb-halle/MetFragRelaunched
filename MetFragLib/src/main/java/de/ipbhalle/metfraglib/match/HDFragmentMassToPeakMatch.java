@@ -97,12 +97,10 @@ public class HDFragmentMassToPeakMatch extends FragmentMassToPeakMatch {
 	}
 
 	public void addMatchedFragment(IFragment matchedFragment, byte numberHydrogensDifferToPeakMass, byte numberDeuteriumsDifferToPeakMass, double matchedFragmentMassToPeak, byte adductTypeIndex, byte numberVariableDeuteriumsDifferToPeakMass, byte numberOfDeuteriumsOfMatchedFragment) {
-		System.out.println("addMatchedFragment " + matchedFragment.getMolecularFormula().getNumberHydrogens());
 		this.matchedFragmentsList.addElement(matchedFragment);
 		this.matchedFragmentMassesToTandemMassPeak.add(matchedFragmentMassToPeak);
 		this.numberOfHydrogensDifferToPeakMass.add(numberHydrogensDifferToPeakMass);
 		this.numberOfDeuteriumsDifferToPeakMass.add(numberDeuteriumsDifferToPeakMass);
-		System.out.println("addMatchedFragment " + numberDeuteriumsDifferToPeakMass);
 		this.numberOfDeuteriumsOfMatchedFragment.add(numberOfDeuteriumsOfMatchedFragment);
 		this.numberOfVariableDeuteriumsDifferToPeakMass.add(numberVariableDeuteriumsDifferToPeakMass);
 		this.fragmentAdductTypeIndeces.add(adductTypeIndex);
@@ -162,11 +160,8 @@ public class HDFragmentMassToPeakMatch extends FragmentMassToPeakMatch {
 	}
 	
 	public String getModifiedFormulaStringOfBestMatchedFragment() {
-		System.out.println(this.bestMatchedFragment.getAtomsInfo() + " " + this.bestMatchedFragment.getBondsInfo());
-		System.out.println("hs " + this.bestMatchedFragment.getMolecularFormula().getNumberHydrogens());
 		String formula = "";
 		BitArrayFragmentMolecularFormula form = (BitArrayFragmentMolecularFormula)this.bestMatchedFragment.getMolecularFormula();
-		System.out.println(form + " " + this.numberOfDeuteriumsOfBestFragment + " " + this.variableDeuteriumDifferenceOfBestFragment);
 		HDFragmentMolecularFormulaWrapper formWrapper = new HDFragmentMolecularFormulaWrapper(form, (byte)(this.numberOfDeuteriumsOfBestFragment + this.variableDeuteriumDifferenceOfBestFragment));
 		
 		formula = "[" + formWrapper.toString();
@@ -186,7 +181,6 @@ public class HDFragmentMassToPeakMatch extends FragmentMassToPeakMatch {
 			formula += "+";
 		else
 			formula += "-";
-		System.out.println(formula);
 		return formula;
 	}
 

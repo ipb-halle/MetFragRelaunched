@@ -30,7 +30,7 @@ import de.ipbhalle.metfraglib.precursor.BitArrayPrecursor;
  */
 public class DefaultBitArrayFragment extends AbstractFragment {
 
-	protected int numberHydrogens;
+	protected IMolecularFormula molecularFormula;
 
 	/**
 	 * atoms represented as BitArray object 
@@ -90,6 +90,10 @@ public class DefaultBitArrayFragment extends AbstractFragment {
 		}
 		
 		this.treeDepth = 0;
+	}
+
+	public void initialiseMolecularFormula() throws AtomTypeNotKnownFromInputListException {
+		this.molecularFormula = new BitArrayFragmentMolecularFormula((BitArrayPrecursor)this.precursorMolecule, this.atomsBitArray);
 	}
 	
 	@Override
@@ -246,11 +250,11 @@ public class DefaultBitArrayFragment extends AbstractFragment {
 	}
 	
 	public void setNumberHydrogens(int numberHydrogens) {
-		this.numberHydrogens = numberHydrogens;
+		this.molecularFormula.setNumberHydrogens((short)numberHydrogens);
 	}
 	
 	public int getNumberHydrogens() {
-		return this.numberHydrogens;
+		return this.molecularFormula.getNumberHydrogens();
 	}
 	
 	public IMolecularFormula getMolecularFormula() {
@@ -385,7 +389,7 @@ public class DefaultBitArrayFragment extends AbstractFragment {
 	public DefaultBitArrayFragment clone() {
 		DefaultBitArrayFragment clone = new DefaultBitArrayFragment((BitArrayPrecursor)this.precursorMolecule, this.atomsBitArray.clone(), this.bondsBitArray.clone(), this.brokenBondsBitArray.clone());
 	//	clone.setID(this.ID);
-		clone.setNumberHydrogens(this.numberHydrogens);
+		clone.setNumberHydrogens(this.getNumberHydrogens());
 		clone.setTreeDepth(this.treeDepth);
 		return clone;
 	}

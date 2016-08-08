@@ -24,7 +24,7 @@ public class WriteSubstructureAnnotationFile {
 	 * 3 - mzabs
 	 * 4 - probability type: 1 - likelihood; 2 - posterior
 	 * 5 - output smarts
-	 * 6 - putput smiles
+	 * 6 - output smiles
 	 * 
 	 */
 	
@@ -100,6 +100,7 @@ public class WriteSubstructureAnnotationFile {
 			peakToSmartGroupListCollection.calculatePeakProbabilities();
 			peakToSmartGroupListCollection.calculatePosteriorProbabilites();
 		}
+		peakToSmartGroupListCollection.removeDuplicates();
 		if(output == null) peakToSmartGroupListCollection.print();
 		else {
 			BufferedWriter bwriter = new BufferedWriter(new FileWriter(new File(output)));

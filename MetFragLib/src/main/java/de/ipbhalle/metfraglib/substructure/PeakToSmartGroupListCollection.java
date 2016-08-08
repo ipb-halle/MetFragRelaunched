@@ -123,6 +123,13 @@ public class PeakToSmartGroupListCollection extends DefaultList {
 		}
 	}
 	
+	public void removeDuplicates() {
+		for(int i = 0; i < this.list.size(); i++) {
+			PeakToSmartGroupList peakToSmartGroupList = (PeakToSmartGroupList)this.list.get(i);
+			peakToSmartGroupList.removeDuplicates();
+		}	
+	}
+	
 	public void updateProbabilities() {
 		for(int i = 0; i < this.list.size(); i++) {
 			this.getElement(i).updateProbabilities();

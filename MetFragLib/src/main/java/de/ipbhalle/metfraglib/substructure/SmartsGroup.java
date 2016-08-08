@@ -92,6 +92,24 @@ public class SmartsGroup extends DefaultList {
 		return string;
 	}
 	
+	public void removeDuplicates() {
+		java.util.Vector<Object> newList = new java.util.Vector<Object>();
+		java.util.Vector<String> newSmiles = new java.util.Vector<String>();
+		for(int i = 0; i < this.list.size(); i++) {
+			String current = ((SMARTSQueryTool)this.list.get(i)).getSmarts();
+			if(!newList.contains(current)) {
+				newList.add(current);
+				newSmiles.add(this.smiles.get(i));
+			}
+		}
+		this.list = new java.util.Vector<Object>();
+		for(int i = 0; i < newList.size(); i++) {
+			SMARTSQueryTool sqt = new SMARTSQueryTool((String)newList.get(i), DefaultChemObjectBuilder.getInstance());
+			this.list.add(sqt);
+		}
+		this.smiles = newSmiles;
+	}
+	
 	public String toStringSmiles() {
 		String string = this.probability + "";
 		for(int i = 0; i < this.smiles.size(); i++) {

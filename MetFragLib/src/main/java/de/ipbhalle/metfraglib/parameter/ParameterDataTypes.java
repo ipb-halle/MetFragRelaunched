@@ -204,6 +204,7 @@ public class ParameterDataTypes {
 		parameterDatatypes.put(	VariableNames.HD_PRECURSOR_ION_MASS_NAME, 									"Double"	);
 		parameterDatatypes.put(	VariableNames.HD_PEAK_LIST_PATH_NAME, 										"String"	);
 		parameterDatatypes.put(	VariableNames.HD_PRECURSOR_ION_MODE_NAME, 									"Integer"	);
+		parameterDatatypes.put(	VariableNames.HD_MINIMUM_ABSOLUTE_PEAK_INTENSITY_NAME,						"Double"	);
 		parameterDatatypes.put(	VariableNames.HD_GROUP_FLAG_FILTER_ENABLED_NAME, 							"Boolean"	);
 		
 	}

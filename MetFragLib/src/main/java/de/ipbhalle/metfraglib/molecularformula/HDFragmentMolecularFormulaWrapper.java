@@ -50,9 +50,7 @@ public class HDFragmentMolecularFormulaWrapper {
 		for(int i = 0; i < atomsAsIndeces.length; i++)
 			buckets[atomsAsIndeces[i]] = numberOfAtoms[i];
 		if(this.molecularFormula.getNumberHydrogens() != 0) {
-			System.out.println(this.molecularFormula.getNumberHydrogens() + " " + this.numberDeuteriums);
 			buckets[hydrogenIndex] = (short)(this.molecularFormula.getNumberHydrogens() - this.numberDeuteriums);
-			System.out.println(buckets[hydrogenIndex]);
 		}
 		if(this.numberDeuteriums != 0) buckets[deuteriumIndex] = (short)this.numberDeuteriums;
 		

@@ -1,14 +1,10 @@
 package de.ipbhalle.metfraglib.fragment;
 
 import de.ipbhalle.metfraglib.exceptions.AtomTypeNotKnownFromInputListException;
-import de.ipbhalle.metfraglib.interfaces.IMolecularFormula;
-import de.ipbhalle.metfraglib.molecularformula.BitArrayFragmentMolecularFormula;
 import de.ipbhalle.metfraglib.precursor.BitArrayPrecursor;
 import de.ipbhalle.metfraglib.precursor.TopDownBitArrayPrecursor;
 
 public class TopDownBitArrayFragment extends de.ipbhalle.metfraglib.fragment.AbstractTopDownBitArrayFragment {
-
-	protected IMolecularFormula molecularFormula;
 	
 	/**
 	 * constructor setting all bits of atomsBitArray and bondsBitArray to true
@@ -23,12 +19,17 @@ public class TopDownBitArrayFragment extends de.ipbhalle.metfraglib.fragment.Abs
 
 	public TopDownBitArrayFragment clone() {
 		TopDownBitArrayFragment clone = null;
-		clone = new TopDownBitArrayFragment(
-				(TopDownBitArrayPrecursor)this.precursorMolecule, 
-				this.atomsBitArray.clone(), 
-				this.bondsBitArray.clone(), 
-				this.brokenBondsBitArray.clone(), 
-				this.numberHydrogens);
+		try {
+			clone = new TopDownBitArrayFragment(
+					(TopDownBitArrayPrecursor)this.precursorMolecule, 
+					this.atomsBitArray.clone(), 
+					this.bondsBitArray.clone(), 
+					this.brokenBondsBitArray.clone(), 
+					this.getNumberHydrogens());
+		} catch (AtomTypeNotKnownFromInputListException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		clone.setID(this.ID);
 		clone.setTreeDepth(this.treeDepth);
 		if(clone.hasMatched) clone.setHasMatched();
@@ -55,24 +56,17 @@ public class TopDownBitArrayFragment extends de.ipbhalle.metfraglib.fragment.Abs
 			de.ipbhalle.metfraglib.BitArray atomsBitArray, 
 			de.ipbhalle.metfraglib.BitArray bondsBitArray, 
 			de.ipbhalle.metfraglib.BitArray brokenBondsBitArray, 
-			int numberHydrogens)
+			int numberHydrogens) throws AtomTypeNotKnownFromInputListException
 	{
 		super(precursor, atomsBitArray, bondsBitArray, brokenBondsBitArray);
-		this.numberHydrogens = numberHydrogens;
-	}
-	
-	public void initialiseMolecularFormula() throws AtomTypeNotKnownFromInputListException {
-		this.molecularFormula = new BitArrayFragmentMolecularFormula((BitArrayPrecursor)this.precursorMolecule, this.atomsBitArray);
+		this.initialiseMolecularFormula();
+		this.setNumberHydrogens(numberHydrogens);
 	}
 	
 	public double getMonoisotopicMass() {
 		return this.molecularFormula.getMonoisotopicMass();
 	}
 
-	public IMolecularFormula getMolecularFormula() {
-		return this.molecularFormula;
-	}
-	
 	public boolean equals(Object topDownBitArrayFragment) {
 		if(this.atomsBitArray.equals(((TopDownBitArrayFragment)topDownBitArrayFragment).getAtomsBitArray())) return true;
 		return false;
@@ -103,8 +97,14 @@ public class TopDownBitArrayFragment extends de.ipbhalle.metfraglib.fragment.Abs
 		boolean stillOneFragment = this.traverseSingleDirection(indecesOfBondConnectedAtoms[0], indecesOfBondConnectedAtoms[1], bondIndexToRemove, 
 				atomArrayOfNewFragment_1, bondArrayOfNewFragment_1, brokenBondArrayOfNewFragment_1, numberHydrogensOfNewFragment);
 		
-		TopDownBitArrayFragment firstNewGeneratedFragment = new TopDownBitArrayFragment((TopDownBitArrayPrecursor)this.precursorMolecule, atomArrayOfNewFragment_1, bondArrayOfNewFragment_1, 
-			brokenBondArrayOfNewFragment_1, numberHydrogensOfNewFragment[0]);
+		TopDownBitArrayFragment firstNewGeneratedFragment = null;
+		try {
+			firstNewGeneratedFragment = new TopDownBitArrayFragment((TopDownBitArrayPrecursor)this.precursorMolecule, atomArrayOfNewFragment_1, bondArrayOfNewFragment_1, 
+				brokenBondArrayOfNewFragment_1, numberHydrogensOfNewFragment[0]);
+		} catch (AtomTypeNotKnownFromInputListException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
 		try {
 			firstNewGeneratedFragment.initialiseMolecularFormula();
 		} catch (AtomTypeNotKnownFromInputListException e1) {
@@ -134,8 +134,14 @@ public class TopDownBitArrayFragment extends de.ipbhalle.metfraglib.fragment.Abs
 		this.traverseSingleDirection(indecesOfBondConnectedAtoms[1], indecesOfBondConnectedAtoms[0], bondIndexToRemove, 
 				atomArrayOfNewFragment_2, bondArrayOfNewFragment_2, brokenBondArrayOfNewFragment_2, numberHydrogensOfNewFragment);
 
-		TopDownBitArrayFragment secondNewGeneratedFragment = new TopDownBitArrayFragment((TopDownBitArrayPrecursor)this.precursorMolecule, atomArrayOfNewFragment_2, 
-			bondArrayOfNewFragment_2, brokenBondArrayOfNewFragment_2, numberHydrogensOfNewFragment[0]);
+		TopDownBitArrayFragment secondNewGeneratedFragment = null;
+		try {
+			secondNewGeneratedFragment = new TopDownBitArrayFragment((TopDownBitArrayPrecursor)this.precursorMolecule, atomArrayOfNewFragment_2, 
+				bondArrayOfNewFragment_2, brokenBondArrayOfNewFragment_2, numberHydrogensOfNewFragment[0]);
+		} catch (AtomTypeNotKnownFromInputListException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		
 		try {
 			secondNewGeneratedFragment.initialiseMolecularFormula();

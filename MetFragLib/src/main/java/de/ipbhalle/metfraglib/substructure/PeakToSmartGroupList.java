@@ -93,6 +93,12 @@ public class PeakToSmartGroupList extends DefaultList {
 		return numberSubstructures;
 	}
 	
+	public void removeDuplicates() {
+		for(int i = 0; i < this.list.size(); i++) {
+			((SmartsGroup)this.list.get(i)).removeDuplicates();
+		}
+	}
+	
 	public String toStringSmiles() {
 		String string = "";
 		if(this.list.size() > 0) string += this.getElement(0).toStringSmiles();
