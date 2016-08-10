@@ -19,6 +19,10 @@ public class ClusterWrapper {
 		return children;
 	}
 	
+	public boolean isLeaf() {
+		return this.cluster.getChildren() == null || this.cluster.getChildren().size() == 0;
+	}
+	
 	public String getName() {
 		return this.cluster.getName();
 	}
