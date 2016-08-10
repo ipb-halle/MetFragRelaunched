@@ -48,6 +48,12 @@
 						<ui:include src="resultTable.xhtml" />
 					</ui:insert>
 				</p:tab>
+				<p:tab title="Cluster" id="resultCluster" rendered="#{metFragWebBean.resultsAvailable}" 
+					disabled="#{not metFragWebBean.compoundsClusterReady}">
+					<ui:insert name="resultCluster">
+						<ui:include src="resultCluster.xhtml" />
+					</ui:insert>
+				</p:tab>
 			</p:accordionPanel>
 			<p:idleMonitor timeout="1800000" >
 				<p:ajax event="idle" listener="#{metFragWebBean.viewExpiredListener}"/>

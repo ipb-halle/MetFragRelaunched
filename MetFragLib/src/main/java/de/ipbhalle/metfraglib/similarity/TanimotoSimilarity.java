@@ -156,28 +156,27 @@ public class TanimotoSimilarity {
 		double[][] pdist = new double[][] {
 				distValues
 	    };
-		
+		/*
 		for(int i = 0; i < distValues.length; i++)
 			System.out.println(distValues[i]);
-		
+		*/
 		ClusteringAlgorithm alg = new PDistClusteringAlgorithm();
 		return new ClusterWrapper(alg.performClustering(pdist, names, new AverageLinkageStrategy()));
 	}
 	
 	public static void main(String[] args) {
 		String peakListFilePath = "/tmp/peaklist_file_example_1.txt";
-		String candidateListFilePath = "/tmp/candidate_file_example_1.txt";
+
 		de.ipbhalle.metfraglib.settings.MetFragGlobalSettings settings = new de.ipbhalle.metfraglib.settings.MetFragGlobalSettings();
 		//set peaklist path and candidate list path
 		settings.set(VariableNames.PEAK_LIST_PATH_NAME, peakListFilePath);
-		settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, candidateListFilePath);
 		//set needed parameters
 		settings.set(VariableNames.DATABASE_RELATIVE_MASS_DEVIATION_NAME, 5.0);
 		settings.set(VariableNames.RELATIVE_MASS_DEVIATION_NAME, 5.0);
 		settings.set(VariableNames.ABSOLUTE_MASS_DEVIATION_NAME, 0.001);
 		settings.set(VariableNames.PRECURSOR_NEUTRAL_MASS_NAME, 253.966126);
 		settings.set(VariableNames.METFRAG_DATABASE_TYPE_NAME, "PubChem");
-		
+		settings.set(VariableNames.PRECURSOR_DATABASE_IDS_NAME, new String[] {"50465", "57010914", "56974741", "88419651", "44290588"});
 		de.ipbhalle.metfraglib.process.CombinedMetFragProcess metfragProcess = new de.ipbhalle.metfraglib.process.CombinedMetFragProcess(settings);
 		
 		try {
@@ -187,12 +186,38 @@ public class TanimotoSimilarity {
 		}
 		
 		CandidateList completeCanddiateList = metfragProcess.getCandidateList();
-		CandidateList canddiateList = new CandidateList();
+		CandidateList candidiateList = new CandidateList();
 		
 		
 		for(int i = 0; i < completeCanddiateList.getNumberElements(); i++)
-			canddiateList.addElement(completeCanddiateList.getElement(i));
+			candidiateList.addElement(completeCanddiateList.getElement(i));
 		
+		System.out.println("generating cluster");
+		try {
+			ClusterWrapper clusterWrapper = TanimotoSimilarity.generateCluster(candidiateList);
+			ClusterWrapper[] cw = clusterWrapper.getChildren();
+			System.out.println(cw.length + " children");
+			
+			java.util.Stack<ClusterWrapper> clusterStack = new java.util.Stack<ClusterWrapper>();
+			java.util.Stack<String> tabStack = new java.util.Stack<String>();
+			clusterStack.push(clusterWrapper);
+			tabStack.push("");
+			
+			while(!clusterStack.isEmpty()) {
+				ClusterWrapper current = clusterStack.pop();
+				String currenTab = tabStack.pop();
+				ClusterWrapper[] children = current.getChildren();
+				for(ClusterWrapper child : children) {
+					clusterStack.push(child);
+					tabStack.push(currenTab + " ");
+				}
+				System.out.println(currenTab + " " + current.getName());
+			}
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 }

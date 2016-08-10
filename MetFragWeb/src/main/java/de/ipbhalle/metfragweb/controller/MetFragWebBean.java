@@ -26,6 +26,7 @@ import org.primefaces.event.CloseEvent;
 import org.primefaces.event.ItemSelectEvent;
 import org.primefaces.event.SlideEndEvent;
 import org.primefaces.model.StreamedContent;
+import org.primefaces.model.TreeNode;
 import org.primefaces.model.chart.AxisType;
 import org.primefaces.model.chart.LineChartModel;
 import org.primefaces.model.chart.LineChartSeries;
@@ -53,6 +54,7 @@ import de.ipbhalle.metfragweb.datatype.Parameter;
 import de.ipbhalle.metfragweb.datatype.ScoreSummary;
 import de.ipbhalle.metfragweb.datatype.SuspectListFileContainer;
 import de.ipbhalle.metfragweb.datatype.Weight;
+import de.ipbhalle.metfragweb.helper.ClusterCompoundsThreadRunner;
 import de.ipbhalle.metfragweb.helper.FileStorer;
 import de.ipbhalle.metfragweb.helper.ProcessCompoundsThreadRunner;
 import de.ipbhalle.metfragweb.helper.RetrieveCompoundsThreadRunner;
@@ -72,6 +74,9 @@ public class MetFragWebBean {
 	 * combines all the settings
 	 */
 	protected BeanSettingsContainer beanSettingsContainer;
+	
+	protected Thread clusterCompoundsThread;
+	protected ClusterCompoundsThreadRunner clusterCompoundsThreadRunner;
 	protected Messages errorMessages;
 	protected Messages infoMessages;
 
@@ -598,7 +603,15 @@ public class MetFragWebBean {
 		RequestContext.getCurrentInstance().execute("PF('retrieveCandidatesProgressDialog').show();");
 		
 		this.isDatabaseProcessing = true;
-		
+		/*
+		 * stop compounds cluster thread
+		 */
+		if(this.clusterCompoundsThread != null)
+			try {
+				this.clusterCompoundsThread.join();
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
 		/*
 		 * check database settings before retrieving compounds
 		 */
@@ -1883,6 +1896,15 @@ public class MetFragWebBean {
 		this.initScoreSettings();
 		System.out.println("checks before processing");
 		
+		//cluster compounds reset
+		if(this.clusterCompoundsThread != null)
+			try {
+				this.clusterCompoundsThread.join();
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
+		if(this.clusterCompoundsThreadRunner != null) this.clusterCompoundsThreadRunner.reset();
+		
 		//check all parameters
 		boolean allSettingsFine = true;
 		//check filter settings
@@ -1975,7 +1997,6 @@ public class MetFragWebBean {
 			this.infoMessages.removeKey("processingProcessedCandidatesInfo");
 
 			this.threadExecutionStarted = false;
-			this.retrieveCompoundsThreadRunner = null;
 			
 			
 			//stop the thread
@@ -1995,10 +2016,11 @@ public class MetFragWebBean {
 	public void stopCompoundProcessing() {
 		System.out.println("stop processing triggered");
 		try {
-			this.processCompoundsThreadRunner.setInterrupted(true);
 			this.beanSettingsContainer.terminateMetFragProcess();
 			System.out.println("this.beanSettingsContainer.terminateMetFragProcess();");
 			this.thread.join();
+			//cluster compounds stop
+			if(this.clusterCompoundsThread != null) this.clusterCompoundsThread.join();
 			while(this.thread.isAlive()) {
 				try {
 					System.out.println("waiting for thread to be finished");
@@ -2021,6 +2043,8 @@ public class MetFragWebBean {
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Processing stopped.",  ""));
 			this.beanSettingsContainer.setProcessCompoundsDialogHeader("");
 			this.beanSettingsContainer.resetProcessStatus();
+			this.retrieveCompoundsThreadRunner = null;
+			
 		} catch (InterruptedException e) {
 			return;
 		}
@@ -2062,6 +2086,14 @@ public class MetFragWebBean {
 				//reset the header of the processing dialog
 				this.beanSettingsContainer.setProcessCompoundsDialogHeader("");
 				this.beanSettingsContainer.resetProcessStatus();
+				
+				//start clustering compounds
+				if(this.filteredMetFragResultsContainer.getMetFragResults().size() >= 10) {
+					this.clusterCompoundsThreadRunner = new ClusterCompoundsThreadRunner(this.beanSettingsContainer, 
+							this.infoMessages, this.errorMessages, this.filteredMetFragResultsContainer);
+					this.clusterCompoundsThread = new Thread(this.clusterCompoundsThreadRunner);
+					if(this.clusterCompoundsThread != null) this.clusterCompoundsThread.start();
+				}
 			}
 			catch(Exception e) {
 				//error occured
@@ -2091,6 +2123,17 @@ public class MetFragWebBean {
 	
 	public String getLabel() {
 		return "test";
+	}
+	
+	/*
+	 * results cluster
+	 */
+	public boolean isCompoundsClusterReady() {
+		return this.clusterCompoundsThreadRunner == null ? false : this.clusterCompoundsThreadRunner.isReady();
+	}
+	
+	public TreeNode getCompoundsClusterRoot() {
+		return this.clusterCompoundsThreadRunner.getTreeRoot();
 	}
 	
 	/*
