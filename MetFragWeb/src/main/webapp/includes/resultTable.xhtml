@@ -32,7 +32,7 @@
 						style="border: none; width: 100px; padding-right: 20px;">
 						<p:slider for="sliderValue" id="slider">
 							<p:ajax event="slideEnd" process="sliderValue slider"
-								update="mainForm:mainAccordion:MetFragResultsTable mainForm:mainAccordion:scoreDistributionPlot"
+								update="mainForm:mainAccordion:MetFragResultsTable mainForm:mainAccordion:scoreDistributionPlot mainForm:mainAccordion:resultClusterPanel"
 								listener="#{metFragWebBean.weightsSliderValueChanged}" />
 						</p:slider>
 					</p:column>
@@ -42,7 +42,7 @@
 						<p:inputText id="sliderValue" required="false" size="2"
 							value="#{weight.value}" style="text-align: center;">
 							<p:ajax event="blur"
-								update="mainForm:mainAccordion:MetFragResultsTable mainForm:mainAccordion:scoreDistributionPlot"
+								update="mainForm:mainAccordion:MetFragResultsTable mainForm:mainAccordion:scoreDistributionPlot mainForm:mainAccordion:resultClusterPanel"
 								listener="#{metFragWebBean.weightsTextInputValueChanged}" />
 						</p:inputText>
 					</p:column>
@@ -134,7 +134,7 @@
 										<h:panelGroup>
 											<h:graphicImage id="magnifierMol_1"
 												name="images/icons/magni3.png" />
-											<p:tooltip id="molImageLarge1" for="magnifierMol_1">
+											<p:tooltip id="molImageLarge1" for="magnifierMol_1" style="background-color: white;">
 												<p:graphicImage alt="images/ajaxloadingbar.gif"
 													value="#{metFragResult.imageAddress}" />
 											</p:tooltip>

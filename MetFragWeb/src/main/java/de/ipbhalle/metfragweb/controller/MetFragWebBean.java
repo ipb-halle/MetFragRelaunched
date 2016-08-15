@@ -24,6 +24,8 @@ import org.apache.commons.mail.MultiPartEmail;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.CloseEvent;
 import org.primefaces.event.ItemSelectEvent;
+import org.primefaces.event.NodeCollapseEvent;
+import org.primefaces.event.NodeExpandEvent;
 import org.primefaces.event.SlideEndEvent;
 import org.primefaces.model.StreamedContent;
 import org.primefaces.model.TreeNode;
@@ -43,6 +45,8 @@ import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.peak.TandemMassPeak;
 import de.ipbhalle.metfraglib.settings.MetFragGlobalSettings;
 import de.ipbhalle.metfraglib.settings.Settings;
+import de.ipbhalle.metfragweb.compoundCluster.ClusterCompoundsThreadRunner;
+import de.ipbhalle.metfragweb.compoundCluster.INode;
 import de.ipbhalle.metfragweb.container.BeanSettingsContainer;
 import de.ipbhalle.metfragweb.container.Messages;
 import de.ipbhalle.metfragweb.container.MetFragResultsContainer;
@@ -54,7 +58,6 @@ import de.ipbhalle.metfragweb.datatype.Parameter;
 import de.ipbhalle.metfragweb.datatype.ScoreSummary;
 import de.ipbhalle.metfragweb.datatype.SuspectListFileContainer;
 import de.ipbhalle.metfragweb.datatype.Weight;
-import de.ipbhalle.metfragweb.helper.ClusterCompoundsThreadRunner;
 import de.ipbhalle.metfragweb.helper.FileStorer;
 import de.ipbhalle.metfragweb.helper.ProcessCompoundsThreadRunner;
 import de.ipbhalle.metfragweb.helper.RetrieveCompoundsThreadRunner;
@@ -77,6 +80,10 @@ public class MetFragWebBean {
 	
 	protected Thread clusterCompoundsThread;
 	protected ClusterCompoundsThreadRunner clusterCompoundsThreadRunner;
+	protected TreeNode[] selectedClusterNodes;
+	protected TreeNode selectedContextMenuClusterNode;
+	protected Boolean clusterCompoundsThreadStarted;
+	
 	protected Messages errorMessages;
 	protected Messages infoMessages;
 
@@ -622,6 +629,7 @@ public class MetFragWebBean {
 			return;
 		}
 		RequestContext.getCurrentInstance().execute("PF('mainAccordion').unselect(1)");
+		RequestContext.getCurrentInstance().execute("PF('mainAccordion').unselect(5)");
 		this.beanSettingsContainer.setCompoundsRetrieved(false);
 		this.metFragResultsContainer = new MetFragResultsContainer();
 		this.filteredMetFragResultsContainer = new MetFragResultsContainer();
@@ -1935,6 +1943,7 @@ public class MetFragWebBean {
 		this.candidateStatistics = new CandidateStatistics();
 		this.candidateStatistics.setShowPointLabels(false);
 		this.candidateStatistics.setSelectedCandidate(0);
+		RequestContext.getCurrentInstance().execute("PF('mainAccordion').unselect(5)");
 		System.out.println("start processing");
 		//create a thread that undertakes the processing
 		this.threadExecutionStarted = true;
@@ -2017,10 +2026,12 @@ public class MetFragWebBean {
 		System.out.println("stop processing triggered");
 		try {
 			this.beanSettingsContainer.terminateMetFragProcess();
-			System.out.println("this.beanSettingsContainer.terminateMetFragProcess();");
 			this.thread.join();
 			//cluster compounds stop
-			if(this.clusterCompoundsThread != null) this.clusterCompoundsThread.join();
+			if(this.clusterCompoundsThread != null) {
+				this.clusterCompoundsThread.join();
+				this.clusterCompoundsThreadStarted = false;
+			}
 			while(this.thread.isAlive()) {
 				try {
 					System.out.println("waiting for thread to be finished");
@@ -2029,7 +2040,6 @@ public class MetFragWebBean {
 				    Thread.currentThread().interrupt();
 				}
 			}
-			System.out.println("Thread is finished");
 			this.infoMessages.removeKey("processingErrorCandidatesInfo");
 			this.infoMessages.removeKey("processingProcessedCandidatesInfo");
 			this.infoMessages.removeKey("processingFilteredCandidatesInfo");
@@ -2051,6 +2061,7 @@ public class MetFragWebBean {
 	}
 	
 	public void checkProcessingThread() {
+		this.checkClusterThread();
 		if(this.thread == null) return;
 		if(!this.threadExecutionStarted) return;
 		if(!this.isCandidateProcessing) return;
@@ -2088,11 +2099,14 @@ public class MetFragWebBean {
 				this.beanSettingsContainer.resetProcessStatus();
 				
 				//start clustering compounds
-				if(this.filteredMetFragResultsContainer.getMetFragResults().size() >= 10) {
+				if(this.filteredMetFragResultsContainer.getMetFragResults().size() >= 5) {
 					this.clusterCompoundsThreadRunner = new ClusterCompoundsThreadRunner(this.beanSettingsContainer, 
 							this.infoMessages, this.errorMessages, this.filteredMetFragResultsContainer);
 					this.clusterCompoundsThread = new Thread(this.clusterCompoundsThreadRunner);
-					if(this.clusterCompoundsThread != null) this.clusterCompoundsThread.start();
+					if(this.clusterCompoundsThread != null) {
+						this.clusterCompoundsThreadStarted = true;
+						this.clusterCompoundsThread.start();
+					}
 				}
 			}
 			catch(Exception e) {
@@ -2128,6 +2142,16 @@ public class MetFragWebBean {
 	/*
 	 * results cluster
 	 */
+	public void checkClusterThread() {
+		if(this.clusterCompoundsThread == null) return;
+		if(this.clusterCompoundsThreadStarted && this.clusterCompoundsThreadRunner != null) {
+			if(this.clusterCompoundsThreadRunner.isReady()) {
+				RequestContext.getCurrentInstance().update("mainForm:mainAccordion:resultClusterPanel");
+				this.clusterCompoundsThreadStarted = false;
+			}
+		}
+	}
+	
 	public boolean isCompoundsClusterReady() {
 		return this.clusterCompoundsThreadRunner == null ? false : this.clusterCompoundsThreadRunner.isReady();
 	}
@@ -2136,6 +2160,88 @@ public class MetFragWebBean {
 		return this.clusterCompoundsThreadRunner.getTreeRoot();
 	}
 	
+	public TreeNode[] getSelectedClusterNodes() {
+        return this.selectedClusterNodes;
+    }
+ 
+    public void setSelectedClusterNodes(TreeNode[] selectedClusterNodes) {
+        this.selectedClusterNodes = selectedClusterNodes;
+    }
+    
+    public void expandSelectedClusterCompounds(TreeNode[] nodes) {
+        if(nodes != null && nodes.length > 0) {
+        	java.util.LinkedList<TreeNode> toExpand = new java.util.LinkedList<TreeNode>();
+        	for(int i = 0; i < nodes.length; i++) {
+        		toExpand.push(nodes[i]);
+    		}
+        	while(!toExpand.isEmpty()) {
+        		TreeNode current = toExpand.poll();
+        		if(!current.isLeaf()) current.setExpanded(true);
+        		if(current.getChildCount() == 0) continue;
+        		java.util.List<TreeNode> children = current.getChildren();
+        		for(TreeNode child : children) {
+        			toExpand.add(child);
+        		}
+        	}
+        }
+    }
+
+    public void collapseSelectedClusterCompounds(TreeNode[] nodes) {
+        if(nodes != null && nodes.length > 0) {
+        	java.util.LinkedList<TreeNode> toCollapse = new java.util.LinkedList<TreeNode>();
+        	for(int i = 0; i < nodes.length; i++) {
+        		toCollapse.push(nodes[i]);
+    		}
+        	while(!toCollapse.isEmpty()) {
+        		TreeNode current = toCollapse.poll();
+        		if(!current.isLeaf()) current.setExpanded(false);
+        		if(current.getChildCount() == 0) continue;
+        		java.util.List<TreeNode> children = current.getChildren();
+        		for(TreeNode child : children) {
+        			toCollapse.add(child);
+        		}
+        	}
+        }
+    }
+    
+    public void displaySelectedClusterCompounds(TreeNode[] nodes) {
+        if(nodes != null && nodes.length > 0) {
+        	
+        	this.filteredMetFragResultsContainer = new MetFragResultsContainer();
+
+    		this.filteredMetFragResultsContainer.setNumberPeaksUsed(this.metFragResultsContainer.getNumberPeaksUsed());
+    		this.filteredMetFragResultsContainer.setCompoundNameAvailable(this.metFragResultsContainer.isCompoundNameAvailable());
+    		this.filteredMetFragResultsContainer.setSimScoreAvailable(this.metFragResultsContainer.isSimScoreAvailable());
+
+    		for(int i = 0; i < nodes.length; i++) {
+    			INode currentNode = (INode)nodes[i].getData();
+    			if(currentNode.hasResult()) {
+    				this.filteredMetFragResultsContainer.addMetFragResultScoreSorted(currentNode.getResult());
+    			}
+    		}
+    		
+    		this.generateScoreDistributionModelView();
+    		
+    		//RequestContext.getCurrentInstance().update("mainForm:mainAccordion:MetFragResultsTable");
+    		//RequestContext.getCurrentInstance().update("mainForm:mainAccordion:statistics");
+    		//RequestContext.getCurrentInstance().update("mainForm:mainAccordion:resultsTablePanel");
+    		//RequestContext.getCurrentInstance().update("mainForm:mainAccordion:statisticsPanel");
+    		//RequestContext.getCurrentInstance().update("mainForm:mainAccordion:statistics");
+    		if(!this.isScoreDistributionModelAvailable()) RequestContext.getCurrentInstance().execute("PF('mainAccordion').unselect(3)");
+    		RequestContext.getCurrentInstance().update("mainForm:mainAccordion");
+   
+        }
+    }
+    
+    public void nodeExpand(NodeExpandEvent event) {
+        event.getTreeNode().setExpanded(true);      
+    }
+
+    public void nodeCollapse(NodeCollapseEvent event) {
+        event.getTreeNode().setExpanded(false);     
+    }
+    
+    
 	/*
 	 * results statistics 
 	 */
@@ -2293,6 +2399,10 @@ public class MetFragWebBean {
 		}
 		
 		this.generateScoreDistributionModelView();
+		if(this.clusterCompoundsThreadRunner.isReady()) {
+			System.out.println("updating scores");
+			this.clusterCompoundsThreadRunner.updateScores();
+		}
 	}
 	
 	public void weightsTextInputValueChanged() {
@@ -2317,6 +2427,10 @@ public class MetFragWebBean {
 			if(!molecule.isFiltered()) this.filteredMetFragResultsContainer.addMetFragResult(molecule);
 		}
 		this.generateScoreDistributionModelView();
+		if(this.clusterCompoundsThreadRunner.isReady()) {
+			System.out.println("updating scores");
+			this.clusterCompoundsThreadRunner.updateScores();
+		}
 	}
 	
 	public boolean isResultsAvailable() {

@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<h:body>
+
+	<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+		xmlns:h="http://java.sun.com/jsf/html"
+		xmlns:f="http://java.sun.com/jsf/core"
+		xmlns:c="http://java.sun.com/jsp/jstl/core"
+		xmlns:p="http://primefaces.org/ui">
+		
+		<h:panelGroup id="resultClusterPanel" layout="block" styleClass="zoomViewport">
+			<h:panelGroup rendered="#{metFragWebBean.compoundsClusterReady}" layout="block" styleClass="zoomContainer">
+		
+				<p:tree id="compoundClusterTree" value="#{metFragWebBean.compoundsClusterRoot}" var="node" orientation="horizontal" 
+					selectionMode="checkbox" selection="#{metFragWebBean.selectedClusterNodes}" dynamic="true" >
+					
+		        	<p:ajax event="expand" listener="#{metFragWebBean.nodeExpand}" />
+		    		<p:ajax event="collapse" listener="#{metFragWebBean.nodeCollapse}" />
+		        
+		        	<p:treeNode type="leaf">
+			           	<h:outputText value="#{node.name}" style="color: red;" />
+			    	</p:treeNode>
+				   		
+		           	<p:treeNode type="node">
+			           	<h:outputText value="#{node.maxScore}" />
+			    	</p:treeNode>
+					
+		    	</p:tree>
+		    	<p:contextMenu for="compoundClusterTree">
+		        	<p:menuitem value="Filter selected nodes" actionListener="#{metFragWebBean.displaySelectedClusterCompounds(metFragWebBean.selectedClusterNodes)}" />
+		    	 	<p:menuitem value="Expand selected nodes" update="mainForm:mainAccordion:resultClusterPanel" actionListener="#{metFragWebBean.expandSelectedClusterCompounds(metFragWebBean.selectedClusterNodes)}" />
+		    	 	<p:menuitem value="Collapse selected nodes" update="mainForm:mainAccordion:resultClusterPanel" actionListener="#{metFragWebBean.collapseSelectedClusterCompounds(metFragWebBean.selectedClusterNodes)}" />
+		    	</p:contextMenu>
+				
+			</h:panelGroup>
+			<h:panelGroup rendered="#{not metFragWebBean.compoundsClusterReady}">
+	    		<p:graphicImage name="images/loading.gif"/>
+			</h:panelGroup>
+		  </h:panelGroup>	
+    	
+	</ui:composition>
+</h:body>
+
+</html>
