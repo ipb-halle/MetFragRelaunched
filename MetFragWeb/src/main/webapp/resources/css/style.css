@@ -51,6 +51,12 @@
 	max-width: 400px;
 }
 
+.ui-tooltip .ui-tooltip-text {
+	background-color: #fff !important; 
+	background-image: none !important;
+	color: black !important;
+}
+
 .csvImage {
 	background-image: url("#{resource['images/icons/csv.png']}") !important;
 }
