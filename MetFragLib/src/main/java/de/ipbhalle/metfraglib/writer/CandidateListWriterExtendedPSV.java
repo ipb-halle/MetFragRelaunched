@@ -82,7 +82,7 @@ public class CandidateListWriterExtendedPSV implements IWriter {
 				}
 				if(peaksExplained.length() == 0) peaksExplained = "NA";
 				if(sumFormulasOfFragmentsExplainedPeaks.length() == 0) sumFormulasOfFragmentsExplainedPeaks = "NA";
-		
+				
 				scoredCandidate.setProperty("FragmentAtomBitArrays", atomBitArray);
 				scoredCandidate.setProperty("FragmentBondBitArrays", bondBitArray);
 				scoredCandidate.setProperty("FragmentBrokenBondBitArrays", brokenBondBitArray);

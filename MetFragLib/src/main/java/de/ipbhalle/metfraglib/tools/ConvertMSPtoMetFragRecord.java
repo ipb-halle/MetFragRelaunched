@@ -9,6 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Hashtable;
 
+import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
 import de.ipbhalle.metfraglib.exceptions.AtomTypeNotKnownFromInputListException;
 import de.ipbhalle.metfraglib.molecularformula.ByteMolecularFormula;
 import de.ipbhalle.metfraglib.parameter.Constants;
@@ -22,17 +23,24 @@ public class ConvertMSPtoMetFragRecord {
 	static {
 		parameterConversion = new Hashtable<String, String>();
 		parameterConversion.put("Name:", "# SampleName = ");
+		parameterConversion.put("NAME:", "# SampleName = ");
 		parameterConversion.put("InChI:", "# InChI = ");
 		parameterConversion.put("InChIKey:", "# InChIKey = ");
 		parameterConversion.put("ms level:", "# MSLevel = ");
+		parameterConversion.put("INCHIKEY:", "# InChIKey = ");
 		parameterConversion.put("precursor m/z:", "# IonizedPrecursorMass = ");
+		parameterConversion.put("PRECURSORMZ:", "# IonizedPrecursorMass = ");
 		parameterConversion.put("retention time:", "# RetentionTime = ");
+		parameterConversion.put("RETENTIONTIME:", "# RetentionTime = ");
 		parameterConversion.put("exact mass:", "# NeutralPrecursorMass = ");
 		parameterConversion.put("ion mode:", "# IsPositiveIonMode = ");
+		parameterConversion.put("IONMODE:", "# IsPositiveIonMode = ");
 		parameterConversion.put("mass error:", "# MassError = ");
 		parameterConversion.put("precursor type:", "# PrecursorIonMode = ");
+		parameterConversion.put("PRECURSORTYPE:", "# PrecursorIonMode = ");
 		parameterConversion.put("Num Peaks:", "# NumPeaks = ");
 		parameterConversion.put("formula:", "# NeutralPrecursorMolecularFormula = ");
+		parameterConversion.put("FORMULA:", "# NeutralPrecursorMolecularFormula = ");
 		
 		adductTypes = new Hashtable<String, String>();
 		adductTypes.put("[2M-H]-", "-1");
@@ -101,6 +109,7 @@ public class ConvertMSPtoMetFragRecord {
 			int numberPeaks = 0;
 			java.util.Vector<String> parametersFound = new java.util.Vector<String>();
 			String lastInChI = "";
+			String lastSmiles = "";
 			String lastInChIKey = "";
 			String lastFormula = "";
 			Entry currentEntry = new ConvertMSPtoMetFragRecord().new Entry();
@@ -124,11 +133,15 @@ public class ConvertMSPtoMetFragRecord {
 						lastInChI = value;
 						currentEntry.inchi = lastInChI;
 					}
-					if(paramname.equals("formula:")) {
+					if(paramname.equals("SMILES:")) {
+						lastSmiles = value;
+						currentEntry.smiles = lastSmiles;
+					}
+					if(paramname.equals("formula:") || paramname.equals("FORMULA:")) {
 						lastFormula = value;
 						currentEntry.formula = lastFormula;
 					}
-					if(paramname.equals("InChIKey:")) {
+					if(paramname.equals("InChIKey:") || paramname.equals("INCHIKEY:")) {
 						lastInChIKey = value;
 						currentEntry.inchikey = lastInChIKey;
 					}
@@ -136,12 +149,12 @@ public class ConvertMSPtoMetFragRecord {
 					if(parametersFound.contains(paramname)) continue;
 					if(parameterConversion.containsKey(paramname)) {
 						parametersFound.add(paramname);
-						if(paramname.equals("ion mode:")) {
+						if(paramname.equals("ion mode:") || paramname.equals("IONMODE:")) {
 							String ionmode = chargeTypes.get(value);
 							lines.add(parameterConversion.get(paramname) + ionmode);
 							currentEntry.ionmode = ionmode;
 						}
-						else if(paramname.equals("precursor type:")) {
+						else if(paramname.equals("precursor type:") || paramname.equals("PRECURSORTYPE:")) {
 							if(adductTypes.containsKey(value)) {
 								String adductType = adductTypes.get(value);
 								lines.add(parameterConversion.get(paramname) + adductType);
@@ -157,6 +170,9 @@ public class ConvertMSPtoMetFragRecord {
 							numberPeaks = Integer.parseInt(value);
 							lines.add(parameterConversion.get(paramname) + value);
 							currentEntry.numpeaks = value;
+							if(lastInChI == null || lastInChI.equals("")) {
+								lastInChI = MoleculeFunctions.getInChIFromSmiles(lastSmiles);
+							}
 							if(numberPeaks == 0) {
 								lines.add("");
 								boolean entryFine = checkInChIFormula(lastInChI, lastFormula, lastInChIKey);
@@ -192,7 +208,15 @@ public class ConvertMSPtoMetFragRecord {
 					if(numberPeaks == 0) {
 						parametersFound = new java.util.Vector<String>();
 						lines.add("");
-						boolean entryFine = checkInChIFormula(lastInChI, lastFormula, lastInChIKey);
+						Boolean entryFine = null;
+						try {
+							entryFine = checkInChIFormula(lastInChI, lastFormula, lastInChIKey);
+						}
+						catch(Exception e) {
+							System.out.println(lastInChI);
+							e.printStackTrace();
+							System.exit(1);
+						}
 						lastInChI = "";
 						lastFormula = "";
 						lastInChIKey = "";
@@ -261,6 +285,7 @@ public class ConvertMSPtoMetFragRecord {
 		public String rt;
 		public String mass;
 		public String formula;
+		public String smiles;
 		public String ionizedmass;
 		public String numpeaks;
 		public String ionmode;
@@ -279,6 +304,7 @@ public class ConvertMSPtoMetFragRecord {
 		public String toString() {
 			String string = "# SampleName = " + sampleName + "\n";
 			if(inchi != null) string += "# InChI = " + inchi + "\n";
+			if(smiles != null) string += "# Smiles = " + smiles + "\n";
 			if(inchikey != null) string += "# InChIKey = " + inchikey + "\n";
 			if(rt != null) string += "# RetentionTime = " + rt + "\n";
 			if(ionmode != null) string += "# IsPositiveIonMode = " + ionmode + "\n";

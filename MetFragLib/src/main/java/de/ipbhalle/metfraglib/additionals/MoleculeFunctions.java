@@ -61,9 +61,9 @@ public class MoleculeFunctions {
 		return smiles;
 	}
 	
-	public static String getInChiKeyFromSmiles(String smiles) {
+	public static String getInChIFromSmiles(String smiles) {
 		String[] inchiInfo = getInChIInfoFromAtomContainer(parseSmiles(smiles));
-		return inchiInfo[1].split("-")[1];
+		return inchiInfo[0];
 	}
 	
 	public static IAtomContainer parseSmiles(String smiles) {
