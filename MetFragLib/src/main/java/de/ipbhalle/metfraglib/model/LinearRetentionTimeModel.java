@@ -43,7 +43,7 @@ public class LinearRetentionTimeModel extends AbstractModel {
 	 */
 	private void initialise() {
 		String modelFileName = (String)this.settings.get(VariableNames.RETENTION_TIME_TRAINING_FILE_NAME);
-		
+	
 		Settings settings = new Settings();
 		settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, modelFileName);
 		if(this.settings.containsKey(VariableNames.USER_LOG_P_VALUE_NAME) && this.settings.get(VariableNames.USER_LOG_P_VALUE_NAME) != null)
@@ -126,7 +126,7 @@ public class LinearRetentionTimeModel extends AbstractModel {
 			values[i][0] = rt_values.get(i);
 			values[i][1] = logp_values[i];
 		}
-		
+
 		this.predictByLeastSquares(values);
 	}
 	
@@ -217,6 +217,8 @@ public class LinearRetentionTimeModel extends AbstractModel {
 		
 		this.slope = (sum_products_xy - n * mean_x * mean_y) / (sum_squares_x - n * mean_x * mean_x);
 		this.coefficient = mean_y - this.slope * mean_x;
+	
+	//	System.out.println("values: " + this.slope + " " + this.coefficient);
 	}
 	
 	public double getSlope() {
@@ -226,5 +228,7 @@ public class LinearRetentionTimeModel extends AbstractModel {
 	public double getCoefficient() {
 		return this.coefficient;
 	}
+	
+
 	
 }

@@ -12,9 +12,9 @@
 		xmlns:c="http://java.sun.com/jsp/jstl/core"
 		xmlns:p="http://primefaces.org/ui">
 		
-		<h:panelGroup id="resultClusterPanel" layout="block" styleClass="zoomViewport">
-			<h:panelGroup rendered="#{metFragWebBean.compoundsClusterReady}" layout="block" styleClass="zoomContainer">
-		
+		<h:panelGroup id="resultClusterPanel" layout="block">
+			<!-- <h:panelGroup rendered="#{metFragWebBean.compoundsClusterReady}"> -->
+			<h:panelGroup rendered="false">
 				<p:tree id="compoundClusterTree" value="#{metFragWebBean.compoundsClusterRoot}" var="node" orientation="horizontal" 
 					selectionMode="checkbox" selection="#{metFragWebBean.selectedClusterNodes}" dynamic="true" >
 					
@@ -37,12 +37,89 @@
 		    	</p:contextMenu>
 				
 			</h:panelGroup>
-			<h:panelGroup rendered="#{not metFragWebBean.compoundsClusterReady}">
-	    		<p:graphicImage name="images/loading.gif"/>
+		<!-- <h:panelGroup rendered="#{not metFragWebBean.compoundsClusterReady}"> -->
+			<h:panelGroup>
+	    		<h:outputStylesheet name='css/loader.css'  rel='stylesheet' type='text/css' target="head"/>
+	    		
+	    		<!-- <p:graphicImage name="images/loading.gif"/> -->
+	    		<div class="container">
+	    			<div class="cell">
+	    				<div class="loader square reg">
+	    					<div class="block">
+	    						<div class="box">
+	    						</div>
+	    					</div>
+	    				</div>
+	    			</div>	
+	    			Loading...
+	    		</div>
+	    		
 			</h:panelGroup>
 		  </h:panelGroup>	
-    	
-	</ui:composition>
+
+		<h:outputScript library="primefaces" name="jquery/jquery.js" target="head" />
+   		<h:outputScript target="head" >
+	   		$( document ).ready(function() {
+	
+				var box = $('#mainForm').children('div').eq(0).children('div').eq(5).children('div').eq(0).children('div').eq(0).children('table').eq(0);
+				
+				box.offset({
+				    left: 100,
+				    top: 75
+				});
+				
+				var drag = {
+				    elem: null,
+				    x: 0,
+				    y: 0,
+				    state: false
+				};
+				var delta = {
+				    x: 0,
+				    y: 0
+				};
+				
+				box.mousedown(function(e) {
+				    if (!drag.state) {
+				        drag.elem = this;
+				        this.style.backgroundColor = '#f00';
+				        drag.x = e.pageX;
+				        drag.y = e.pageY;
+				        drag.state = true;
+				    }
+				    return false;
+				});
+				
+				
+				$(document).mousemove(function(e) {
+				    if (drag.state) {
+				        drag.elem.style.backgroundColor = '#f0f';
+				
+				        delta.x = e.pageX - drag.x;
+				        delta.y = e.pageY - drag.y;
+				
+				        var cur_offset = $(drag.elem).offset();
+				
+				        $(drag.elem).offset({
+				            left: (cur_offset.left + delta.x),
+				            top: (cur_offset.top + delta.y)
+				        });
+				
+				        drag.x = e.pageX;
+				        drag.y = e.pageY;
+				    }
+				});
+				
+				$(document).mouseup(function() {
+				    if (drag.state) {
+				        drag.elem.style.backgroundColor = '#808';
+				    drag.state = false;
+				}
+				});
+			});
+	   	</h:outputScript>
+
+ 	</ui:composition>
 </h:body>
 
 </html>
