@@ -3,11 +3,14 @@ package de.ipbhalle.metfraglib.score;
 import org.apache.log4j.Logger;
 
 import de.ipbhalle.metfraglib.additionals.MathTools;
+import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.interfaces.IMatch;
 import de.ipbhalle.metfraglib.model.LinearRetentionTimeModel;
 import de.ipbhalle.metfraglib.parameter.Constants;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
+import de.ipbhalle.metfraglib.scoreinitialisation.RetentionTimeScoreInitialiser;
+import de.ipbhalle.metfraglib.settings.MetFragGlobalSettings;
 import de.ipbhalle.metfraglib.settings.Settings;
 
 public class RetentionTimeScore extends AbstractScore {
@@ -111,4 +114,40 @@ public class RetentionTimeScore extends AbstractScore {
 		return this.value < value ? true : false;
 	}
 	
+	
+
+	public static void main(String[] args) {
+		String filename = "/home/chrisr/Dokumente/PhD/MetFrag/casmi/rt_training_all.csv";
+		MetFragGlobalSettings settings = new MetFragGlobalSettings();
+		settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, filename);
+		settings.set(VariableNames.RETENTION_TIME_TRAINING_FILE_NAME, filename);
+		
+		RetentionTimeScoreInitialiser s = new RetentionTimeScoreInitialiser();
+		s.initScoreParameters(settings);
+		
+		de.ipbhalle.metfraglib.database.LocalPropertyFileDatabase database = new de.ipbhalle.metfraglib.database.LocalPropertyFileDatabase(settings);
+		java.util.Vector<String> identifiers;
+		de.ipbhalle.metfraglib.list.CandidateList candidateList = null;
+		try {
+			identifiers = database.getCandidateIdentifiers();
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			return;
+		}
+		candidateList = database.getCandidateByIdentifier(identifiers);
+		
+		org.openscience.cdk.qsar.descriptors.molecular.XLogPDescriptor xlogp = new org.openscience.cdk.qsar.descriptors.molecular.XLogPDescriptor();
+		
+		for(int i = 0; i < candidateList.getNumberElements(); i++) {
+			try {
+				String inchi = (String)candidateList.getElement(i).getProperty("InChI");
+				org.openscience.cdk.interfaces.IAtomContainer con = MoleculeFunctions.getAtomContainerFromInChI(inchi);
+				MoleculeFunctions.prepareAtomContainer(con, false);
+				System.out.println(xlogp.calculate(con).getValue() + " " + candidateList.getElement(i).getProperty("RetentionTime"));
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
 }
