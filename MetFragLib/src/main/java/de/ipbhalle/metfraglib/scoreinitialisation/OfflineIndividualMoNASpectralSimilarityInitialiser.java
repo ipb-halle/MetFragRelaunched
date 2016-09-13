@@ -7,13 +7,12 @@ import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.peaklistreader.MultipleTandemMassPeakListReader;
 import de.ipbhalle.metfraglib.settings.Settings;
 
-public class OfflineMetFusionSpectralSimilarityScoreInitialiser implements IScoreInitialiser {
+public class OfflineIndividualMoNASpectralSimilarityInitialiser implements IScoreInitialiser {
 
 	@Override
 	public void initScoreParameters(Settings settings) throws Exception {
 		if(!settings.containsKey(VariableNames.OFFLINE_METFUSION_MONA_SPECTRAL_SIMILARITY_PEAK_LIST_COLLECTION_NAME) || settings.get(VariableNames.OFFLINE_METFUSION_MONA_SPECTRAL_SIMILARITY_PEAK_LIST_COLLECTION_NAME) == null) {
 			if(settings.containsKey(VariableNames.OFFLINE_METFUSION_MONA_SPECTRAL_SIMILARITY_PEAK_LIST_COLLECTION_NAME) && settings.get(VariableNames.OFFLINE_METFUSION_MONA_SPECTRAL_SIMILARITY_PEAK_LIST_COLLECTION_NAME) != null) return;
-			
 			
 			String offlineSpectralFilePath = "";
 			java.io.InputStream is = null;
