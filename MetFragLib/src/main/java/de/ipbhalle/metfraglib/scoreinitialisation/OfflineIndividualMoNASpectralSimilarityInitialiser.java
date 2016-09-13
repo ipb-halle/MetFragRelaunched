@@ -27,8 +27,9 @@ public class OfflineIndividualMoNASpectralSimilarityInitialiser implements IScor
 			else spectralPeakLists = multiplePeakListReader.readMultiple(is);
 			spectralPeakLists.calculateSimilarities((SortedTandemMassPeakList)settings.get(VariableNames.PEAK_LIST_NAME));
 			is.close();
-		
+
 			settings.set(VariableNames.OFFLINE_METFUSION_MONA_SPECTRAL_SIMILARITY_PEAK_LIST_COLLECTION_NAME, spectralPeakLists);
+		
 		}
 	}
 

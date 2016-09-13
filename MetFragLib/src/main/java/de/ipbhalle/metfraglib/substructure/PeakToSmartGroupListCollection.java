@@ -135,4 +135,43 @@ public class PeakToSmartGroupListCollection extends DefaultList {
 			this.getElement(i).updateProbabilities();
 		}
 	}
+	
+	public void annotateIds() {
+		java.util.LinkedList<SmartsGroup> smartsGroupsWithoutId = new java.util.LinkedList<SmartsGroup>();
+		java.util.Vector<SmartsGroup> smartsGroupsWithId = new java.util.Vector<SmartsGroup>();
+		int maxAnnotatedId = 0;
+		for(int i = 0; i < this.list.size(); i++) {
+			PeakToSmartGroupList peakToSmartGroupList = (PeakToSmartGroupList)this.getElement(i);
+			for(int j = 0; j < peakToSmartGroupList.getNumberElements(); j++) {
+				SmartsGroup smartsGroup = (SmartsGroup)peakToSmartGroupList.getElement(j);
+				if(i == 0) {
+					smartsGroup.setId(new Integer(j));
+					maxAnnotatedId = j;
+					smartsGroupsWithId.add(smartsGroup);
+				}
+				else {
+					smartsGroupsWithoutId.add(smartsGroup);
+				}	
+			}
+		}
+		
+		while(!smartsGroupsWithoutId.isEmpty()) {
+			SmartsGroup smartsGroup = smartsGroupsWithoutId.poll();
+			boolean found = false;
+			for(int i = 0; i < smartsGroupsWithId.size(); i++) {
+				double sim = smartsGroupsWithId.get(i).getBestSimilarity(smartsGroup.getSmiles().get(0));
+				if(sim == 1.0) {
+					smartsGroup.setId(new Integer(smartsGroupsWithId.get(i).getId()));
+					smartsGroupsWithId.add(smartsGroup);
+					found = true;
+					break;
+				}
+			}
+			if(!found) {
+				smartsGroup.setId(new Integer(maxAnnotatedId++));
+				smartsGroupsWithId.add(smartsGroup);
+			}
+		}
+		
+	}
 }

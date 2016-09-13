@@ -45,6 +45,7 @@ import de.ipbhalle.metfraglib.score.NewFragmenterHierarchicalScore;
 import de.ipbhalle.metfraglib.score.NewFragmenterScore;
 import de.ipbhalle.metfraglib.score.NewFragmenterScoreLipids;
 import de.ipbhalle.metfraglib.score.NewFragmenterUniqueFormulaScore;
+import de.ipbhalle.metfraglib.score.OfflineIndividualMoNASpectralSimilarity;
 import de.ipbhalle.metfraglib.score.OfflineMetFusionSpectralSimilarityScore;
 import de.ipbhalle.metfraglib.score.RetentionTimeScore;
 import de.ipbhalle.metfraglib.score.SmartsSubstructureExclusionScore;
@@ -54,6 +55,7 @@ import de.ipbhalle.metfraglib.scoreinitialisation.AutomatedLossAnnotationScoreIn
 import de.ipbhalle.metfraglib.scoreinitialisation.DefaultScoreInitialiser;
 import de.ipbhalle.metfraglib.scoreinitialisation.AutomatedSubstructureAnnotationScoreInitialiser;
 import de.ipbhalle.metfraglib.scoreinitialisation.IndividualMoNASpectralSimilarityInitialiser;
+import de.ipbhalle.metfraglib.scoreinitialisation.OfflineIndividualMoNASpectralSimilarityInitialiser;
 import de.ipbhalle.metfraglib.scoreinitialisation.OfflineMetFusionSpectralSimilarityScoreInitialiser;
 import de.ipbhalle.metfraglib.scoreinitialisation.RetentionTimeScoreInitialiser;
 import de.ipbhalle.metfraglib.scoreinitialisation.SmartsSubstructureExclusionScoreInitialiser;
@@ -103,6 +105,7 @@ public class ClassNames {
 		scoreNameToClassName.put("RetentionTimeScore", RetentionTimeScore.class.getName());
 		scoreNameToClassName.put("CombinedReferenceScore", CombinedReferenceScore.class.getName());
 		scoreNameToClassName.put("SimScore", MatchSpectrumCosineSimilarityScore.class.getName());
+		scoreNameToClassName.put("OfflineIndividualMoNAScore", OfflineIndividualMoNASpectralSimilarity.class.getName());
 		
 		scoreNameToClassName.put("AutomatedSubstructureAnnotationScore", AutomatedSubstructureAnnotationScore.class.getName());
 		scoreNameToClassName.put("AutomatedLossAnnotationScore", AutomatedLossAnnotationScore.class.getName());
@@ -125,6 +128,7 @@ public class ClassNames {
 		scoreNameToScoreInitialiserClassName.put("AutomatedSubstructureAnnotationScore", AutomatedSubstructureAnnotationScoreInitialiser.class.getName());
 		scoreNameToScoreInitialiserClassName.put("AutomatedLossAnnotationScore", AutomatedLossAnnotationScoreInitialiser.class.getName());
 		scoreNameToScoreInitialiserClassName.put("IndividualMoNAScore", IndividualMoNASpectralSimilarityInitialiser.class.getName());
+		scoreNameToScoreInitialiserClassName.put("OfflineIndividualMoNAScore", OfflineIndividualMoNASpectralSimilarityInitialiser.class.getName());
 		scoreNameToScoreInitialiserClassName.put("OfflineMetFusionScore", OfflineMetFusionSpectralSimilarityScoreInitialiser.class.getName());
 		scoreNameToScoreInitialiserClassName.put("MatchSpectrumCosineSimilarityScore", DefaultScoreInitialiser.class.getName());
 		
