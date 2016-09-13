@@ -14,6 +14,7 @@ public class SmartsGroup extends DefaultList {
 
 	private double probability;
 	private java.util.Vector<String> smiles;
+	private Integer id = null;
 	
 	public SmartsGroup(double probability) {
 		super();
@@ -116,5 +117,17 @@ public class SmartsGroup extends DefaultList {
 			string += " " + this.smiles.get(i);
 		}
 		return string;
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+	
+	public java.util.Vector<String> getSmiles() {
+		return this.smiles;
 	}
 }

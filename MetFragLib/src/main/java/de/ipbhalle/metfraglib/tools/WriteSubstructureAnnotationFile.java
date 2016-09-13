@@ -112,5 +112,9 @@ public class WriteSubstructureAnnotationFile {
 			bwriter.write(peakToSmartGroupListCollection.toStringSmiles());
 			bwriter.close();
 		}
+		
+		System.out.println("annotating IDs");
+		peakToSmartGroupListCollection.annotateIds();
+		
 	}
 }

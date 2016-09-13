@@ -1,10 +1,9 @@
 package de.ipbhalle.metfraglib.score;
 
-import de.ipbhalle.metfraglib.candidatefilter.PreProcessingCandidateSuspectListFilter;
-import de.ipbhalle.metfraglib.functions.MoNARestWebService;
+import de.ipbhalle.metfraglib.collection.SpectralPeakListCollection;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.interfaces.IMatch;
-import de.ipbhalle.metfraglib.list.DefaultPeakList;
+import de.ipbhalle.metfraglib.list.SortedSimilarityTandemMassPeakList;
 import de.ipbhalle.metfraglib.list.SortedTandemMassPeakList;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.settings.Settings;
@@ -31,28 +30,20 @@ public class OfflineIndividualMoNASpectralSimilarity extends AbstractScore {
 	}
 	
 	public void calculate() throws Exception {
-		final PreProcessingCandidateSuspectListFilter MoNAPresentInChIKeys = (PreProcessingCandidateSuspectListFilter)this.settings.get(VariableNames.INDIVIDUAL_MONA_SPECTRAL_SIMILARITY_INCHIKEY_LIST_NAME);
-		final MoNARestWebService webService = (MoNARestWebService)this.settings.get(VariableNames.INDIVIDUAL_MONA_SPECTRAL_SIMILARITY_WEB_SERVICE_NAME);
-		
-		if(MoNAPresentInChIKeys == null || MoNAPresentInChIKeys.passesFilter(this.candidate, false)) {
-			SortedTandemMassPeakList peakList = (SortedTandemMassPeakList)settings.get(VariableNames.PEAK_LIST_NAME);
-			String inchikey1 = (String)this.candidate.getProperty(VariableNames.INCHI_KEY_1_NAME);
-			DefaultPeakList[] monaPeakList = webService.retrievePeakListByInChIKey(inchikey1, peakList.getMeasuredPrecursorMass());
-			if(monaPeakList == null || monaPeakList.length == 0) {
-				this.value = 0.0;
+		this.value = 0.0;
+		//beta = -9, gamma = 0.6
+		try {
+			SpectralPeakListCollection spectralPeakLists = (SpectralPeakListCollection)settings.get(VariableNames.OFFLINE_METFUSION_MONA_SPECTRAL_SIMILARITY_PEAK_LIST_COLLECTION_NAME);
+			SortedSimilarityTandemMassPeakList similarityTandemPeakList = spectralPeakLists.getInchikey1ToPeakList().get(this.candidate.getProperty(VariableNames.INCHI_KEY_1_NAME));
+			if(similarityTandemPeakList != null) {
+				SortedTandemMassPeakList peakList = (SortedTandemMassPeakList)settings.get(VariableNames.PEAK_LIST_NAME);
+				this.value = similarityTandemPeakList.cosineSimilarity(
+					peakList, (Double)this.settings.get(VariableNames.RELATIVE_MASS_DEVIATION_NAME), 
+					(Double)this.settings.get(VariableNames.ABSOLUTE_MASS_DEVIATION_NAME));
 			}
-			else {
-				double max = 0.0;
-				for(int i = 0; i < monaPeakList.length; i++) {
-					double cs = ((SortedTandemMassPeakList)monaPeakList[i]).cosineSimilarity(
-							peakList, (Double)this.settings.get(VariableNames.RELATIVE_MASS_DEVIATION_NAME), 
-							(Double)this.settings.get(VariableNames.ABSOLUTE_MASS_DEVIATION_NAME));
-					if(cs > max) max = cs;
-				}
-				this.value = max;
-			}
+		} catch(Exception e) {
+			this.value = 0.0;
 		}
-		else this.value = 0.0;
 		this.calculationFinished = true;
 	}
 
