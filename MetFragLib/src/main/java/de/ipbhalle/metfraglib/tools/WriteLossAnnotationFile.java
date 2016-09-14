@@ -72,7 +72,7 @@ public class WriteLossAnnotationFile {
 				PeakToSmartGroupList peakToSmartGroupList = peakToSmartGroupListCollection.getElementByPeak(peak, mzppm, mzabs);
 				if(peakToSmartGroupList == null) {
 					peakToSmartGroupList = new PeakToSmartGroupList(peak);
-					SmartsGroup obj = new SmartsGroup(0.0);
+					SmartsGroup obj = new SmartsGroup(0.0, null, null, null);
 					obj.addElement(smarts);
 					obj.addSmiles(smiles);
 					peakToSmartGroupList.addElement(obj);
@@ -86,7 +86,7 @@ public class WriteLossAnnotationFile {
 						smartsGroup.addSmiles(smiles);
 					}
 					else {
-						smartsGroup = new SmartsGroup(0.0);
+						smartsGroup = new SmartsGroup(0.0, null, null, null);
 						smartsGroup.addElement(smarts);
 						smartsGroup.addSmiles(smiles);
 						peakToSmartGroupList.addElement(smartsGroup);
@@ -94,22 +94,96 @@ public class WriteLossAnnotationFile {
 				}
 			}
 		}
-		peakToSmartGroupListCollection.updateProbabilities();
+
+		peakToSmartGroupListCollection.annotateIds();
+		int[] substrOccurences = peakToSmartGroupListCollection.calculateSubstructureAbsoluteProbabilities();
+		
+		//P ( s | p ) 
+		if(probabilityType == 1) {
+			peakToSmartGroupListCollection.updateConditionalProbabilities();
+
+			peakToSmartGroupListCollection.removeDuplicates();
+			peakToSmartGroupListCollection.setProbabilityToConditionalProbability_sp();
+		}
+		//P ( p | s ) 
 		if(probabilityType == 2) {
-			peakToSmartGroupListCollection.calculatePeakProbabilities();
-			peakToSmartGroupListCollection.calculatePosteriorProbabilites();
+			System.out.println("annotating IDs");
+			peakToSmartGroupListCollection.updateProbabilities(substrOccurences);
+			
+			peakToSmartGroupListCollection.removeDuplicates();
+			peakToSmartGroupListCollection.setProbabilityToConditionalProbability_ps();
 		}
-		peakToSmartGroupListCollection.removeDuplicates();
-		if(output == null) peakToSmartGroupListCollection.print();
-		else {
-			BufferedWriter bwriter = new BufferedWriter(new FileWriter(new File(output)));
-			bwriter.write(peakToSmartGroupListCollection.toString());
-			bwriter.close();
+		//P ( p, s )
+		if(probabilityType == 3) {
+			System.out.println("annotating IDs");
+			peakToSmartGroupListCollection.updateJointProbabilities();
+			
+			peakToSmartGroupListCollection.removeDuplicates();
+			peakToSmartGroupListCollection.setProbabilityToJointProbability();
 		}
-		if(outputSmiles != null) {
-			BufferedWriter bwriter = new BufferedWriter(new FileWriter(new File(outputSmiles)));
-			bwriter.write(peakToSmartGroupListCollection.toStringSmiles());
-			bwriter.close();
+		
+		//P ( s | p ) P ( p | s )  P ( p, s )
+		if(probabilityType == 4) {
+			System.out.println("annotating IDs");
+			peakToSmartGroupListCollection.updateJointProbabilities();
+			peakToSmartGroupListCollection.updateConditionalProbabilities();
+			peakToSmartGroupListCollection.updateProbabilities(substrOccurences);
+
+			peakToSmartGroupListCollection.removeDuplicates();
+			
+			peakToSmartGroupListCollection.setProbabilityToConditionalProbability_sp();
+			if(output == null) peakToSmartGroupListCollection.print();
+			else {
+				BufferedWriter bwriter = new BufferedWriter(new FileWriter(new File(output + "_1")));
+				bwriter.write(peakToSmartGroupListCollection.toString());
+				bwriter.close();
+			}
+			if(outputSmiles != null) {
+				BufferedWriter bwriter = new BufferedWriter(new FileWriter(new File(outputSmiles + "_1")));
+				bwriter.write(peakToSmartGroupListCollection.toStringSmiles());
+				bwriter.close();
+			}
+
+			peakToSmartGroupListCollection.setProbabilityToConditionalProbability_ps();
+			if(output == null) peakToSmartGroupListCollection.print();
+			else {
+				BufferedWriter bwriter = new BufferedWriter(new FileWriter(new File(output + "_2")));
+				bwriter.write(peakToSmartGroupListCollection.toString());
+				bwriter.close();
+			}
+			if(outputSmiles != null) {
+				BufferedWriter bwriter = new BufferedWriter(new FileWriter(new File(outputSmiles + "_2")));
+				bwriter.write(peakToSmartGroupListCollection.toStringSmiles());
+				bwriter.close();
+			}
+
+			peakToSmartGroupListCollection.setProbabilityToJointProbability();
+			if(output == null) peakToSmartGroupListCollection.print();
+			else {
+				BufferedWriter bwriter = new BufferedWriter(new FileWriter(new File(output + "_3")));
+				bwriter.write(peakToSmartGroupListCollection.toString());
+				bwriter.close();
+			}
+			if(outputSmiles != null) {
+				BufferedWriter bwriter = new BufferedWriter(new FileWriter(new File(outputSmiles) + "_3"));
+				bwriter.write(peakToSmartGroupListCollection.toStringSmiles());
+				bwriter.close();
+			}
+			
+		}
+
+		if(probabilityType != 4) {
+			if(output == null) peakToSmartGroupListCollection.print();
+			else {
+				BufferedWriter bwriter = new BufferedWriter(new FileWriter(new File(output)));
+				bwriter.write(peakToSmartGroupListCollection.toString());
+				bwriter.close();
+			}
+			if(outputSmiles != null) {
+				BufferedWriter bwriter = new BufferedWriter(new FileWriter(new File(outputSmiles)));
+				bwriter.write(peakToSmartGroupListCollection.toStringSmiles());
+				bwriter.close();
+			}
 		}
 	}
 }

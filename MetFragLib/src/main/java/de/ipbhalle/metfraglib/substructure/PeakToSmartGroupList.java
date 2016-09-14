@@ -48,6 +48,27 @@ public class PeakToSmartGroupList extends DefaultList {
 		}
 		return bestMatch;
 	}
+
+	public void setProbabilityToJointProbability() {
+		for(int i = 0; i < this.list.size(); i++) {
+			SmartsGroup smartsGroup = (SmartsGroup)this.list.get(i);
+			smartsGroup.setProbabilityToJointProbability();
+		}
+	}
+
+	public void setProbabilityToConditionalProbability_sp() {
+		for(int i = 0; i < this.list.size(); i++) {
+			SmartsGroup smartsGroup = (SmartsGroup)this.list.get(i);
+			smartsGroup.setProbabilityToConditionalProbability_sp();
+		}
+	}
+	
+	public void setProbabilityToConditionalProbability_ps() {
+		for(int i = 0; i < this.list.size(); i++) {
+			SmartsGroup smartsGroup = (SmartsGroup)this.list.get(i);
+			smartsGroup.setProbabilityToConditionalProbability_ps();
+		}
+	}
 	
 	public Double getPeakmz() {
 		return peakmz;
@@ -57,7 +78,8 @@ public class PeakToSmartGroupList extends DefaultList {
 		this.peakmz = peakmz;
 	}
 
-	public void updateProbabilities() {
+	// P ( s | p )
+	public void updateConditionalProbabilities() {
 		// numberSubstructures = how often we have seen the peak peakmz
 		int numberSubstructures = 0;
 		for(int i = 0; i < this.list.size(); i++) {
@@ -66,7 +88,24 @@ public class PeakToSmartGroupList extends DefaultList {
 		for(int i = 0; i < this.list.size(); i++) {
 			SmartsGroup smartsGroup = (SmartsGroup)this.list.get(i);
 			// P ( substructure | peakmz ) = H( substructure , peakmz ) / H ( peakmz ) 
-			smartsGroup.setProbability((double)smartsGroup.getNumberElements() / (double)numberSubstructures);
+			smartsGroup.setConditionalProbability_sp((double)smartsGroup.getNumberElements() / (double)numberSubstructures);
+		}
+	}
+
+	// P ( p | s )
+	public void updateConditionalProbabilities(int[] substructureAbsoluteProbabilities) {
+		for(int i = 0; i < this.list.size(); i++) {
+			SmartsGroup smartsGroup = (SmartsGroup)this.list.get(i);
+			smartsGroup.setConditionalProbability_ps((double)smartsGroup.getNumberElements() / (double)substructureAbsoluteProbabilities[smartsGroup.getId()]);
+		}
+	}
+	
+	public void updateJointProbabilities(int numberN) {
+		// numberSubstructures = how often we have seen the peak peakmz
+		for(int i = 0; i < this.list.size(); i++) {
+			SmartsGroup smartsGroup = (SmartsGroup)this.list.get(i);
+			// P ( substructure | peakmz ) = H( substructure , peakmz ) / H ( peakmz ) 
+			smartsGroup.setJointProbability((double)smartsGroup.getNumberElements() / (double)numberN);
 		}
 	}
 	

@@ -1,12 +1,17 @@
 package de.ipbhalle.metfraglib.substructure;
 
+import org.openscience.cdk.interfaces.IAtomContainer;
+
 import de.ipbhalle.metfraglib.additionals.MathTools;
+import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
 import de.ipbhalle.metfraglib.list.DefaultList;
+import de.ipbhalle.metfraglib.similarity.TanimotoSimilarity;
 
 public class PeakToSmartGroupListCollection extends DefaultList {
 	
 	// P ( p )
-	double[] peakProbabilities;
+	private double[] peakProbabilities;
+	private Integer maximumAnnotatedID = null;
 	
 	public PeakToSmartGroupListCollection() {
 		super();
@@ -75,7 +80,7 @@ public class PeakToSmartGroupListCollection extends DefaultList {
 		String string = "";
 		for(int i = 0; i < this.list.size(); i++) {
 			PeakToSmartGroupList peakToSmartGroupList = this.getElement(i);
-			string += peakToSmartGroupList.getPeakmz() + " " + peakToSmartGroupList.toStringSmiles();
+			string += peakToSmartGroupList.getPeakmz() + " " + peakToSmartGroupList.toStringSmiles(); 
 		}
 		return string;
 	}
@@ -89,20 +94,46 @@ public class PeakToSmartGroupListCollection extends DefaultList {
 		int totalNumber = 0;
 		for(int i = 0; i < this.list.size(); i++) {
 			totalNumber += this.getElement(i).getAbsolutePeakFrequency();
-			this.peakProbabilities[i] = (double)totalNumber;
+			this.peakProbabilities[i] = (double)this.getElement(i).getAbsolutePeakFrequency();
 		}
 		for(int i = 0; i < this.peakProbabilities.length; i++) {
 			this.peakProbabilities[i] /= (double)totalNumber;
 		}
 	}
 	
-	public void calculatePosteriorProbabilites() {
+	public void setProbabilityToJointProbability() {
+		for(int i = 0; i < this.list.size(); i++) {
+			PeakToSmartGroupList peakToSmartGroupList = this.getElement(i);
+			peakToSmartGroupList.setProbabilityToJointProbability();
+		}
+	}
+
+	public void setProbabilityToConditionalProbability_sp() {
+		for(int i = 0; i < this.list.size(); i++) {
+			PeakToSmartGroupList peakToSmartGroupList = this.getElement(i);
+			peakToSmartGroupList.setProbabilityToConditionalProbability_sp();
+		}
+	}
+	
+	public void setProbabilityToConditionalProbability_ps() {
+		for(int i = 0; i < this.list.size(); i++) {
+			PeakToSmartGroupList peakToSmartGroupList = this.getElement(i);
+			peakToSmartGroupList.setProbabilityToConditionalProbability_ps();
+		}
+	}
+	
+	/*
+	 * calculates P( p | s ) = ( P( s | p ) * P ( p ) ) / ( P ( s ) )
+	 * 
+	 */
+	public void calculatePosteriorProbabilitesVariant1() {
+		// P ( s )
 		double sumJointProbabilities = 0.0;
 		for(int i = 0; i < this.list.size(); i++) {
 			PeakToSmartGroupList currentPeakToSmartGroupList = this.getElement(i);
 			for(int j = 0; j < currentPeakToSmartGroupList.getNumberElements(); j++) {
 				SmartsGroup currentSmartsGroup = currentPeakToSmartGroupList.getElement(j);
-				// P ( s | p ) 
+				// P ( s, p ) 
 				double currentLikelihood = currentSmartsGroup.getProbability();
 				// P ( s | p ) * P ( p )
 				double currentJointProbability = currentLikelihood * this.peakProbabilities[i];
@@ -129,49 +160,104 @@ public class PeakToSmartGroupListCollection extends DefaultList {
 			peakToSmartGroupList.removeDuplicates();
 		}	
 	}
+
+	public void updateConditionalProbabilities() {
+		for(int i = 0; i < this.getNumberElements(); i++) {
+			this.getElement(i).updateConditionalProbabilities();
+		}
+	}
+
+	public void updateConditionalProbabilities(int[] substructureAbsoluteProbabilities) {
+		for(int i = 0; i < this.getNumberElements(); i++) {
+			this.getElement(i).updateConditionalProbabilities(substructureAbsoluteProbabilities);
+		}
+	}
 	
-	public void updateProbabilities() {
+	public void updateJointProbabilities() {
+		int numberN = 0;
 		for(int i = 0; i < this.list.size(); i++) {
-			this.getElement(i).updateProbabilities();
+			PeakToSmartGroupList peakToSmartGroupList = (PeakToSmartGroupList)this.list.get(i);
+			for(int j = 0; j < peakToSmartGroupList.getNumberElements(); j++) {
+				numberN += peakToSmartGroupList.getElement(j).getNumberElements();
+			}
+		}
+		for(int i = 0; i < this.list.size(); i++) {
+			this.getElement(i).updateJointProbabilities(numberN);
 		}
 	}
 	
 	public void annotateIds() {
-		java.util.LinkedList<SmartsGroup> smartsGroupsWithoutId = new java.util.LinkedList<SmartsGroup>();
-		java.util.Vector<SmartsGroup> smartsGroupsWithId = new java.util.Vector<SmartsGroup>();
-		int maxAnnotatedId = 0;
+		java.util.Vector<SmartsGroup> smartsGroups = new java.util.Vector<SmartsGroup>();
+		int maxAnnotatedId = -1;
 		for(int i = 0; i < this.list.size(); i++) {
 			PeakToSmartGroupList peakToSmartGroupList = (PeakToSmartGroupList)this.getElement(i);
 			for(int j = 0; j < peakToSmartGroupList.getNumberElements(); j++) {
 				SmartsGroup smartsGroup = (SmartsGroup)peakToSmartGroupList.getElement(j);
-				if(i == 0) {
-					smartsGroup.setId(new Integer(j));
-					maxAnnotatedId = j;
-					smartsGroupsWithId.add(smartsGroup);
-				}
-				else {
-					smartsGroupsWithoutId.add(smartsGroup);
-				}	
+				smartsGroups.add(smartsGroup);
 			}
 		}
 		
-		while(!smartsGroupsWithoutId.isEmpty()) {
-			SmartsGroup smartsGroup = smartsGroupsWithoutId.poll();
-			boolean found = false;
-			for(int i = 0; i < smartsGroupsWithId.size(); i++) {
-				double sim = smartsGroupsWithId.get(i).getBestSimilarity(smartsGroup.getSmiles().get(0));
+		int number = smartsGroups.size();
+		int nextPercent = 1;
+		System.out.println(number + " substructures");
+		
+		IAtomContainer[] cons = new  IAtomContainer[number];
+		cons[0] = MoleculeFunctions.parseSmiles(smartsGroups.get(0).getSmiles().get(0));
+		for(int i = 1; i < cons.length; i++) 
+			cons[i] = MoleculeFunctions.parseSmiles(smartsGroups.get(i).getSmiles().get(0));
+		
+		TanimotoSimilarity sims = new TanimotoSimilarity(cons);
+		System.out.println("calculated similarities");
+		
+		for(int i = 0; i < smartsGroups.size(); i++) {
+			SmartsGroup smartsGroupI = smartsGroups.get(i);
+			for(int j = 0; j < smartsGroups.size(); j++) {
+				SmartsGroup smartsGroupJ = smartsGroups.get(j);
+				if(smartsGroupJ.getId() == null) {
+					smartsGroupI.setId(++maxAnnotatedId);
+					break;
+				}
+				double sim = TanimotoSimilarity.calculateSimilarity(sims.getFingerPrint(i), sims.getFingerPrint(j));
 				if(sim == 1.0) {
-					smartsGroup.setId(new Integer(smartsGroupsWithId.get(i).getId()));
-					smartsGroupsWithId.add(smartsGroup);
-					found = true;
+					smartsGroupI.setId(smartsGroupJ.getId());
 					break;
 				}
 			}
-			if(!found) {
-				smartsGroup.setId(new Integer(maxAnnotatedId++));
-				smartsGroupsWithId.add(smartsGroup);
+			double relation = ((double)i / (double)number) * 100.0;
+			if(nextPercent < relation) {
+				System.out.print(nextPercent + "% ");
+				nextPercent = (int)Math.ceil(relation);
 			}
 		}
-		
+		System.out.println();
+		this.maximumAnnotatedID = new Integer(maxAnnotatedId); 
 	}
+	
+	public int[] calculateSubstructureAbsoluteProbabilities() {
+		System.out.println(this.maximumAnnotatedID + " different substructures");
+		int[] absoluteProbabilities = new int[this.maximumAnnotatedID + 1];
+		for(int i = 0; i < this.getNumberElements(); i++) {
+			PeakToSmartGroupList peakToSmartGroupList = this.getElement(i);
+			for(int j = 0; j < peakToSmartGroupList.getNumberElements(); j++) {
+				SmartsGroup smartGroup = peakToSmartGroupList.getElement(j);
+				absoluteProbabilities[smartGroup.getId()] += smartGroup.getNumberElements();
+			}
+		}
+		return absoluteProbabilities;
+	}
+
+	public void updateProbabilities(int[] substructureAbsoluteProbabilities) {
+		for(int i = 0; i < this.list.size(); i++) {
+			this.getElement(i).updateConditionalProbabilities(substructureAbsoluteProbabilities);
+		}
+	}
+
+	public Integer getMaximumAnnotatedID() {
+		return maximumAnnotatedID;
+	}
+
+	public void setMaximumAnnotatedID(Integer maximumAnnotatedID) {
+		this.maximumAnnotatedID = maximumAnnotatedID;
+	}
+	
 }
