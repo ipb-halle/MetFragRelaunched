@@ -146,67 +146,125 @@ public class HighlightSubStructureImageGenerator extends StandardSingleStructure
 		//IAtomContainer m = sp.parseSmiles("CC(C)c1ccc(cc1)S(=O)(=O)O");
 		IAtomContainer m = null;
 		try {
-			m = MoleculeFunctions.getAtomContainerFromInChI("InChI=1S/C17H14O5/c1-20-11-5-3-4-10(8-11)17-16(19)15(18)13-7-6-12(21-2)9-14(13)22-17/h3-9,19H,1-2H3");
+			m = MoleculeFunctions.getAtomContainerFromInChI("InChI=1/C28H32O16/c1-9-18(32)21(35)23(37)27(41-9)40-8-16-19(33)22(36)24(38)28(43-16)44-26-20(34)17-13(31)6-11(29)7-15(17)42-25(26)10-3-4-12(30)14(5-10)39-2/h3-7,9,16,18-19,21-24,27-33,35-38H,8H2,1-2H3/t9-,16+,18-,19+,21+,22-,23+,24+,27+,28-/m0/s1");
+			//MoleculeFunctions.removeHydrogens(m);
 			MoleculeFunctions.prepareAtomContainer(m, false);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
 		HighlightSubStructureImageGenerator s = new HighlightSubStructureImageGenerator(new Font("Verdana", Font.BOLD, 18));
 		s.setImageHeight(1500);
 		s.setImageWidth(1500);
 		s.setStrokeRation(1.2);
 		
+		//convertBitString("000000000001001101111000110001101111001111001101", "bitArrayBonds");
+		
 		BitArray bitArrayAtoms = new BitArray(m.getAtomCount());
 		BitArray bitArrayBonds = new BitArray(m.getBondCount());
 		bitArrayAtoms.set(0, false);
-		bitArrayAtoms.set(1, true);
-		bitArrayAtoms.set(2, true);
-		bitArrayAtoms.set(3, true);
-		bitArrayAtoms.set(4, true);
-		bitArrayAtoms.set(5, true);
-		bitArrayAtoms.set(6, true);
+		bitArrayAtoms.set(1, false);
+		bitArrayAtoms.set(2, false);
+		bitArrayAtoms.set(3, false);
+		bitArrayAtoms.set(4, false);
+		bitArrayAtoms.set(5, false);
+		bitArrayAtoms.set(6, false);
 		bitArrayAtoms.set(7, true);
 		bitArrayAtoms.set(8, true);
-		bitArrayAtoms.set(9, true);
-		bitArrayAtoms.set(10, true);
-		bitArrayAtoms.set(11, true);
-		bitArrayAtoms.set(12, true);
-		bitArrayAtoms.set(13, true);
-		bitArrayAtoms.set(14, true);
+		bitArrayAtoms.set(9, false);
+		bitArrayAtoms.set(10, false);
+		bitArrayAtoms.set(11, false);
+		bitArrayAtoms.set(12, false);
+		bitArrayAtoms.set(13, false);
+		bitArrayAtoms.set(14, false);
 		bitArrayAtoms.set(15, true);
-		bitArrayAtoms.set(16, true);
+		bitArrayAtoms.set(16, false);
 		bitArrayAtoms.set(17, true);
-		bitArrayAtoms.set(18, false);
+		bitArrayAtoms.set(18, true);
 		bitArrayAtoms.set(19, false);
 		bitArrayAtoms.set(20, true);
 		bitArrayAtoms.set(21, true);
+		bitArrayAtoms.set(22, true);
+		bitArrayAtoms.set(23, true);
+		bitArrayAtoms.set(24, false);
+		bitArrayAtoms.set(25, false);
+		bitArrayAtoms.set(26, true);
+		bitArrayAtoms.set(27, true);
+		bitArrayAtoms.set(28, false);
+		bitArrayAtoms.set(29, false);
+		bitArrayAtoms.set(30, false);
+		bitArrayAtoms.set(31, true);
+		bitArrayAtoms.set(32, true);
+		bitArrayAtoms.set(33, false);
+		bitArrayAtoms.set(34, true);
+		bitArrayAtoms.set(35, true);
+		bitArrayAtoms.set(36, true);
+		bitArrayAtoms.set(37, true);
+		bitArrayAtoms.set(38, false);
+		bitArrayAtoms.set(39, true);
+		bitArrayAtoms.set(40, true);
+		bitArrayAtoms.set(41, false);
+		bitArrayAtoms.set(42, true);
+		bitArrayAtoms.set(43, true);
 		
-		bitArrayBonds.set(0, true);
-		bitArrayBonds.set(1, true);
-		bitArrayBonds.set(2, true);
-		bitArrayBonds.set(3, true);
-		bitArrayBonds.set(4, true);
-		bitArrayBonds.set(5, true);
-		bitArrayBonds.set(6, true);
-		bitArrayBonds.set(7, true);
-		bitArrayBonds.set(8, true);
-		bitArrayBonds.set(9, true);
-		bitArrayBonds.set(10, true);
+		bitArrayBonds.set(0, false);
+		bitArrayBonds.set(1, false);
+		bitArrayBonds.set(2, false);
+		bitArrayBonds.set(3, false);
+		bitArrayBonds.set(4, false);
+		bitArrayBonds.set(5, false);
+		bitArrayBonds.set(6, false);
+		bitArrayBonds.set(7, false);
+		bitArrayBonds.set(8, false);
+		bitArrayBonds.set(9, false);
+		bitArrayBonds.set(10, false);
 		bitArrayBonds.set(11, true);
-		bitArrayBonds.set(12, true);
-		bitArrayBonds.set(13, true);
+		bitArrayBonds.set(12, false);
+		bitArrayBonds.set(13, false);
 		bitArrayBonds.set(14, true);
 		bitArrayBonds.set(15, true);
-		bitArrayBonds.set(16, true);
-		bitArrayBonds.set(17, false);
-		bitArrayBonds.set(18, false);
-		bitArrayBonds.set(19, false);
+		bitArrayBonds.set(16, false);
+		bitArrayBonds.set(17, true);
+		bitArrayBonds.set(18, true);
+		bitArrayBonds.set(19, true);
 		bitArrayBonds.set(20, true);
-		bitArrayBonds.set(21, true);
-		bitArrayBonds.set(22, true);
-		bitArrayBonds.set(23, true);
+		bitArrayBonds.set(21, false);
+		bitArrayBonds.set(22, false);
+		bitArrayBonds.set(23, false);
+		bitArrayBonds.set(24, true);
+		bitArrayBonds.set(25, true);
+		bitArrayBonds.set(26, false);
+		bitArrayBonds.set(27, false);
+		bitArrayBonds.set(28, false);
+		bitArrayBonds.set(29, true);
+		bitArrayBonds.set(30, true);
+		bitArrayBonds.set(31, false);
+		bitArrayBonds.set(32, true);
+		bitArrayBonds.set(33, true);
+		bitArrayBonds.set(34, true);
+		bitArrayBonds.set(35, true);
+		bitArrayBonds.set(36, false);
+		bitArrayBonds.set(37, false);
+		bitArrayBonds.set(38, true);
+		bitArrayBonds.set(39, true);
+		bitArrayBonds.set(40, true);
+		bitArrayBonds.set(41, true);
+		bitArrayBonds.set(42, false);
+		bitArrayBonds.set(43, false);
+		bitArrayBonds.set(44, true);
+		bitArrayBonds.set(45, true);
+		bitArrayBonds.set(46, false);
+		bitArrayBonds.set(47, true);
 
 		RenderedImage img = s.generateImage(bitArrayAtoms, bitArrayBonds, m);
 		ImageIO.write((RenderedImage) img, "PNG", new java.io.File("/tmp/file2.png"));
+	}
+	
+	public static void convertBitString(String bitString, String type) {
+		for(int i = 0; i < bitString.length(); i++) {
+			char pos = bitString.charAt(i);
+			if(pos == '1') System.out.println(type + ".set(" + i + ", true);");
+			else System.out.println(type + ".set(" + i + ", false);");
+		}
 	}
 }

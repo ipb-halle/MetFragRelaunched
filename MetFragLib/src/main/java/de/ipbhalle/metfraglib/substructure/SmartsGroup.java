@@ -12,13 +12,26 @@ import de.ipbhalle.metfraglib.similarity.TanimotoSimilarity;
 
 public class SmartsGroup extends DefaultList {
 
-	private double probability;
+	private Double jointProbability = null;
+	private Double conditionalProbability_ps = null;
+	private Double conditionalProbability_sp = null;
+	
+	private Double probability = null;
+	
 	private java.util.Vector<String> smiles;
 	private Integer id = null;
-	
-	public SmartsGroup(double probability) {
+
+	public SmartsGroup(Double probability) {
 		super();
 		this.probability = probability;
+	}
+
+	public SmartsGroup(Double probability, Double jointProbability, Double conditionalProbability_ps, Double conditionalProbability_sp) {
+		super();
+		this.probability = probability;
+		this.jointProbability = jointProbability;
+		this.conditionalProbability_ps = conditionalProbability_ps;
+		this.conditionalProbability_sp = conditionalProbability_sp;
 	}
 
 	public void addSmiles(String smiles) {
@@ -28,6 +41,10 @@ public class SmartsGroup extends DefaultList {
 	
 	public double getBestSimilarity(String smiles) {
 		double maxSimilarity = 0.0;
+		for(int i = 0; i < this.list.size(); i++) {
+			String currentSmiles = this.smiles.get(i);
+			if(currentSmiles.equals(smiles)) return 1.0;
+		}
 		IAtomContainer con = MoleculeFunctions.parseSmiles(smiles);
 		for(int i = 0; i < this.list.size(); i++) {
 			String currentSmiles = this.smiles.get(i);
@@ -37,12 +54,48 @@ public class SmartsGroup extends DefaultList {
 		return maxSimilarity;
 	}
 	
-	public double getProbability() {
+	public void setProbabilityToJointProbability() {
+		this.probability = this.jointProbability;
+	}
+
+	public void setProbabilityToConditionalProbability_ps() {
+		this.probability = this.conditionalProbability_ps;
+	}
+
+	public void setProbabilityToConditionalProbability_sp() {
+		this.probability = this.conditionalProbability_sp;
+	}
+	
+	public void setProbability(Double probability) {
+		this.probability = probability;
+	}
+
+	public Double getProbability() {
 		return probability;
 	}
 
-	public void setProbability(double probability) {
-		this.probability = probability;
+	public Double getJointProbability() {
+		return jointProbability;
+	}
+
+	public void setJointProbability(Double jointProbability) {
+		this.jointProbability = jointProbability;
+	}
+
+	public Double getConditionalProbability_ps() {
+		return conditionalProbability_ps;
+	}
+
+	public void setConditionalProbability_ps(Double conditionalProbability_ps) {
+		this.conditionalProbability_ps = conditionalProbability_ps;
+	}
+
+	public Double getConditionalProbability_sp() {
+		return conditionalProbability_sp;
+	}
+
+	public void setConditionalProbability_sp(Double conditionalProbability_sp) {
+		this.conditionalProbability_sp = conditionalProbability_sp;
 	}
 
 	public String getElement(int index) {

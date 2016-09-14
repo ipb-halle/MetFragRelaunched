@@ -41,6 +41,10 @@ public class TanimotoSimilarity {
 		}
 	}
 
+	public IBitFingerprint getFingerPrint(int index) {
+		return this.fingerprints[index];
+	}
+	
 	public double[] calculateSimilarities(IAtomContainer con) {
 		IBitFingerprint fingerprint = null;
 		try {
