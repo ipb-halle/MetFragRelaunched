@@ -3,8 +3,6 @@ package de.ipbhalle.metfraglib.score;
 import de.ipbhalle.metfraglib.collection.SpectralPeakListCollection;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.interfaces.IMatch;
-import de.ipbhalle.metfraglib.list.SortedSimilarityTandemMassPeakList;
-import de.ipbhalle.metfraglib.list.SortedTandemMassPeakList;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.settings.Settings;
 
@@ -34,12 +32,9 @@ public class OfflineIndividualMoNASpectralSimilarity extends AbstractScore {
 		//beta = -9, gamma = 0.6
 		try {
 			SpectralPeakListCollection spectralPeakLists = (SpectralPeakListCollection)settings.get(VariableNames.OFFLINE_METFUSION_MONA_SPECTRAL_SIMILARITY_PEAK_LIST_COLLECTION_NAME);
-			SortedSimilarityTandemMassPeakList similarityTandemPeakList = spectralPeakLists.getInchikey1ToPeakList().get(this.candidate.getProperty(VariableNames.INCHI_KEY_1_NAME));
-			if(similarityTandemPeakList != null) {
-				SortedTandemMassPeakList peakList = (SortedTandemMassPeakList)settings.get(VariableNames.PEAK_LIST_NAME);
-				this.value = similarityTandemPeakList.cosineSimilarity(
-					peakList, (Double)this.settings.get(VariableNames.RELATIVE_MASS_DEVIATION_NAME), 
-					(Double)this.settings.get(VariableNames.ABSOLUTE_MASS_DEVIATION_NAME));
+			Double bestSimilarityScore = spectralPeakLists.getInchikey1ToSimScore().get(this.candidate.getProperty(VariableNames.INCHI_KEY_1_NAME));
+			if(bestSimilarityScore != null) {
+				this.value = bestSimilarityScore;
 			}
 		} catch(Exception e) {
 			this.value = 0.0;

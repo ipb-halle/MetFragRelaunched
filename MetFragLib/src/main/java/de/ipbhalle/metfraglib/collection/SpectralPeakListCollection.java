@@ -11,7 +11,7 @@ import de.ipbhalle.metfraglib.similarity.TanimotoSimilarity;
 public class SpectralPeakListCollection {
 
 	protected java.util.Vector<SortedSimilarityTandemMassPeakList> peaklists;
-	protected java.util.Hashtable<String, SortedSimilarityTandemMassPeakList> inchikey1ToPeakList;
+	protected java.util.Hashtable<String, java.util.Vector<SortedSimilarityTandemMassPeakList>> inchikey1ToPeakList;
 	protected java.util.Hashtable<String, Double> inchikey1ToSimScore;
 	protected boolean isPositiveCharge;
 	protected double mzabs;
@@ -44,7 +44,7 @@ public class SpectralPeakListCollection {
 	}
 	
 	public void calculateSimilarities(SortedTandemMassPeakList peakList) {
-		this.inchikey1ToPeakList = new java.util.Hashtable<String, SortedSimilarityTandemMassPeakList>();
+		this.inchikey1ToPeakList = new java.util.Hashtable<String, java.util.Vector<SortedSimilarityTandemMassPeakList>>();
 		this.inchikey1ToSimScore = new java.util.Hashtable<String, Double>();
 		for(int i = 0; i < this.peaklists.size(); i++) {
 			if(this.peaklists.get(i).getIsPositiveCharge() == this.isPositiveCharge) {
@@ -63,12 +63,17 @@ public class SpectralPeakListCollection {
 					}
 					if(this.inchikey1ToPeakList.containsKey(this.peaklists.get(i).getInchikey1())) {
 						if(this.inchikey1ToSimScore.get(this.peaklists.get(i).getInchikey1()) < value) {
-							this.inchikey1ToPeakList.put(this.peaklists.get(i).getInchikey1(), this.peaklists.get(i));
+							this.inchikey1ToPeakList.get(this.peaklists.get(i).getInchikey1()).add(0, this.peaklists.get(i));
 							this.inchikey1ToSimScore.put(this.peaklists.get(i).getInchikey1(), value);
+						}
+						else {
+							this.inchikey1ToPeakList.get(this.peaklists.get(i).getInchikey1()).add(this.peaklists.get(i));
 						}
 					}
 					else {
-						this.inchikey1ToPeakList.put(this.peaklists.get(i).getInchikey1(), this.peaklists.get(i));
+						java.util.Vector<SortedSimilarityTandemMassPeakList> newPeakListVector = new java.util.Vector<SortedSimilarityTandemMassPeakList>();
+						newPeakListVector.add(this.peaklists.get(i));
+						this.inchikey1ToPeakList.put(this.peaklists.get(i).getInchikey1(), newPeakListVector);
 						this.inchikey1ToSimScore.put(this.peaklists.get(i).getInchikey1(), value);
 					}
 				}
@@ -76,11 +81,11 @@ public class SpectralPeakListCollection {
 		}
 	}
 	
-	public java.util.Hashtable<String, SortedSimilarityTandemMassPeakList> getInchikey1ToPeakList() {
+	public java.util.Hashtable<String, java.util.Vector<SortedSimilarityTandemMassPeakList>> getInchikey1ToPeakList() {
 		return inchikey1ToPeakList;
 	}
 
-	public void setInchikey1ToPeakList(java.util.Hashtable<String, SortedSimilarityTandemMassPeakList> inchikey1ToPeakList) {
+	public void setInchikey1ToPeakList(java.util.Hashtable<String, java.util.Vector<SortedSimilarityTandemMassPeakList>> inchikey1ToPeakList) {
 		this.inchikey1ToPeakList = inchikey1ToPeakList;
 	}
 
