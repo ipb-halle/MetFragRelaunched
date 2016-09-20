@@ -11,6 +11,8 @@ import org.openscience.cdk.config.IsotopeFactory;
 import org.openscience.cdk.config.Isotopes;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.exception.InvalidSmilesException;
+import org.openscience.cdk.fingerprint.BitSetFingerprint;
+import org.openscience.cdk.fingerprint.IBitFingerprint;
 import org.openscience.cdk.graph.Cycles;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -317,6 +319,22 @@ public class MoleculeFunctions {
 		for(IAtom atom : hydrogenAtoms) {
 			molecule.removeAtomAndConnectedElectronContainers(atom);
 		}
+	}
+	
+	public static String fingerPrintToString(IBitFingerprint fp) {
+		String string = "";
+		for(int i = 0; i < fp.size(); i++) {
+			string += fp.get(i) ? "1" : "0";
+		}
+		return string;
+	}
+
+	public static IBitFingerprint stringToFingerPrint(String string) {
+		java.util.BitSet bitSet = new java.util.BitSet(string.length());
+		for(int i = 0; i < string.length(); i++) {
+			if(string.charAt(i) == '1') bitSet.set(i);
+		}
+		return new BitSetFingerprint(bitSet);
 	}
 	
 	public static double getCDKXLogValue(IAtomContainer molecule) {

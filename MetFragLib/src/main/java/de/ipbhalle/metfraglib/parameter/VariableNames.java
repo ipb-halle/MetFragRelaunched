@@ -207,6 +207,8 @@ public class VariableNames {
 	public static final String INDIVIDUAL_MONA_SPECTRAL_SIMILARITY_WEB_SERVICE_NAME 		= "IndividualMoNASpectralSimilarityWebService";
 	public static final String METFUSION_MONA_SPECTRAL_SIMILARITY_CANDIDATES_NAME 			= "MetFusionMoNASpectralSimilarityCandidates";
 	public static final String OFFLINE_METFUSION_MONA_SPECTRAL_SIMILARITY_PEAK_LIST_COLLECTION_NAME = "OfflineMetFusionMonaSpectralSimilarityPeakListCollection";
+	public static final String MINIMUM_COSINE_SIMILARITY_LIMIT_NAME		= "MinimumCosineSimilarityLimit";
+	public static final String MOLECULAR_FINGERPRINT_NAME					= "MolecularFingerPrint";
 	
 	/*
 	 * candidate property names

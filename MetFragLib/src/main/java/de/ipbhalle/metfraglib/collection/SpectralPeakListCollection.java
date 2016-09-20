@@ -16,12 +16,21 @@ public class SpectralPeakListCollection {
 	protected boolean isPositiveCharge;
 	protected double mzabs;
 	protected double mzppm;
+	protected double minimum_cosine_similarity_limit = 0.0;
 	
 	public SpectralPeakListCollection(boolean isPositiveCharge, double mzabs, double mzppm) {
 		this.peaklists = new java.util.Vector<SortedSimilarityTandemMassPeakList>();
 		this.mzabs = mzabs;
 		this.mzppm = mzppm;
 		this.isPositiveCharge = isPositiveCharge;
+	}
+
+	public SpectralPeakListCollection(boolean isPositiveCharge, double mzabs, double mzppm, double minimum_cosine_similarity_limit) {
+		this.peaklists = new java.util.Vector<SortedSimilarityTandemMassPeakList>();
+		this.mzabs = mzabs;
+		this.mzppm = mzppm;
+		this.isPositiveCharge = isPositiveCharge;
+		this.minimum_cosine_similarity_limit = minimum_cosine_similarity_limit;
 	}
 	
 	public void nullify() {
@@ -49,13 +58,15 @@ public class SpectralPeakListCollection {
 		for(int i = 0; i < this.peaklists.size(); i++) {
 			if(this.peaklists.get(i).getIsPositiveCharge() == this.isPositiveCharge) {
 				double value = this.peaklists.get(i).cosineSimilarity(peakList, this.mzppm, this.mzabs);
-				if(value != 0.0) {
+				if(value > this.minimum_cosine_similarity_limit) {
 					IBitFingerprint fp = null;
 					try {
-						IAtomContainer con = MoleculeFunctions.getAtomContainerFromInChI(this.peaklists.get(i).getInchi());
-						MoleculeFunctions.prepareAtomContainer(con, true);
-						fp = TanimotoSimilarity.calculateFingerPrint(con);
-						this.peaklists.get(i).setFingerprint(fp);
+						if(this.peaklists.get(i).getFingerprint() == null) {
+							IAtomContainer con = MoleculeFunctions.getAtomContainerFromInChI(this.peaklists.get(i).getInchi());
+							MoleculeFunctions.prepareAtomContainer(con, true);
+							fp = TanimotoSimilarity.calculateFingerPrint(con);
+							this.peaklists.get(i).setFingerprint(fp);
+						}
 					} catch (Exception e) {
 						System.err.println("Spectrum " + i + " excluded during fingerprint calculation.");
 						e.printStackTrace();

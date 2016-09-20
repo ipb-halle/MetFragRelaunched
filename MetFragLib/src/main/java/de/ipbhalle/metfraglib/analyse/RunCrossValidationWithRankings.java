@@ -13,9 +13,10 @@ import de.ipbhalle.metfraglib.additionals.MathTools;
 
 public class RunCrossValidationWithRankings {
 
-	public static String rankings_folder_name = "/home/chrisr/Dokumente/PhD/svn/2016hdx/data/rankings_7/pos";
+	public static String rankings_folder_name = "/home/cruttkie/svn/eawag/2016hdx/metfrag/rankings_7_2/pos";
 	public static int number_folds = 10;
 	public static int number_queries = 1;
+	public static String only_metfrag_filename = "rankings_1005.txt";
 	public static String given_folds_filename = null;
 	public static String output_file = null;
 	
@@ -41,8 +42,8 @@ public class RunCrossValidationWithRankings {
 		if(args != null && args.length >= 2) {
 			rankings_folder_name = args[0];
 			number_folds = Integer.parseInt(args[1]);
-			if(args.length == 3) given_folds_filename = args[2];
-			if(args.length == 4) output_file = args[3];
+			if(args.length == 3) output_file = args[2];
+			if(args.length == 4) given_folds_filename = args[3];
 		}
 		int[] folds = null;
 		if(given_folds_filename != null) {
@@ -177,7 +178,7 @@ public class RunCrossValidationWithRankings {
 		}
 		System.out.println();
 		
-		writeTestingSummary(folds, query_testing_rankings, query_names);
+		if(output_file != null) writeTestingSummary(folds, query_testing_rankings, query_names);
 		
 		int[] summed_results = new int[check_best_rank_positions];
 		for(int i = 0; i < test_results.length; i++) {
@@ -196,7 +197,7 @@ public class RunCrossValidationWithRankings {
 		
 		calculateBestWeight(rank_matrix, check_best_rank_positions, valid_indexes, all_filenames);
 		
-		printRankingsStatistics("rankings_1001.txt", check_best_rank_positions);
+		printRankingsStatistics(only_metfrag_filename, check_best_rank_positions);
 	}
 	
 	public static void calculateBestWeight(int[][] rank_matrix, int check_best_rank_positions, int[] valid_indexes, String[] file_names) {

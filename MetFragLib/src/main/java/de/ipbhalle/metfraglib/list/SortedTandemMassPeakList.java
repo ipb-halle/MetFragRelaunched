@@ -64,7 +64,6 @@ public class SortedTandemMassPeakList extends DefaultPeakList {
 	protected int getIndexOfPeakByMass(double mass, double mzppm, double mzabs) {
 		double dev = MathTools.calculateAbsoluteDeviation(mass, mzppm);
 		dev += mzabs;
-
 		for(int i = 0; i < this.list.size(); i++) 
 		{
 			double currentMass = ((Peak)this.list.get(i)).getMass();
