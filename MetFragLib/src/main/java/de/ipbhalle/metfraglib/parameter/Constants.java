@@ -205,7 +205,8 @@ public class Constants {
 	public static final IDatabase			DEFAULT_DATABASE_OBJECT											=	null;
 	public static final String			DEFAULT_DATABASE_IDENTIFIER										=	null;
 	public static final Boolean			DEFAULT_ENABLE_DEUTERIUM										=	false;
-	public static final String[]			DEFAULT_SCORE_NAMES_NOT_TO_SCALE								=	{"IndividualMoNAScore", "HDFragmentPairScore", "SimScore"};
+	public static final String[]			DEFAULT_SCORE_NAMES_NOT_TO_SCALE								=	{"IndividualMoNAScore", "HDFragmentPairScore", "SimScore", "OfflineIndividualMoNAScore"};
+	public static final Double			DEFAULT_MINIMUM_COSINE_SIMILARITY_LIMIT					= 	0.1;
 	
 	/*
 	 * retention time models

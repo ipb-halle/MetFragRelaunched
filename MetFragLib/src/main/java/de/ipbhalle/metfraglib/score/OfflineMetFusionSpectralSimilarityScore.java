@@ -46,7 +46,8 @@ public class OfflineMetFusionSpectralSimilarityScore extends AbstractScore {
 			java.util.Enumeration<?> it = inchikey1ToPeakList.keys();
 			while(it.hasMoreElements()) {
 				String inchikey1 = (String)it.nextElement();
-				double val = TanimotoSimilarity.calculateSimilarity(inchikey1ToPeakList.get(inchikey1).get(0).getFingerprint(), f2) * inchikey1ToSimScore.get(inchikey1);
+				double tanimoto_sim = TanimotoSimilarity.calculateSimilarity(inchikey1ToPeakList.get(inchikey1).get(0).getFingerprint(), f2);
+				double val = tanimoto_sim * inchikey1ToSimScore.get(inchikey1);
 				this.value += this.signum(-9.0, 0.6, val);
 			}
 		} catch(Exception e) {

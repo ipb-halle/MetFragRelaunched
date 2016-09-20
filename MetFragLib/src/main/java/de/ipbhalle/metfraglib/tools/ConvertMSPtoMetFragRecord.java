@@ -9,10 +9,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Hashtable;
 
+import org.openscience.cdk.interfaces.IAtomContainer;
+
 import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
 import de.ipbhalle.metfraglib.exceptions.AtomTypeNotKnownFromInputListException;
 import de.ipbhalle.metfraglib.molecularformula.ByteMolecularFormula;
 import de.ipbhalle.metfraglib.parameter.Constants;
+import de.ipbhalle.metfraglib.similarity.TanimotoSimilarity;
 
 public class ConvertMSPtoMetFragRecord {
 
@@ -84,7 +87,7 @@ public class ConvertMSPtoMetFragRecord {
 		chargeTypes.put("NEGATIVE", "False");
 	}
 	
-	public static void main(String[] args) throws AtomTypeNotKnownFromInputListException {
+	public static void main(String[] args) throws Exception {
 		if(args.length != 2) {
 			System.err.println("MSP input file needed. MetFrag record output file needed.");
 			System.exit(1);
@@ -112,6 +115,7 @@ public class ConvertMSPtoMetFragRecord {
 			String lastSmiles = "";
 			String lastInChIKey = "";
 			String lastFormula = "";
+			String lastMZ = "";
 			Entry currentEntry = new ConvertMSPtoMetFragRecord().new Entry();
 			while((line = breader.readLine()) != null) {
 				//get param name and value
@@ -140,6 +144,10 @@ public class ConvertMSPtoMetFragRecord {
 					if(paramname.equals("formula:") || paramname.equals("FORMULA:")) {
 						lastFormula = value;
 						currentEntry.formula = lastFormula;
+					}
+					if(paramname.equals("precursor m/z:") || paramname.equals("PRECURSORMZ:")) {
+						lastMZ = value;
+						currentEntry.ionizedmass = lastMZ;
 					}
 					if(paramname.equals("InChIKey:") || paramname.equals("INCHIKEY:")) {
 						lastInChIKey = value;
@@ -213,9 +221,14 @@ public class ConvertMSPtoMetFragRecord {
 							entryFine = checkInChIFormula(lastInChI, lastFormula, lastInChIKey);
 						}
 						catch(Exception e) {
-							System.out.println(lastInChI);
-							e.printStackTrace();
-							System.exit(1);
+							if(lastFormula.equals("")) {
+								System.out.println(lastInChI + " " + currentEntry.sampleName);
+								e.printStackTrace();
+								System.exit(1);
+							}
+							else {
+								entryFine = new Boolean(false);
+							}
 						}
 						lastInChI = "";
 						lastFormula = "";
@@ -256,6 +269,19 @@ public class ConvertMSPtoMetFragRecord {
 		try {
 			BufferedWriter bwriter = new BufferedWriter(new FileWriter(metfragfile));
 			for(int i = 0; i < entries.size(); i++) {
+				if(entries.get(i).inchi == null) {
+					if(entries.get(i).smiles != null) {
+						entries.get(i).inchi = MoleculeFunctions.getInChIFromSmiles(entries.get(i).smiles);
+						entries.get(i).smiles = null;
+					}
+				}
+				if(entries.get(i).inchi != null) {
+					IAtomContainer con = MoleculeFunctions.getAtomContainerFromInChI(entries.get(i).inchi);
+					MoleculeFunctions.prepareAtomContainer(con, true);
+					String fingerprint = MoleculeFunctions.fingerPrintToString(TanimotoSimilarity.calculateFingerPrint(con));
+					entries.get(i).fingerprint = fingerprint;
+				}
+				
 				bwriter.write(entries.get(i).toString());
 				bwriter.newLine();
 			}
@@ -291,6 +317,7 @@ public class ConvertMSPtoMetFragRecord {
 		public String ionmode;
 		public String masserror;
 		public String mslevel;
+		public String fingerprint;
 		public java.util.Vector<String> mzs;
 		public java.util.Vector<String> ints;
 		
@@ -302,7 +329,8 @@ public class ConvertMSPtoMetFragRecord {
 		}
 		
 		public String toString() {
-			String string = "# SampleName = " + sampleName + "\n";
+			String string = "";
+			if(sampleName != null) string += "# SampleName = " + sampleName + "\n";
 			if(inchi != null) string += "# InChI = " + inchi + "\n";
 			if(smiles != null) string += "# Smiles = " + smiles + "\n";
 			if(inchikey != null) string += "# InChIKey = " + inchikey + "\n";
@@ -314,6 +342,7 @@ public class ConvertMSPtoMetFragRecord {
 			if(mslevel != null) string += "# MSLevel = " + mslevel + "\n";
 			if(ionizedmass != null) string += "# IonizedPrecursorMass = " + ionizedmass + "\n";
 			if(numpeaks != null) string += "# NumPeaks = " + numpeaks + "\n";
+			if(fingerprint != null) string += "# MolecularFingerPrint = " + fingerprint + "\n";
 			if(mzs != null && ints != null) {
 				for(int i = 0; i < ints.size(); i++) {
 					string += mzs.get(i) + " " + ints.get(i) + "\n";

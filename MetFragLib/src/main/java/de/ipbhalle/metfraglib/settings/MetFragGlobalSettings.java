@@ -53,6 +53,7 @@ public class MetFragGlobalSettings extends Settings {
 		this.defaults.put(VariableNames.METFRAG_UNIQUE_FRAGMENT_MATCHES, Constants.DEFAULT_METFRAG_UNIQUE_FRAGMENT_MATCHES);
 
 		this.defaults.put(VariableNames.USER_LOG_P_VALUE_NAME, Constants.DEFAULT_LOG_P_VALUE_NAME);
+		this.defaults.put(VariableNames.MINIMUM_COSINE_SIMILARITY_LIMIT_NAME, Constants.DEFAULT_MINIMUM_COSINE_SIMILARITY_LIMIT);
 
 		/*
 		 * candidate filters
