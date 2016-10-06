@@ -200,7 +200,7 @@ public class VariableNames {
 	//forident
 	public static final String FORIDENT_TONNAGE_NAME					=	"ForIdentTonnage";
 	public static final String FORIDENT_CATEGORIES_NAME				=	"ForIdentCategories";
-	public static final String FORIDENT_SUSPECTLIST_NAME				=	"ForIdent";
+	public static final String FORIDENT_SUSPECTLIST_NAME				=	"FOR-IDENT";
 	
 	public static final String PUBCHEM_NUMBER_PATENTS_NAME 			=	"PubChemNumberPatents";
 	public static final String PUBCHEM_NUMBER_PUBMED_REFERENCES_NAME	=	"PubChemNumberPubMedReferences";

@@ -20,7 +20,7 @@ public class OnlineForIdentDatabase extends AbstractDatabase {
 	 * 
 	 */
 	public java.util.Vector<String> getCandidateIdentifiers(double monoisotopicMass, double relativeMassDeviation) throws Exception {
-		logger.info("Fetching candidates from ForIdent");
+		logger.info("Fetching candidates from FOR-IDENT");
 		java.util.Vector<String> cids = new java.util.Vector<String>();
 		this.candidateList = this.forIdentRestWebService.getCandidatesByMass(monoisotopicMass, relativeMassDeviation);
 		for(int i = 0; i < this.candidateList.getNumberElements(); i++) {
@@ -34,7 +34,7 @@ public class OnlineForIdentDatabase extends AbstractDatabase {
 	 * 
 	 */
 	public java.util.Vector<String> getCandidateIdentifiers(String molecularFormula) throws Exception {
-		logger.info("Fetching candidates from ForIdent");
+		logger.info("Fetching candidates from FOR-IDENT");
 		java.util.Vector<String> cids = new java.util.Vector<String>();
 		this.candidateList = this.forIdentRestWebService.getCandidatesByMolecularFormula(molecularFormula);
 		for(int i = 0; i < this.candidateList.getNumberElements(); i++) {

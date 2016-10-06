@@ -118,7 +118,7 @@ public class ClassNames {
 		databaseNameToClassName.put("LocalPSV", LocalPSVDatabase.class.getName());
 		databaseNameToClassName.put("LocalCSV", LocalCSVDatabase.class.getName());
 		databaseNameToClassName.put("LocalProperty", LocalPropertyFileDatabase.class.getName());
-		databaseNameToClassName.put("ForIdent", OnlineForIdentDatabase.class.getName());
+		databaseNameToClassName.put("FOR-IDENT", OnlineForIdentDatabase.class.getName());
 		databaseNameToClassName.put("LocalSDF", LocalSDFDatabase.class.getName());
 		databaseNameToClassName.put("LipidMaps", LocalLipidMapsDatabase.class.getName());
 		databaseNameToClassName.put("PostgresSQL", LocalPostgresDatabase.class.getName());
