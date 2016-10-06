@@ -269,5 +269,7 @@ public class VariableNames {
 	public static final String KEGG_PROXY_PORT				 			= 	"KeggProxyPort";
 	public static final String METACYC_PROXY_SERVER				 		= 	"MetaCycProxyServer";
 	public static final String METACYC_PROXY_PORT				 			= 	"MetaCycProxyPort";
+	public static final String PUBCHEM_PROXY_SERVER				 		= 	"PubChemProxyServer";
+	public static final String PUBCHEM_PROXY_PORT				 			= 	"PubChemProxyPort";
 	
 }

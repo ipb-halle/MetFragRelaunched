@@ -1,6 +1,9 @@
 package de.ipbhalle.metfraglib.database;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.HttpURLConnection;
 import java.util.Vector;
 
 import org.apache.log4j.Level;
@@ -76,7 +79,7 @@ public class OnlinePubChemDatabase extends AbstractDatabase {
 		double minMass = monoisotopicMass - mzabs;
 		double maxMass = monoisotopicMass + mzabs;
 
-		String urlname = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pccompound&term=" + minMass + "[MIMass]:" + maxMass + "[MIMass]&retmode=json&retmax=100000";
+		String urlname = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pccompound&term=" + minMass + "[MIMass]:" + maxMass + "[MIMass]&retmode=json&retmax=100000";
 		java.io.InputStream stream = HelperFunctions.getInputStreamFromURL(urlname);
 		if(stream == null) return new Vector<String>();
 		JSONParser parser = new JSONParser();
@@ -105,7 +108,7 @@ public class OnlinePubChemDatabase extends AbstractDatabase {
 	 */
 	public java.util.Vector<String> getCandidateIdentifiers(String molecularFormula) throws Exception {
 		this.formulaSearch = true;
-		String urlname = "http://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/formula/" + molecularFormula + "/TXT";
+		String urlname = "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/formula/" + molecularFormula + "/TXT";
 		/*
 		 * get stream to retrieve listkey
 		 */
@@ -126,7 +129,7 @@ public class OnlinePubChemDatabase extends AbstractDatabase {
 		/*
 		 * build url to get cids
 		 */
-		urlname = "http://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/listkey/" + listKey + "/cids/TXT";
+		urlname = "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/listkey/" + listKey + "/cids/TXT";
 		logger.trace(urlname);
 		stream = HelperFunctions.getInputStreamFromURL(urlname);
 		java.util.Vector<String> cids = new Vector<String>();
@@ -276,7 +279,7 @@ public class OnlinePubChemDatabase extends AbstractDatabase {
 			if((i % 100 == 0 && i != 0) || (i == cidsVec.length - 1)) {
 				idString = idString.substring(1, idString.length());
 			//	String urlname = "http://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/" + idString + "/property/inchi,XLogP,InChIKey,MolecularFormula,IsotopeAtomCount,IsomericSMILES,MonoisotopicMass,IUPACName/CSV";
-				String urlname = "http://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/" + idString + "/property/inchi,XLogP,InChIKey,MolecularFormula,IsotopeAtomCount,IsomericSMILES,MonoisotopicMass/CSV";
+				String urlname = "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/" + idString + "/property/inchi,XLogP,InChIKey,MolecularFormula,IsotopeAtomCount,IsomericSMILES,MonoisotopicMass/CSV";
 				logger.trace(urlname);
 				java.io.InputStream stream = HelperFunctions.getInputStreamFromURL(urlname);
 				if(stream == null) return new Vector<String>();
@@ -369,7 +372,7 @@ public class OnlinePubChemDatabase extends AbstractDatabase {
 			idString += "," + cidsVec.get(i);
 			if((i % 100 == 0 && i != 0) || (i == cidsVec.size() - 1)) {
 				idString = idString.substring(1, idString.length());
-				String urlname = "http://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/" + idString + "/description/JSON";
+				String urlname = "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/" + idString + "/description/JSON";
 				logger.trace(urlname);
 				java.io.InputStream stream = null;
 				try {
@@ -424,7 +427,19 @@ public class OnlinePubChemDatabase extends AbstractDatabase {
 		int responseCode = 403;
 		try {
 			java.net.URL url = new java.net.URL(urlname);
-			connection = (java.net.HttpURLConnection) url.openConnection();
+			
+			Proxy proxy = null;
+			if(this.settings.containsKey(VariableNames.PUBCHEM_PROXY_SERVER) && this.settings.containsKey(VariableNames.PUBCHEM_PROXY_PORT)
+					&& this.settings.get(VariableNames.PUBCHEM_PROXY_SERVER) != null && this.settings.get(VariableNames.PUBCHEM_PROXY_PORT) != null) {
+				proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress((String)this.settings.get(VariableNames.PUBCHEM_PROXY_SERVER), (Integer)this.settings.get(VariableNames.PUBCHEM_PROXY_PORT)));
+			}
+			
+			if(proxy == null) connection = (HttpURLConnection) url.openConnection();
+			else connection = (HttpURLConnection) url.openConnection(proxy);
+			
+			connection.setConnectTimeout(10000);
+			connection.setReadTimeout(10000);
+			
 			responseCode = connection.getResponseCode();
 			if(responseCode == 404) return null;
 			

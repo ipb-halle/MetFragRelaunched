@@ -172,6 +172,8 @@ public class ParameterDataTypes {
 		parameterDatatypes.put(	VariableNames.KEGG_PROXY_PORT, 											"Integer"	);
 		parameterDatatypes.put(	VariableNames.METACYC_PROXY_SERVER, 									"String"	);
 		parameterDatatypes.put(	VariableNames.METACYC_PROXY_PORT, 										"Integer"	);
+		parameterDatatypes.put(	VariableNames.PUBCHEM_PROXY_SERVER, 									"String"	);
+		parameterDatatypes.put(	VariableNames.PUBCHEM_PROXY_PORT, 										"Integer"	);
 		
 		/*
 		 * hd settings
