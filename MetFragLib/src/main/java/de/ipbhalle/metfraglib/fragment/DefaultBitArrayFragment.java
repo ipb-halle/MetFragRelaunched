@@ -108,11 +108,17 @@ public class DefaultBitArrayFragment extends AbstractFragment {
 		byte numberCompareResultsEqualPlusOne = 0;
 		byte numberComparisons = 2;
 		boolean matched = false;
+		
+		short numberHydrogens = this.molecularFormula.getNumberHydrogens();
+		
+		
 		for(int i = 0; i < ionisationTypeMassCorrection.length; i++) {
+			int substractHydrogenFromCharge = 0;
+			if(i == 0 && precursorIonTypeIndex == 1) substractHydrogenFromCharge = 1;
 			boolean[] toCheckHydrogenShiftType = {true, true};
 			double currentFragmentMass = this.getMonoisotopicMass() + ionisationTypeMassCorrection[i];
 			byte compareResult = ((TandemMassPeak)peak).matchesToMass(currentFragmentMass);
-			if(compareResult == 0) {
+			if(compareResult == 0 && substractHydrogenFromCharge <= numberHydrogens) {
 				/*
 				 * if a former fragment has matched already then add the current fragment list to the match object
 				 */
@@ -147,6 +153,9 @@ public class DefaultBitArrayFragment extends AbstractFragment {
 				 */
 				for(byte signIndex = 0; signIndex < signs.length; signIndex++) {
 					if(!toCheckHydrogenShiftType[signIndex]) {
+						continue;
+					}
+					if(signs[signIndex] * hydrogenShift - substractHydrogenFromCharge < numberHydrogens) {
 						continue;
 					}
 					/*

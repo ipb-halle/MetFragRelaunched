@@ -129,6 +129,14 @@ public class NewFragmenterScore extends AbstractScore {
 				minimumEnergyPerMatch = energyOfFragment;
 				indexOfBestFragment = ii;
 			}
+			/*
+			if(((AbstractTopDownBitArrayFragment)currentFragment).getAtomsBitArray().toString().equals("111110001100010001")) {
+				System.out.println(((AbstractTopDownBitArrayFragment)currentFragment).getAtomsBitArray().toString() + " " + 
+						((AbstractTopDownBitArrayFragment)currentFragment).getBondsBitArray().toString() + " " + 
+						((AbstractTopDownBitArrayFragment)currentFragment).getBrokenBondsBitArray().toString() + " " + currentFragment.getID()
+						+ " " + energyOfFragment);
+			}
+			*/
 		}
 		this.calculationFinished = true;
 		if(indexOfBestFragment != -1) currentMatch.initialiseBestMatchedFragment(indexOfBestFragment);

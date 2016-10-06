@@ -13,12 +13,12 @@ import de.ipbhalle.metfraglib.additionals.MathTools;
 
 public class RunCrossValidationWithRankings {
 
-	public static String rankings_folder_name = "/home/cruttkie/svn/eawag/2016hdx/metfrag/rankings_7_2/pos";
+	public static String rankings_folder_name = "/home/cruttkie/Dokumente/PhD/MetFrag/substructure_training/cross_validation/eawag_ufz_03/rankings_testing_combinded";
 	public static int number_folds = 10;
 	public static int number_queries = 1;
 	public static String only_metfrag_filename = "rankings_1005.txt";
-	public static String given_folds_filename = null;
-	public static String output_file = null;
+	public static String given_folds_filename = "/home/cruttkie/Dokumente/PhD/MetFrag/substructure_training/cross_validation/eawag_ufz_03/folds.txt";
+	public static String output_file = "/home/cruttkie/Dokumente/PhD/MetFrag/substructure_training/cross_validation/eawag_ufz_03/rankings.txt";
 	
 	public static String[] forbidden_filenames = {
 		"rankings_1001.txt",
@@ -37,7 +37,13 @@ public class RunCrossValidationWithRankings {
 		"rankings_1014.txt",
 		"rankings_1015.txt"
 	};
-	
+
+	/*
+	public static String[] forbidden_filenames = {
+		"rankings_101.txt",
+		"rankings_102.txt"
+	};
+	*/
 	public static void main(String[] args) {
 		if(args != null && args.length >= 2) {
 			rankings_folder_name = args[0];
@@ -178,7 +184,9 @@ public class RunCrossValidationWithRankings {
 		}
 		System.out.println();
 		
-		if(output_file != null) writeTestingSummary(folds, query_testing_rankings, query_names);
+		if(output_file != null) {
+			writeTestingSummary(folds, query_testing_rankings, query_names);
+		}
 		
 		int[] summed_results = new int[check_best_rank_positions];
 		for(int i = 0; i < test_results.length; i++) {

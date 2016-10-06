@@ -187,6 +187,7 @@ public class PeakToSmartGroupListCollection extends DefaultList {
 	}
 	
 	public void annotateIds() {
+		//store all smarts groups to annotate them with IDs later
 		java.util.Vector<SmartsGroup> smartsGroups = new java.util.Vector<SmartsGroup>();
 		int maxAnnotatedId = -1;
 		for(int i = 0; i < this.list.size(); i++) {
@@ -202,6 +203,8 @@ public class PeakToSmartGroupListCollection extends DefaultList {
 		System.out.println(number + " substructures");
 		
 		IAtomContainer[] cons = new  IAtomContainer[number];
+		//use the first smiles from each group to perform similarity calculation
+		//needed to match IDs
 		cons[0] = MoleculeFunctions.parseSmiles(smartsGroups.get(0).getSmiles().get(0));
 		for(int i = 1; i < cons.length; i++) 
 			cons[i] = MoleculeFunctions.parseSmiles(smartsGroups.get(i).getSmiles().get(0));
