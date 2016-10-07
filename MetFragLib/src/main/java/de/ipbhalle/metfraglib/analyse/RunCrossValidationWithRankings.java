@@ -13,12 +13,16 @@ import de.ipbhalle.metfraglib.additionals.MathTools;
 
 public class RunCrossValidationWithRankings {
 
-	public static String rankings_folder_name = "/home/cruttkie/Dokumente/PhD/MetFrag/substructure_training/cross_validation/eawag_ufz_03/rankings_testing_combinded";
+	//public static String rankings_folder_name = "/home/cruttkie/Dokumente/PhD/MetFrag/substructure_training/cross_validation/eawag_ufz_03/rankings_testing_combinded";
+	public static String rankings_folder_name = "/home/cruttkie/svn/eawag/2016hdx/metfrag/rankings_7/pos";
 	public static int number_folds = 10;
 	public static int number_queries = 1;
-	public static String only_metfrag_filename = "rankings_1005.txt";
-	public static String given_folds_filename = "/home/cruttkie/Dokumente/PhD/MetFrag/substructure_training/cross_validation/eawag_ufz_03/folds.txt";
-	public static String output_file = "/home/cruttkie/Dokumente/PhD/MetFrag/substructure_training/cross_validation/eawag_ufz_03/rankings.txt";
+	//public static String only_metfrag_filename = "rankings_1005.txt";
+	public static String only_metfrag_filename = "rankings_1001.txt";
+	//public static String given_folds_filename = "/home/cruttkie/Dokumente/PhD/MetFrag/substructure_training/cross_validation/eawag_ufz_03/folds.txt";
+	public static String given_folds_filename = null;
+	//public static String output_file = "/home/cruttkie/Dokumente/PhD/MetFrag/substructure_training/cross_validation/eawag_ufz_03/rankings.txt";
+	public static String output_file = "/home/cruttkie/svn/eawag/2016hdx/metfrag/rankings_7/pos_rankings.txt";
 	
 	public static String[] forbidden_filenames = {
 		"rankings_1001.txt",
@@ -185,7 +189,8 @@ public class RunCrossValidationWithRankings {
 		System.out.println();
 		
 		if(output_file != null) {
-			writeTestingSummary(folds, query_testing_rankings, query_names);
+			int[] metfrag_rankings = getRankings(only_metfrag_filename);
+			writeTestingSummary(folds, query_testing_rankings, query_names, metfrag_rankings);
 		}
 		
 		int[] summed_results = new int[check_best_rank_positions];
@@ -316,6 +321,31 @@ public class RunCrossValidationWithRankings {
 		return folds;
 	}
 	
+	public static int[] getRankings(String filename) {
+		java.util.Vector<Integer> rankings = new java.util.Vector<Integer>();
+		try {
+			BufferedReader breader = new BufferedReader(new FileReader(new File(rankings_folder_name + "/" + filename)));
+			String line = "";
+			while((line = breader.readLine()) != null) {
+				if(line.startsWith("#")) continue;
+				String[] tmp = line.split("\\s+");
+				int current_rank = Integer.parseInt(tmp[2]);
+				rankings.add(current_rank);
+			}
+			breader.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		int[] rankings_arr = new int[rankings.size()];
+		for(int i = 0; i < rankings_arr.length; i++)
+			rankings_arr[i] = rankings.get(i);
+		return rankings_arr;
+	}
+	
 	public static void printRankingsStatistics(String filename, int check_best_rank_positions) {
 		int[] ranking_values = new int[check_best_rank_positions];
 		try {
@@ -353,7 +383,22 @@ public class RunCrossValidationWithRankings {
 
 			bwriter.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+	}
+
+	public static void writeTestingSummary(int[] folds, int[] rankings_testing, String[] query_names, int[] rankings_testing_to_add) {
+		BufferedWriter bwriter;
+		try {
+			bwriter = new BufferedWriter(new FileWriter(new File(output_file)));
+			for(int i = 0; i < query_names.length; i++) {
+				bwriter.write(query_names[i] + " " + folds[i] + " " + rankings_testing[i] + " " + rankings_testing_to_add[i]);	
+				bwriter.newLine();
+			}
+
+			bwriter.close();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	
