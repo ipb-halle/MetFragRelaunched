@@ -158,7 +158,7 @@ public class OnlineExtendedPubChemDatabase extends OnlinePubChemDatabase {
 			idString += "," + cidsVec.get(i);
 			if((i % 100 == 0 && i != 0) || (i == cidsVec.size() - 1)) {
 				idString = idString.substring(1, idString.length());
-				String urlname = "http://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/" + idString + "/xrefs/PubMedID/JSON";
+				String urlname = "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/" + idString + "/xrefs/PubMedID/JSON";
 				logger.trace(urlname);
 				java.io.InputStream stream = null;
 				try {
@@ -227,7 +227,7 @@ public class OnlineExtendedPubChemDatabase extends OnlinePubChemDatabase {
 			idString += "," + cidsVec.get(i);
 			if((i % numIDs == 0 && i != 0) || (i == cidsVec.size() - 1)) {
 				idString = idString.substring(1, idString.length());
-				String urlname = "http://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/" + idString + "/xrefs/PatentID/JSON";
+				String urlname = "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/" + idString + "/xrefs/PatentID/JSON";
 				logger.trace(urlname);
 				java.io.InputStream stream = null;
 				try {

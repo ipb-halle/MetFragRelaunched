@@ -80,7 +80,7 @@ public class OnlinePubChemDatabase extends AbstractDatabase {
 		double maxMass = monoisotopicMass + mzabs;
 
 		String urlname = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pccompound&term=" + minMass + "[MIMass]:" + maxMass + "[MIMass]&retmode=json&retmax=100000";
-		java.io.InputStream stream = HelperFunctions.getInputStreamFromURL(urlname);
+		java.io.InputStream stream = HelperFunctions.getInputStreamFromURL(urlname, this.settings.get(VariableNames.PUBCHEM_PROXY_SERVER), this.settings.get(VariableNames.PUBCHEM_PROXY_PORT));
 		if(stream == null) return new Vector<String>();
 		JSONParser parser = new JSONParser();
 		JSONObject jsonObject = (JSONObject)parser.parse(new java.io.InputStreamReader(stream));
@@ -112,7 +112,7 @@ public class OnlinePubChemDatabase extends AbstractDatabase {
 		/*
 		 * get stream to retrieve listkey
 		 */
-		java.io.InputStream stream = HelperFunctions.getInputStreamFromURL(urlname);
+		java.io.InputStream stream = HelperFunctions.getInputStreamFromURL(urlname, this.settings.get(VariableNames.PUBCHEM_PROXY_SERVER), this.settings.get(VariableNames.PUBCHEM_PROXY_PORT));
 		if(stream == null) return new Vector<String>();
 		java.io.BufferedReader breader = new java.io.BufferedReader(new java.io.InputStreamReader(stream));
 		String listKey = "";
@@ -131,7 +131,7 @@ public class OnlinePubChemDatabase extends AbstractDatabase {
 		 */
 		urlname = "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/listkey/" + listKey + "/cids/TXT";
 		logger.trace(urlname);
-		stream = HelperFunctions.getInputStreamFromURL(urlname);
+		stream = HelperFunctions.getInputStreamFromURL(urlname, this.settings.get(VariableNames.PUBCHEM_PROXY_SERVER), this.settings.get(VariableNames.PUBCHEM_PROXY_PORT));
 		java.util.Vector<String> cids = new Vector<String>();
 		if(stream == null) {
 			return cids;
@@ -150,7 +150,7 @@ public class OnlinePubChemDatabase extends AbstractDatabase {
 				/*
 				 * if not fetch the url stream again
 				 */
-				stream = HelperFunctions.getInputStreamFromURL(urlname);
+				stream = HelperFunctions.getInputStreamFromURL(urlname, this.settings.get(VariableNames.PUBCHEM_PROXY_SERVER), this.settings.get(VariableNames.PUBCHEM_PROXY_PORT));
 				breader = new java.io.BufferedReader(new java.io.InputStreamReader(stream));
 				try {
 					Thread.sleep(1000);
@@ -281,7 +281,7 @@ public class OnlinePubChemDatabase extends AbstractDatabase {
 			//	String urlname = "http://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/" + idString + "/property/inchi,XLogP,InChIKey,MolecularFormula,IsotopeAtomCount,IsomericSMILES,MonoisotopicMass,IUPACName/CSV";
 				String urlname = "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/" + idString + "/property/inchi,XLogP,InChIKey,MolecularFormula,IsotopeAtomCount,IsomericSMILES,MonoisotopicMass/CSV";
 				logger.trace(urlname);
-				java.io.InputStream stream = HelperFunctions.getInputStreamFromURL(urlname);
+				java.io.InputStream stream = HelperFunctions.getInputStreamFromURL(urlname, this.settings.get(VariableNames.PUBCHEM_PROXY_SERVER), this.settings.get(VariableNames.PUBCHEM_PROXY_PORT));
 				if(stream == null) return new Vector<String>();
 				java.io.BufferedReader breader = new java.io.BufferedReader(new java.io.InputStreamReader(stream));
 				try {
