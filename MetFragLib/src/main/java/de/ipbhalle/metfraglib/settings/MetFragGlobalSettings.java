@@ -186,6 +186,28 @@ public class MetFragGlobalSettings extends Settings {
 		return settings;
 	}
 
+	public static MetFragGlobalSettings readSettings(java.util.Hashtable<String, String> arguments, org.apache.log4j.Logger logger) throws Exception {
+		MetFragGlobalSettings settings = new MetFragGlobalSettings();
+		java.util.Enumeration<String> keys = arguments.keys();
+		while(keys.hasMoreElements()) {
+			String currentKey = keys.nextElement();
+			if(currentKey.equals(VariableNames.PARAMETER_FILE_NAME)) continue;
+			String argument = arguments.get(currentKey);
+			settings.set(currentKey, ParameterDataTypes.getParameter(argument, currentKey));
+		}
+	
+		return settings;
+	}
+
+	public static void readSettings(java.util.Hashtable<String, String> arguments, MetFragGlobalSettings settings, org.apache.log4j.Logger logger) throws Exception {
+		java.util.Enumeration<String> keys = arguments.keys();
+		while(keys.hasMoreElements()) {
+			String currentKey = keys.nextElement();
+			if(currentKey.equals(VariableNames.PARAMETER_FILE_NAME)) continue;
+			String argument = arguments.get(currentKey);
+			settings.set(currentKey, ParameterDataTypes.getParameter(argument, currentKey));
+		}
+	}
 	
 	public void includeSettings(MetFragGlobalSettings settings, boolean overwrite) {
 		if(settings == null) return;
