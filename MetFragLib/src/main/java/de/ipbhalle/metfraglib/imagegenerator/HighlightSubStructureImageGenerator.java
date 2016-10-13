@@ -146,7 +146,7 @@ public class HighlightSubStructureImageGenerator extends StandardSingleStructure
 		//IAtomContainer m = sp.parseSmiles("CC(C)c1ccc(cc1)S(=O)(=O)O");
 		IAtomContainer m = null;
 		try {
-			m = MoleculeFunctions.getAtomContainerFromInChI("InChI=1S/C15H10O3/c16-11-6-7-12-13(17)9-14(18-15(12)8-11)10-4-2-1-3-5-10/h1-9,16H");
+			m = MoleculeFunctions.getAtomContainerFromInChI("InChI=1S/C12H16N2O3/c1-3-13-11(15)9(2)17-12(16)14-10-7-5-4-6-8-10/h4-9H,3H2,1-2H3,(H,13,15)(H,14,16)");
 			//MoleculeFunctions.removeHydrogens(m);
 			MoleculeFunctions.prepareAtomContainer(m, false);
 		} catch (Exception e) {
@@ -159,8 +159,8 @@ public class HighlightSubStructureImageGenerator extends StandardSingleStructure
 		s.setStrokeRation(1.2);
 		
 		//1111101110001100001
-		BitArray bitArrayAtoms = convertBitString("000001111011101010");
-		BitArray bitArrayBonds = convertBitString("00001001111100110100");
+		BitArray bitArrayAtoms = convertBitString("00011111010000000");
+		BitArray bitArrayBonds = convertBitString("01111011000000000");
 		
 		
 		RenderedImage img = s.generateImage(bitArrayAtoms, bitArrayBonds, m);

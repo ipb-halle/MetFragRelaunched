@@ -20,6 +20,7 @@ public class VariableNames {
 	public static final String PEAK_LIST_PATH_NAME 								= 	"PeakListPath";
 	public static final String LOCAL_DATABASE_PATH_NAME 							= 	"LocalDatabasePath";
 	public static final String NUMBER_OF_DIGITS_AFTER_ROUNDING_NAME				= 	"NumberOfDigitsAfterRounding";
+	public static final String PARAMETER_FILE_NAME								= 	"ParameterFile";
 	
 	public static final String METFRAG_DATABASE_TYPE_NAME 						= 	"MetFragDatabaseType";
 	public static final String METFRAG_FRAGMENTER_TYPE_NAME 						= 	"MetFragFragmenterType";

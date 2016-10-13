@@ -22,7 +22,7 @@ public class WriteSubstructureAnnotationFile {
 	 * 1 - input file name
 	 * 2 - mzppm
 	 * 3 - mzabs
-	 * 4 - probability type: 1 - P ( s | p ); 2 - P ( p | s ); 3 - P ( p , s );
+	 * 4 - probability type: 1 - P ( s | p ); 2 - P ( p | s ); 3 - P ( p , s ) from s; 4 - P ( p , s ) from p; 5 - P ( s | p ) P ( p | s ) P ( p , s )_s P ( p , s )_p
 	 * 5 - output smarts
 	 * 6 - output smiles
 	 * 
@@ -97,10 +97,14 @@ public class WriteSubstructureAnnotationFile {
 		}
 
 		peakToSmartGroupListCollection.annotateIds();
+		//get absolute numbers of single substructure occurences
+		//N^(s)
 		int[] substrOccurences = peakToSmartGroupListCollection.calculateSubstructureAbsoluteProbabilities();
+		int[] peakOccurences = peakToSmartGroupListCollection.calculatePeakAbsoluteProbabilities();
 		
 		//P ( s | p ) 
 		if(probabilityType == 1) {
+			// calculate P ( s | p ) 
 			peakToSmartGroupListCollection.updateConditionalProbabilities();
 
 			peakToSmartGroupListCollection.removeDuplicates();
@@ -109,26 +113,39 @@ public class WriteSubstructureAnnotationFile {
 		//P ( p | s ) 
 		if(probabilityType == 2) {
 			System.out.println("annotating IDs");
+			// calculate P ( p | s ) 
 			peakToSmartGroupListCollection.updateProbabilities(substrOccurences);
 			
 			peakToSmartGroupListCollection.removeDuplicates();
 			peakToSmartGroupListCollection.setProbabilityToConditionalProbability_ps();
 		}
-		//P ( p, s )
+		
+		//P ( p , s )_s 
 		if(probabilityType == 3) {
 			System.out.println("annotating IDs");
-			peakToSmartGroupListCollection.updateJointProbabilities();
+			// calculate P ( p , s ) 
+			peakToSmartGroupListCollection.updateJointProbabilitiesWithSubstructures(substrOccurences);
+			
+			peakToSmartGroupListCollection.removeDuplicates();
+			peakToSmartGroupListCollection.setProbabilityToJointProbability();
+		}
+
+		//P ( p , s )_p
+		if(probabilityType == 4) {
+			System.out.println("annotating IDs");
+			// calculate P ( p , s ) 
+			peakToSmartGroupListCollection.updateJointProbabilitiesWithPeaks(peakOccurences);
 			
 			peakToSmartGroupListCollection.removeDuplicates();
 			peakToSmartGroupListCollection.setProbabilityToJointProbability();
 		}
 		
-		//P ( s | p ) P ( p | s )  P ( p, s )
-		if(probabilityType == 4) {
+		//P ( s | p ) P ( p | s ) P( s, p )_s
+		if(probabilityType == 5) {
 			System.out.println("annotating IDs");
-			peakToSmartGroupListCollection.updateJointProbabilities();
 			peakToSmartGroupListCollection.updateConditionalProbabilities();
 			peakToSmartGroupListCollection.updateProbabilities(substrOccurences);
+			peakToSmartGroupListCollection.updateJointProbabilitiesWithSubstructures(substrOccurences);
 
 			peakToSmartGroupListCollection.removeDuplicates();
 			
@@ -166,14 +183,13 @@ public class WriteSubstructureAnnotationFile {
 				bwriter.close();
 			}
 			if(outputSmiles != null) {
-				BufferedWriter bwriter = new BufferedWriter(new FileWriter(new File(outputSmiles) + "_3"));
+				BufferedWriter bwriter = new BufferedWriter(new FileWriter(new File(outputSmiles + "_3")));
 				bwriter.write(peakToSmartGroupListCollection.toStringSmiles());
 				bwriter.close();
 			}
-			
 		}
 
-		if(probabilityType != 4) {
+		if(probabilityType != 5) {
 			if(output == null) peakToSmartGroupListCollection.print();
 			else {
 				BufferedWriter bwriter = new BufferedWriter(new FileWriter(new File(output)));

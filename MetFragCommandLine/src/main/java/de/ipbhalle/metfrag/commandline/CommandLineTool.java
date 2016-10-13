@@ -26,38 +26,53 @@ public class CommandLineTool {
 	 */
 	public static void main(String[] args) {
 		Logger logger = Logger.getLogger(CommandLineTool.class);
-		if(args == null || args.length == 0) {
-			logger.error("Parameter file is missing!");
-			return;
-		}
-		if(args.length > 1) {
-			logger.error("Too many arguments! Just one parameter file is needed!");
-			return;
-		}
-		File parameterFile = new File(args[0].trim());
-		if(!parameterFile.exists()) {
-			logger.error("Parameter file " + parameterFile.getAbsolutePath() + " not found!");
-			return;
-		}
-		if(!parameterFile.canRead()) {
-			logger.error("Parameter file " + parameterFile.getAbsolutePath() + " has no read permissions!");
-			return;
-		}
-		if(!parameterFile.isFile()) {
-			logger.error("Parameter file " + parameterFile.getAbsolutePath() + " is no regular file!"); 
-			return;
-		}
-		MetFragGlobalSettings settings = null;
 		/*
-		 * read settings
+		 * read in commandline arguments
+		 */
+		java.util.Hashtable<String, String> commandLineArguments = processCommandLineArguments(args, logger);
+		if(commandLineArguments == null) return;
+		
+		File parameterFile = null;
+		MetFragGlobalSettings settings = null;
+		if(commandLineArguments.containsKey(VariableNames.PARAMETER_FILE_NAME)) {
+			parameterFile = new File((String)commandLineArguments.get(VariableNames.PARAMETER_FILE_NAME));
+			if(!parameterFile.exists()) {
+				logger.error("Parameter file " + parameterFile.getAbsolutePath() + " not found!");
+				return;
+			}
+			if(!parameterFile.canRead()) {
+				logger.error("Parameter file " + parameterFile.getAbsolutePath() + " has no read permissions!");
+				return;
+			}
+			if(!parameterFile.isFile()) {
+				logger.error("Parameter file " + parameterFile.getAbsolutePath() + " is no regular file!"); 
+				return;
+			}
+			/*
+			 * read settings
+			 */
+			try {
+				settings = MetFragGlobalSettings.readSettings(parameterFile, logger);
+			}
+			catch(Exception e) {
+				logger.error("Error reading parameter file " + parameterFile);
+				System.exit(1);
+			}
+		}
+		/*
+		 * read additional parameters
 		 */
 		try {
-			settings = MetFragGlobalSettings.readSettings(parameterFile, logger);
-		}
-		catch(Exception e) {
-			logger.error("Error reading parameter file " + parameterFile);
+			if(settings == null) {
+				settings = MetFragGlobalSettings.readSettings(commandLineArguments, logger);
+			} else {
+				MetFragGlobalSettings.readSettings(commandLineArguments, settings, logger);
+			}
+		} catch (Exception e2) {
+			logger.error("Error reading settings");
 			System.exit(1);
 		}
+		
 		//check settings with SettingsChecker	
 		SettingsChecker settingsChecker = new SettingsChecker();
 		if(!settingsChecker.check(settings)) return;
@@ -178,4 +193,56 @@ public class CommandLineTool {
 		}
 	}
 
+	/**
+	 * process commandline arguments and return hashtable
+	 * 
+	 * @param args
+	 * @param logger
+	 * @return
+	 */
+	public static java.util.Hashtable<String, String> processCommandLineArguments(String[] args, Logger logger) {
+		java.util.Hashtable<String, String> arguments = new java.util.Hashtable<String, String>();
+		if(args == null || args.length == 0) {
+			logger.error("Parameter file is missing!");
+			logger.error("ParameterFile='path_to_parameterfile'");
+			return null;
+		}
+		//preprocess arguments
+		String argumentString = args[0];
+		for(int i = 1; i < args.length; i++) 
+			argumentString += " " + args[i];
+		//replace escaped '=' maybe coming from a SMARTS
+		argumentString = argumentString.replaceAll("\\\\=", "|").replaceAll("\\s+=", "=").replaceAll("=\\s+", "=").replaceAll("\\s+", " ").replaceAll("\\t", " ");
+		String[] arguments_splitted = argumentString.split("\\s+");
+		// if length 0 then it must be a parameter file
+		try {
+			if(arguments_splitted.length == 1) {
+				if(arguments_splitted[0].contains("="))
+					arguments.put(VariableNames.PARAMETER_FILE_NAME, arguments_splitted[0].split("=")[1]);
+				else 
+					arguments.put(VariableNames.PARAMETER_FILE_NAME, arguments_splitted[0]);
+				return arguments;
+			}
+			for(int i = 0; i < arguments_splitted.length; i++) {
+				String[] current_argument = arguments_splitted[i].split("=");
+				if(current_argument.length != 2) {
+					logger.error("Error: Error at " + arguments_splitted[i]);
+					return null;
+				}
+				if(arguments.containsKey(current_argument[0])) {
+					logger.error("Error: Argument " + current_argument[0] + " is already defined.");
+					return null;
+				}
+				// replace the placeholder | by =
+				current_argument[1] = current_argument[1].replaceAll("\\|", "=");
+				arguments.put(current_argument[0], current_argument[1]);
+			}
+		} catch(Exception e) {
+			logger.error("Error: Check commandline parameters!");
+			return null;
+		}
+		
+		return arguments;
+	}
+	
 }

@@ -48,13 +48,13 @@
 						<ui:include src="resultTable.xhtml" />
 					</ui:insert>
 				</p:tab>
-				<p:tab title="Cluster" id="resultCluster" rendered="#{metFragWebBean.resultsAvailable}" >
+				<p:tab title="Cluster" id="resultCluster" rendered="#{metFragWebBean.clusteringEnabled metFragWebBean.resultsAvailable}" >
 					<ui:insert name="resultCluster">
 						<ui:include src="resultCluster.xhtml" />
 					</ui:insert>
 				</p:tab>
 			</p:accordionPanel>
-			<p:idleMonitor timeout="1800000" >
+			<p:idleMonitor timeout="3600000" >
 				<p:ajax event="idle" listener="#{metFragWebBean.viewExpiredListener}"/>
 			</p:idleMonitor>
 		</h:form>

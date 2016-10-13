@@ -76,6 +76,15 @@ public class PeakToSmartGroupListCollection extends DefaultList {
 		return string;
 	}
 
+	public String toStringDetail() {
+		String string = "";
+		for(int i = 0; i < this.list.size(); i++) {
+			PeakToSmartGroupList peakToSmartGroupList = this.getElement(i);
+			string += peakToSmartGroupList.getPeakmz() + " " + peakToSmartGroupList.toStringDetail();
+		}
+		return string;
+	}
+
 	public String toStringSmiles() {
 		String string = "";
 		for(int i = 0; i < this.list.size(); i++) {
@@ -100,6 +109,14 @@ public class PeakToSmartGroupListCollection extends DefaultList {
 			this.peakProbabilities[i] /= (double)totalNumber;
 		}
 	}
+
+	public int[] calculatePeakAbsoluteProbabilities() {
+		int[] peakOccurences = new int[this.list.size()];
+		for(int i = 0; i < this.list.size(); i++) {
+			peakOccurences[i] = this.getElement(i).getAbsolutePeakFrequency();
+		}
+		return peakOccurences;
+	}
 	
 	public void setProbabilityToJointProbability() {
 		for(int i = 0; i < this.list.size(); i++) {
@@ -119,38 +136,6 @@ public class PeakToSmartGroupListCollection extends DefaultList {
 		for(int i = 0; i < this.list.size(); i++) {
 			PeakToSmartGroupList peakToSmartGroupList = this.getElement(i);
 			peakToSmartGroupList.setProbabilityToConditionalProbability_ps();
-		}
-	}
-	
-	/*
-	 * calculates P( p | s ) = ( P( s | p ) * P ( p ) ) / ( P ( s ) )
-	 * 
-	 */
-	public void calculatePosteriorProbabilitesVariant1() {
-		// P ( s )
-		double sumJointProbabilities = 0.0;
-		for(int i = 0; i < this.list.size(); i++) {
-			PeakToSmartGroupList currentPeakToSmartGroupList = this.getElement(i);
-			for(int j = 0; j < currentPeakToSmartGroupList.getNumberElements(); j++) {
-				SmartsGroup currentSmartsGroup = currentPeakToSmartGroupList.getElement(j);
-				// P ( s, p ) 
-				double currentLikelihood = currentSmartsGroup.getProbability();
-				// P ( s | p ) * P ( p )
-				double currentJointProbability = currentLikelihood * this.peakProbabilities[i];
-				currentSmartsGroup.setProbability(currentJointProbability);
-				sumJointProbabilities += currentJointProbability;
-			}
-		}
-		for(int i = 0; i < this.list.size(); i++) {
-			PeakToSmartGroupList currentPeakToSmartGroupList = this.getElement(i);
-			for(int j = 0; j < currentPeakToSmartGroupList.getNumberElements(); j++) {
-				SmartsGroup currentSmartsGroup = currentPeakToSmartGroupList.getElement(j);
-				// now P ( s , p ) 
-				double currentJointProbability = currentSmartsGroup.getProbability();
-				// P ( s , p ) / sum_p P ( s , p ) = P ( s , p ) / P ( s )
-				double currentPosteriorProbability = currentJointProbability / sumJointProbabilities;
-				currentSmartsGroup.setProbability(currentPosteriorProbability);
-			}
 		}
 	}
 	
@@ -226,6 +211,7 @@ public class PeakToSmartGroupListCollection extends DefaultList {
 					break;
 				}
 			}
+			//just for percentage output
 			double relation = ((double)i / (double)number) * 100.0;
 			if(nextPercent < relation) {
 				System.out.print(nextPercent + "% ");
@@ -236,6 +222,7 @@ public class PeakToSmartGroupListCollection extends DefaultList {
 		this.maximumAnnotatedID = new Integer(maxAnnotatedId); 
 	}
 	
+	// calculate N^(s)
 	public int[] calculateSubstructureAbsoluteProbabilities() {
 		System.out.println(this.maximumAnnotatedID + " different substructures");
 		int[] absoluteProbabilities = new int[this.maximumAnnotatedID + 1];
@@ -248,7 +235,34 @@ public class PeakToSmartGroupListCollection extends DefaultList {
 		}
 		return absoluteProbabilities;
 	}
+	
+	public void updateJointProbabilitiesWithSubstructures(int[] substructureAbsoluteProbabilities) {
+		double sumSubstructures = 0.0;
+		// P ( s ) 
+		double[] substructureRelativeProbabilities = new double[substructureAbsoluteProbabilities.length];
+		for(int i = 0; i < substructureAbsoluteProbabilities.length; i++)
+			sumSubstructures += (double)substructureAbsoluteProbabilities[i];
+		for(int i = 0; i < substructureAbsoluteProbabilities.length; i++)
+			substructureRelativeProbabilities[i] += (double)substructureAbsoluteProbabilities[i] / sumSubstructures; 
+		
+		for(int i = 0; i < this.list.size(); i++) {
+			this.getElement(i).updateJointProbabilitiesWithSubstructures(substructureAbsoluteProbabilities, substructureRelativeProbabilities);
+		}
+	}
 
+	public void updateJointProbabilitiesWithPeaks(int[] peakAbsoluteProbabilities) {
+		double sumPeakOccurences = 0d;
+		for(int i = 0; i < peakAbsoluteProbabilities.length; i++) 
+			sumPeakOccurences += (double)peakAbsoluteProbabilities[i];
+		// P ( p ) 
+		double[] peakRelativeProbabilities = new double[peakAbsoluteProbabilities.length];
+		for(int i = 0; i < peakAbsoluteProbabilities.length; i++) 
+			peakRelativeProbabilities[i] = (double)peakAbsoluteProbabilities[i] / sumPeakOccurences;
+		for(int i = 0; i < this.list.size(); i++) {
+			this.getElement(i).updateJointProbabilitiesWithPeaks(peakAbsoluteProbabilities, peakRelativeProbabilities, i);
+		}
+	}
+	
 	public void updateProbabilities(int[] substructureAbsoluteProbabilities) {
 		for(int i = 0; i < this.list.size(); i++) {
 			this.getElement(i).updateConditionalProbabilities(substructureAbsoluteProbabilities);

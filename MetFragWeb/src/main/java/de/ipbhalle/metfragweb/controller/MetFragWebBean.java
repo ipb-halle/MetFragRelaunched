@@ -72,12 +72,13 @@ import de.ipbhalle.metfragweb.validator.SmartsValidator;
 @SessionScoped
 public class MetFragWebBean {
 
-	private final String version = "v2.0";
+	private final String version = "v2.0.1";
 	/*
 	 * combines all the settings
 	 */
 	protected BeanSettingsContainer beanSettingsContainer;
 	
+	protected boolean compoundClusteringEnabled = false;
 	protected Thread clusterCompoundsThread;
 	protected ClusterCompoundsThreadRunner clusterCompoundsThreadRunner;
 	protected TreeNode[] selectedClusterNodes;
@@ -2099,13 +2100,15 @@ public class MetFragWebBean {
 				this.beanSettingsContainer.resetProcessStatus();
 				
 				//start clustering compounds
-				if(this.filteredMetFragResultsContainer.getMetFragResults().size() >= 5) {
-					this.clusterCompoundsThreadRunner = new ClusterCompoundsThreadRunner(this.beanSettingsContainer, 
-							this.infoMessages, this.errorMessages, this.filteredMetFragResultsContainer);
-					this.clusterCompoundsThread = new Thread(this.clusterCompoundsThreadRunner);
-					if(this.clusterCompoundsThread != null) {
-						this.clusterCompoundsThreadStarted = true;
-						this.clusterCompoundsThread.start();
+				if(this.compoundClusteringEnabled) {
+					if(this.filteredMetFragResultsContainer.getMetFragResults().size() >= 5) {
+						this.clusterCompoundsThreadRunner = new ClusterCompoundsThreadRunner(this.beanSettingsContainer, 
+								this.infoMessages, this.errorMessages, this.filteredMetFragResultsContainer);
+						this.clusterCompoundsThread = new Thread(this.clusterCompoundsThreadRunner);
+						if(this.clusterCompoundsThread != null) {
+							this.clusterCompoundsThreadStarted = true;
+							this.clusterCompoundsThread.start();
+						}
 					}
 				}
 			}
@@ -2154,6 +2157,10 @@ public class MetFragWebBean {
 	
 	public boolean isCompoundsClusterReady() {
 		return this.clusterCompoundsThreadRunner == null ? false : this.clusterCompoundsThreadRunner.isReady();
+	}
+	
+	public boolean isCompundClusteringEnabled() {
+		return this.compoundClusteringEnabled;
 	}
 	
 	public TreeNode getCompoundsClusterRoot() {
@@ -2399,7 +2406,7 @@ public class MetFragWebBean {
 		}
 		
 		this.generateScoreDistributionModelView();
-		if(this.clusterCompoundsThreadRunner.isReady()) {
+		if(this.clusterCompoundsThreadRunner != null && this.clusterCompoundsThreadRunner.isReady()) {
 			System.out.println("updating scores");
 			this.clusterCompoundsThreadRunner.updateScores();
 		}
@@ -2427,7 +2434,7 @@ public class MetFragWebBean {
 			if(!molecule.isFiltered()) this.filteredMetFragResultsContainer.addMetFragResult(molecule);
 		}
 		this.generateScoreDistributionModelView();
-		if(this.clusterCompoundsThreadRunner.isReady()) {
+		if(this.clusterCompoundsThreadRunner != null && this.clusterCompoundsThreadRunner.isReady()) {
 			System.out.println("updating scores");
 			this.clusterCompoundsThreadRunner.updateScores();
 		}
