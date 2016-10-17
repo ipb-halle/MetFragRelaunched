@@ -41,9 +41,9 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-    		<groupId>org.apache.commons</groupId>
-    		<artifactId>commons-csv</artifactId>
-    		<version>1.2</version>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-csv</artifactId>
+			<version>1.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openscience.cdk</groupId>
@@ -81,9 +81,9 @@
 			<version>3.1</version>
 		</dependency>
 		<dependency>
-    	<groupId>org.apache.sling</groupId>
-    		<artifactId>org.apache.sling.scripting.api</artifactId>
-   			<version>2.1.6</version>
+			<groupId>org.apache.sling</groupId>
+			<artifactId>org.apache.sling.scripting.api</artifactId>
+			<version>2.1.6</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.woden</groupId>
@@ -205,6 +205,12 @@
 			<artifactId>hierarchical-clustering</artifactId>
 			<version>1.1.0</version>
 		</dependency>
+		<!-- added dependency for mzXML  
+		<dependency>
+			<groupId>io.github.msdk</groupId>
+			<artifactId>msdk-all</artifactId>
+			<version>0.0.3</version>
+		</dependency>-->
 	</dependencies>
 
 	<repositories>

@@ -48,7 +48,7 @@
 						<ui:include src="resultTable.xhtml" />
 					</ui:insert>
 				</p:tab>
-				<p:tab title="Cluster" id="resultCluster" rendered="#{metFragWebBean.clusteringEnabled metFragWebBean.resultsAvailable}" >
+				<p:tab title="Cluster" id="resultCluster" rendered="#{metFragWebBean.compoundClusteringEnabled and metFragWebBean.resultsAvailable}" >
 					<ui:insert name="resultCluster">
 						<ui:include src="resultCluster.xhtml" />
 					</ui:insert>

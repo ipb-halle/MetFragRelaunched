@@ -115,7 +115,7 @@ public class TopDownFragmenterAssignerScorer extends AbstractFragmenterAssignerS
 						newToProcessFragments.add(new AbstractTopDownBitArrayFragmentWrapper(currentFragment, currentPeakPointer));
 						continue;
 					}
-					if(currentFragment.getAtomsBitArray().toString().equals("111110001100010001")) System.out.println("here");
+
 					byte matched = -1;
 					int tempPeakPointer = currentPeakPointer;
 					while(matched != 1 && tempPeakPointer >= 0) {

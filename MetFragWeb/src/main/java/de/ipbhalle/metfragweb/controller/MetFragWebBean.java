@@ -2159,7 +2159,7 @@ public class MetFragWebBean {
 		return this.clusterCompoundsThreadRunner == null ? false : this.clusterCompoundsThreadRunner.isReady();
 	}
 	
-	public boolean isCompundClusteringEnabled() {
+	public boolean isCompoundClusteringEnabled() {
 		return this.compoundClusteringEnabled;
 	}
 	

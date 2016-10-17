@@ -37,26 +37,7 @@
 		    	</p:contextMenu>
 				
 			</h:panelGroup>
-		<!-- <h:panelGroup rendered="#{not metFragWebBean.compoundsClusterReady}"> -->
-			<h:panelGroup>
-	    		<h:outputStylesheet name='css/loader.css'  rel='stylesheet' type='text/css' target="head"/>
-	    		
-	    		<!-- <p:graphicImage name="images/loading.gif"/> -->
-	    		<div class="container">
-	    			<div class="cell">
-	    				<div class="loader square reg">
-	    					<div class="block">
-	    						<div class="box">
-	    						</div>
-	    					</div>
-	    				</div>
-	    			</div>	
-	    			Loading...
-	    		</div>
-	    		
-			</h:panelGroup>
 		  </h:panelGroup>	
-
 		<h:outputScript library="primefaces" name="jquery/jquery.js" target="head" />
    		<h:outputScript target="head" >
 	   		$( document ).ready(function() {
@@ -118,7 +99,6 @@
 				});
 			});
 	   	</h:outputScript>
-
  	</ui:composition>
 </h:body>
 
