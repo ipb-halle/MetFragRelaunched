@@ -111,7 +111,6 @@ public class DefaultBitArrayFragment extends AbstractFragment {
 		
 		short numberHydrogens = this.molecularFormula.getNumberHydrogens();
 		
-		
 		for(int i = 0; i < ionisationTypeMassCorrection.length; i++) {
 			int substractHydrogenFromCharge = 0;
 			if(i == 0 && precursorIonTypeIndex == 1) substractHydrogenFromCharge = 1;
@@ -155,7 +154,7 @@ public class DefaultBitArrayFragment extends AbstractFragment {
 					if(!toCheckHydrogenShiftType[signIndex]) {
 						continue;
 					}
-					if(signs[signIndex] * hydrogenShift - substractHydrogenFromCharge < numberHydrogens) {
+					if(numberHydrogens - (signs[signIndex] * hydrogenShift - substractHydrogenFromCharge) < 0) {
 						continue;
 					}
 					/*
