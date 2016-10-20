@@ -175,7 +175,6 @@ public class HDTopDownBitArrayFragmentWrapper extends AbstractTopDownBitArrayFra
 							+ (shifts[j]) * Constants.getMonoisotopicMassOfAtom("H") 
 							+ (Constants.getMonoisotopicMassOfAtom("D") * (double)k - Constants.getMonoisotopicMassOfAtom("H") * (double)k) 
 							+ (shifts[i] * Constants.getMonoisotopicMassOfAtom("D"));
-						
 						byte compareResult = ((TandemMassPeak)peak).matchesToMass(currentFragmentMass);
 						if(compareResult == 0) {
 							if(fragmentPeakMatch[0] != null) {
