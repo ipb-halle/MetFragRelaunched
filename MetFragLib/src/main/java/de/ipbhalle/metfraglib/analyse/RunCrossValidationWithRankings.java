@@ -13,16 +13,17 @@ import de.ipbhalle.metfraglib.additionals.MathTools;
 
 public class RunCrossValidationWithRankings {
 
-	public static String rankings_folder_name = "/home/cruttkie/Dokumente/PhD/MetFrag/substructure_training/cross_validation/eawag_03_new/rankings_testing_combined";
-	//public static String rankings_folder_name = "/home/cruttkie/svn/eawag/2016hdx/metfrag/rankings_7/pos";
+	//public static String rankings_folder_name = "/home/cruttkie/Dokumente/PhD/MetFrag/substructure_training/cross_validation/eawag_01_new/rankings_testing_combined";
+	public static String rankings_folder_name = "/home/cruttkie/svn/eawag/2016hdx/metfrag/rankings_8/pos";
 	public static int number_folds = 10;
 	public static int number_queries = 1;
+	public static String only_metfrag_filename = "rankings_1001.txt";
 	//public static String only_metfrag_filename = "rankings_1005.txt";
-	public static String only_metfrag_filename = "rankings_1005.txt";
-	public static String given_folds_filename = "/home/cruttkie/Dokumente/PhD/MetFrag/substructure_training/cross_validation/eawag_03_new/folds.txt";
-	//public static String given_folds_filename = null;
-	public static String output_file = "/home/cruttkie/Dokumente/PhD/MetFrag/substructure_training/cross_validation/eawag_03_new/rankings.txt";
+	//public static String given_folds_filename = "/home/cruttkie/Dokumente/PhD/MetFrag/substructure_training/cross_validation/eawag_01_new/folds.txt";
+	public static String given_folds_filename = null;
+	//public static String output_file = "/home/cruttkie/Dokumente/PhD/MetFrag/substructure_training/cross_validation/eawag_01_new/rankings.txt";
 	//public static String output_file = "/home/cruttkie/svn/eawag/2016hdx/metfrag/rankings_7/pos_rankings.txt";
+	public static String output_file = null;
 	
 	public static String[] forbidden_filenames = {
 		"rankings_1001.txt",
