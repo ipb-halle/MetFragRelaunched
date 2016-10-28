@@ -4,8 +4,8 @@ import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.interfaces.IMatch;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.settings.Settings;
-import de.ipbhalle.metfraglib.substructure.PeakToSmartGroupList;
-import de.ipbhalle.metfraglib.substructure.PeakToSmartGroupListCollection;
+import de.ipbhalle.metfraglib.substructure.PeakToSmartsGroupList;
+import de.ipbhalle.metfraglib.substructure.PeakToSmartsGroupListCollection;
 
 public class AutomatedSubstructureAnnotationScore extends AbstractScore {
 
@@ -21,10 +21,10 @@ public class AutomatedSubstructureAnnotationScore extends AbstractScore {
 	
 	public void calculate() {
 		this.value = 0.0;
-		PeakToSmartGroupListCollection peakToSmartGroupListCollection = (PeakToSmartGroupListCollection)this.settings.get(VariableNames.PEAK_TO_SMARTS_GROUP_LIST_COLLECTION_NAME);
+		PeakToSmartsGroupListCollection peakToSmartGroupListCollection = (PeakToSmartsGroupListCollection)this.settings.get(VariableNames.PEAK_TO_SMARTS_GROUP_LIST_COLLECTION_NAME);
 		for(int i = 0; i < peakToSmartGroupListCollection.getNumberElements(); i++) {
-			PeakToSmartGroupList peakToSmartsGroupList = peakToSmartGroupListCollection.getElement(i);
-			this.value += peakToSmartsGroupList.getMaximalMatchingProbability(this.candidate);
+			PeakToSmartsGroupList peakToSmartsGroupList = peakToSmartGroupListCollection.getElement(i);
+			this.value += peakToSmartsGroupList.getMaximalMatchingProbabilitySorted(this.candidate);
 		}
  		this.calculationFinished = true;
 	}

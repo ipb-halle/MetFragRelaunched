@@ -1063,7 +1063,9 @@ public class MetFragWebBean {
 		if (this.beanSettingsContainer.getSuspectListFilterFileContainer() != null) {
 			int suspectListElementName = (Integer) event.getComponent().getAttributes().get("currentSuspectListFilterElementId");
 			this.beanSettingsContainer.getSuspectListFilterFileContainer().removeById(suspectListElementName);
-			if (this.beanSettingsContainer.getSuspectListFilterFileContainer().size() == 0 && !this.isForIdentSuspectListInclusionFilterEnabled()) {
+			if (this.beanSettingsContainer.getSuspectListFilterFileContainer().size() == 0 
+					&& !this.isForIdentSuspectListInclusionFilterEnabled()
+					&& !this.isDsstoxSuspectListInclusionFilterEnabled()) {
 				this.errorMessages.setMessage("suspectListsFilterError", "Suspect list file(s) required.");
 				this.beanSettingsContainer.setScoreValid(false, "suspectListsFilter");
 			} else
@@ -1079,9 +1081,33 @@ public class MetFragWebBean {
 		return this.beanSettingsContainer.isForIdentSuspectListFilterEnabled();
 	}
 
+	public boolean isDsstoxSuspectListInclusionFilterEnabled() {
+		return this.beanSettingsContainer.isDsstoxSuspectListFilterEnabled();
+	}
+
 	public void setForIdentSuspectListInclusionFilterEnabled(boolean value) {
 		this.beanSettingsContainer.setForIdentSuspectListFilterEnabled(value);
-		if ((this.beanSettingsContainer.getSuspectListFilterFileContainer() == null || this.beanSettingsContainer.getSuspectListFilterFileContainer().size() == 0) && !this.isForIdentSuspectListInclusionFilterEnabled()) 
+		if ((this.beanSettingsContainer.getSuspectListFilterFileContainer() == null 
+				|| this.beanSettingsContainer.getSuspectListFilterFileContainer().size() == 0) 
+				&& !this.isForIdentSuspectListInclusionFilterEnabled()
+				&& !this.isDsstoxSuspectListInclusionFilterEnabled()) 
+		{
+			this.errorMessages.setMessage("suspectListsFilterError", "Suspect list file(s) required.");
+			this.beanSettingsContainer.setScoreValid(false, "suspectListsFilter");
+		}
+		else 
+		{
+			this.errorMessages.removeKey("suspectListsFilterError");
+			this.beanSettingsContainer.setFilterValid(true, "suspectListsFilter");
+		}
+	}
+
+	public void setDsstoxSuspectListInclusionFilterEnabled(boolean value) {
+		this.beanSettingsContainer.setDsstoxSuspectListFilterEnabled(value);
+		if ((this.beanSettingsContainer.getSuspectListFilterFileContainer() == null 
+				|| this.beanSettingsContainer.getSuspectListFilterFileContainer().size() == 0) 
+				&& !this.isForIdentSuspectListInclusionFilterEnabled()
+				&& !this.isDsstoxSuspectListInclusionFilterEnabled()) 
 		{
 			this.errorMessages.setMessage("suspectListsFilterError", "Suspect list file(s) required.");
 			this.beanSettingsContainer.setScoreValid(false, "suspectListsFilter");
@@ -1095,7 +1121,10 @@ public class MetFragWebBean {
 	
 	public void setSuspectListInclusionFilterEnabled(boolean suspectListInclusionFilterEnabled) {
 		if (suspectListInclusionFilterEnabled == true) {
-			if ((this.beanSettingsContainer.getSuspectListFilterFileContainer() == null || this.beanSettingsContainer.getSuspectListFilterFileContainer().size() == 0)  && !this.isForIdentSuspectListInclusionFilterEnabled())
+			if ((this.beanSettingsContainer.getSuspectListFilterFileContainer() == null 
+					|| this.beanSettingsContainer.getSuspectListFilterFileContainer().size() == 0)  
+					&& !this.isForIdentSuspectListInclusionFilterEnabled()
+					&& !this.isDsstoxSuspectListInclusionFilterEnabled())
 				this.beanSettingsContainer.setFilterValid(false, "suspectListsFilter");
 			else
 				this.beanSettingsContainer.setFilterValid(true, "suspectListsFilter");
@@ -1245,7 +1274,9 @@ public class MetFragWebBean {
 		}
 		// suspect lists inclusion filter
 		if (this.beanSettingsContainer.isFilterEnabled("suspectListsFilter")) {
-			if ((this.beanSettingsContainer.getSuspectListFilterFileContainer() == null || this.beanSettingsContainer.getSuspectListFilterFileContainer().size() == 0) && !this.isForIdentSuspectListInclusionFilterEnabled()) 
+			if ((this.beanSettingsContainer.getSuspectListFilterFileContainer() == null 
+					|| this.beanSettingsContainer.getSuspectListFilterFileContainer().size() == 0) 
+					&& !this.isForIdentSuspectListInclusionFilterEnabled() && !this.isDsstoxSuspectListInclusionFilterEnabled()) 
 			{
 				this.beanSettingsContainer.setFilterValid(false, "suspectListsFilter");
 				this.errorMessages.setMessage("suspectListsFilterError", "Suspect list file(s) required.");
@@ -1287,6 +1318,14 @@ public class MetFragWebBean {
 
 	public void setSpectralSimilarityScoreEnabled(boolean spectralSimilarityScoreEnabled) {
 		this.beanSettingsContainer.setScoreEnabled(spectralSimilarityScoreEnabled, "spectralSimilarity");
+	}
+
+	public boolean isExactSpectralSimilarityScoreEnabled() {
+		return this.beanSettingsContainer.isScoreEnabled("exactSpectralSimilarity");
+	}
+
+	public void setExactSpectralSimilarityScoreEnabled(boolean exactSpectralSimilarityScoreEnabled) {
+		this.beanSettingsContainer.setScoreEnabled(exactSpectralSimilarityScoreEnabled, "exactSpectralSimilarity");
 	}
 
 	// SMARTS scores
@@ -1489,7 +1528,9 @@ public class MetFragWebBean {
 		if (this.beanSettingsContainer.getSuspectListScoreFileContainer() != null) {
 			int suspectListElementName = (Integer) event.getComponent().getAttributes().get("currentSuspectListScoreElementId");
 			this.beanSettingsContainer.getSuspectListScoreFileContainer().removeById(suspectListElementName);
-			if (this.beanSettingsContainer.getSuspectListScoreFileContainer().size() == 0 && !this.isForIdentSuspectListInclusionScoreEnabled()) {
+			if (this.beanSettingsContainer.getSuspectListScoreFileContainer().size() == 0 
+					&& !this.isForIdentSuspectListInclusionScoreEnabled()
+					&& !this.isDsstoxSuspectListInclusionScoreEnabled()) {
 				this.errorMessages.setMessage("suspectListsScoreError", "Suspect list file(s) required.");
 				this.beanSettingsContainer.setScoreValid(false, "suspectListsScore");
 			} else
@@ -1515,9 +1556,32 @@ public class MetFragWebBean {
 		return this.beanSettingsContainer.isForIdentSuspectListScoreEnabled();
 	}
 
+	public boolean isDsstoxSuspectListInclusionScoreEnabled() {
+		return this.beanSettingsContainer.isDsstoxSuspectListScoreEnabled();
+	}
+
 	public void setForIdentSuspectListInclusionScoreEnabled(boolean value) {
 		this.beanSettingsContainer.setForIdentSuspectListScoreEnabled(value);
-		if ((this.beanSettingsContainer.getSuspectListScoreFileContainer() == null || this.beanSettingsContainer.getSuspectListScoreFileContainer().size() == 0) && !this.isForIdentSuspectListInclusionScoreEnabled()) 
+		if ((this.beanSettingsContainer.getSuspectListScoreFileContainer() == null 
+				|| this.beanSettingsContainer.getSuspectListScoreFileContainer().size() == 0) 
+				&& !this.isForIdentSuspectListInclusionScoreEnabled() && !this.isDsstoxSuspectListInclusionScoreEnabled()) 
+		{
+			this.beanSettingsContainer.setScoreValid(false, "suspectListsScore");
+			this.errorMessages.setMessage("suspectListsScoreError", "Suspect list file(s) required.");
+		}
+		else 
+		{
+			this.errorMessages.removeKey("suspectListsScoreError");
+			this.beanSettingsContainer.setScoreValid(true, "suspectListsScore");
+		}
+	}
+
+	public void setDsstoxSuspectListInclusionScoreEnabled(boolean value) {
+		this.beanSettingsContainer.setDsstoxSuspectListScoreEnabled(value);
+		if ((this.beanSettingsContainer.getSuspectListScoreFileContainer() == null || 
+				this.beanSettingsContainer.getSuspectListScoreFileContainer().size() == 0) && 
+				!this.isForIdentSuspectListInclusionScoreEnabled() && !this.isDsstoxSuspectListInclusionScoreEnabled()
+			) 
 		{
 			this.beanSettingsContainer.setScoreValid(false, "suspectListsScore");
 			this.errorMessages.setMessage("suspectListsScoreError", "Suspect list file(s) required.");
@@ -1633,7 +1697,10 @@ public class MetFragWebBean {
 		}
 		// suspect lists inclusion score
 		if (this.beanSettingsContainer.isScoreEnabled("suspectListsScore")) {
-			if ((this.beanSettingsContainer.getSuspectListScoreFileContainer() == null || this.beanSettingsContainer.getSuspectListScoreFileContainer().size() == 0) && !this.isForIdentSuspectListInclusionScoreEnabled()) 
+			if ((this.beanSettingsContainer.getSuspectListScoreFileContainer() == null 
+					|| this.beanSettingsContainer.getSuspectListScoreFileContainer().size() == 0) 
+					&& !this.isForIdentSuspectListInclusionScoreEnabled()
+					&& !this.isDsstoxSuspectListInclusionScoreEnabled()) 
 			{
 				this.beanSettingsContainer.setScoreValid(false, "suspectListsScore");
 				this.errorMessages.setMessage("suspectListsScoreError", "Suspect list file(s) required.");

@@ -289,7 +289,14 @@
 								<p:ajax update="suspectListInclusionScorePanel" />
 							</p:selectBooleanCheckbox>
 							<h:outputText escape="false" id="forIdentSuspectListInclusionScoreLabel"
-							value="ForIdent (Find out more about &lt;a href='http://for-ident.hswt.de/pages/en/home.php?lang=EN'&gt;ForIdent&lt;/a&gt;)" />
+							value="FOR-IDENT (Find out more about &lt;a href='http://for-ident.hswt.de/pages/en/home.php?lang=EN'&gt;ForIdent&lt;/a&gt;)" />
+							<p:selectBooleanCheckbox id="dsstoxSuspectListInclusionScoreEnabled"
+								value="#{metFragWebBean.dsstoxSuspectListInclusionScoreEnabled}"
+								required="false" labelPosition="left">
+								<p:ajax update="suspectListInclusionScorePanel" />
+							</p:selectBooleanCheckbox>
+							<h:outputText escape="false" id="dsstoxSuspectListInclusionScoreLabel"
+							value="DSSTox (Find out more about &lt;a href='https://www.epa.gov/chemical-research/distributed-structure-searchable-toxicity-dsstox-database'&gt;DSSTox&lt;/a&gt;)" />
 						</h:panelGrid>
 					</h:panelGrid>
 					<h:panelGroup id="suspectListsScoreError" layout="block"
@@ -323,7 +330,22 @@
 			<h:panelGrid id="spectralSimilarityScorePanel">
 				<h:panelGrid columns="2" style="vertical-align:top;" cellspacing="4"
 					cellpadding="4" styleClass="subPanel" rendered="false">
+				</h:panelGrid>
+			</h:panelGrid>
 
+			<h:panelGrid columns="2" width="80%" style="vertical-align:top;"
+				cellspacing="4" cellpadding="4" styleClass="mainPanel"
+				columnClasses="firstColumnSimple,secondColumnSimple">
+				<p:selectBooleanCheckbox id="exactSpectralSimilarityScoreEnabled"
+					value="#{metFragWebBean.exactSpectralSimilarityScoreEnabled}">
+					<p:ajax update="exactSpectralSimilarityScorePanel" />
+				</p:selectBooleanCheckbox>
+				<h:outputText id="exactSpectralSimilarityScoreLabel"
+					value="Exact Spectral Similarity (MoNA)" />
+			</h:panelGrid>
+			<h:panelGrid id="exactSpectralSimilarityScorePanel">
+				<h:panelGrid columns="2" style="vertical-align:top;" cellspacing="4"
+					cellpadding="4" styleClass="subPanel" rendered="false">
 				</h:panelGrid>
 			</h:panelGrid>
 

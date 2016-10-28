@@ -21,8 +21,8 @@ public class ForIdentRestWebService {
 	 * @throws Exception
 	 */
 	public java.util.Vector<String> getCategories() throws Exception {
-		//https://nightly.for-ident.org/api/categories
-		String urlname = "https://nightly.for-ident.org/api/categories";
+		//https://water.for-ident.org/api/categories
+		String urlname = "https://water.for-ident.org/api/categories";
 		java.io.InputStream stream = HelperFunctions.getInputStreamFromURL(urlname);
 		if(stream == null) return new java.util.Vector<String>();
 		JSONParser parser = new JSONParser();
@@ -49,8 +49,8 @@ public class ForIdentRestWebService {
 	 * @throws Exception
 	 */
 	public java.util.Vector<String> getInChIKeys() throws Exception {
-		//https://nightly.for-ident.org/api/substances/inchiKeys
-		String urlname = "https://nightly.for-ident.org/api/substances/inchiKeys";
+		//https://water.for-ident.org/api/substances/inchiKeys
+		String urlname = "https://water.for-ident.org/api/substances/inchiKeys";
 		java.io.InputStream stream = HelperFunctions.getInputStreamFromURL(urlname);
 		if(stream == null) return new java.util.Vector<String>();
 		JSONParser parser = new JSONParser();
@@ -65,7 +65,7 @@ public class ForIdentRestWebService {
 		Long numberPages = (Long)jsonObject.get("totalPages");
 	
 		for(int i = 0; i < numberPages; i++) {
-			urlname = "https://nightly.for-ident.org/api/substances/inchiKeys?page=" + i;
+			urlname = "https://water.for-ident.org/api/substances/inchiKeys?page=" + i;
 			stream = HelperFunctions.getInputStreamFromURL(urlname);
 			jsonObject = (JSONObject)parser.parse(new java.io.InputStreamReader(stream));
 			stream.close();
@@ -87,8 +87,8 @@ public class ForIdentRestWebService {
 	 * @throws Exception
 	 */
 	public java.util.Vector<String[]> getInChIKeysAndIdentifiers() throws Exception {
-		//https://nightly.for-ident.org/api/substances/inchiKeys
-		String urlname = "https://nightly.for-ident.org/api/substances/inchiKeysAndStoffidentIds";
+		//https://water.for-ident.org/api/substances/inchiKeys
+		String urlname = "https://water.for-ident.org/api/substances/inchiKeysAndStoffidentIds";
 		java.io.InputStream stream = HelperFunctions.getInputStreamFromURL(urlname);
 		if(stream == null) return new java.util.Vector<String[]>();
 		JSONParser parser = new JSONParser();
@@ -103,7 +103,7 @@ public class ForIdentRestWebService {
 		Long numberPages = (Long)jsonObject.get("totalPages");
 	
 		for(int i = 0; i < numberPages; i++) {
-			urlname = "https://nightly.for-ident.org/api/substances/inchiKeysAndStoffidentIds?page=" + i;
+			urlname = "https://water.for-ident.org/api/substances/inchiKeysAndStoffidentIds?page=" + i;
 			stream = HelperFunctions.getInputStreamFromURL(urlname);
 			jsonObject = (JSONObject)parser.parse(new java.io.InputStreamReader(stream));
 			stream.close();
@@ -125,8 +125,8 @@ public class ForIdentRestWebService {
 	 * @throws Exception
 	 */
 	public java.util.Vector<String> getIdentifiers() throws Exception {
-		//https://nightly.for-ident.org/api/substances/publicIds
-		String urlname = "https://nightly.for-ident.org/api/substances/stoffidentIds";
+		//https://water.for-ident.org/api/substances/publicIds
+		String urlname = "https://water.for-ident.org/api/substances/stoffidentIds";
 		java.io.InputStream stream = HelperFunctions.getInputStreamFromURL(urlname);
 		if(stream == null) return new java.util.Vector<String>();
 		JSONParser parser = new JSONParser();
@@ -141,7 +141,7 @@ public class ForIdentRestWebService {
 		Long numberPages = (Long)jsonObject.get("totalPages");
 	
 		for(int i = 0; i < numberPages; i++) {
-			urlname = "https://nightly.for-ident.org/api/substances/stoffidentIds?page=" + i;
+			urlname = "https://water.for-ident.org/api/substances/stoffidentIds?page=" + i;
 			stream = HelperFunctions.getInputStreamFromURL(urlname);
 			jsonObject = (JSONObject)parser.parse(new java.io.InputStreamReader(stream));
 			stream.close();
@@ -165,9 +165,9 @@ public class ForIdentRestWebService {
 	 * @throws Exception
 	 */
 	public CandidateList getCandidatesByMass(double mass, double mzppm) throws Exception {
-		//https://nightly.for-ident.org/api/substances?accurateMassMin=100&accurateMassMax=200
+		//https://water.for-ident.org/api/substances?accurateMassMin=100&accurateMassMax=200
 		double mzabs = MathTools.calculateAbsoluteDeviation(mass, mzppm);
-		String urlname = "https://nightly.for-ident.org/api/substances?accurateMassMin=" + (mass - mzabs) + "&accurateMassMax=" + (mass + mzabs);
+		String urlname = "https://water.for-ident.org/api/substances?accurateMassMin=" + (mass - mzabs) + "&accurateMassMax=" + (mass + mzabs);
 		java.io.InputStream stream = HelperFunctions.getInputStreamFromURL(urlname);
 		if(stream == null) return new CandidateList();
 		JSONParser parser = new JSONParser();
@@ -182,7 +182,7 @@ public class ForIdentRestWebService {
 		Long numberPages = (Long)jsonObject.get("totalPages");
 	
 		for(int i = 0; i < numberPages; i++) {
-			urlname = "https://nightly.for-ident.org/api/substances?accurateMassMin=" + (mass - mzabs) + "&accurateMassMax=" + (mass + mzabs) + "&page=" + i;
+			urlname = "https://water.for-ident.org/api/substances?accurateMassMin=" + (mass - mzabs) + "&accurateMassMax=" + (mass + mzabs) + "&page=" + i;
 			stream = HelperFunctions.getInputStreamFromURL(urlname);
 			jsonObject = (JSONObject)parser.parse(new java.io.InputStreamReader(stream));
 			stream.close();
@@ -237,8 +237,8 @@ public class ForIdentRestWebService {
 	 * @throws Exception
 	 */
 	public CandidateList getCandidatesByMolecularFormula(String molecularFormula) throws Exception {
-		//https://nightly.for-ident.org/api/substances?elementalFormula=C16H12Cl2N4O4
-		String urlname = "https://nightly.for-ident.org/api/substances?elementalFormula=" + molecularFormula;
+		//https://water.for-ident.org/api/substances?elementalFormula=C16H12Cl2N4O4
+		String urlname = "https://water.for-ident.org/api/substances?elementalFormula=" + molecularFormula;
 		java.io.InputStream stream = HelperFunctions.getInputStreamFromURL(urlname);
 		if(stream == null) return new CandidateList();
 		JSONParser parser = new JSONParser();
@@ -253,7 +253,7 @@ public class ForIdentRestWebService {
 		Long numberPages = (Long)jsonObject.get("totalPages");
 	
 		for(int i = 0; i < numberPages; i++) {
-			urlname = "https://nightly.for-ident.org/api/substances?elementalFormula=" + molecularFormula + "&page=" + i;
+			urlname = "https://water.for-ident.org/api/substances?elementalFormula=" + molecularFormula + "&page=" + i;
 			stream = HelperFunctions.getInputStreamFromURL(urlname);
 			jsonObject = (JSONObject)parser.parse(new java.io.InputStreamReader(stream));
 			stream.close();
@@ -308,7 +308,7 @@ public class ForIdentRestWebService {
 	 * @throws Exception
 	 */
 	public CandidateList getCandidatesByIdentifier(String[] identifiers) throws Exception {
-		//https://nightly.for-ident.org/api/substances?publicId=SI00000001&publicId=SI00000002
+		//https://water.for-ident.org/api/substances?publicId=SI00000001&publicId=SI00000002
 		CandidateList candidateList = new CandidateList();
 		String idString = "";
 		for(int i = 0; i < identifiers.length; i++) {
@@ -316,7 +316,7 @@ public class ForIdentRestWebService {
 			if((i % 100 == 0 && i != 0) || (i == identifiers.length - 1)) {
 				idString = idString.substring(1, idString.length());
 		
-				String urlname = "https://nightly.for-ident.org/api/substances?" + idString;
+				String urlname = "https://water.for-ident.org/api/substances?" + idString;
 				System.out.println(urlname);
 				java.io.InputStream stream = HelperFunctions.getInputStreamFromURL(urlname);
 				if(stream == null) return new CandidateList();

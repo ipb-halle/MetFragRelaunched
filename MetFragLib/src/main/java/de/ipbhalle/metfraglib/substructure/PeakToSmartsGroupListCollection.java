@@ -7,44 +7,60 @@ import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
 import de.ipbhalle.metfraglib.list.DefaultList;
 import de.ipbhalle.metfraglib.similarity.TanimotoSimilarity;
 
-public class PeakToSmartGroupListCollection extends DefaultList {
+public class PeakToSmartsGroupListCollection extends DefaultList {
 	
 	// P ( p )
 	private double[] peakProbabilities;
 	private Integer maximumAnnotatedID = null;
 	
-	public PeakToSmartGroupListCollection() {
+	public PeakToSmartsGroupListCollection() {
 		super();
 	}
 
-	public void addElement(PeakToSmartGroupList obj) {
+	public void filterByOccurence(int minimumNumberOccurences) {
+		java.util.Vector<Object> filteredList = new java.util.Vector<Object>();
+		for(int i = 0; i < this.getNumberElements(); i++) {
+			this.getElement(i).filterByOccurence(minimumNumberOccurences);
+			if(this.getElement(i).getNumberElements() != 0)
+				filteredList.add(this.getElement(i));
+		}
+		this.list = filteredList;
+	}
+	
+	public void addElement(PeakToSmartsGroupList obj) {
 		this.list.add(obj);
 	}
 
-	public void addElementSorted(PeakToSmartGroupList obj) {
+	public void addElementSorted(PeakToSmartsGroupList obj) {
 		int index = 0;
 		while(index < this.list.size()) {
-			double peakMz = ((PeakToSmartGroupList)this.list.get(index)).getPeakmz();
+			double peakMz = ((PeakToSmartsGroupList)this.list.get(index)).getPeakmz();
 			if(peakMz < obj.getPeakmz()) index++;
 			else break;
 		}
 		this.list.add(index, obj);
 	}
 
-	public void addElement(int index, PeakToSmartGroupList obj) {
+	public void sortElementsByProbability() {
+		for(int i = 0; i < this.list.size(); i++) {
+			this.getElement(i).sortElementsByProbability();
+		}
+	}
+	
+	public void addElement(int index, PeakToSmartsGroupList obj) {
 		this.list.add(index, obj);
 	}
 	
-	public PeakToSmartGroupList getElement(int index) {
-		return (PeakToSmartGroupList)this.list.get(index);
+	public PeakToSmartsGroupList getElement(int index) {
+		return (PeakToSmartsGroupList)this.list.get(index);
 	}
 	
-	public PeakToSmartGroupList getElementByPeak(Double mzValue, Double mzppm, Double mzabs) {
+	public PeakToSmartsGroupList getElementByPeak(Double mzValue, Double mzppm, Double mzabs) {
 		double dev = MathTools.calculateAbsoluteDeviation(mzValue, mzppm) + mzabs;
 		double minDev = Integer.MAX_VALUE;
-		PeakToSmartGroupList bestMatch = null;
+		PeakToSmartsGroupList bestMatch = null;
 		for(int i = 0; i < this.list.size(); i++) {
-			PeakToSmartGroupList peakToSmartGroupList = (PeakToSmartGroupList)this.list.get(i);
+			PeakToSmartsGroupList peakToSmartGroupList = (PeakToSmartsGroupList)this.list.get(i);
 			double currentDev = Math.abs(peakToSmartGroupList.getPeakmz() - mzValue);
 			if(currentDev <= dev) {
 				if(currentDev < minDev) {
@@ -58,7 +74,7 @@ public class PeakToSmartGroupListCollection extends DefaultList {
 	
 	public void print() {
 		for(int i = 0; i < this.list.size(); i++) {
-			PeakToSmartGroupList peakToSmartGroupList = this.getElement(i);
+			PeakToSmartsGroupList peakToSmartGroupList = this.getElement(i);
 			System.out.print(peakToSmartGroupList.getPeakmz());
 			for(int j = 0; j < peakToSmartGroupList.getNumberElements(); j++) {
 				System.out.print(" ");
@@ -70,7 +86,7 @@ public class PeakToSmartGroupListCollection extends DefaultList {
 	public String toString() {
 		String string = "";
 		for(int i = 0; i < this.list.size(); i++) {
-			PeakToSmartGroupList peakToSmartGroupList = this.getElement(i);
+			PeakToSmartsGroupList peakToSmartGroupList = this.getElement(i);
 			string += peakToSmartGroupList.getPeakmz() + " " + peakToSmartGroupList.toString();
 		}
 		return string;
@@ -79,7 +95,7 @@ public class PeakToSmartGroupListCollection extends DefaultList {
 	public String toStringDetail() {
 		String string = "";
 		for(int i = 0; i < this.list.size(); i++) {
-			PeakToSmartGroupList peakToSmartGroupList = this.getElement(i);
+			PeakToSmartsGroupList peakToSmartGroupList = this.getElement(i);
 			string += peakToSmartGroupList.getPeakmz() + " " + peakToSmartGroupList.toStringDetail();
 		}
 		return string;
@@ -88,7 +104,7 @@ public class PeakToSmartGroupListCollection extends DefaultList {
 	public String toStringSmiles() {
 		String string = "";
 		for(int i = 0; i < this.list.size(); i++) {
-			PeakToSmartGroupList peakToSmartGroupList = this.getElement(i);
+			PeakToSmartsGroupList peakToSmartGroupList = this.getElement(i);
 			string += peakToSmartGroupList.getPeakmz() + " " + peakToSmartGroupList.toStringSmiles(); 
 		}
 		return string;
@@ -120,28 +136,28 @@ public class PeakToSmartGroupListCollection extends DefaultList {
 	
 	public void setProbabilityToJointProbability() {
 		for(int i = 0; i < this.list.size(); i++) {
-			PeakToSmartGroupList peakToSmartGroupList = this.getElement(i);
+			PeakToSmartsGroupList peakToSmartGroupList = this.getElement(i);
 			peakToSmartGroupList.setProbabilityToJointProbability();
 		}
 	}
 
 	public void setProbabilityToConditionalProbability_sp() {
 		for(int i = 0; i < this.list.size(); i++) {
-			PeakToSmartGroupList peakToSmartGroupList = this.getElement(i);
+			PeakToSmartsGroupList peakToSmartGroupList = this.getElement(i);
 			peakToSmartGroupList.setProbabilityToConditionalProbability_sp();
 		}
 	}
 	
 	public void setProbabilityToConditionalProbability_ps() {
 		for(int i = 0; i < this.list.size(); i++) {
-			PeakToSmartGroupList peakToSmartGroupList = this.getElement(i);
+			PeakToSmartsGroupList peakToSmartGroupList = this.getElement(i);
 			peakToSmartGroupList.setProbabilityToConditionalProbability_ps();
 		}
 	}
 	
 	public void removeDuplicates() {
 		for(int i = 0; i < this.list.size(); i++) {
-			PeakToSmartGroupList peakToSmartGroupList = (PeakToSmartGroupList)this.list.get(i);
+			PeakToSmartsGroupList peakToSmartGroupList = (PeakToSmartsGroupList)this.list.get(i);
 			peakToSmartGroupList.removeDuplicates();
 		}	
 	}
@@ -161,7 +177,7 @@ public class PeakToSmartGroupListCollection extends DefaultList {
 	public void updateJointProbabilities() {
 		int numberN = 0;
 		for(int i = 0; i < this.list.size(); i++) {
-			PeakToSmartGroupList peakToSmartGroupList = (PeakToSmartGroupList)this.list.get(i);
+			PeakToSmartsGroupList peakToSmartGroupList = (PeakToSmartsGroupList)this.list.get(i);
 			for(int j = 0; j < peakToSmartGroupList.getNumberElements(); j++) {
 				numberN += peakToSmartGroupList.getElement(j).getNumberElements();
 			}
@@ -176,7 +192,7 @@ public class PeakToSmartGroupListCollection extends DefaultList {
 		java.util.Vector<SmartsGroup> smartsGroups = new java.util.Vector<SmartsGroup>();
 		int maxAnnotatedId = -1;
 		for(int i = 0; i < this.list.size(); i++) {
-			PeakToSmartGroupList peakToSmartGroupList = (PeakToSmartGroupList)this.getElement(i);
+			PeakToSmartsGroupList peakToSmartGroupList = (PeakToSmartsGroupList)this.getElement(i);
 			for(int j = 0; j < peakToSmartGroupList.getNumberElements(); j++) {
 				SmartsGroup smartsGroup = (SmartsGroup)peakToSmartGroupList.getElement(j);
 				smartsGroups.add(smartsGroup);
@@ -227,7 +243,7 @@ public class PeakToSmartGroupListCollection extends DefaultList {
 		System.out.println(this.maximumAnnotatedID + " different substructures");
 		int[] absoluteProbabilities = new int[this.maximumAnnotatedID + 1];
 		for(int i = 0; i < this.getNumberElements(); i++) {
-			PeakToSmartGroupList peakToSmartGroupList = this.getElement(i);
+			PeakToSmartsGroupList peakToSmartGroupList = this.getElement(i);
 			for(int j = 0; j < peakToSmartGroupList.getNumberElements(); j++) {
 				SmartsGroup smartGroup = peakToSmartGroupList.getElement(j);
 				absoluteProbabilities[smartGroup.getId()] += smartGroup.getNumberElements();

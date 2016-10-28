@@ -200,7 +200,7 @@ public class StandardSingleStructureImageGenerator implements IImageGenerator {
 	public static void main(String[] args) throws InvalidSmilesException, IOException {
 		 IAtomContainer m = null;
 			try {
-				m = MoleculeFunctions.getAtomContainerFromInChI("InChI=1S/C7H7NS/c9-6-8-7-4-2-1-3-5-7/h1-6H,(H,8,9)");
+				m = MoleculeFunctions.getAtomContainerFromInChI("InChI=1S/C15H12O5/c16-9-3-1-8(2-4-9)13-7-12(19)15-11(18)5-10(17)6-14(15)20-13/h1-6,13,16-18H,7H2");
 				MoleculeFunctions.prepareAtomContainer(m, false);
 				MoleculeFunctions.removeHydrogens(m);
 			} catch (Exception e) {
@@ -209,7 +209,7 @@ public class StandardSingleStructureImageGenerator implements IImageGenerator {
 	    StandardSingleStructureImageGenerator s = new StandardSingleStructureImageGenerator();
 	    s.setImageHeight(1500);
 	    s.setImageWidth(1500);
-	    s.setStrokeRation(1.2);
+	    s.setStrokeRation(2.2);
 	    RenderedImage img = s.generateImage(m, "1");
 	    
 	    ImageIO.write((RenderedImage) img, "PNG", new java.io.File("/tmp/file.png"));

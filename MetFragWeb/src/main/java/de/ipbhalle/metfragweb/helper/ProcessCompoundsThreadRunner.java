@@ -305,7 +305,9 @@ public class ProcessCompoundsThreadRunner extends ThreadRunner {
 		if(realName.equals(VariableNames.METFRAG_FRAGMENTER_SCORE_NAME))
 			return "MetFrag";
 		else if(realName.equals("MetFusionMoNAScore") || realName.equals("OfflineMetFusionScore") || realName.equals("ExactMoNAScore") || realName.equals("IndividualMoNAScore"))
-			return "SpectralSimilarityScore";
+			return "SpectralSimilarity";
+		else if(realName.equals("OfflineIndividualMoNAScore") || realName.equals("IndividualMoNAScore"))
+			return "ExactSpectralSimilarity";
 		else if(realName.equals("ChemSpiderRSCCount"))
 			return "RSCCount";
 		else if(realName.equals("ChemSpiderReferenceCount"))

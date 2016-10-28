@@ -3,13 +3,23 @@ package de.ipbhalle.metfraglib.substructure;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.list.DefaultList;
 
-public class PeakToSmartGroupList extends DefaultList {
+public class PeakToSmartsGroupList extends DefaultList {
 
 	private Double peakmz;
 	
-	public PeakToSmartGroupList(Double peakmz) {
+	public PeakToSmartsGroupList(Double peakmz) {
 		super();
 		this.peakmz = peakmz;
+	}
+	
+	public void filterByOccurence(int minimumNumberOccurences) {
+		java.util.Vector<Object> filteredList = new java.util.Vector<Object>();
+		for(int i = 0; i < this.getNumberElements(); i++) {
+			SmartsGroup smartsGroup = (SmartsGroup)this.getElement(i);
+			if(smartsGroup.getNumberElements() >= minimumNumberOccurences)
+				filteredList.add(smartsGroup);
+		}
+		this.list = filteredList;
 	}
 	
 	public double getMaximalMatchingProbability(ICandidate candidate) {
@@ -21,6 +31,30 @@ public class PeakToSmartGroupList extends DefaultList {
 			}
 		}
 		return maxProbability;
+	}
+
+	public double getMaximalMatchingProbabilitySorted(ICandidate candidate) {
+		for(int i = 0; i < this.list.size(); i++) {
+			SmartsGroup smartsGroup = (SmartsGroup)this.list.get(i);
+			if(smartsGroup.smartsMatches(candidate)) {
+				//if already matched you can discard all others (if sorted!!)
+				return smartsGroup.getProbability();
+			}
+		}
+		return 0.0;
+	}
+	
+	public void sortElementsByProbability() {
+		DefaultList newlist = new DefaultList();
+		for(int i = 0; i < this.list.size(); i++) {
+			int index = 0;
+			while(index < newlist.getNumberElements() && ((SmartsGroup)newlist.getElement(index)).getProbability() > this.getElement(i).getProbability()) {
+				index++;
+			}
+			newlist.addElement(index, this.getElement(i));
+		}
+		this.list.clear();
+		for(int i = 0; i < newlist.getNumberElements(); i++) this.addElement((SmartsGroup)newlist.getElement(i));
 	}
 	
 	public SmartsGroup getElement(int index) {
