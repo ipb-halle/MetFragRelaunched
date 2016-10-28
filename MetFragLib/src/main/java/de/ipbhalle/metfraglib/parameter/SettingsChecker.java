@@ -356,7 +356,7 @@ public class SettingsChecker {
 					else if(checkPositive) {
 						String[] fileNames = (String[])FilterSuspectLists;
 						for(int j = 0; j < fileNames.length; j++) {
-							if(!fileNames[j].equals(VariableNames.FORIDENT_SUSPECTLIST_NAME) && !this.checkFile(VariableNames.PRE_CANDIDATE_FILTER_SUSPECT_LIST_NAME, fileNames[j]))
+							if(!fileNames[j].equals(VariableNames.DSSTOX_SUSPECTLIST_NAME) && !fileNames[j].equals(VariableNames.FORIDENT_SUSPECTLIST_NAME) && !this.checkFile(VariableNames.PRE_CANDIDATE_FILTER_SUSPECT_LIST_NAME, fileNames[j]))
 								checkPositive = false;
 						}
 					}
@@ -448,7 +448,7 @@ public class SettingsChecker {
 					else if(checkPositive) {
 						String[] fileNames = (String[])ScoreSuspectLists;
 						for(int j = 0; j < fileNames.length; j++) 
-							if(!fileNames[j].equals(VariableNames.FORIDENT_SUSPECTLIST_NAME) && !this.checkFile(VariableNames.SCORE_SUSPECT_LISTS_NAME, fileNames[j]))
+							if(!fileNames[j].equals(VariableNames.DSSTOX_SUSPECTLIST_NAME) && !fileNames[j].equals(VariableNames.FORIDENT_SUSPECTLIST_NAME) && !this.checkFile(VariableNames.SCORE_SUSPECT_LISTS_NAME, fileNames[j]))
 								checkPositive = false;
 					}
 				}

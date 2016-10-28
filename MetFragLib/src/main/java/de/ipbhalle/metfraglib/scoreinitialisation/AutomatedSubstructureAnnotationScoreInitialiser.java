@@ -8,8 +8,8 @@ import de.ipbhalle.metfraglib.interfaces.IScoreInitialiser;
 import de.ipbhalle.metfraglib.list.DefaultPeakList;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.settings.Settings;
-import de.ipbhalle.metfraglib.substructure.PeakToSmartGroupList;
-import de.ipbhalle.metfraglib.substructure.PeakToSmartGroupListCollection;
+import de.ipbhalle.metfraglib.substructure.PeakToSmartsGroupList;
+import de.ipbhalle.metfraglib.substructure.PeakToSmartsGroupListCollection;
 import de.ipbhalle.metfraglib.substructure.SmartsGroup;
 
 public class AutomatedSubstructureAnnotationScoreInitialiser  implements IScoreInitialiser {
@@ -17,7 +17,7 @@ public class AutomatedSubstructureAnnotationScoreInitialiser  implements IScoreI
 	@Override
 	public void initScoreParameters(Settings settings) throws Exception {
 		if(!settings.containsKey(VariableNames.PEAK_TO_SMARTS_GROUP_LIST_COLLECTION_NAME) || settings.get(VariableNames.PEAK_TO_SMARTS_GROUP_LIST_COLLECTION_NAME) == null) {
-			PeakToSmartGroupListCollection peakToSmartGroupListCollection = new PeakToSmartGroupListCollection();
+			PeakToSmartsGroupListCollection peakToSmartGroupListCollection = new PeakToSmartsGroupListCollection();
 			String filename = (String)settings.get(VariableNames.SMARTS_PEAK_ANNOTATION_FILE_NAME);
 			DefaultPeakList peakList = (DefaultPeakList)settings.get(VariableNames.PEAK_LIST_NAME);
 			Double mzppm = (Double)settings.get(VariableNames.RELATIVE_MASS_DEVIATION_NAME);
@@ -32,7 +32,7 @@ public class AutomatedSubstructureAnnotationScoreInitialiser  implements IScoreI
 				String[] tmp = line.split("\\s+");
 				Double peak = Double.parseDouble(tmp[0]);
 				if(!peakList.containsMass(peak, mzppm, mzabs)) continue;
-				PeakToSmartGroupList peakToSmartGroupList = new PeakToSmartGroupList(peak);
+				PeakToSmartsGroupList peakToSmartGroupList = new PeakToSmartsGroupList(peak);
 				SmartsGroup smartsGroup = null;
 				for(int i = 1; i < tmp.length; i++) {
 					if(this.isDoubleValue(tmp[i])) {

@@ -205,12 +205,17 @@
 			<artifactId>hierarchical-clustering</artifactId>
 			<version>1.1.0</version>
 		</dependency>
-		<!-- added dependency for mzXML  
+		<!-- MSDK -->
 		<dependency>
 			<groupId>io.github.msdk</groupId>
-			<artifactId>msdk-all</artifactId>
+			<artifactId>msdk-io-mzml</artifactId>
 			<version>0.0.3</version>
-		</dependency>-->
+		</dependency>
+		<dependency>
+			<groupId>io.github.msdk</groupId>
+			<artifactId>msdk-datamodel</artifactId>
+			<version>0.0.3</version>
+		</dependency>
 	</dependencies>
 
 	<repositories>

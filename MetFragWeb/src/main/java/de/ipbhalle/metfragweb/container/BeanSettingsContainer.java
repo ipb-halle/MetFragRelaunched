@@ -110,6 +110,7 @@ public class BeanSettingsContainer {
 	protected SuspectListFileContainer suspectListFilterFileContainer;
 	
 	protected boolean forIdentSuspectListFilterEnabled = false;
+	protected boolean dsstoxSuspectListFilterEnabled = false;
 	
 	/*
 	 * score parameters
@@ -131,6 +132,7 @@ public class BeanSettingsContainer {
 	protected SuspectListFileContainer suspectListScoreFileContainer;
 
 	protected boolean forIdentSuspectListScoreEnabled = false;
+	protected boolean dsstoxSuspectListScoreEnabled = false;
 	
 	/*
 	 * fragmentation parameters
@@ -240,6 +242,7 @@ public class BeanSettingsContainer {
 		this.scoreEnabledMap.put("retentionTimeTrainingFile", false);
 		this.scoreEnabledMap.put("suspectListsScore", false);
 		this.scoreEnabledMap.put("spectralSimilarity", false);
+		this.scoreEnabledMap.put("exactSpectralSimilarity", false);
 	}
 
 	protected void initScoreNames() {
@@ -250,6 +253,7 @@ public class BeanSettingsContainer {
 		this.scoreNamesMap.put("suspectListsScore", "Suspect Inclusion Lists");
 		this.scoreNamesMap.put("fragmenterScore", "Fragmenter Score");
 		this.scoreNamesMap.put("spectralSimilarity", "Spectral Similarity");
+		this.scoreNamesMap.put("exactSpectralSimilarity", "Exact Spectral Similarity");
 	}
 
 	protected void initScoreValid() {
@@ -261,6 +265,7 @@ public class BeanSettingsContainer {
 		this.scoreValidMap.put("fragmenterScore", true);
 		this.scoreValidMap.put("simScore", true);
 		this.scoreValidMap.put("spectralSimilarity", true);
+		this.scoreValidMap.put("exactSpectralSimilarity", true);
 	}
 	
 	protected void initFilterEnabled() {
@@ -916,6 +921,14 @@ public class BeanSettingsContainer {
 		this.forIdentSuspectListFilterEnabled = forIdentSuspectListFilterEnabled;
 	}
 
+	public boolean isDsstoxSuspectListFilterEnabled() {
+		return dsstoxSuspectListFilterEnabled;
+	}
+
+	public void setDsstoxSuspectListFilterEnabled(boolean dsstoxSuspectListFilterEnabled) {
+		this.dsstoxSuspectListFilterEnabled = dsstoxSuspectListFilterEnabled;
+	}
+
 	/*
 	 * scores
 	 */
@@ -1039,6 +1052,14 @@ public class BeanSettingsContainer {
 
 	public void setForIdentSuspectListScoreEnabled(boolean forIdentSuspectListScoreEnabled) {
 		this.forIdentSuspectListScoreEnabled = forIdentSuspectListScoreEnabled;
+	}
+
+	public boolean isDsstoxSuspectListScoreEnabled() {
+		return dsstoxSuspectListScoreEnabled;
+	}
+
+	public void setDsstoxSuspectListScoreEnabled(boolean dsstoxSuspectListScoreEnabled) {
+		this.dsstoxSuspectListScoreEnabled = dsstoxSuspectListScoreEnabled;
 	}
 
 	public void incrementSuspectListScoreFileIdentifier() {
@@ -1231,6 +1252,17 @@ public class BeanSettingsContainer {
 					suspectListFilter = newSuspectListFilter;
 				}	
 			}
+			if(this.isDsstoxSuspectListFilterEnabled()) {
+				if(suspectListFilter == null) 
+					suspectListFilter = new String[] {VariableNames.DSSTOX_SUSPECTLIST_NAME};
+				else {
+					String[] newSuspectListFilter = new String[suspectListFilter.length + 1];
+					for(int k = 0; k < suspectListFilter.length; k++)
+						newSuspectListFilter[k] = suspectListFilter[k];
+					newSuspectListFilter[newSuspectListFilter.length - 1] = VariableNames.DSSTOX_SUSPECTLIST_NAME;
+					suspectListFilter = newSuspectListFilter;
+				}	
+			}
 			this.metFragSettings.set(VariableNames.PRE_CANDIDATE_FILTER_SUSPECT_LIST_NAME, suspectListFilter);
 		}
 		else this.metFragSettings.remove(VariableNames.PRE_CANDIDATE_FILTER_SUSPECT_LIST_NAME);
@@ -1270,6 +1302,10 @@ public class BeanSettingsContainer {
 		if(this.scoreEnabledMap.get("spectralSimilarity") && this.scoreValidMap.get("spectralSimilarity")) {
 			compoundScores.add("OfflineMetFusionScore");
 		}
+		//exact spectral similarity
+		if(this.scoreEnabledMap.get("exactSpectralSimilarity") && this.scoreValidMap.get("exactSpectralSimilarity")) {
+			compoundScores.add("OfflineIndividualMoNAScore");
+		}
 		//suspect list inclusion score
 		if(this.scoreEnabledMap.get("suspectListsScore") && this.scoreValidMap.get("suspectListsScore")) {
 			compoundScores.add("SuspectListScore");
@@ -1284,6 +1320,17 @@ public class BeanSettingsContainer {
 					for(int k = 0; k < suspectListScore.length; k++)
 						newSuspectListScore[k] = suspectListScore[k];
 					newSuspectListScore[newSuspectListScore.length - 1] = VariableNames.FORIDENT_SUSPECTLIST_NAME;
+					suspectListScore = newSuspectListScore;
+				}	
+			}
+			if(this.isDsstoxSuspectListScoreEnabled()) {
+				if(suspectListScore == null)
+					suspectListScore = new String[] {VariableNames.DSSTOX_SUSPECTLIST_NAME};
+				else {
+					String[] newSuspectListScore = new String[suspectListScore.length + 1];
+					for(int k = 0; k < suspectListScore.length; k++)
+						newSuspectListScore[k] = suspectListScore[k];
+					newSuspectListScore[newSuspectListScore.length - 1] = VariableNames.DSSTOX_SUSPECTLIST_NAME;
 					suspectListScore = newSuspectListScore;
 				}	
 			}

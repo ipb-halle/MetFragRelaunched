@@ -7,11 +7,11 @@ import de.ipbhalle.metfraglib.settings.Settings;
 import de.ipbhalle.metfraglib.substructure.PeakToSmartsGroupList;
 import de.ipbhalle.metfraglib.substructure.PeakToSmartsGroupListCollection;
 
-public class AutomatedLossAnnotationScore extends AbstractScore {
+public class CombinedAutomatedAnnotationScore extends AbstractScore {
 
 	protected ICandidate candidate;
 	
-	public AutomatedLossAnnotationScore(Settings settings) {
+	public CombinedAutomatedAnnotationScore(Settings settings) {
 		super(settings);
 		this.optimalValues = new double[1];
 		this.optimalValues[0] = 0.0;
@@ -21,9 +21,14 @@ public class AutomatedLossAnnotationScore extends AbstractScore {
 	
 	public void calculate() {
 		this.value = 0.0;
-		PeakToSmartsGroupListCollection peakToSmartGroupListCollection = (PeakToSmartsGroupListCollection)this.settings.get(VariableNames.LOSS_TO_SMARTS_GROUP_LIST_COLLECTION_NAME);
+		PeakToSmartsGroupListCollection peakToSmartGroupListCollection = (PeakToSmartsGroupListCollection)this.settings.get(VariableNames.PEAK_TO_SMARTS_GROUP_LIST_COLLECTION_NAME);
+		PeakToSmartsGroupListCollection lossToSmartGroupListCollection = (PeakToSmartsGroupListCollection)this.settings.get(VariableNames.LOSS_TO_SMARTS_GROUP_LIST_COLLECTION_NAME);
 		for(int i = 0; i < peakToSmartGroupListCollection.getNumberElements(); i++) {
 			PeakToSmartsGroupList peakToSmartsGroupList = peakToSmartGroupListCollection.getElement(i);
+			this.value += peakToSmartsGroupList.getMaximalMatchingProbabilitySorted(this.candidate);
+		}
+		for(int i = 0; i < peakToSmartGroupListCollection.getNumberElements(); i++) {
+			PeakToSmartsGroupList peakToSmartsGroupList = lossToSmartGroupListCollection.getElement(i);
 			this.value += peakToSmartsGroupList.getMaximalMatchingProbabilitySorted(this.candidate);
 		}
  		this.calculationFinished = true;

@@ -35,6 +35,7 @@ import de.ipbhalle.metfraglib.database.OnlinePubChemDatabase;
 import de.ipbhalle.metfraglib.score.AutomatedLossAnnotationScore;
 import de.ipbhalle.metfraglib.score.AutomatedSubstructureAnnotationScore;
 import de.ipbhalle.metfraglib.score.CandidatePropertyScore;
+import de.ipbhalle.metfraglib.score.CombinedAutomatedAnnotationScore;
 import de.ipbhalle.metfraglib.score.CombinedReferenceScore;
 import de.ipbhalle.metfraglib.score.HDExchangedHydrogendsScore;
 import de.ipbhalle.metfraglib.score.HDFragmentPairScore;
@@ -52,6 +53,7 @@ import de.ipbhalle.metfraglib.score.SmartsSubstructureExclusionScore;
 import de.ipbhalle.metfraglib.score.SmartsSubstructureInclusionScore;
 import de.ipbhalle.metfraglib.score.SuspectListScore;
 import de.ipbhalle.metfraglib.scoreinitialisation.AutomatedLossAnnotationScoreInitialiser;
+import de.ipbhalle.metfraglib.scoreinitialisation.CombinedAutomatedAnnotationScoreInitialiser;
 import de.ipbhalle.metfraglib.scoreinitialisation.DefaultScoreInitialiser;
 import de.ipbhalle.metfraglib.scoreinitialisation.AutomatedSubstructureAnnotationScoreInitialiser;
 import de.ipbhalle.metfraglib.scoreinitialisation.IndividualMoNASpectralSimilarityInitialiser;
@@ -106,7 +108,8 @@ public class ClassNames {
 		scoreNameToClassName.put("CombinedReferenceScore", CombinedReferenceScore.class.getName());
 		scoreNameToClassName.put("SimScore", MatchSpectrumCosineSimilarityScore.class.getName());
 		scoreNameToClassName.put("OfflineIndividualMoNAScore", OfflineIndividualMoNASpectralSimilarity.class.getName());
-		
+
+		scoreNameToClassName.put("CombinedAutomatedAnnotationScore", CombinedAutomatedAnnotationScore.class.getName());
 		scoreNameToClassName.put("AutomatedSubstructureAnnotationScore", AutomatedSubstructureAnnotationScore.class.getName());
 		scoreNameToClassName.put("AutomatedLossAnnotationScore", AutomatedLossAnnotationScore.class.getName());
 		scoreNameToClassName.put("IndividualMoNAScore", IndividualMoNASpectralSimilarity.class.getName());
@@ -124,7 +127,8 @@ public class ClassNames {
 		scoreNameToScoreInitialiserClassName.put("SuspectListScore", SuspectListScoreInitialiser.class.getName());
 		scoreNameToScoreInitialiserClassName.put("RetentionTimeScore", RetentionTimeScoreInitialiser.class.getName());
 		scoreNameToScoreInitialiserClassName.put("CombinedReferenceScore", DefaultScoreInitialiser.class.getName());
-		
+
+		scoreNameToScoreInitialiserClassName.put("AutomatedAnnotationScore", CombinedAutomatedAnnotationScoreInitialiser.class.getName());
 		scoreNameToScoreInitialiserClassName.put("AutomatedSubstructureAnnotationScore", AutomatedSubstructureAnnotationScoreInitialiser.class.getName());
 		scoreNameToScoreInitialiserClassName.put("AutomatedLossAnnotationScore", AutomatedLossAnnotationScoreInitialiser.class.getName());
 		scoreNameToScoreInitialiserClassName.put("IndividualMoNAScore", IndividualMoNASpectralSimilarityInitialiser.class.getName());
@@ -159,7 +163,7 @@ public class ClassNames {
 		databaseNameToClassName.put("LocalPSV", LocalPSVDatabase.class.getName());
 		databaseNameToClassName.put("LocalCSV", LocalCSVDatabase.class.getName());
 		databaseNameToClassName.put("LocalProperty", LocalPropertyFileDatabase.class.getName());
-		databaseNameToClassName.put("ForIdent", OnlineForIdentDatabase.class.getName());
+		databaseNameToClassName.put("FOR-IDENT", OnlineForIdentDatabase.class.getName());
 		databaseNameToClassName.put("LocalSDF", LocalSDFDatabase.class.getName());
 		databaseNameToClassName.put("LipidMaps", LocalLipidMapsDatabase.class.getName());
 		databaseNameToClassName.put("Postgres", LocalPostgresDatabase.class.getName());

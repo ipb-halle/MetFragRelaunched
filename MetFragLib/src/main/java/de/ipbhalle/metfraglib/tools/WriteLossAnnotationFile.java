@@ -10,8 +10,8 @@ import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.list.CandidateList;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.settings.Settings;
-import de.ipbhalle.metfraglib.substructure.PeakToSmartGroupList;
-import de.ipbhalle.metfraglib.substructure.PeakToSmartGroupListCollection;
+import de.ipbhalle.metfraglib.substructure.PeakToSmartsGroupList;
+import de.ipbhalle.metfraglib.substructure.PeakToSmartsGroupListCollection;
 import de.ipbhalle.metfraglib.substructure.SmartsGroup;
 
 public class WriteLossAnnotationFile {
@@ -42,7 +42,7 @@ public class WriteLossAnnotationFile {
 		java.util.Vector<String> ids = db.getCandidateIdentifiers();
 		CandidateList candidateList = db.getCandidateByIdentifier(ids);
 		//SmilesOfExplPeaks
-		PeakToSmartGroupListCollection peakToSmartGroupListCollection = new PeakToSmartGroupListCollection();
+		PeakToSmartsGroupListCollection peakToSmartGroupListCollection = new PeakToSmartsGroupListCollection();
 		for(int i = 0; i < candidateList.getNumberElements(); i++) {
 			ICandidate candidate = candidateList.getElement(i);
 			String smilesOfExplPeaks = (String)candidate.getProperty("LossSmilesOfExplPeaks");
@@ -69,9 +69,9 @@ public class WriteLossAnnotationFile {
 				catch(Exception e) {
 					continue;
 				}
-				PeakToSmartGroupList peakToSmartGroupList = peakToSmartGroupListCollection.getElementByPeak(peak, mzppm, mzabs);
+				PeakToSmartsGroupList peakToSmartGroupList = peakToSmartGroupListCollection.getElementByPeak(peak, mzppm, mzabs);
 				if(peakToSmartGroupList == null) {
-					peakToSmartGroupList = new PeakToSmartGroupList(peak);
+					peakToSmartGroupList = new PeakToSmartsGroupList(peak);
 					SmartsGroup obj = new SmartsGroup(0.0, null, null, null);
 					obj.addElement(smarts);
 					obj.addSmiles(smiles);
@@ -95,6 +95,8 @@ public class WriteLossAnnotationFile {
 			}
 		}
 
+		// test filtering
+		// peakToSmartGroupListCollection.filterByOccurence(2);
 
 		peakToSmartGroupListCollection.annotateIds();
 		//get absolute numbers of single substructure occurences
@@ -109,6 +111,7 @@ public class WriteLossAnnotationFile {
 
 			peakToSmartGroupListCollection.removeDuplicates();
 			peakToSmartGroupListCollection.setProbabilityToConditionalProbability_sp();
+			peakToSmartGroupListCollection.sortElementsByProbability();
 		}
 		//P ( p | s ) 
 		if(probabilityType == 2) {
@@ -118,6 +121,7 @@ public class WriteLossAnnotationFile {
 			
 			peakToSmartGroupListCollection.removeDuplicates();
 			peakToSmartGroupListCollection.setProbabilityToConditionalProbability_ps();
+			peakToSmartGroupListCollection.sortElementsByProbability();
 		}
 		
 		//P ( p , s )_s 
@@ -128,6 +132,7 @@ public class WriteLossAnnotationFile {
 			
 			peakToSmartGroupListCollection.removeDuplicates();
 			peakToSmartGroupListCollection.setProbabilityToJointProbability();
+			peakToSmartGroupListCollection.sortElementsByProbability();
 		}
 
 		//P ( p , s )_p
@@ -138,6 +143,7 @@ public class WriteLossAnnotationFile {
 			
 			peakToSmartGroupListCollection.removeDuplicates();
 			peakToSmartGroupListCollection.setProbabilityToJointProbability();
+			peakToSmartGroupListCollection.sortElementsByProbability();
 		}
 		
 		//P ( s | p ) P ( p | s ) P( s, p )_s
@@ -150,6 +156,7 @@ public class WriteLossAnnotationFile {
 			peakToSmartGroupListCollection.removeDuplicates();
 			
 			peakToSmartGroupListCollection.setProbabilityToConditionalProbability_sp();
+			peakToSmartGroupListCollection.sortElementsByProbability();
 			if(output == null) peakToSmartGroupListCollection.print();
 			else {
 				BufferedWriter bwriter = new BufferedWriter(new FileWriter(new File(output + "_1")));
@@ -163,6 +170,7 @@ public class WriteLossAnnotationFile {
 			}
 
 			peakToSmartGroupListCollection.setProbabilityToConditionalProbability_ps();
+			peakToSmartGroupListCollection.sortElementsByProbability();
 			if(output == null) peakToSmartGroupListCollection.print();
 			else {
 				BufferedWriter bwriter = new BufferedWriter(new FileWriter(new File(output + "_2")));
@@ -179,6 +187,7 @@ public class WriteLossAnnotationFile {
 			if(output == null) peakToSmartGroupListCollection.print();
 			else {
 				BufferedWriter bwriter = new BufferedWriter(new FileWriter(new File(output + "_3")));
+				peakToSmartGroupListCollection.sortElementsByProbability();
 				bwriter.write(peakToSmartGroupListCollection.toString());
 				bwriter.close();
 			}

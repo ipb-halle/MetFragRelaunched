@@ -180,7 +180,7 @@ public class AvailableParameters {
 			new SelectItem("KEGG", "KEGG"), 
 			new SelectItem("ChemSpider", "ChemSpider"),
 			new SelectItem("MetaCyc", "MetaCyc"),
-			new SelectItem("ForIdent", "ForIdent"),
+			new SelectItem("FOR-IDENT", "FOR-IDENT"),
 			new SelectItem("LipidMaps", "LipidMaps"),
 			new SelectItem("LocalDerivatisedKegg", "KEGG (derivatised)"),
 			new SelectItem("LocalChEBI", "ChEBI")
@@ -204,7 +204,7 @@ public class AvailableParameters {
 		this.databaseNeedsLocalFile.put("KEGG", false);
 		this.databaseNeedsLocalFile.put("ChemSpider", false);
 		this.databaseNeedsLocalFile.put("MetaCyc", false);
-		this.databaseNeedsLocalFile.put("ForIdent", false);
+		this.databaseNeedsLocalFile.put("FOR-IDENT", false);
 		this.databaseNeedsLocalFile.put("LipidMaps", false);
 		this.databaseNeedsLocalFile.put("LocalDerivatisedKegg", false);
 		this.databaseNeedsLocalFile.put("LocalChEBI", false);
