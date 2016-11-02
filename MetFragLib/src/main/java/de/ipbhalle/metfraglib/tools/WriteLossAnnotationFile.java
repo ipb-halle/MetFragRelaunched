@@ -19,23 +19,46 @@ public class WriteLossAnnotationFile {
 	/*
 	 * write annotation file
 	 * 
-	 * 1 - input file name
-	 * 2 - mzppm
-	 * 3 - mzabs
-	 * 4 - output smarts
-	 * 5 - output smiles
+	 * filename - input file name
+	 * mzppm
+	 * mzabs
+	 * probtype - probability type: 1 - P ( s | p ); 2 - P ( p | s ); 3 - P ( p , s ) from s; 4 - P ( p , s ) from p; 5 - P ( s | p ) P ( p | s ) P ( p , s )_s P ( p , s )_p
+	 * output - output smarts
+	 * outputSMILES - output smiles
+	 * occurThresh
 	 * 
 	 */
 	
 	public static void main(String[] args) throws MultipleHeadersFoundInInputDatabaseException, Exception {
-		String filename = args[0];
-		Double mzppm = Double.parseDouble(args[1]);
-		Double mzabs = Double.parseDouble(args[2]);
-		Integer probabilityType = Integer.parseInt(args[3]);
+		java.util.Hashtable<String, String> readParameters = readParameters(args);
+		if(!readParameters.containsKey("filename")) {
+			System.err.println("filename missing");
+			System.exit(1);
+		}
+		if(!readParameters.containsKey("mzppm")) {
+			System.err.println("mzppm missing");
+			System.exit(1);
+		}
+		if(!readParameters.containsKey("mzabs")) {
+			System.err.println("mzabs missing");
+			System.exit(1);
+		}
+		if(!readParameters.containsKey("probtype")) {
+			System.err.println("probtype missing");
+			System.exit(1);
+		}
+		
+		String filename = readParameters.get("filename");
+		Double mzppm = Double.parseDouble(readParameters.get("mzppm"));
+		Double mzabs = Double.parseDouble(readParameters.get("mzabs"));
+		Integer probabilityType = Integer.parseInt(readParameters.get("probtype"));
 		String output = null;
 		String outputSmiles = null;
-		if(args.length >= 5) output = args[4];
-		if(args.length == 6) outputSmiles = args[5];
+		Integer occurThresh = null;
+		if(readParameters.containsKey("output")) output = readParameters.get("output");
+		if(readParameters.containsKey("outputSMILES")) outputSmiles = readParameters.get("outputSMILES");
+		if(readParameters.containsKey("occurThresh")) occurThresh = Integer.parseInt(readParameters.get("occurThresh"));
+		
 		Settings settings = new Settings();
 		settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, filename);
 		LocalPSVDatabase db = new LocalPSVDatabase(settings);
@@ -96,7 +119,7 @@ public class WriteLossAnnotationFile {
 		}
 
 		// test filtering
-		// peakToSmartGroupListCollection.filterByOccurence(2);
+		if(occurThresh != null) peakToSmartGroupListCollection.filterByOccurence(occurThresh);
 
 		peakToSmartGroupListCollection.annotateIds();
 		//get absolute numbers of single substructure occurences
@@ -211,5 +234,16 @@ public class WriteLossAnnotationFile {
 				bwriter.close();
 			}
 		}
+	}
+	
+	public static java.util.Hashtable<String, String> readParameters(String[] params) {
+		java.util.Hashtable<String, String> parameters = new java.util.Hashtable<String, String>();
+		for(int i = 0; i < params.length; i++) {
+			String param = params[i];
+			String[] tmp = param.split("=");
+			if(tmp.length != 2) continue;
+			parameters.put(tmp[0], tmp[1]);
+		}
+		return parameters;
 	}
 }
