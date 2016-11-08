@@ -24,6 +24,7 @@ public class MetFragGlobalSettings extends Settings {
 		this.defaults.put(VariableNames.NUMBER_THREADS_NAME, Constants.DEFAULT_NUMBER_THREADS);
 		this.defaults.put(VariableNames.NUMBER_OF_DIGITS_AFTER_ROUNDING_NAME, Constants.DEFAULT_NUMBER_OF_DIGITS_AFTER_ROUNDING);
 		this.defaults.put(VariableNames.SCORE_NAMES_NOT_TO_SCALE, Constants.DEFAULT_SCORE_NAMES_NOT_TO_SCALE);
+		this.defaults.put(VariableNames.PROCESS_CANDIDATES, Constants.DEFAULT_PROCESS_CANDIDATES);
 		/*
 		 * needs to be set externally
 		 */

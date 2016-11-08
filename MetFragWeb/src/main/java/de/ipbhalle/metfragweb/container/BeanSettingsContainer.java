@@ -14,6 +14,7 @@ import org.primefaces.model.chart.AxisType;
 import org.primefaces.model.chart.LineChartModel;
 import org.primefaces.model.chart.LineChartSeries;
 
+import de.ipbhalle.metfraglib.exceptions.ParameterNotKnownException;
 import de.ipbhalle.metfraglib.exceptions.RetentionTimeNotFoundException;
 import de.ipbhalle.metfraglib.exceptions.TooFewCandidatesException;
 import de.ipbhalle.metfraglib.functions.HelperFunctions;
@@ -1152,7 +1153,7 @@ public class BeanSettingsContainer {
 	/*
 	 * overall settings processing
 	 */
-	private void prepareDatabaseSettings() {
+	private void prepareDatabaseSettings() throws ParameterNotKnownException {
 		String database = this.database;
 		if(database.equals("PubChem")) {
 			if(this.localPubChemDatabase) {

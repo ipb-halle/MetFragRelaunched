@@ -200,7 +200,7 @@ public class StandardSingleStructureImageGenerator implements IImageGenerator {
 	public static void main(String[] args) throws InvalidSmilesException, IOException {
 		 IAtomContainer m = null;
 			try {
-				m = MoleculeFunctions.getAtomContainerFromInChI("InChI=1S/C15H12O5/c16-9-3-1-8(2-4-9)13-7-12(19)15-11(18)5-10(17)6-14(15)20-13/h1-6,13,16-18H,7H2");
+				m = MoleculeFunctions.getAtomContainerFromInChI("InChI=1S/C15H14ClNO2S/c1-19-13-3-2-11(16)8-12(13)15(18)17-6-4-14-10(9-17)5-7-20-14/h2-3,5,7-8H,4,6,9H2,1H3");
 				MoleculeFunctions.prepareAtomContainer(m, false);
 				MoleculeFunctions.removeHydrogens(m);
 			} catch (Exception e) {

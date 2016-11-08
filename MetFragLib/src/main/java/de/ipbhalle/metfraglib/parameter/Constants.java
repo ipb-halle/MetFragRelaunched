@@ -175,6 +175,7 @@ public class Constants {
 	public static final String 				DEFAULT_PRECURSOR_DATABASE_IDS								=	null;
 	public static final String 				DEFAULT_PEAK_LIST_PATH										=	null;
 	public static final Integer				DEFAULT_PRECURSOR_ION_TYPE 									= 	1;
+	public static final Boolean				DEFAULT_PROCESS_CANDIDATES 									= 	true;
 
 	public static final Integer 			DEFAULT_STRUCTURE_IMAGE_WIDTH 								= 	200;
 	public static final Integer 			DEFAULT_STRUCTURE_IMAGE_HEIGHT 								= 	200;

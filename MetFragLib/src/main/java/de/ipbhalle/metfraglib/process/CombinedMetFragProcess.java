@@ -111,6 +111,7 @@ public class CombinedMetFragProcess implements Runnable {
 	public void run() {
 		this.processes = null;
 		this.threadStoppedExternally = false;
+			
 		/*
 		 * read peak list and store in settings object
 		 * store database object

@@ -21,6 +21,7 @@ public class VariableNames {
 	public static final String LOCAL_DATABASE_PATH_NAME 							= 	"LocalDatabasePath";
 	public static final String NUMBER_OF_DIGITS_AFTER_ROUNDING_NAME				= 	"NumberOfDigitsAfterRounding";
 	public static final String PARAMETER_FILE_NAME								= 	"ParameterFile";
+	public static final String PROCESS_CANDIDATES									=	"ProcessCandidates";
 	
 	public static final String METFRAG_DATABASE_TYPE_NAME 						= 	"MetFragDatabaseType";
 	public static final String METFRAG_FRAGMENTER_TYPE_NAME 						= 	"MetFragFragmenterType";
@@ -55,6 +56,7 @@ public class VariableNames {
 	public static final String LOG_LEVEL_NAME 								= 	"LogLevel";
 	public static final String SAMPLE_NAME 									= 	"SampleName";
 	public static final String STORE_RESULTS_PATH_NAME 						= 	"ResultsPath";
+	public static final String STORE_RESULTS_FILE_NAME 						= 	"ResultsFile";
 	public static final String MINIMUM_FRAGMENT_MASS_LIMIT_NAME 				= 	"MinimumFragmentMassLimit";
 	public static final String NUMBER_THREADS_NAME 							= 	"NumberThreads";
 	public static final String MAXIMUM_NUMBER_OF_TOPDOWN_FRAGMENT_ADDED_TO_QUEUE = "MaximumNumberOfAFragmentAddedToQueue";

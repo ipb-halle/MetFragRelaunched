@@ -12,8 +12,8 @@ public class TestMZML {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		//java.io.File file = new java.io.File("/home/cruttkie/github/msdk/msdk-io/msdk-io-mzml/src/test/resources/5peptideFT.mzML");
-		java.io.File file = new java.io.File("/mnt/isilon/data/IPB/Transfer/sscharfe/fremde RSkripte/ms files/MIK_PP6A-459_test.mzML");
+		java.io.File file = new java.io.File("/home/cruttkie/github/msdk/msdk-io/msdk-io-mzml/src/test/resources/5peptideFT.mzML");
+		//java.io.File file = new java.io.File("/mnt/isilon/data/IPB/Transfer/sscharfe/fremde RSkripte/ms files/MIK_PP6A-459_test.mzML");
 		if(!file.exists()) {
 			System.err.println("File does not exist!");
 			System.exit(1);
@@ -31,10 +31,7 @@ public class TestMZML {
 				for(int k = 0; k < iso.size(); k++) {
 					numberSpectra++;
 					String filename = "/tmp/spec_" + scans.get(i).getChromatographyInfo().getRetentionTime() + "_" + scans.get(i).getScanNumber() + "_" + Math.round(iso.get(k).getPrecursorMz()) + "_" + (k + 1) + ".jpg";
-					if(Math.round(iso.get(k).getPrecursorMz()) == 459) {
-						specImg.drawMS2SpectrumImage(scans.get(i), iso.get(k), filename, true);
-						System.exit(1);
-					}
+					specImg.drawMS2SpectrumImage(scans.get(i), iso.get(k), filename, true);
 				}
 			}
 			System.out.println(numberSpectra + " isolation spectra found");

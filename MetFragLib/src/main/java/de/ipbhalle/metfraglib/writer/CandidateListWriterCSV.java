@@ -26,6 +26,15 @@ public class CandidateListWriterCSV implements IWriter {
 	}
 	
 	public boolean write(IList list, String filename, String path) throws IOException {
+		File file = new File(path + Constants.OS_SPECIFIC_FILE_SEPARATOR + filename + ".csv");
+		return writeFile(file, list);
+	}
+
+	public boolean write(IList list, String filename) throws IOException {
+		return this.writeFile(new File(filename), list);
+	}
+	
+	protected boolean writeFile(File file, IList list) throws IOException {
 		CandidateList candidateList = null;
 		int numberOfPeaksUsed = 0;
 		if(list instanceof ScoredCandidateList || list instanceof SortedScoredCandidateList) {
@@ -37,7 +46,6 @@ public class CandidateListWriterCSV implements IWriter {
 		}
 		if(candidateList == null) return false;
 
-		File file = new File(path + Constants.OS_SPECIFIC_FILE_SEPARATOR + filename + ".csv");
 		java.io.Writer writer = new java.io.OutputStreamWriter(new java.io.FileOutputStream(file), Charset.forName("UTF-8"));
 		CSVPrinter csvFilePrinter = new CSVPrinter(writer, CSVFormat.EXCEL);
 		java.util.List<Object> header = new java.util.ArrayList<Object>();

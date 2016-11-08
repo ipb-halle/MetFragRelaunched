@@ -69,6 +69,7 @@ public class SettingsChecker {
 		Object SampleName = settings.get(VariableNames.SAMPLE_NAME);
 		Object ResultsPath = settings.get(VariableNames.STORE_RESULTS_PATH_NAME);
 		Object MetFragCandidateWriter = settings.get(VariableNames.METFRAG_CANDIDATE_WRITER_NAME);
+		Object ResultsFile = settings.get(VariableNames.STORE_RESULTS_FILE_NAME);
 		
 		/**
 		 * check peak list file
@@ -78,12 +79,15 @@ public class SettingsChecker {
 			this.logger.error(VariableNames.SAMPLE_NAME + " is not defined!");
 			checkPositive = false;
 		}
-		if(ResultsPath == null) {
-			this.logger.error(VariableNames.STORE_RESULTS_PATH_NAME + " is not defined!");
+		if(ResultsPath == null && ResultsFile == null) {
+			this.logger.error("No location for the result file defined. Specify " + VariableNames.STORE_RESULTS_PATH_NAME + " or " + VariableNames.STORE_RESULTS_FILE_NAME);
 			checkPositive = false;
 		}
 		else if(checkPositive) {
-			checkPositive = this.checkDirectory(VariableNames.STORE_RESULTS_PATH_NAME, (String)ResultsPath);
+			if(ResultsFile != null) checkPositive = this.checkDirectory(VariableNames.STORE_RESULTS_PATH_NAME, (String)ResultsPath);
+			if(checkPositive && (ResultsPath != null && ResultsFile != null)) {
+				this.logger.info(VariableNames.STORE_RESULTS_PATH_NAME + " and " + VariableNames.STORE_RESULTS_FILE_NAME + " are specified. " + VariableNames.STORE_RESULTS_FILE_NAME + " has higher priority.");
+			}
 		}
 		if(MetFragCandidateWriter == null) {
 			this.logger.error(VariableNames.METFRAG_CANDIDATE_WRITER_NAME + " is not defined!");
