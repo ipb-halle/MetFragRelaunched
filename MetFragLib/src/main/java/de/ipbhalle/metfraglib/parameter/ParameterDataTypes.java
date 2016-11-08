@@ -4,6 +4,8 @@ import java.util.HashMap;
 
 import org.apache.log4j.Level;
 
+import de.ipbhalle.metfraglib.exceptions.ParameterNotKnownException;
+
 public class ParameterDataTypes {
 
 	/*
@@ -27,6 +29,7 @@ public class ParameterDataTypes {
 		parameterDatatypes.put(	VariableNames.LOCAL_DATABASE_PATH_NAME, 								"String"	);
 		parameterDatatypes.put(	VariableNames.MINIMUM_ABSOLUTE_PEAK_INTENSITY_NAME, 					"Double"	);
 		parameterDatatypes.put(	VariableNames.MAXIMUM_CANDIDATE_LIMIT_TO_STOP_NAME, 					"Integer"	);
+		parameterDatatypes.put(	VariableNames.PROCESS_CANDIDATES,					 					"Boolean"	);
 		
 		parameterDatatypes.put(	VariableNames.METFRAG_DATABASE_TYPE_NAME, 								"String"	);
 		parameterDatatypes.put(	VariableNames.METFRAG_PRE_PROCESSING_CANDIDATE_FILTER_NAME,				"String[]"	);
@@ -215,8 +218,10 @@ public class ParameterDataTypes {
 	/*
 	 * function to retrieve parameters
 	 */
-	public static Object getParameter(String parameter, String parameterName) {
+	public static Object getParameter(String parameter, String parameterName) throws ParameterNotKnownException {
 		String type = parameterDatatypes.get(parameterName);
+		if(type == null) throw new ParameterNotKnownException("Parameter '" + parameterName + "' not known.");
+		
 		if(type.equals("Double")) return Double.parseDouble(parameter);
 		if(type.equals("Integer")) return Integer.parseInt(parameter);
 		if(type.equals("Byte")) return Byte.parseByte(parameter);

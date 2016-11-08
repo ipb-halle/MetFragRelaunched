@@ -141,7 +141,7 @@ public class AnnotatedStandardSingleStructureImageGenerator extends StandardSing
 	    IAtomContainer m = null;
 		
 	    try {
-			m = MoleculeFunctions.getAtomContainerFromInChI("InChI=1S/C13H16ClNO/c1-15-13(9-5-4-8-12(13)16)10-6-2-3-7-11(10)14/h2-3,6-7,15H,4-5,8-9H2,1H3/t13-/m1/s1");
+			m = MoleculeFunctions.getAtomContainerFromInChI("InChI=1S/C15H14ClNO2S/c16-12-4-2-1-3-11(12)14(15(18)19)17-7-5-13-10(9-17)6-8-20-13/h1-4,6,8,14H,5,7,9H2,(H,18,19)");
 			MoleculeFunctions.prepareAtomContainer(m, true);
 		} catch (Exception e) {
 			e.printStackTrace();

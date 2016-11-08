@@ -20,7 +20,7 @@ public class PostProcessingCandidateFilterCollection {
 			this.numberPostFilteredCandidates += this.postProcessingCandidateFilter[i].getNumberPostFilteredCandidates();
 		return candidateList;
 	}
-	
+
 	public int getNumberPostFilteredCandidates() {
 		return numberPostFilteredCandidates;
 	}

@@ -90,6 +90,7 @@ public class CombinedSingleCandidateMetFragProcess implements Runnable {
 			this.shallowNullify();
 			return;
 		}
+		
 		/*
 		 * generate fragments
 		 */
@@ -104,7 +105,6 @@ public class CombinedSingleCandidateMetFragProcess implements Runnable {
 		 */
 		this.fas.calculate();
 		this.fas.assignScores();
-
 		//set the reference to the scored candidate(s)
 		this.scoredPrecursorCandidates = this.fas.getCandidates();
 		

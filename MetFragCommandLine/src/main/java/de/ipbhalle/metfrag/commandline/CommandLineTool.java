@@ -69,6 +69,7 @@ public class CommandLineTool {
 				MetFragGlobalSettings.readSettings(commandLineArguments, settings, logger);
 			}
 		} catch (Exception e2) {
+			logger.error(e2.getMessage());
 			logger.error("Error reading settings");
 			System.exit(1);
 		}
@@ -241,7 +242,13 @@ public class CommandLineTool {
 			logger.error("Error: Check commandline parameters!");
 			return null;
 		}
-		
+		/*
+		java.util.Enumeration<String> keys = arguments.keys();
+		while(keys.hasMoreElements()) {
+			String currentKey = keys.nextElement();
+			System.out.println(currentKey + " = " + arguments.get(currentKey));
+		}
+		*/
 		return arguments;
 	}
 	
