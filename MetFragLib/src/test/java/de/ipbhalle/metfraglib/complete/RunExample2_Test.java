@@ -1,4 +1,4 @@
-package de.ipbhalle.metfraglib;
+package de.ipbhalle.metfraglib.complete;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

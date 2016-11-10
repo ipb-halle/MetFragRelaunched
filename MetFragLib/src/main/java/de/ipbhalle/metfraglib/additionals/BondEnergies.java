@@ -141,11 +141,4 @@ public class BondEnergies {
 		return Constants.DEFAULT_BOND_ENERGY;
 	}
 	
-	public static void main(String[] args) {
-		BondEnergies be = new BondEnergies("/home/cruttkie/metfrag/michaelwitting/21_05_14/processing/10th/bondEnergiesLipids.txt");
-		//BondEnergies be = new BondEnergies();
-		System.out.println("####");
-		System.out.println(be.get(new Bond("H", "H", '-')));
-		System.out.println(be.get(new Bond("Cl", "C", '-')));
-	}
 }
