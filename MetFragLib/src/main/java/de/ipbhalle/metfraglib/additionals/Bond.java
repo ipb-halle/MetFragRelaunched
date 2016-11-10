@@ -68,16 +68,4 @@ public class Bond {
         return Integer.parseInt(hash);
     }
 	
-	public static void main(String[] args) {
-		Bond bond1 = new Bond("A", "A", '=');
-		Bond bond2 = new Bond("H", "C", '-');
-		Bond bond5 = new Bond("C", "H", '-');
-		Bond bond3 = new Bond("H", "C", '~');
-		Bond bond4 = new Bond("Ge", "Ge", '~');
-		System.out.println(bond1.hashCode());
-		System.out.println(bond2.hashCode());
-		System.out.println(bond3.hashCode());
-		System.out.println(bond4.hashCode());
-		System.out.println(bond5.hashCode());
-	}
 }
