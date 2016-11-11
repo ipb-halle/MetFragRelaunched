@@ -66,6 +66,11 @@ public class SuspectList extends DefaultList {
 		this.name = name;
 		this.initialise(is, isPrefiltered);
 	}
+
+	public SuspectList(String[] inChIKeys, String name, boolean isPrefiltered) {
+		this.name = name;
+		this.initialise(inChIKeys, isPrefiltered);
+	}
 	
 	protected void initForIdentSuspectList() {
 		ForIdentRestWebService firws = new ForIdentRestWebService();
@@ -90,6 +95,33 @@ public class SuspectList extends DefaultList {
 		}
 	}
 	
+	/**
+	 * init by string array
+	 * 
+	 * @param inChIKeys
+	 * @param isPrefiltered
+	 */
+	protected void initialise(String[] inChIKeys, boolean isPrefiltered) {
+		for(int i = 0; i < inChIKeys.length; i++) {
+			String[] tmp = inChIKeys[i].split("-");
+			if(tmp.length < 1 || tmp[0] == null || tmp[0].length() == 0) continue;
+			if(!isPrefiltered) {
+				int index = 0;
+				while(index < this.list.size() && ((String)this.list.get(index)).compareTo(tmp[0]) < 0) {
+					index++;
+				}
+				this.list.add(index, tmp[0]);
+			}
+			else this.list.add(tmp[0]);
+		}
+	}
+	
+	/**
+	 * init by file
+	 * 
+	 * @param file
+	 * @param isPrefiltered
+	 */
 	protected void initialise(File file, boolean isPrefiltered) {
 		if(!file.exists()) {
 			return;
@@ -124,6 +156,12 @@ public class SuspectList extends DefaultList {
 		}
 	}
 	
+	/**
+	 * init by input stream
+	 * 
+	 * @param is
+	 * @param isPrefiltered
+	 */
 	protected void initialise(java.io.InputStream is, boolean isPrefiltered) {
 		try {
 			java.io.BufferedReader breader = new java.io.BufferedReader(new java.io.InputStreamReader(is));
@@ -155,8 +193,9 @@ public class SuspectList extends DefaultList {
 	public boolean contains(String key) {
 		for(int i = 0; i < this.list.size(); i++) {
 			String current = (String)this.list.get(i);
-			if(current.compareTo(key) == 0) return true;
-			if(current.compareTo(key) == 1) return false;
+			int compare = current.compareTo(key);
+			if(compare == 0) return true;
+			if(compare > 0) return false;
 		}
 		return false;
 	}

@@ -43,15 +43,7 @@ public class MoleculeFunctions {
 			e.printStackTrace();
 		}
 	}
-	
-	public static double calculateMonoIsotopicMassExplicitHydrogens(IAtomContainer molecule) {
-		double neutralMonoisotopicMass = 0.0;
-		for(int i = 0; i < molecule.getAtomCount(); i++) {
-			neutralMonoisotopicMass += Constants.getMonoisotopicMassOfAtom(molecule.getAtom(i).getSymbol());
-		}
-		return neutralMonoisotopicMass;
-	}
-	
+
 	public static String generateSmiles(IAtomContainer molecule) {
 		SmilesGenerator sg = new SmilesGenerator();
 		String smiles = null;
