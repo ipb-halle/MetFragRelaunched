@@ -11,6 +11,7 @@ import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
 import de.ipbhalle.metfraglib.candidate.TopDownPrecursorCandidate;
 import de.ipbhalle.metfraglib.exceptions.AtomTypeNotKnownFromInputListException;
+import de.ipbhalle.metfraglib.exceptions.ExplicitHydrogenRepresentationException;
 import de.ipbhalle.metfraglib.exceptions.RelativeIntensityNotDefinedException;
 import de.ipbhalle.metfraglib.fragmenter.TopDownNeutralLossFragmenter;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
@@ -238,6 +239,7 @@ class MetfRag {
 			IAtomContainer tmp = null;
 			try {
 				tmp = candidate.getAtomContainer();
+				MoleculeFunctions.prepareAtomContainer(tmp, false);
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
@@ -251,7 +253,12 @@ class MetfRag {
 			
 			tmp.setProperty(VariableNames.IDENTIFIER_NAME, candidate.getIdentifier());
 			IMolecularFormula molFormula = MolecularFormulaManipulator.getMolecularFormula(tmp);
-			Double massDoubleOrig = MoleculeFunctions.calculateMonoIsotopicMassExplicitHydrogens(tmp);
+			Double massDoubleOrig = null;
+			try {
+				massDoubleOrig = MoleculeFunctions.calculateMonoIsotopicMassImplicitHydrogens(tmp);
+			} catch (ExplicitHydrogenRepresentationException e) {
+				e.printStackTrace();
+			}
 			massDoubleOrig = (double)Math.round((massDoubleOrig) * 10000)/10000;
 			tmp.setProperty(VariableNames.MONOISOTOPIC_MASS_NAME, massDoubleOrig);
 			tmp.setProperty(VariableNames.FINAL_SCORE_COLUMN_NAME, candidate.getProperty(VariableNames.FINAL_SCORE_COLUMN_NAME));
@@ -390,6 +397,7 @@ class MetfRag {
 			IAtomContainer tmp = null;
 			try {
 				tmp = candidate.getAtomContainer();
+				MoleculeFunctions.prepareAtomContainer(tmp, false);
 			} catch (Exception e1) {
 				e1.printStackTrace();
 				continue;
@@ -404,7 +412,12 @@ class MetfRag {
 			
 			tmp.setProperty(VariableNames.IDENTIFIER_NAME, candidate.getIdentifier());
 			IMolecularFormula molFormula = MolecularFormulaManipulator.getMolecularFormula(tmp);
-			Double massDoubleOrig = MoleculeFunctions.calculateMonoIsotopicMassExplicitHydrogens(tmp);
+			Double massDoubleOrig = null;
+			try {
+				massDoubleOrig = MoleculeFunctions.calculateMonoIsotopicMassImplicitHydrogens(tmp);
+			} catch (ExplicitHydrogenRepresentationException e) {
+				e.printStackTrace();
+			}
 			massDoubleOrig = (double)Math.round((massDoubleOrig)*10000)/10000;
 			tmp.setProperty(VariableNames.MONOISOTOPIC_MASS_NAME, massDoubleOrig);
 			tmp.setProperty(VariableNames.FINAL_SCORE_COLUMN_NAME, candidate.getProperty(VariableNames.FINAL_SCORE_COLUMN_NAME));
@@ -522,13 +535,19 @@ class MetfRag {
 			IAtomContainer tmp = null;
 			try {
 				tmp = candidate.getAtomContainer();
+				MoleculeFunctions.prepareAtomContainer(tmp, false);
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
 			
 			tmp.setProperty(VariableNames.IDENTIFIER_NAME, candidate.getIdentifier());
 			IMolecularFormula molFormula = MolecularFormulaManipulator.getMolecularFormula(tmp);
-			Double massDoubleOrig = MoleculeFunctions.calculateMonoIsotopicMassExplicitHydrogens(tmp);
+			Double massDoubleOrig = null;
+			try {
+				massDoubleOrig = MoleculeFunctions.calculateMonoIsotopicMassImplicitHydrogens(tmp);
+			} catch (ExplicitHydrogenRepresentationException e) {
+				e.printStackTrace();
+			}
 			massDoubleOrig = (double)Math.round((massDoubleOrig)*10000)/10000;
 			tmp.setProperty(VariableNames.MONOISOTOPIC_MASS_NAME, massDoubleOrig);
 			tmp.setProperty(VariableNames.FINAL_SCORE_COLUMN_NAME, candidate.getProperty(VariableNames.FINAL_SCORE_COLUMN_NAME));
