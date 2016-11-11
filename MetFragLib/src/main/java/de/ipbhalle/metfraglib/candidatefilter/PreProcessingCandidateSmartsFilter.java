@@ -7,10 +7,8 @@ import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.smiles.smarts.SMARTSQueryTool;
 
-import de.ipbhalle.metfraglib.database.OnlinePubChemDatabase;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
-import de.ipbhalle.metfraglib.settings.MetFragGlobalSettings;
 import de.ipbhalle.metfraglib.settings.Settings;
 
 public class PreProcessingCandidateSmartsFilter extends AbstractPreProcessingCandidateFilter {
@@ -77,20 +75,6 @@ public class PreProcessingCandidateSmartsFilter extends AbstractPreProcessingCan
 	public void nullify() {
 		this.formula = null;
 		this.smartsQuerytools = null;
-	}
-	
-	public static void main(String[] args) throws Exception {
-		MetFragGlobalSettings mgs = new MetFragGlobalSettings();
-		mgs.set(VariableNames.PRE_CANDIDATE_FILTER_SMARTS_FORMULA_NAME, "CCC and c1ccccc1");
-		PreProcessingCandidateSmartsFilter filter = new PreProcessingCandidateSmartsFilter(mgs);
-		
-		mgs.set(VariableNames.PRECURSOR_DATABASE_IDS_NAME, new String[] {"932"});
-		
-		OnlinePubChemDatabase db = new OnlinePubChemDatabase(mgs);
-		java.util.Vector<String> ids = db.getCandidateIdentifiers();
-		ICandidate candidate = db.getCandidateByIdentifier(ids.get(0));
-		
-		System.out.println(filter.passesFilter(candidate));
 	}
 	
 }

@@ -8,12 +8,12 @@ public class CheckMatchMasses_Test {
 
 	@Test
 	public void test() {
-		assertTrue("100.0 100.1 0 0.1 don't match", MathTools.matchMasses(100.0, 100.1, 0, 0.1));
-		assertTrue("100.0 100.1 100 0 don't match", MathTools.matchMasses(100.0, 100.01, 100, 0));
-		assertTrue("100.0 100.1 100 0.05 don't match", MathTools.matchMasses(100.0, 100.1, 100, 0.09));
-	
-		assertFalse("100.0 100.1 100 0.05 match", MathTools.matchMasses(100.0, 100.1, 0, 0));
-		assertFalse("100.0 100.1 100 0.05 match", MathTools.matchMasses(100.0, 100.00001, 0, 0));
+		assertTrue("Masses: 100.0 100.1 mzppm:0 mzabs:0.1 => don't match", MathTools.matchMasses(100.0, 100.1, 0, 0.1));
+		assertTrue("Masses: 100.0 100.1 mzppm:100 mzabs:0 => don't match", MathTools.matchMasses(100.0, 100.01, 100, 0));
+		assertTrue("Masses: 100.0 100.1 mzppm:100 mzabs:0.05 => don't match", MathTools.matchMasses(100.0, 100.1, 100, 0.09));
+		
+		assertFalse("Masses: 100.0 100.1 mzppm:100 mzabs:0.05 => match", MathTools.matchMasses(100.0, 100.1, 0, 0));
+		assertFalse("Masses: 100.0 100.1 mzppm:100 mzabs:0.05 => match", MathTools.matchMasses(100.0, 100.00001, 0, 0));
 		
 	}
 
