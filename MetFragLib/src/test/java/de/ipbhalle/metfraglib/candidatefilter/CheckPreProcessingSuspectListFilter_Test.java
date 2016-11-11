@@ -10,7 +10,7 @@ import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.settings.Settings;
 
-public class CheckPreProcessSuspectListFilter_Test {
+public class CheckPreProcessingSuspectListFilter_Test {
 
 	private PreProcessingCandidateSuspectListFilter candidateFilter;
 	private String[] inChIKeys = new String[] {
