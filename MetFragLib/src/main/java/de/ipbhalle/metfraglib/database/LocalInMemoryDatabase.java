@@ -56,7 +56,9 @@ public class LocalInMemoryDatabase extends AbstractDatabase {
 		for(int i = 0; i < this.candidates.size(); i++) {
 			double currentMonoisotopicMass = 0.0;
 			try {
-				currentMonoisotopicMass = MoleculeFunctions.calculateMonoIsotopicMassExplicitHydrogens(MoleculeFunctions.convertExplicitToImplicitHydrogens(this.candidates.get(i).getAtomContainer()));
+				IAtomContainer con = this.candidates.get(i).getAtomContainer();
+				MoleculeFunctions.prepareAtomContainer(con, false);
+				currentMonoisotopicMass = MoleculeFunctions.calculateMonoIsotopicMassImplicitHydrogens(this.candidates.get(i).getAtomContainer());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

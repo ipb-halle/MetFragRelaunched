@@ -53,6 +53,12 @@ public class PreProcessingCandidateSuspectListFilter extends AbstractPreProcessi
 		this.suspectLists[0] = new SuspectList(is, name, isPrefiltered);
 	}
 	
+	public PreProcessingCandidateSuspectListFilter(String[] inChIKeys, String name, Settings settings, boolean isPrefiltered) {
+		super(settings);
+		this.suspectLists = new SuspectList[1];
+		this.suspectLists[0] = new SuspectList(inChIKeys, name, isPrefiltered);
+	}
+	
 	@Override
 	public boolean passesFilter(ICandidate candidate) {
 		String containedIn = "";
