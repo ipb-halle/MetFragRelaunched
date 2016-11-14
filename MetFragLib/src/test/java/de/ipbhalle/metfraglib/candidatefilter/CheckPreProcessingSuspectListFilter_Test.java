@@ -27,6 +27,7 @@ public class CheckPreProcessingSuspectListFilter_Test {
 	
 	@Before
 	public void setUp() {
+		//init candidate objects
 		toTestCandidates[0] = new PrecursorCandidate("InChI=1S/C12H19NO5S2/c1-12(2,3)18-11(14)13-9(8-17-20(4,15)16)10-6-5-7-19-10/h5-7,9H,8H2,1-4H3,(H,13,14)/t9-/m0/s1", "13877939");
 		toTestCandidates[0].setProperty(VariableNames.INCHI_KEY_1_NAME, "LGXPPQPBQCFQPU");
 		toTestCandidates[1] = new PrecursorCandidate("InChI=1S/C12H19NO5S2/c1-13(19(2,14)15)12-8-6-11(7-9-12)5-4-10-18-20(3,16)17/h6-9H,4-5,10H2,1-3H3", "59122053");
@@ -47,5 +48,5 @@ public class CheckPreProcessingSuspectListFilter_Test {
 		assertTrue(this.candidateFilter.passesFilter(this.toTestCandidates[2]));
 		assertFalse(this.candidateFilter.passesFilter(this.toTestCandidates[3]));
 	}
-
+	
 }
