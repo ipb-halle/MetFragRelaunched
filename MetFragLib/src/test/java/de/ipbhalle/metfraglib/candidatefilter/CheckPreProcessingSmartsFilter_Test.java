@@ -18,6 +18,7 @@ public class CheckPreProcessingSmartsFilter_Test {
 	
 	@Before
 	public void setUp() {
+		//init candidate objects
 		toTestCandidates[0] = new PrecursorCandidate("InChI=1S/C12H19NO5S2/c1-12(2,3)18-11(14)13-9(8-17-20(4,15)16)10-6-5-7-19-10/h5-7,9H,8H2,1-4H3,(H,13,14)/t9-/m0/s1", "13877939");
 		toTestCandidates[0].setProperty(VariableNames.INCHI_KEY_1_NAME, "LGXPPQPBQCFQPU");
 		toTestCandidates[1] = new PrecursorCandidate("InChI=1S/C12H19NO5S2/c1-13(19(2,14)15)12-8-6-11(7-9-12)5-4-10-18-20(3,16)17/h6-9H,4-5,10H2,1-3H3", "59122053");
@@ -63,19 +64,25 @@ public class CheckPreProcessingSmartsFilter_Test {
 		assertTrue("FTVWIRXFELQLPI does not match 'not (( CCC or c1ccccc1 ) and S(=O)=O)'", this.candidateFilter.passesFilter(this.toTestCandidates[3]));
 	}
 
-	@Test
-	(expected=IllegalArgumentException.class)
+	@Test (expected=IllegalArgumentException.class)
 	public void testIllegalArgumentException_Brackets() {
 		//check correct brackets
 		this.settings.set(VariableNames.PRE_CANDIDATE_FILTER_SMARTS_FORMULA_NAME, "not ( S(=O)=O)");
 		this.candidateFilter = new PreProcessingCandidateSmartsFilter(this.settings);
 	}
 	
-	@Test
-	(expected=IllegalArgumentException.class)
+	@Test (expected=IllegalArgumentException.class)
 	public void testIllegalArgumentException_Smarts() {
 		//check correct smarts
 		this.settings.set(VariableNames.PRE_CANDIDATE_FILTER_SMARTS_FORMULA_NAME, "S(=O)=O=");
 		this.candidateFilter = new PreProcessingCandidateSmartsFilter(this.settings);
 	}
+
+	@Test
+	public void testObjectReference() {
+		ICandidate cand = this.toTestCandidates[0];
+		assertSame(cand, this.toTestCandidates[0]);
+		assertNotSame(cand, this.toTestCandidates[0].clone());
+	}
+	
 }
