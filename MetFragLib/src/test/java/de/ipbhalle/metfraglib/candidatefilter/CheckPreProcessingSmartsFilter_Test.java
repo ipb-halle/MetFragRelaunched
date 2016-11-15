@@ -78,11 +78,4 @@ public class CheckPreProcessingSmartsFilter_Test {
 		this.candidateFilter = new PreProcessingCandidateSmartsFilter(this.settings);
 	}
 
-	@Test
-	public void testObjectReference() {
-		ICandidate cand = this.toTestCandidates[0];
-		assertSame(cand, this.toTestCandidates[0]);
-		assertNotSame(cand, this.toTestCandidates[0].clone());
-	}
-	
 }

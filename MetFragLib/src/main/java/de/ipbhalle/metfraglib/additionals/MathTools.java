@@ -17,7 +17,7 @@ public class MathTools {
 	}
 	
 	public static boolean matchMasses(double mass1, double mass2, double ppm, double abs) {
-		double mzabs = (mass1 / 1000000.0) * ppm + abs;
+		double mzabs = (mass1 / 1000000.0) * ppm;
 		if(mass1 - mzabs <= mass2 && (mass2 <= mass1 + mzabs)) return true;
 		return false;
 	}
