@@ -7,6 +7,7 @@ import java.util.Vector;
 
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.transport.http.HTTPConstants;
+import org.apache.axis2.transport.http.HttpTransportProperties;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.openscience.cdk.ChemFile;
@@ -57,15 +58,12 @@ public class OnlineChemSpiderDatabase extends AbstractDatabase {
 		double mzabs = MathTools.calculateAbsoluteDeviation(monoisotopicMass, relativeMassDeviation);
 		MassSpecAPIStub stub = null;
 		try {
-			stub = new MassSpecAPIStub();
-		} catch (AxisFault e) {
+			stub = this.initMassSpecAPIStub();
+		} catch (Exception e) {
 			this.logger.error("Error: Could not perform database query. This could be caused by a temporal database timeout. Try again later.");
-			throw new Exception();
+			return null;
 		}
-		stub._getServiceClient().getOptions().setProperty(HTTPConstants.CHUNKED, false);
-		stub._getServiceClient().getOptions().setProperty(HTTPConstants.CONNECTION_TIMEOUT, 3 * 60 * 1000);
-		stub._getServiceClient().getOptions().setProperty(HTTPConstants.SO_TIMEOUT, 3 * 60 * 1000);
-		stub._getServiceClient().getOptions().setCallTransportCleanup(true);
+		
 		SearchByMassAsync sbma = new SearchByMassAsync();
 		
 		sbma.setMass(monoisotopicMass);
@@ -104,12 +102,12 @@ public class OnlineChemSpiderDatabase extends AbstractDatabase {
 		
 		MassSpecAPIStub stub = null;
 		try {
-			stub = new MassSpecAPIStub();
-		} catch (AxisFault e) {
+			stub = this.initMassSpecAPIStub();
+		} catch (Exception e) {
 			this.logger.error("Error: Could not perform database query. This could be caused by a temporal database timeout. Try again later.");
 			throw new Exception();
 		}
-        stub._getServiceClient().getOptions().setProperty(HTTPConstants.CHUNKED, false);
+
         SearchByFormulaAsync sbfa = new SearchByFormulaAsync();
         sbfa.setFormula(molecularFormula);
         sbfa.setToken(this.chemSpiderToken);
@@ -156,12 +154,11 @@ public class OnlineChemSpiderDatabase extends AbstractDatabase {
 	public ICandidate getCandidateByIdentifier(String identifier) {
 		MassSpecAPIStub stub = null;
 		try {
-			stub = new MassSpecAPIStub();
-		} catch (AxisFault e1) {
+			stub = this.initMassSpecAPIStub();
+		} catch (Exception e) {
 			this.logger.error("Error: Could not perform database query. This could be caused by a temporal database timeout. Try again later.");
 			return null;
 		}
-        stub._getServiceClient().getOptions().setProperty(HTTPConstants.CHUNKED, false);
       
 		GetExtendedMolCompoundInfoArray gemcia = new GetExtendedMolCompoundInfoArray();
 		com.chemspider.www.MassSpecAPIStub.ArrayOfInt aoi_msas = new com.chemspider.www.MassSpecAPIStub.ArrayOfInt();
@@ -224,16 +221,7 @@ public class OnlineChemSpiderDatabase extends AbstractDatabase {
         	if(!uniqueCsidArray.contains(identifiers.get(i))) uniqueCsidArray.add(identifiers.get(i));
         }
         CandidateList candidateList = new CandidateList();
-        MassSpecAPIStub stub = null;
-		try {
-			stub = new MassSpecAPIStub();
-		} catch (AxisFault e1) {
-			this.logger.error("Error: Could not perform database query. This could be caused by a temporal database timeout. Try again later.");
-			throw new Exception();
-		}
-        stub._getServiceClient().getOptions().setProperty(HTTPConstants.CHUNKED, false);
-		stub._getServiceClient().getOptions().setProperty(HTTPConstants.CONNECTION_TIMEOUT, 3 * 60 * 1000);
-		stub._getServiceClient().getOptions().setProperty(HTTPConstants.SO_TIMEOUT, 3 * 60 * 1000);
+
         int[] csids = null;
         String rid = "";
         /*
@@ -257,12 +245,12 @@ public class OnlineChemSpiderDatabase extends AbstractDatabase {
 	    ass.setToken(this.chemSpiderToken);
 	    SearchStub thisSearchStub = null;
 		try {
-			thisSearchStub = new SearchStub();
+			thisSearchStub = this.initSearchStub();
 		} catch (AxisFault e1) {
 			this.logger.error("Error: Could not perform database query. This could be caused by a temporal database timeout. Try again later.");
 			throw new Exception();
 		}
-        thisSearchStub._getServiceClient().getOptions().setProperty(HTTPConstants.CHUNKED, false);
+
         rid = "";
 		try {
 			rid = thisSearchStub.asyncSimpleSearch(ass).getAsyncSimpleSearchResult();
@@ -286,10 +274,7 @@ public class OnlineChemSpiderDatabase extends AbstractDatabase {
 		int count = Math.min(250, csids.length);
 		SearchStub searchStub = null;
 		try {
-			searchStub = new SearchStub();
-			searchStub._getServiceClient().getOptions().setProperty(HTTPConstants.CHUNKED, false);
-			searchStub._getServiceClient().getOptions().setProperty(HTTPConstants.CONNECTION_TIMEOUT, 3 * 60 * 1000);
-			searchStub._getServiceClient().getOptions().setProperty(HTTPConstants.SO_TIMEOUT, 3 * 60 * 1000);
+			searchStub = this.initSearchStub();
 		} catch (AxisFault e) {
 			this.logger.error("Error: Could not perform database query. This could be caused by a temporal database timeout. Try again later.");
 			throw new Exception();
@@ -348,12 +333,11 @@ public class OnlineChemSpiderDatabase extends AbstractDatabase {
 		do {
 			MassSpecAPIStub stub = null;
 			try {
-				stub = new MassSpecAPIStub();
-			} catch (AxisFault e1) {
+				stub = this.initMassSpecAPIStub();
+			} catch (Exception e) {
 				this.logger.error("Error: Could not perform database query. This could be caused by a temporal database timeout. Try again later.");
 				return new Vector<ExtendedMolCompoundInfo>();
 			}
-	        stub._getServiceClient().getOptions().setProperty(HTTPConstants.CHUNKED, false);
 	        GetAsyncSearchResultPart gasrp = new GetAsyncSearchResultPart();
 			gasrp.setRid(rid);
 			gasrp.setStart(start);
@@ -446,10 +430,7 @@ public class OnlineChemSpiderDatabase extends AbstractDatabase {
 	 */
 	private int[] getAsyncSearchStatusIfResultReady (String rid) throws Exception {
 		try {
-			final SearchStub stub = new SearchStub();
-			stub._getServiceClient().getOptions().setProperty(HTTPConstants.CHUNKED, false);
-	        stub._getServiceClient().getOptions().setProperty(HTTPConstants.CONNECTION_TIMEOUT, 3 * 60 * 1000);
-	        stub._getServiceClient().getOptions().setProperty(HTTPConstants.SO_TIMEOUT, 3 * 60 * 1000);
+			final SearchStub stub = this.initSearchStub();
 			com.chemspider.www.SearchStub.GetAsyncSearchStatusAndCount getGetAsyncSearchStatusAndCountInput = new com.chemspider.www.SearchStub.GetAsyncSearchStatusAndCount();
 			getGetAsyncSearchStatusAndCountInput.setRid(rid);
 			getGetAsyncSearchStatusAndCountInput.setToken(this.chemSpiderToken);
@@ -511,6 +492,58 @@ public class OnlineChemSpiderDatabase extends AbstractDatabase {
 			logger.error("Problem retrieving ChemSpider webservices", e);
 		}
 		return new int[0];
+	}
+	
+	protected MassSpecAPIStub initMassSpecAPIStub() throws Exception {
+		MassSpecAPIStub stub = new MassSpecAPIStub();
+		stub._getServiceClient().getOptions().setProperty(HTTPConstants.CHUNKED, false);
+		stub._getServiceClient().getOptions().setProperty(HTTPConstants.CONNECTION_TIMEOUT, 3 * 60 * 1000);
+		stub._getServiceClient().getOptions().setProperty(HTTPConstants.SO_TIMEOUT, 3 * 60 * 1000);
+		stub._getServiceClient().getOptions().setCallTransportCleanup(true);
+		//set proxy if available
+		if(this.settings.containsKey(VariableNames.CHEMSPIDER_PROXY_SERVER) 
+				&& this.settings.containsKey(VariableNames.CHEMSPIDER_PROXY_PORT)
+				&& this.settings.get(VariableNames.CHEMSPIDER_PROXY_SERVER) != null 
+				&& this.settings.get(VariableNames.CHEMSPIDER_PROXY_PORT) != null) 
+		{
+			HttpTransportProperties.ProxyProperties pp = new HttpTransportProperties.ProxyProperties();
+			try {
+				pp.setProxyName((String)this.settings.get(VariableNames.CHEMSPIDER_PROXY_SERVER));
+				pp.setProxyPort(Integer.parseInt((String)this.settings.get(VariableNames.CHEMSPIDER_PROXY_PORT)));
+			} catch(Exception e) {
+				this.logger.error("Error: Could not set proxy settings. Please check input.");
+				throw new Exception();
+			}
+			stub._getServiceClient().getOptions().setProperty(HTTPConstants.PROXY,pp);
+		}
+		
+		return stub;
+	}
+	
+	protected SearchStub initSearchStub() throws Exception {
+		SearchStub searchStub = new SearchStub();
+		searchStub._getServiceClient().getOptions().setProperty(HTTPConstants.CHUNKED, false);
+		searchStub._getServiceClient().getOptions().setProperty(HTTPConstants.CONNECTION_TIMEOUT, 3 * 60 * 1000);
+		searchStub._getServiceClient().getOptions().setProperty(HTTPConstants.SO_TIMEOUT, 3 * 60 * 1000);
+		
+		//set proxy if available
+		if(this.settings.containsKey(VariableNames.CHEMSPIDER_PROXY_SERVER) 
+				&& this.settings.containsKey(VariableNames.CHEMSPIDER_PROXY_PORT)
+				&& this.settings.get(VariableNames.CHEMSPIDER_PROXY_SERVER) != null 
+				&& this.settings.get(VariableNames.CHEMSPIDER_PROXY_PORT) != null) 
+		{
+			HttpTransportProperties.ProxyProperties pp = new HttpTransportProperties.ProxyProperties();
+			try {
+				pp.setProxyName((String)this.settings.get(VariableNames.CHEMSPIDER_PROXY_SERVER));
+				pp.setProxyPort(Integer.parseInt((String)this.settings.get(VariableNames.CHEMSPIDER_PROXY_PORT)));
+			} catch(Exception e) {
+				this.logger.error("Error: Could not set proxy settings. Please check input.");
+				throw new Exception();
+			}
+			searchStub._getServiceClient().getOptions().setProperty(HTTPConstants.PROXY,pp);
+		}
+		
+		return searchStub;
 	}
 	
 	public void nullify() {
