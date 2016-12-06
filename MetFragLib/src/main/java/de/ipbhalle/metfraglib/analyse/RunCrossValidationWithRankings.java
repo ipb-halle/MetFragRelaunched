@@ -13,18 +13,21 @@ import de.ipbhalle.metfraglib.additionals.MathTools;
 
 public class RunCrossValidationWithRankings {
 
+	//public static String rankings_folder_name = "/home/cruttkie/Dokumente/PhD/MetFrag/substructure_training/ufz_train_eawag_test/rankings";
 	//public static String rankings_folder_name = "/home/cruttkie/Dokumente/PhD/MetFrag/substructure_training/cross_validation/eawag_02_new/rankings_testing_combined";
-	public static String rankings_folder_name = "/home/cruttkie/svn/eawag/2016hdx/metfrag/rankings_9_4_chemspider/pos";
+	//public static String rankings_folder_name = "/home/cruttkie/svn/eawag/2016hdx/metfrag/rankings_9_5_chemspider/pos";
+	public static String rankings_folder_name = "/home/cruttkie/svn/eawag/2016hdx/simulation/rankings_3/pos";
 	//public static String rankings_folder_name = "/home/chrisr/Dokumente/PhD/Talks/FoSem2016/train_ufz_test_eawag_05_11_2016/rankings";
 	public static int number_folds = 10;
 	public static int number_queries = 1;
+	//public static String only_metfrag_filename = "rankings_1001.txt";
 	public static String only_metfrag_filename = "rankings_101.txt";
-	//public static String only_metfrag_filename = "rankings_101.txt";
-	//public static String given_folds_filename = "/home/cruttkie/Dokumente/PhD/MetFrag/substructure_training/cross_validation/eawag_01_new/folds.txt";
+	//public static String given_folds_filename = "/home/cruttkie/Dokumente/PhD/MetFrag/substructure_training/cross_validation/eawag_02_new/folds.txt";
 	public static String given_folds_filename = null;
+	//public static String output_file = "/home/cruttkie/Dokumente/PhD/MetFrag/substructure_training/ufz_train_eawag_test/rankings.txt";
 	//public static String output_file = "/home/cruttkie/Dokumente/PhD/MetFrag/substructure_training/cross_validation/eawag_02_new/rankings.txt";
-	public static String output_file = "/home/cruttkie/svn/eawag/2016hdx/metfrag/rankings_9_4_chemspider/pos_rankings.txt";
-	//public static String output_file = "/home/chrisr/Dokumente/PhD/Talks/FoSem2016/train_ufz_test_eawag_05_11_2016/rankings_cross.txt";
+	public static String output_file = "/home/cruttkie/svn/eawag/2016hdx/simulation/rankings_3/pos_rankings.txt";
+	//public static String output_file = "/home/cruttkie/svn/eawag/2016hdx/metfrag/rankings_9_5_chemspider/pos_rankings.txt";
 	//public static String output_file = null;
 
 	/*
@@ -51,6 +54,7 @@ public class RunCrossValidationWithRankings {
 		"rankings_101.txt",
 		"rankings_102.txt"
 	};
+	
 	
 	public static void main(String[] args) {
 		if(args != null && args.length >= 2) {
@@ -103,6 +107,8 @@ public class RunCrossValidationWithRankings {
 		String[] query_names = getEntryNames(all_filenames[0]);
 		int[] query_testing_rankings = new int[query_names.length];
 		int[] query_testing_better_cands = new int[query_names.length];
+		int[] query_testing_worse_cands = new int[query_names.length];
+		int[] query_testing_total_cands = new int[query_names.length];
 		if(folds == null) folds = generateFolds(query_names.length);
 		number_queries = folds.length;
 		System.out.println("Containing " + folds.length + " queries");
@@ -110,6 +116,8 @@ public class RunCrossValidationWithRankings {
 		//for each weight combination number_allowed_files
 		int[][] rank_matrix = new int[folds.length][number_allowed_files]; 
 		int[][] better_candidates_matrix = new int[folds.length][number_allowed_files]; 
+		int[][] worse_candidates_matrix = new int[folds.length][number_allowed_files]; 
+		int[][] total_candidates_matrix = new int[folds.length][number_allowed_files]; 
 		int[] valid_indexes = new int[number_allowed_files];
 		int file_index = 0;
 		for(int i = 0; i < forbidden_filenames.length; i++) {
@@ -125,6 +133,8 @@ public class RunCrossValidationWithRankings {
 					try {
 						rank_matrix[row_index][file_index] = Integer.parseInt(tmp[2]);
 						better_candidates_matrix[row_index][file_index] = (int)Math.round(Double.parseDouble(tmp[8]));
+						worse_candidates_matrix[row_index][file_index] = (int)Math.round(Double.parseDouble(tmp[9]));
+						total_candidates_matrix[row_index][file_index] = (int)Math.round(Double.parseDouble(tmp[3]));
 					}
 					catch(Exception e) {
 						System.err.println("Error at " + row_index + " " + file_index + " " 
@@ -192,19 +202,27 @@ public class RunCrossValidationWithRankings {
 				number_in_fold[current_fold]++;
 				int current_rank = rank_matrix[row_index][best_weight_index[current_fold]] - 1;
 				int current_better_cands = better_candidates_matrix[row_index][best_weight_index[current_fold]] - 1;
+				int current_worse_cands = worse_candidates_matrix[row_index][best_weight_index[current_fold]] - 1;
+				int current_total_cands = total_candidates_matrix[row_index][best_weight_index[current_fold]] - 1;
 				query_testing_rankings[row_index] = current_rank + 1;
 				query_testing_better_cands[row_index] = current_better_cands + 1;
+				query_testing_worse_cands[row_index] = current_worse_cands + 1;
+				query_testing_total_cands[row_index] = current_total_cands + 1;
 				if(current_rank >= check_best_rank_positions) continue;
 				test_results[current_fold][current_rank]++;
 			}
 		}
 		System.out.println();
 		
+		double[] rrps = calculateRelativeRankingPositions(query_testing_better_cands, query_testing_worse_cands, query_testing_total_cands);
+		
 		if(output_file != null) {
 			int[][] metfrag_rankings = getRankings(only_metfrag_filename);
-			writeTestingSummary(folds, query_testing_rankings, query_testing_better_cands, query_names, metfrag_rankings);
+			writeTestingSummary(folds, query_testing_rankings, query_testing_better_cands, 
+					query_testing_worse_cands, query_testing_total_cands, rrps, query_names, metfrag_rankings);
 		}
-		
+		double[] meanrrps = calculateMeanRelativeRankingPositions(rrps, folds);
+		double[] testingErrors = calculateRelativeRankingPositionTestErrors(meanrrps);
 		int[] summed_results = new int[check_best_rank_positions];
 		for(int i = 0; i < test_results.length; i++) {
 			System.out.print("Fold\t" + (i + 1) + ":");
@@ -212,10 +230,10 @@ public class RunCrossValidationWithRankings {
 				System.out.print("\t" + test_results[i][j]);
 				summed_results[j] += test_results[i][j];
 			}
-			System.out.println("\t" + "(" + number_in_fold[i] + ")" + "\t" + all_filenames[valid_indexes[best_weight_index[i]]]);
+			System.out.println("\t" + meanrrps[i] + "\t" + testingErrors[i] + "\t\t" + "(" + number_in_fold[i] + ")" + "\t" + all_filenames[valid_indexes[best_weight_index[i]]]);
 		}
 		System.out.println("===================================================================================================");
-		printRankingValues(summed_results, "Sum:\t", "");
+		printRankingValues(summed_results, "Sum:\t", "", calculateMeanValue(meanrrps, 4) + "\t" + calculateMeanValue(testingErrors, 5));
 		printCumulativeRankingValues(summed_results, "Sum:\t", "");
 		
 		printCumulativeRankingPercentages(summed_results, "PercSum:", "");
@@ -223,6 +241,65 @@ public class RunCrossValidationWithRankings {
 		calculateBestWeight(rank_matrix, check_best_rank_positions, valid_indexes, all_filenames);
 		
 		printRankingsStatistics(only_metfrag_filename, check_best_rank_positions);
+	}
+	
+	/**
+	 * 
+	 * @param values
+	 * @return
+	 */
+	public static double calculateMeanValue(double[] values, int decimalPlaces) {
+		double mean = 0.0;
+		for(double val : values) {
+			mean += val;
+		}
+		return MathTools.round(mean / (double)values.length, decimalPlaces);
+	}
+	
+	/**
+	 * calculate mean rrps per fold
+	 * 
+	 * @param rrps
+	 * @param folds
+	 * @return
+	 */
+	public static double[] calculateMeanRelativeRankingPositions(double[] rrps, int[] folds) {
+		double[] meanValues = new double[number_folds];
+		double[] number_queries_per_fold = new double[number_folds];
+		//add up rrps per fold
+		for(int i = 0; i < number_folds; i++) {
+			for(int k = 0; k < folds.length; k++) {
+				if(folds[k] == i) {
+					meanValues[i] += rrps[k];
+					number_queries_per_fold[i] += 1.0;
+				}
+			}
+		}
+		//calculate mean rrp per fold
+		for(int i = 0; i < number_folds; i++) {
+			meanValues[i] = MathTools.round(meanValues[i] / number_queries_per_fold[i], 4);
+		}
+		return meanValues;
+	}
+	
+	/**
+	 * calculate testing errors
+	 * 
+	 * @param rrps
+	 * @param folds
+	 * @return
+	 */
+	public static double[] calculateRelativeRankingPositionTestErrors(double[] meanrrps) {
+		double[] added_up_errors = new double[number_folds];
+		double[] errors = new double[number_folds];
+		for(int i = 0; i < number_folds; i++) {
+			for(int k = 0; k < number_folds; k++) {
+				if(k != i) added_up_errors[i] += meanrrps[k];
+			}
+			added_up_errors[i] = added_up_errors[i] / (double)(number_folds - 1);
+			errors[i] = MathTools.round(Math.pow(meanrrps[i] - added_up_errors[i], 2.0), 6);
+		}
+		return errors;
 	}
 	
 	public static void calculateBestWeight(int[][] rank_matrix, int check_best_rank_positions, int[] valid_indexes, String[] file_names) {
@@ -254,10 +331,20 @@ public class RunCrossValidationWithRankings {
 			}
 		}
 		System.out.println("===================================================================================================");
-		printRankingValues(best_ranking_numbers, "Complete:", file_names[valid_indexes[best_weight_index]]);
+		printRankingValues(best_ranking_numbers, "Complete:", file_names[valid_indexes[best_weight_index]], "");
 		printCumulativeRankingValues(best_ranking_numbers, "Complete:", file_names[valid_indexes[best_weight_index]]);
 	}
 	
+	public static double[] calculateRelativeRankingPositions(int[] better_cands_testing, 
+			int[] worse_cands_testing, int[] total_cands_testing) {
+		double[] rrps = new double[better_cands_testing.length];
+		for(int i = 0; i < rrps.length; i++) {
+			if(total_cands_testing[i] == 1) rrps[i] = 0;
+			else rrps[i] = 0.5 * (1.0 + (double)(better_cands_testing[i] - worse_cands_testing[i]) / (double)(total_cands_testing[i] - 1));
+			rrps[i] = MathTools.round(rrps[i], 5);
+		}
+		return rrps;
+	}
 	
 	public static boolean isContainedInForbiddenList(String filename) {
 		for(int i = 0; i < forbidden_filenames.length; i++) {
@@ -384,7 +471,7 @@ public class RunCrossValidationWithRankings {
 			e.printStackTrace();
 		}
 		System.out.println("===================================================================================================");
-		printRankingValues(ranking_values, "Complete:", filename);
+		printRankingValues(ranking_values, "Complete:", filename, "");
 		printCumulativeRankingValues(ranking_values, "Complete:", filename);
 		printCumulativeRankingPercentages(ranking_values, "PercComp:", filename);
 	}
@@ -405,12 +492,17 @@ public class RunCrossValidationWithRankings {
 	
 	}
 
-	public static void writeTestingSummary(int[] folds, int[] rankings_testing, int[] better_cands_testing, String[] query_names, int[][] rankings_testing_to_add) {
+	public static void writeTestingSummary(int[] folds, int[] rankings_testing, int[] better_cands_testing, 
+			int[] worse_cands_testing, int[] total_cands_testing, double[] rrps, String[] query_names, int[][] rankings_testing_to_add) {
 		BufferedWriter bwriter;
 		try {
 			bwriter = new BufferedWriter(new FileWriter(new File(output_file)));
+			bwriter.write("query foldnum rank bc wc tc rrp mfonly bcmfonly");
+			bwriter.newLine();
 			for(int i = 0; i < query_names.length; i++) {
-				bwriter.write(query_names[i] + " " + folds[i] + " " + rankings_testing[i] + " " + better_cands_testing[i] + " " + rankings_testing_to_add[i][0] + " " + rankings_testing_to_add[i][1]);	
+				bwriter.write(query_names[i] + " " + folds[i] + " " + rankings_testing[i] + " " + better_cands_testing[i] 
+						+ " " + worse_cands_testing[i] + " " + total_cands_testing[i] + " " + rrps[i]
+						+ " " + rankings_testing_to_add[i][0] + " " + rankings_testing_to_add[i][1]);	
 				bwriter.newLine();
 			}
 
@@ -421,11 +513,11 @@ public class RunCrossValidationWithRankings {
 	
 	}
 	
-	public static void printRankingValues(int[] ranking_values, String name, String filename) {
+	public static void printRankingValues(int[] ranking_values, String name, String filename, String suffix) {
 		System.out.print(name);
 		for(int i = 0; i < ranking_values.length; i++)
 			System.out.print("\t" + ranking_values[i]);
-		System.out.println("\t" + filename);
+		System.out.println("\t" + filename + suffix);
 	}
 	
 	public static void printCumulativeRankingValues(int[] ranking_values, String name, String filename) {
