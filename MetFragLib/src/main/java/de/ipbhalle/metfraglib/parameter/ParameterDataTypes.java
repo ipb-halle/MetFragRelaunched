@@ -32,9 +32,7 @@ public class ParameterDataTypes {
 		parameterDatatypes.put(	VariableNames.PROCESS_CANDIDATES,					 					"Boolean"	);
 		
 		parameterDatatypes.put(	VariableNames.METFRAG_DATABASE_TYPE_NAME, 								"String"	);
-		parameterDatatypes.put(	VariableNames.METFRAG_PRE_PROCESSING_CANDIDATE_FILTER_NAME,				"String[]"	);
 		parameterDatatypes.put(	VariableNames.COMBINED_REFERENCE_SCORE_VALUES,							"String[]"	);
-		parameterDatatypes.put(	VariableNames.METFRAG_POST_PROCESSING_CANDIDATE_FILTER_NAME,			"String[]"	);
 		parameterDatatypes.put(	VariableNames.METFRAG_FRAGMENTER_TYPE_NAME, 							"String"	);
 		parameterDatatypes.put(	VariableNames.METFRAG_ASSIGNER_TYPE_NAME, 								"String"	);
 		parameterDatatypes.put(	VariableNames.METFRAG_SCORE_TYPES_NAME, 								"String[]"	);
