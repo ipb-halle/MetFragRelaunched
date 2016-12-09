@@ -44,7 +44,7 @@ import de.ipbhalle.metfraglib.score.IndividualMoNASpectralSimilarity;
 import de.ipbhalle.metfraglib.score.MatchSpectrumCosineSimilarityScore;
 import de.ipbhalle.metfraglib.score.NewFragmenterHierarchicalScore;
 import de.ipbhalle.metfraglib.score.NewFragmenterScore;
-import de.ipbhalle.metfraglib.score.NewFragmenterScoreLipids;
+import de.ipbhalle.metfraglib.score.NewFragmenterLipidScore;
 import de.ipbhalle.metfraglib.score.NewFragmenterUniqueFormulaScore;
 import de.ipbhalle.metfraglib.score.OfflineIndividualMoNASpectralSimilarity;
 import de.ipbhalle.metfraglib.score.OfflineMetFusionSpectralSimilarityScore;
@@ -99,7 +99,7 @@ public class ClassNames {
 		
 		scoreNameToClassName.put(VariableNames.METFRAG_FRAGMENTER_SCORE_NAME, NewFragmenterScore.class.getName());
 		scoreNameToClassName.put("FragmenterHierarchicalScore", NewFragmenterHierarchicalScore.class.getName());
-		scoreNameToClassName.put("FragmenterScoreLipids", NewFragmenterScoreLipids.class.getName());
+		scoreNameToClassName.put("FragmenterLipidScore", NewFragmenterLipidScore.class.getName());
 		scoreNameToClassName.put("FragmenterUniqueFormulaScore", NewFragmenterUniqueFormulaScore.class.getName());
 		scoreNameToClassName.put("SmartsSubstructureInclusionScore", SmartsSubstructureInclusionScore.class.getName());
 		scoreNameToClassName.put("SmartsSubstructureExclusionScore", SmartsSubstructureExclusionScore.class.getName());
