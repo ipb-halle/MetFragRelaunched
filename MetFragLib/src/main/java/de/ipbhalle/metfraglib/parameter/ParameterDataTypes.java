@@ -176,6 +176,13 @@ public class ParameterDataTypes {
 		parameterDatatypes.put(	VariableNames.LOCAL_CHEBI_DATABASE_USER_NAME, 							"String"	);
 		parameterDatatypes.put(	VariableNames.LOCAL_CHEBI_DATABASE_PASSWORD_NAME, 						"String"	);
 		parameterDatatypes.put(	VariableNames.LOCAL_CHEBI_DATABASE_COMPOUND_NAME_COLUMN_NAME,			"String"	);
+		
+		parameterDatatypes.put(	VariableNames.LOCAL_METCHEM_DATABASE_LIBRARY_NAME,						"String"	);
+		parameterDatatypes.put(	VariableNames.LOCAL_METCHEM_DATABASE_PASSWORD_NAME,						"String"	);
+		parameterDatatypes.put(	VariableNames.LOCAL_METCHEM_DATABASE_PORT_NUMBER_NAME,					"String"	);
+		parameterDatatypes.put(	VariableNames.LOCAL_METCHEM_DATABASE_SERVER_IP_NAME,					"String"	);
+		parameterDatatypes.put(	VariableNames.LOCAL_METCHEM_DATABASE_USER_NAME,							"String"	);
+		parameterDatatypes.put(	VariableNames.LOCAL_METCHEM_DATABASE_NAME,								"String"	);
 
 		parameterDatatypes.put(	VariableNames.NUMBER_RANDOM_SPECTRA_NAME, 								"Integer"	);
 		parameterDatatypes.put(	VariableNames.ENABLE_DEUTERIUM_NAME, 									"Boolean"	);

@@ -87,6 +87,8 @@ public class MetFragGlobalSettings extends Settings {
 		this.defaults.put(VariableNames.LOCAL_DATABASE_USER_NAME, Constants.DEFAULT_LOCAL_DATABASE_USER);
 		this.defaults.put(VariableNames.LOCAL_DATABASE_PASSWORD_NAME, Constants.DEFAULT_LOCAL_DATABASE_PASSWORD);
 		
+		this.defaults.put(VariableNames.LOCAL_METCHEM_DATABASE_LIBRARY_NAME, Constants.DEFAULT_LOCAL_METCHEM_DATABASE_LIBRARY_NAME);
+		
 	}
 
 	public void writeSettingsFile(String filename) throws IOException {

@@ -134,6 +134,13 @@ public class VariableNames {
 	public static final String LOCAL_PUBCHEM_DATABASE_PASSWORD_NAME				= 	"LocalPubChemDatabasePassword";
 	public static final String LOCAL_PUBCHEM_DATABASE_COMPOUND_NAME_COLUMN_NAME		= 	"LocalPubChemDatabaseCompoundNameColumn";
 
+	public static final String LOCAL_METCHEM_DATABASE_NAME						= 	"LocalMetChemDatabase";
+	public static final String LOCAL_METCHEM_DATABASE_PORT_NUMBER_NAME			= 	"LocalMetChemDatabasePortNumber";
+	public static final String LOCAL_METCHEM_DATABASE_SERVER_IP_NAME				= 	"LocalMetChemDatabaseServerIp";
+	public static final String LOCAL_METCHEM_DATABASE_USER_NAME					= 	"LocalMetChemDatabaseUser";
+	public static final String LOCAL_METCHEM_DATABASE_PASSWORD_NAME				= 	"LocalMetChemDatabasePassword";
+	public static final String LOCAL_METCHEM_DATABASE_LIBRARY_NAME				= 	"LocalMetChemDatabaseLibrary";
+	
 	public static final String LOCAL_KEGG_DATABASE_NAME					= 	"LocalKeggDatabase";
 	public static final String LOCAL_KEGG_DATABASE_COMPOUND_TABLE_NAME	= 	"LocalKeggDatabaseCompoundsTable";
 	public static final String LOCAL_KEGG_DATABASE_PORT_NUMBER_NAME		= 	"LocalKeggDatabasePortNumber";
