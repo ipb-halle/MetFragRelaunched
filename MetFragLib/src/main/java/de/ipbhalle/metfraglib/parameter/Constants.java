@@ -236,7 +236,8 @@ public class Constants {
 	public static final String 				DEFAULT_LOCAL_DATABASE_USER					=	null;
 	public static final String 				DEFAULT_LOCAL_DATABASE_PASSWORD				=	null;
 	public static final String 				DEFAULT_LOCAL_DATABASE_PORT_NUMBER			=	null;
-	
+
+	public static final String 				DEFAULT_LOCAL_METCHEM_DATABASE_LIBRARY_NAME		= 	"pubchem";
 	/*
 	 * 
 	 *			Functions

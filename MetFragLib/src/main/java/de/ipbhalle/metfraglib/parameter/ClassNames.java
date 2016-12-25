@@ -18,6 +18,7 @@ import de.ipbhalle.metfraglib.database.LocalChEBIDatabase;
 import de.ipbhalle.metfraglib.database.LocalDerivatisedKeggDatabase;
 import de.ipbhalle.metfraglib.database.LocalExtendedPubChemDatabase;
 import de.ipbhalle.metfraglib.database.LocalInMemoryDatabase;
+import de.ipbhalle.metfraglib.database.LocalMetChemDatabase;
 import de.ipbhalle.metfraglib.database.LocalPSVDatabase;
 import de.ipbhalle.metfraglib.database.LocalKeggDatabase;
 import de.ipbhalle.metfraglib.database.LocalLipidMapsDatabase;
@@ -174,6 +175,7 @@ public class ClassNames {
 		databaseNameToClassName.put("LocalExtendedPubChem", LocalExtendedPubChemDatabase.class.getName());
 		databaseNameToClassName.put("LocalInMemoryDatabase", LocalInMemoryDatabase.class.getName());
 		databaseNameToClassName.put("LocalChEBI", LocalChEBIDatabase.class.getName());
+		databaseNameToClassName.put("MetChem", LocalMetChemDatabase.class.getName());
 		
 		/*
 		 * new implemented candidateListWriter have to be added here
