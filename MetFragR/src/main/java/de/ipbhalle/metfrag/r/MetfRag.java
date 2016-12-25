@@ -11,7 +11,6 @@ import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
 import de.ipbhalle.metfraglib.candidate.TopDownPrecursorCandidate;
 import de.ipbhalle.metfraglib.exceptions.AtomTypeNotKnownFromInputListException;
-import de.ipbhalle.metfraglib.exceptions.ExplicitHydrogenRepresentationException;
 import de.ipbhalle.metfraglib.exceptions.RelativeIntensityNotDefinedException;
 import de.ipbhalle.metfraglib.fragmenter.TopDownNeutralLossFragmenter;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
@@ -255,8 +254,8 @@ class MetfRag {
 			IMolecularFormula molFormula = MolecularFormulaManipulator.getMolecularFormula(tmp);
 			Double massDoubleOrig = null;
 			try {
-				massDoubleOrig = MoleculeFunctions.calculateMonoIsotopicMassImplicitHydrogens(tmp);
-			} catch (ExplicitHydrogenRepresentationException e) {
+				massDoubleOrig = candidate.getMolecularFormula().getMonoisotopicMass();
+			} catch (AtomTypeNotKnownFromInputListException e) {
 				e.printStackTrace();
 			}
 			massDoubleOrig = (double)Math.round((massDoubleOrig) * 10000)/10000;
@@ -414,8 +413,8 @@ class MetfRag {
 			IMolecularFormula molFormula = MolecularFormulaManipulator.getMolecularFormula(tmp);
 			Double massDoubleOrig = null;
 			try {
-				massDoubleOrig = MoleculeFunctions.calculateMonoIsotopicMassImplicitHydrogens(tmp);
-			} catch (ExplicitHydrogenRepresentationException e) {
+				massDoubleOrig = candidate.getMolecularFormula().getMonoisotopicMass();
+			} catch (AtomTypeNotKnownFromInputListException e) {
 				e.printStackTrace();
 			}
 			massDoubleOrig = (double)Math.round((massDoubleOrig)*10000)/10000;
@@ -544,8 +543,8 @@ class MetfRag {
 			IMolecularFormula molFormula = MolecularFormulaManipulator.getMolecularFormula(tmp);
 			Double massDoubleOrig = null;
 			try {
-				massDoubleOrig = MoleculeFunctions.calculateMonoIsotopicMassImplicitHydrogens(tmp);
-			} catch (ExplicitHydrogenRepresentationException e) {
+				massDoubleOrig = candidate.getMolecularFormula().getMonoisotopicMass();
+			} catch (AtomTypeNotKnownFromInputListException e) {
 				e.printStackTrace();
 			}
 			massDoubleOrig = (double)Math.round((massDoubleOrig)*10000)/10000;
