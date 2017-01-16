@@ -24,10 +24,13 @@ import org.openscience.cdk.io.SDFWriter;
 import org.openscience.cdk.smiles.SmilesGenerator;
 import org.openscience.cdk.tools.CDKHydrogenAdder;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
+import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 
 import de.ipbhalle.metfraglib.BitArray;
+import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
 import de.ipbhalle.metfraglib.inchi.InChIToStructure;
 import de.ipbhalle.metfraglib.molecularformula.HDByteMolecularFormula;
+import de.ipbhalle.metfraglib.parameter.Constants;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import edu.emory.mathcs.backport.java.util.Arrays;
 
@@ -35,7 +38,7 @@ public class SmilesDeuteriumGeneration {
 
 	public static void main(String[] args) throws Exception {
 		boolean withAromaticRings = false;
-		boolean combinatorial = true;
+		boolean combinatorial = false;
 		/*
 		 * read input inchis
 		 */
@@ -69,8 +72,7 @@ public class SmilesDeuteriumGeneration {
 			/*
 			 * build the jni inchi atom container
 			 */
-			IAtomContainer its = new InChIToStructure(inchis.get(j),
-					DefaultChemObjectBuilder.getInstance()).getAtomContainer();
+			IAtomContainer its = MoleculeFunctions.parseSmilesImplicitHydrogen(inchis.get(j));
 			AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(its);
 			try {
 				adder.addImplicitHydrogens(its);
@@ -90,7 +92,7 @@ public class SmilesDeuteriumGeneration {
 			
 			if(!combinatorial || (numberToAddDeuteriums.size() == 0 || toExchange.length <= numberToAddDeuteriums.get(j))) {	
 				for (int i = 0; i < toExchange.length; i++) {
-					int numberExchanged = setAllExplicitDeuteriums(its, i);
+					int numberExchanged = setAllExplicitDeuteriums(its, toExchange[i]);
 					numberDeuteriums += numberExchanged;
 					numberDeuteriumsEasilyExchanged += numberExchanged;
 				}
@@ -173,7 +175,7 @@ public class SmilesDeuteriumGeneration {
 
 			HDByteMolecularFormula formula = null;
 			try {
-				formula = new HDByteMolecularFormula(inchi.split("/")[1]);
+				formula = new HDByteMolecularFormula(MolecularFormulaManipulator.getString(MolecularFormulaManipulator.getMolecularFormula(its)));
 			}
 			catch(Exception e) {
 				System.err.println(identifiers.get(j));
@@ -185,20 +187,28 @@ public class SmilesDeuteriumGeneration {
 			// Identifier|InChI|MolecularFormula|MonoisotopicMass|InChIKey1|InChIKey2|OSN-Deuteriums|AromaticDeuteriums
 			
 			if(numberToAddDeuteriums.size() == 0 || numberDeuteriums == numberToAddDeuteriums.get(j)) {
-				System.out.println(identifiers.get(j) + "|" + inchi + "|" + sg.create(its) + "|" + formula.toString() + "|" + formula.getMonoisotopicMass() + "|"
-					+ JniInchiWrapper.getInchiKey(inchi).getKey().split("-")[0] + "|" + JniInchiWrapper.getInchiKey(inchi).getKey().split("-")[1] + "|" + numberDeuteriumsEasilyExchanged + "|" + numberDeuteriumsAromaticExchanged + "|0");
-
+				
 				its.setProperty(VariableNames.IDENTIFIER_NAME, identifiers.get(j));
 				its.setProperty(VariableNames.INCHI_NAME, inchi);
 				//its.setProperty(VariableNames.SMILES_NAME, sg.create(its));
 				its.setProperty(VariableNames.MOLECULAR_FORMULA_NAME, formula.toString());
+				
+				double mass = formula.getMonoisotopicMass();
 				its.setProperty(VariableNames.MONOISOTOPIC_MASS_NAME, formula.getMonoisotopicMass());
-				its.setProperty(VariableNames.INCHI_KEY_1_NAME, JniInchiWrapper.getInchiKey(inchi).getKey().split("-")[0]);
-				its.setProperty(VariableNames.INCHI_KEY_2_NAME, JniInchiWrapper.getInchiKey(inchi).getKey().split("-")[1]);
+				//its.setProperty(VariableNames.INCHI_KEY_1_NAME, JniInchiWrapper.getInchiKey(inchi).getKey().split("-")[0]);
+				//its.setProperty(VariableNames.INCHI_KEY_2_NAME, JniInchiWrapper.getInchiKey(inchi).getKey().split("-")[1]);
 				its.setProperty("OSN-Deuteriums", numberDeuteriumsEasilyExchanged);
 				its.setProperty("AromaticDeuteriums", numberDeuteriumsAromaticExchanged);
 				its.setProperty("MissedDeuteriums", 0);
 				
+				its.setProperty("M+H", mass + Constants.getMonoisotopicMassOfAtom("H") - Constants.ELECTRON_MASS);
+				its.setProperty("M+D", mass + Constants.getMonoisotopicMassOfAtom("D") - Constants.ELECTRON_MASS);
+				its.setProperty("M-H", mass - Constants.getMonoisotopicMassOfAtom("H") + Constants.ELECTRON_MASS);
+				its.setProperty("M-D", mass - Constants.getMonoisotopicMassOfAtom("D") + Constants.ELECTRON_MASS);
+				
+				IAtomContainer con = removeHydrogens(its, toExchange);
+				
+				its.setProperty("DeuteratedSMILES", MoleculeFunctions.generateSmiles(con).replaceAll("\\[H\\]", "[2H]"));
 				set.addAtomContainer(its);
 			}
 			else if(!combinatorial) System.err.println("discarded to many easy exchangeable hydrogens " + numberDeuteriums + " " + identifiers.get(j));
@@ -257,6 +267,37 @@ public class SmilesDeuteriumGeneration {
 		
 		formula.setNumberDeuterium(numberDeuterium);
 		return formulas;
+	}
+
+	public static IAtomContainer removeHydrogens(IAtomContainer target, int[] skipPositions) throws CloneNotSupportedException {
+		IAtomContainer molecule = target.clone();
+		java.util.Vector<IAtom> hydrogenAtoms = new java.util.Vector<IAtom>();
+		java.util.Iterator<IAtom> atoms = molecule.atoms().iterator();
+		java.util.Vector<IAtom> atomsToSkip = new java.util.Vector<IAtom>();
+		for(int i = 0; i < skipPositions.length; i++) {
+			atomsToSkip.add(molecule.getAtom(skipPositions[i]));
+		}
+		while(atoms.hasNext()) {
+			IAtom currentAtom = atoms.next();
+			if(currentAtom.getSymbol().equals("H")) {
+				//hydrogen can only have one neighbour
+				if(atomsToSkip.contains(molecule.getConnectedAtomsList(currentAtom).get(0))) {
+					molecule.getConnectedAtomsList(currentAtom).get(0).setImplicitHydrogenCount(0);
+					continue;
+				}
+				else hydrogenAtoms.add(currentAtom);
+			}
+			java.util.List<IAtom> neighbours = molecule.getConnectedAtomsList(currentAtom);
+			int numberHydrogens = 0;
+			for(int k = 0; k < neighbours.size(); k++) {
+				if(neighbours.get(k).getSymbol().equals("H")) numberHydrogens++;
+			}
+			currentAtom.setImplicitHydrogenCount(numberHydrogens);
+		}
+		for(IAtom atom : hydrogenAtoms) {
+			molecule.removeAtomAndConnectedElectronContainers(atom);
+		}
+		return molecule;
 	}
 	
 	/**
