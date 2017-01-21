@@ -120,6 +120,7 @@ public class CombinedMetFragProcess implements Runnable {
 			this.globalSettings.set(VariableNames.PEAK_LIST_NAME, this.peakListReader.read());
 		} catch (Exception e) {
 			this.logger.error("Error when reading peak list.");
+			e.printStackTrace();
 			return;
 		}
 		this.globalSettings.set(VariableNames.MINIMUM_FRAGMENT_MASS_LIMIT_NAME, ((DefaultPeakList)this.globalSettings.get(VariableNames.PEAK_LIST_NAME)).getMinimumMassValue());
