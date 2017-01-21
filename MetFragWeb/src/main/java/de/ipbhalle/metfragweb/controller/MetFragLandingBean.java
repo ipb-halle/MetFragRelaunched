@@ -46,6 +46,7 @@ public class MetFragLandingBean {
 		this.allowedDatabases.add("KEGG");
 		this.allowedDatabases.add("PubChem");
 		this.allowedDatabases.add("ChemSpider");
+		this.allowedDatabases.add("LipidMaps");
 		this.allowedDatabases.add("MetaCyc");
 		this.allowedDatabases.add("LocalInChI");
 		this.allowedDatabases.add("LocalSDF");

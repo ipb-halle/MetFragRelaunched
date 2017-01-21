@@ -88,6 +88,7 @@ public class BeanSettingsContainer {
 	//retrieved candidates list
 	protected CandidateList retrievedCandidateList;
 	
+	protected String bondEnergyLipidMapsFilePath = "";
 	//for local databases
 	protected boolean localPubChemDatabase = false;
 	protected boolean localKeggDatabase = false;
@@ -1378,7 +1379,7 @@ public class BeanSettingsContainer {
 		this.metFragSettings.set(VariableNames.ABSOLUTE_MASS_DEVIATION_NAME, Double.parseDouble(this.absoluteMassDeviation));
 		this.metFragSettings.set(VariableNames.PEAK_LIST_NAME, new StringTandemMassPeakListReader(this.metFragSettings).read());
 		int mode = this.mode;
-		if(mode == 1000 || mode == -100) mode = 0;
+		if(mode == 1000 || mode == -1000) mode = 0;
 		this.metFragSettings.set(VariableNames.PRECURSOR_ION_MODE_NAME, mode);
 		this.metFragSettings.set(VariableNames.IS_POSITIVE_ION_MODE_NAME, this.isPositiveCharge());
 	}
@@ -1486,6 +1487,11 @@ public class BeanSettingsContainer {
 		this.prepareFragmenterSettings();
 		
 		this.metFragSettings.includeSettings(this.metFragSettingsFile, true, this.getExcludeKeys());
+		
+		if(this.database.equals("LipidMaps") && this.bondEnergyLipidMapsFilePath != null && this.bondEnergyLipidMapsFilePath.length() != 0) {
+			System.out.println("bond energy file path set to " + this.bondEnergyLipidMapsFilePath);
+			this.metFragSettings.set(VariableNames.BOND_ENERGY_FILE_PATH_NAME, this.bondEnergyLipidMapsFilePath);
+		}
 	}
 
 	public java.util.Vector<String> getExcludeKeys() {
@@ -1781,6 +1787,7 @@ public class BeanSettingsContainer {
 	public MetFragGlobalSettings readDatabaseConfigFromFile() {
 		try {
 			ServletContext servletContext = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
+			this.bondEnergyLipidMapsFilePath = servletContext.getRealPath("/resources/BondEnergiesLipidMaps.txt");
 			String pathToProperties = servletContext.getRealPath("/resources/settings.properties");
 			MetFragGlobalSettings settings = MetFragGlobalSettings.readSettings(new java.io.File(pathToProperties), null);
 			if(settings.containsKey(VariableNames.LOCAL_KEGG_DATABASE_NAME) && settings.get(VariableNames.LOCAL_KEGG_DATABASE_NAME) != null) this.localKeggDatabase = true;

@@ -72,7 +72,7 @@ public class ProcessCompoundsThreadRunner extends ThreadRunner {
 			this.errorMessages.setMessage("buttonProcessCompoundsError", "Error: Processing of candidates failed.");
 			return;
 		}
-		
+
 		if(this.interrupted) return; 
 		
 		//wait until poll is triggered to display 100% in the progress bar for candidate processing
