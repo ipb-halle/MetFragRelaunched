@@ -1,5 +1,9 @@
 package de.ipbhalle.metfraglib.similarity;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Hashtable;
+
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.fingerprint.IBitFingerprint;
 import org.openscience.cdk.fingerprint.MACCSFingerprinter;
@@ -128,6 +132,7 @@ public class TanimotoSimilarity {
 		return new ClusterWrapper(alg.performClustering(pdist, names, new AverageLinkageStrategy()));
 	}
 
+
 	/**
 	 * 
 	 * @param candidates
@@ -142,10 +147,9 @@ public class TanimotoSimilarity {
 			}
 			names[i] = candidates.getElement(i).getIdentifier();
 		}
-
-		int index = 0;
 		double[] distValues = new double[(candidates.getNumberElements() * (candidates.getNumberElements() - 1)) / 2];
-		System.out.println(distValues.length + " " + candidates.getNumberElements());
+		
+		int index = 0;
 		for(int col = 0; col < candidates.getNumberElements(); col++) {
 			for(int row = col + 1; row < candidates.getNumberElements(); row++) {
 				double distValue = 
@@ -156,70 +160,177 @@ public class TanimotoSimilarity {
 				index++;
 			}
 		}
-
+		
 		double[][] pdist = new double[][] {
 				distValues
 	    };
-		/*
-		for(int i = 0; i < distValues.length; i++)
-			System.out.println(distValues[i]);
-		*/
+
 		ClusteringAlgorithm alg = new PDistClusteringAlgorithm();
 		return new ClusterWrapper(alg.performClustering(pdist, names, new AverageLinkageStrategy()));
 	}
 	
-	public static void main(String[] args) {
-		String peakListFilePath = "/tmp/peaklist_file_example_1.txt";
+	/**
+	 * first list is the candidate list for which each candidate gets its maximum similarity
+	 * 
+	 * @param candidates1
+	 * @param candidates2
+	 * @return
+	 * @throws Exception
+	 */
+	public static String[][] getMaximumSimilarities(CandidateList candidates1, CandidateList candidates2, Hashtable<String, String> names) throws Exception {
+		String[] names1 = new String[candidates1.getNumberElements()];
+		String[] names2 = new String[candidates2.getNumberElements()];
+		for(int i = 0; i < candidates1.getNumberElements(); i++) {
+			if(candidates1.getElement(i).getProperties().containsKey(VariableNames.FINGERPRINT_NAME_NAME) || candidates1.getElement(i).getProperty(VariableNames.FINGERPRINT_NAME_NAME) == null) {
+				candidates1.getElement(i).setProperty(VariableNames.FINGERPRINT_NAME_NAME, TanimotoSimilarity.calculateFingerPrint(candidates1.getElement(i).getAtomContainer()));
+			}
+			names1[i] = candidates1.getElement(i).getIdentifier();
+		}
+		for(int i = 0; i < candidates2.getNumberElements(); i++) {
+			if(candidates2.getElement(i).getProperties().containsKey(VariableNames.FINGERPRINT_NAME_NAME) || candidates2.getElement(i).getProperty(VariableNames.FINGERPRINT_NAME_NAME) == null) {
+				candidates2.getElement(i).setProperty(VariableNames.FINGERPRINT_NAME_NAME, TanimotoSimilarity.calculateFingerPrint(candidates2.getElement(i).getAtomContainer()));
+			}
+			names2[i] = candidates2.getElement(i).getIdentifier();
+		}
+		
+		String[][] maximumSimValues = new String[candidates1.getNumberElements()][2];
+		
+		for(int col = 0; col < candidates1.getNumberElements(); col++) {
+			double maxSimValue = 0.0;
+			for(int row = 0; row < candidates2.getNumberElements(); row++) {
+				double currentSimValue = 
+						TanimotoSimilarity.calculateSimilarity(
+								(IBitFingerprint)candidates1.getElement(col).getProperty(VariableNames.FINGERPRINT_NAME_NAME), 
+								(IBitFingerprint)candidates2.getElement(row).getProperty(VariableNames.FINGERPRINT_NAME_NAME));
+				if(maxSimValue < currentSimValue) maxSimValue = currentSimValue;
+			}
+			maximumSimValues[col][0] = (String)names.get(candidates1.getElement(col).getProperty("Identifier"));
+			maximumSimValues[col][1] = String.valueOf(maxSimValue);
+		}
+		
+		return maximumSimValues;
+	}
 
+	public static void main(String[] args) {
 		de.ipbhalle.metfraglib.settings.MetFragGlobalSettings settings = new de.ipbhalle.metfraglib.settings.MetFragGlobalSettings();
 		//set peaklist path and candidate list path
-		settings.set(VariableNames.PEAK_LIST_PATH_NAME, peakListFilePath);
+		String training = "/home/cruttkie/Dokumente/PhD/MetFrag/substructure_training/ufz_train_eawag_test/ids_training.txt";
+		String testing = "/home/cruttkie/Dokumente/PhD/MetFrag/substructure_training/ufz_train_eawag_test/ids_testing.txt";
+		
+		java.util.Vector<String> ids_training_pos = new java.util.Vector<String>();
+		java.util.Vector<String> ids_training_neg = new java.util.Vector<String>();
+		java.util.Vector<String> ids_testing_pos = new java.util.Vector<String>();
+		java.util.Vector<String> ids_testing_neg = new java.util.Vector<String>();
+		
+		java.util.Hashtable<String, String> names_pos = new java.util.Hashtable<String, String>();
+		java.util.Hashtable<String, String> names_neg = new java.util.Hashtable<String, String>();
+		
+		try {
+			java.io.BufferedReader breader = new java.io.BufferedReader(new java.io.FileReader(new java.io.File(training)));
+			String line = "";
+			while((line = breader.readLine()) != null) {
+				String[] tmp = line.split("\\s+");
+				if(tmp[0].matches(".*01\\.txt.*")) ids_training_pos.add(tmp[1].trim());
+				else {
+					ids_training_neg.add(tmp[1].trim());
+				}
+			}
+			breader.close();
+			breader = new java.io.BufferedReader(new java.io.FileReader(new java.io.File(testing)));
+			line = "";
+			while((line = breader.readLine()) != null) {
+				String[] tmp = line.split("\\s+");
+				if(tmp[0].matches(".*01\\.txt.*")) {
+					ids_testing_pos.add(tmp[1].trim());
+					names_pos.put(tmp[1], tmp[0]);
+				}
+				else {
+					ids_testing_neg.add(tmp[1].trim());
+					names_neg.put(tmp[1], tmp[0]);
+				}
+			}
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		String ids_training_pos_string = ids_training_pos.get(0);
+		String ids_training_neg_string = ids_training_neg.get(0);
+		
+		for(int i = 1; i < ids_training_pos.size(); i++) ids_training_pos_string += "," + ids_training_pos.get(i);
+		for(int i = 1; i < ids_training_neg.size(); i++) ids_training_neg_string += "," + ids_training_neg.get(i);
+		
+		String ids_testing_pos_string = ids_testing_pos.get(0);
+		String ids_testing_neg_string = ids_testing_neg.get(0);
+		
+		for(int i = 1; i < ids_testing_pos.size(); i++) ids_testing_pos_string += "," + ids_testing_pos.get(i);
+		for(int i = 1; i < ids_testing_neg.size(); i++) ids_testing_neg_string += "," + ids_testing_neg.get(i);
+		
+		
+		
+		settings.set(VariableNames.PEAK_LIST_PATH_NAME, "/tmp/spec.txt");
 		//set needed parameters
 		settings.set(VariableNames.DATABASE_RELATIVE_MASS_DEVIATION_NAME, 5.0);
 		settings.set(VariableNames.RELATIVE_MASS_DEVIATION_NAME, 5.0);
 		settings.set(VariableNames.ABSOLUTE_MASS_DEVIATION_NAME, 0.001);
 		settings.set(VariableNames.PRECURSOR_NEUTRAL_MASS_NAME, 253.966126);
 		settings.set(VariableNames.METFRAG_DATABASE_TYPE_NAME, "PubChem");
-		settings.set(VariableNames.PRECURSOR_DATABASE_IDS_NAME, new String[] {"50465", "57010914", "56974741", "88419651", "44290588"});
-		de.ipbhalle.metfraglib.process.CombinedMetFragProcess metfragProcess = new de.ipbhalle.metfraglib.process.CombinedMetFragProcess(settings);
+		
+		CandidateList ids_training_pos_candidates = null;
+		CandidateList ids_training_neg_candidates = null;
+		CandidateList ids_testing_pos_candidates = null;
+		CandidateList ids_testing_neg_candidates = null;
 		
 		try {
+			// ids_training_pos_candidates
+			settings.set(VariableNames.PRECURSOR_DATABASE_IDS_NAME, ids_training_pos_string.split(","));
+			de.ipbhalle.metfraglib.process.CombinedMetFragProcess metfragProcess = new de.ipbhalle.metfraglib.process.CombinedMetFragProcess(settings);
 			metfragProcess.retrieveCompounds();
+			ids_training_pos_candidates = metfragProcess.getCandidateList();
+
+			// ids_training_neg_candidates
+			settings.set(VariableNames.PRECURSOR_DATABASE_IDS_NAME, ids_training_neg_string.split(","));
+			metfragProcess = new de.ipbhalle.metfraglib.process.CombinedMetFragProcess(settings);
+			metfragProcess.retrieveCompounds();
+			ids_training_neg_candidates = metfragProcess.getCandidateList();
+			
+			// ids_testing_pos_candidates
+			settings.set(VariableNames.PRECURSOR_DATABASE_IDS_NAME, ids_testing_pos_string.split(","));
+			metfragProcess = new de.ipbhalle.metfraglib.process.CombinedMetFragProcess(settings);
+			metfragProcess.retrieveCompounds();
+			ids_testing_pos_candidates = metfragProcess.getCandidateList();
+			
+
+			// ids_testing_neg_candidates
+			settings.set(VariableNames.PRECURSOR_DATABASE_IDS_NAME, ids_testing_neg_string.split(","));
+			metfragProcess = new de.ipbhalle.metfraglib.process.CombinedMetFragProcess(settings);
+			metfragProcess.retrieveCompounds();
+			ids_testing_neg_candidates = metfragProcess.getCandidateList();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		CandidateList completeCanddiateList = metfragProcess.getCandidateList();
-		CandidateList candidiateList = new CandidateList();
-		
-		
-		for(int i = 0; i < completeCanddiateList.getNumberElements(); i++)
-			candidiateList.addElement(completeCanddiateList.getElement(i));
-		
-		System.out.println("generating cluster");
+
 		try {
-			ClusterWrapper clusterWrapper = TanimotoSimilarity.generateCluster(candidiateList);
-			ClusterWrapper[] cw = clusterWrapper.getChildren();
-			System.out.println(cw.length + " children");
-			
-			java.util.Stack<ClusterWrapper> clusterStack = new java.util.Stack<ClusterWrapper>();
-			java.util.Stack<String> tabStack = new java.util.Stack<String>();
-			clusterStack.push(clusterWrapper);
-			tabStack.push("");
-			
-			while(!clusterStack.isEmpty()) {
-				ClusterWrapper current = clusterStack.pop();
-				String currenTab = tabStack.pop();
-				ClusterWrapper[] children = current.getChildren();
-				for(ClusterWrapper child : children) {
-					clusterStack.push(child);
-					tabStack.push(currenTab + " ");
-				}
-				System.out.println(currenTab + " " + current.getName());
+			String[][] maxSimPos = TanimotoSimilarity.getMaximumSimilarities(ids_testing_pos_candidates, ids_training_pos_candidates, names_pos);
+			String[][] maxSimNeg = TanimotoSimilarity.getMaximumSimilarities(ids_testing_neg_candidates, ids_training_neg_candidates, names_neg);
+			System.out.println(maxSimPos.length + " " + maxSimNeg.length);
+			java.io.BufferedWriter bwriter = new java.io.BufferedWriter(new java.io.FileWriter(new java.io.File("/home/cruttkie/Dokumente/PhD/MetFrag/substructure_training/ufz_train_eawag_test/maximum_similarities_pos.txt")));
+			for(int i = 0; i < maxSimPos.length; i++) {
+				bwriter.write(maxSimPos[i][0] + " " + maxSimPos[i][1]);
+				bwriter.newLine();
 			}
-			
-			
+			bwriter.close();
+			bwriter = new java.io.BufferedWriter(new java.io.FileWriter(new java.io.File("/home/cruttkie/Dokumente/PhD/MetFrag/substructure_training/ufz_train_eawag_test/maximum_similarities_neg.txt")));
+			for(int i = 0; i < maxSimNeg.length; i++) {
+				bwriter.write(maxSimNeg[i][0] + " " + maxSimNeg[i][1]);
+				bwriter.newLine();
+			}
+			bwriter.close();
 		} catch (Exception e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
