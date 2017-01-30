@@ -100,7 +100,6 @@ public class SimulateSpectrumHDX {
                         }
                         // predict based on deuteriums
                         else if(method == 4) {
-                            byte adductType = ((DefaultFragmentToPeakMatch)matchList.getElement(i)).getBestMatchedFragmentAdductTypeIndex();
                             spectrumHDX[i][0] = peak.getMass() - (numberDeuteriums) * Constants.HYDROGEN_MASS + (numberDeuteriums) * Constants.getMonoisotopicMassOfAtom("D");
                             if(numberDeuteriums != 0) spectrumHDX[i][0] += Constants.getMonoisotopicMassOfAtom("D") - Constants.HYDROGEN_MASS;
                         }
