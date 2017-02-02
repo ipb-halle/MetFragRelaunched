@@ -1,8 +1,11 @@
 package de.ipbhalle.metfraglib.tools;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Vector;
 
 import de.ipbhalle.metfraglib.collection.SpectralPeakListCollection;
@@ -21,14 +24,16 @@ public class MatchSpectralLibrary {
 	
 	/**
 	 * @param args
+	 * @throws IOException 
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		String querySpectrumFile = args[0];
 		String spectralDatabaseFile = args[1];
 		String charge = args[2].toLowerCase();
 		Double mzabs = Double.parseDouble(args[3]);
 		Double mzppm = Double.parseDouble(args[4]);
 		Double threshold = Double.parseDouble(args[5]);
+		String resultFile = args[6];
 		
 		MetFragGlobalSettings settings = new MetFragGlobalSettings();
 		settings.set(VariableNames.IS_POSITIVE_ION_MODE_NAME, charge.startsWith("neg") ? false : true);
@@ -54,15 +59,26 @@ public class MatchSpectralLibrary {
 			System.exit(2);
 		}
 		
+		Vector<String> data = new Vector<String>();
+		
 		for(int i = 0; i < querySpectra.size(); i++) {
+			System.out.println((i + 1) + "/" + querySpectra.size());
 			if(querySpectra.get(i).getNumberElements() <= 4) continue;
 			for(int j = 0; j < spectralPeakLists.getSize(); j++) {
 				double sim = spectralPeakLists.getPeakList(j).cosineSimilarity((SortedTandemMassPeakList)querySpectra.get(i), mzppm, mzabs);
 				if(sim >= threshold) {
-					System.out.println(sim + " " + querySpectraNames.get(i) + " " + spectralPeakLists.getPeakList(j).getInchikey1());
+					data.add(sim + " " + querySpectraNames.get(i) + " " + spectralPeakLists.getPeakList(j).getInchikey1() + " \"" + spectralPeakLists.getPeakList(j).getSampleName().replaceFirst("Name:\\s+", "") + "\" " + spectralPeakLists.getPeakList(j).getInchi());
 				}
 			}
 		}
+		BufferedWriter bwriter = new BufferedWriter(new FileWriter(new File(resultFile)));
+		bwriter.write("Similarity Query InChIKey1 SampleName InChI");
+		bwriter.newLine();
+		for(int i = 0; i < data.size(); i++) {
+			bwriter.write(data.get(i));
+			bwriter.newLine();
+		}
+		bwriter.close();
 	}
 
 	public static void readQuerySpectra(String querySpectrumFile) throws Exception {

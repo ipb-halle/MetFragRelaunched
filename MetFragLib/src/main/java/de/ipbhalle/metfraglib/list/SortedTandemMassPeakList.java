@@ -84,19 +84,47 @@ public class SortedTandemMassPeakList extends DefaultPeakList {
 		BitArray foundPeaks = new BitArray(this.getNumberElements());
 		for(int i = 0; i < peakList.getNumberElements(); i++) {
 			double mass = peakList.getElement(i).getMass();
-			double intensity = peakList.getElement(i).getRelativeIntensity();
+			double intensity1 = peakList.getElement(i).getRelativeIntensity();
+			asquare += intensity1 * intensity1;
 			int index = this.getIndexOfPeakByMass(mass, mzppm, mzabs);
-			asquare += intensity * intensity;
 			if(index != -1) {
+				double intensity2 = this.getElement(index).getRelativeIntensity();
 				foundPeaks.set(index);
-				numerator += intensity * this.getElement(index).getRelativeIntensity();
-				bsquare += this.getElement(index).getRelativeIntensity() * this.getElement(index).getRelativeIntensity();
+				numerator += intensity1 * intensity2;
 			}
 		}
-		for(int i = 0; i < foundPeaks.getSize(); i++) {
-			if(!foundPeaks.get(i)) {
-				bsquare += this.getElement(i).getRelativeIntensity() * this.getElement(i).getRelativeIntensity();
+		for(int i = 0; i < this.getNumberElements(); i++) {
+			double intensity2 = this.getElement(i).getRelativeIntensity();
+			bsquare += intensity2 * intensity2;
+		}
+		if(asquare == 0.0 || bsquare == 0.0) return 0.0;
+		return MathTools.round(numerator / Math.sqrt(asquare * bsquare), 4.0);
+	}
+
+	public double cosineSimilarityLog(SortedTandemMassPeakList peakList, double mzppm, double mzabs) {
+		//http://www.sciencedirect.com/science/article/pii/S1044030501003270
+		double numerator = 0.0;
+		double asquare = 0.0;
+		double bsquare = 0.0;
+		BitArray foundPeaks = new BitArray(this.getNumberElements());
+		for(int i = 0; i < peakList.getNumberElements(); i++) {
+			double mass = peakList.getElement(i).getMass();
+			if(peakList.getElement(i).getRelativeIntensity() <= 1.0) continue;
+			double intensity1 = Math.log(peakList.getElement(i).getRelativeIntensity());
+			asquare += intensity1 * intensity1;
+			int index = this.getIndexOfPeakByMass(mass, mzppm, mzabs);
+			if(index != -1) {
+				if(this.getElement(index).getRelativeIntensity() <= 1.0) continue;
+				double intensity2 = Math.log(this.getElement(index).getRelativeIntensity());
+				foundPeaks.set(index);
+				numerator += intensity1 * intensity2;
 			}
+		}
+		for(int i = 0; i < this.getNumberElements(); i++) {
+			double intensity2 = this.getElement(i).getRelativeIntensity();
+			if(intensity2 <= 1.0) continue;
+			intensity2 = Math.log(intensity2);
+			bsquare += intensity2 * intensity2;
 		}
 		if(asquare == 0.0 || bsquare == 0.0) return 0.0;
 		return MathTools.round(numerator / Math.sqrt(asquare * bsquare), 4.0);

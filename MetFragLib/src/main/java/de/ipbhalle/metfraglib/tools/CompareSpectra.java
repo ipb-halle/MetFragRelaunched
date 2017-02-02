@@ -31,11 +31,14 @@ public class CompareSpectra {
 		double mzabs = Double.parseDouble(args[2]);
 		double mzppm = Double.parseDouble(args[3]);
 
+		double maximumMass = Integer.MAX_VALUE; 
+		if(args.length > 4) maximumMass = Double.parseDouble(args[4]);
+		
 		DefaultPeakList peakList1 = null;
 		DefaultPeakList peakList2 = null;
 		try {
-			peakList1 = StringTandemMassPeakListReader.readSingle(getPeakString(spectrumFile1), 1000);
-			peakList2 = StringTandemMassPeakListReader.readSingle(getPeakString(spectrumFile2), 1000);
+			peakList1 = StringTandemMassPeakListReader.readSingle(getPeakString(spectrumFile1), 1000, 1.0, maximumMass);
+			peakList2 = StringTandemMassPeakListReader.readSingle(getPeakString(spectrumFile2), 1000, 1.0, maximumMass);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
