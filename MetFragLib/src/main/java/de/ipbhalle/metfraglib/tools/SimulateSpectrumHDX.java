@@ -113,6 +113,7 @@ public class SimulateSpectrumHDX {
 				spectrumHDX[i][0] = peak.getMass() - (numberDeuteriums) * Constants.HYDROGEN_MASS
 						+ (numberDeuteriums) * Constants.getMonoisotopicMassOfAtom("D");
 				spectrumHDX[i][0] += Constants.getMonoisotopicMassOfAtom("D") - Constants.HYDROGEN_MASS;
+				System.out.println(peak.getMass() + " " + spectrumHDX[i][0]);
 			}
 			// [M]+
 			else if (method == 2) {
