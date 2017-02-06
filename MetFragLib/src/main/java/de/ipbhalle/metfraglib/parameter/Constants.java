@@ -20,6 +20,7 @@ public class Constants {
 	public static final Vector<Double> 		MONOISOTOPIC_MASSES 		= 	new Vector<Double>();
 	public static final Vector<String> 		ELEMENTS 					= 	new Vector<String>();
 	public static final Vector<String> 		ADDUCT_NAMES				= 	new Vector<String>();
+	public static final Vector<String> 		ADDUCT_TYPES					= 	new Vector<String>();
 	public static final Vector<Double> 		ADDUCT_MASSES				= 	new Vector<Double>();
 	public static final Vector<Integer> 		ADDUCT_NOMINAL_MASSES		= 	new Vector<Integer>();
 	public static final Vector<Boolean> 		ADDUCT_CHARGES				= 	new Vector<Boolean>();
@@ -118,30 +119,29 @@ public class Constants {
 		 * - [M]		-> 		+/- zero
 		 * - [M+H]+		->		+ proton mass
 		 */
-		ADDUCT_NAMES.add("");		ADDUCT_MASSES.add(0.0);								ADDUCT_NOMINAL_MASSES.add(0);	ADDUCT_CHARGES.add(true);
-		ADDUCT_NAMES.add("-H");		ADDUCT_MASSES.add(-1.0 * Constants.HYDROGEN_MASS);	ADDUCT_NOMINAL_MASSES.add(-1);	ADDUCT_CHARGES.add(false);
-		ADDUCT_NAMES.add("+H");		ADDUCT_MASSES.add(Constants.HYDROGEN_MASS);			ADDUCT_NOMINAL_MASSES.add(1);	ADDUCT_CHARGES.add(true);
-		ADDUCT_NAMES.add("-D");		ADDUCT_MASSES.add(-1.0 * MONOISOTOPIC_MASSES.get(ELEMENTS.indexOf("D")));			ADDUCT_NOMINAL_MASSES.add(-2);	ADDUCT_CHARGES.add(false);
-		ADDUCT_NAMES.add("+D");		ADDUCT_MASSES.add(MONOISOTOPIC_MASSES.get(ELEMENTS.indexOf("D")));					ADDUCT_NOMINAL_MASSES.add(2);	ADDUCT_CHARGES.add(true);
+		ADDUCT_TYPES.add("[M]");		ADDUCT_NAMES.add("");		ADDUCT_MASSES.add(0.0);								ADDUCT_NOMINAL_MASSES.add(0);	ADDUCT_CHARGES.add(true);
+		ADDUCT_TYPES.add("[M-H]-");		ADDUCT_NAMES.add("-H");		ADDUCT_MASSES.add(-1.0 * Constants.HYDROGEN_MASS);	ADDUCT_NOMINAL_MASSES.add(-1);	ADDUCT_CHARGES.add(false);
+		ADDUCT_TYPES.add("[M+H]+");		ADDUCT_NAMES.add("+H");		ADDUCT_MASSES.add(Constants.HYDROGEN_MASS);			ADDUCT_NOMINAL_MASSES.add(1);	ADDUCT_CHARGES.add(true);
+		ADDUCT_TYPES.add("[M-D]-");		ADDUCT_NAMES.add("-D");		ADDUCT_MASSES.add(-1.0 * MONOISOTOPIC_MASSES.get(ELEMENTS.indexOf("D")));			ADDUCT_NOMINAL_MASSES.add(-2);	ADDUCT_CHARGES.add(false);
+		ADDUCT_TYPES.add("[M+D]+");		ADDUCT_NAMES.add("+D");		ADDUCT_MASSES.add(MONOISOTOPIC_MASSES.get(ELEMENTS.indexOf("D")));					ADDUCT_NOMINAL_MASSES.add(2);	ADDUCT_CHARGES.add(true);
 		
-		/*
-		 * ToDo
-		 */
 		//positive
-		ADDUCT_NAMES.add("+NH4");		ADDUCT_MASSES.add(Constants.HYDROGEN_MASS * 4.0 + MONOISOTOPIC_MASSES.get(ELEMENTS.indexOf("N")));	ADDUCT_NOMINAL_MASSES.add(18);	ADDUCT_CHARGES.add(true);
-		ADDUCT_NAMES.add("+Na");		ADDUCT_MASSES.add(MONOISOTOPIC_MASSES.get(ELEMENTS.indexOf("Na")));									ADDUCT_NOMINAL_MASSES.add(23);	ADDUCT_CHARGES.add(true);
-		ADDUCT_NAMES.add("+K");			ADDUCT_MASSES.add(MONOISOTOPIC_MASSES.get(ELEMENTS.indexOf("K")));									ADDUCT_NOMINAL_MASSES.add(39);	ADDUCT_CHARGES.add(true);
-		ADDUCT_NAMES.add("+CH3OH+H");	ADDUCT_MASSES.add(33.033489);																		ADDUCT_NOMINAL_MASSES.add(33);	ADDUCT_CHARGES.add(true);
+		ADDUCT_TYPES.add("[M+NH4]+");		ADDUCT_NAMES.add("+NH4");		ADDUCT_MASSES.add(Constants.HYDROGEN_MASS * 4.0 + MONOISOTOPIC_MASSES.get(ELEMENTS.indexOf("N")));	ADDUCT_NOMINAL_MASSES.add(18);	ADDUCT_CHARGES.add(true);
+		ADDUCT_TYPES.add("[M+Na]+");		ADDUCT_NAMES.add("+Na");		ADDUCT_MASSES.add(MONOISOTOPIC_MASSES.get(ELEMENTS.indexOf("Na")));									ADDUCT_NOMINAL_MASSES.add(23);	ADDUCT_CHARGES.add(true);
+		ADDUCT_TYPES.add("[M+K]+");			ADDUCT_NAMES.add("+K");			ADDUCT_MASSES.add(MONOISOTOPIC_MASSES.get(ELEMENTS.indexOf("K")));									ADDUCT_NOMINAL_MASSES.add(39);	ADDUCT_CHARGES.add(true);
+		ADDUCT_TYPES.add("[M+CH3OH+H]+");	ADDUCT_NAMES.add("+CH3OH+H");	ADDUCT_MASSES.add(33.033489);																		ADDUCT_NOMINAL_MASSES.add(33);	ADDUCT_CHARGES.add(true);
 		
 		//negative
-		ADDUCT_NAMES.add("+Cl");		ADDUCT_MASSES.add(MONOISOTOPIC_MASSES.get(ELEMENTS.indexOf("Cl")));																									ADDUCT_NOMINAL_MASSES.add(35);	ADDUCT_CHARGES.add(false);
-		ADDUCT_NAMES.add("+HCOO");		ADDUCT_MASSES.add(Constants.HYDROGEN_MASS + MONOISOTOPIC_MASSES.get(ELEMENTS.indexOf("C")) + MONOISOTOPIC_MASSES.get(ELEMENTS.indexOf("O")) * 2.0);					ADDUCT_NOMINAL_MASSES.add(45);	ADDUCT_CHARGES.add(false);
-		ADDUCT_NAMES.add("+CH3COO");	ADDUCT_MASSES.add(Constants.HYDROGEN_MASS * 3.0 + MONOISOTOPIC_MASSES.get(ELEMENTS.indexOf("C")) * 2.0 + MONOISOTOPIC_MASSES.get(ELEMENTS.indexOf("O")) * 2.0);		ADDUCT_NOMINAL_MASSES.add(59);	ADDUCT_CHARGES.add(false);
+		ADDUCT_TYPES.add("[M+Cl]-");		ADDUCT_NAMES.add("+Cl");		ADDUCT_MASSES.add(MONOISOTOPIC_MASSES.get(ELEMENTS.indexOf("Cl")));																									ADDUCT_NOMINAL_MASSES.add(35);	ADDUCT_CHARGES.add(false);
+		ADDUCT_TYPES.add("[M+HCOO]-");		ADDUCT_NAMES.add("+HCOO");		ADDUCT_MASSES.add(Constants.HYDROGEN_MASS + MONOISOTOPIC_MASSES.get(ELEMENTS.indexOf("C")) + MONOISOTOPIC_MASSES.get(ELEMENTS.indexOf("O")) * 2.0);					ADDUCT_NOMINAL_MASSES.add(45);	ADDUCT_CHARGES.add(false);
+		ADDUCT_TYPES.add("[M+CH3COO]-");	ADDUCT_NAMES.add("+CH3COO");	ADDUCT_MASSES.add(Constants.HYDROGEN_MASS * 3.0 + MONOISOTOPIC_MASSES.get(ELEMENTS.indexOf("C")) * 2.0 + MONOISOTOPIC_MASSES.get(ELEMENTS.indexOf("O")) * 2.0);		ADDUCT_NOMINAL_MASSES.add(59);	ADDUCT_CHARGES.add(false);
 		
-		ADDUCT_NAMES.add("+ACN+H");		ADDUCT_MASSES.add(42.033823);		ADDUCT_NOMINAL_MASSES.add(42);	ADDUCT_CHARGES.add(true);
-		ADDUCT_NAMES.add("+ACN+Na");	ADDUCT_MASSES.add(64.015765);		ADDUCT_NOMINAL_MASSES.add(64);	ADDUCT_CHARGES.add(true);
-		ADDUCT_NAMES.add("+2ACN+H");	ADDUCT_MASSES.add(83.060370);		ADDUCT_NOMINAL_MASSES.add(83);	ADDUCT_CHARGES.add(true);
+		ADDUCT_TYPES.add("[M+ACN+H]+");		ADDUCT_NAMES.add("+ACN+H");		ADDUCT_MASSES.add(42.033823);		ADDUCT_NOMINAL_MASSES.add(42);	ADDUCT_CHARGES.add(true);
+		ADDUCT_TYPES.add("[M+ACN+Na]+");	ADDUCT_NAMES.add("+ACN+Na");	ADDUCT_MASSES.add(64.015765);		ADDUCT_NOMINAL_MASSES.add(64);	ADDUCT_CHARGES.add(true);
+		ADDUCT_TYPES.add("[M+2ACN+H]+");	ADDUCT_NAMES.add("+2ACN+H");	ADDUCT_MASSES.add(83.060370);		ADDUCT_NOMINAL_MASSES.add(83);	ADDUCT_CHARGES.add(true);
 		
+		ADDUCT_TYPES.add("[M]+");		ADDUCT_NAMES.add("");		ADDUCT_MASSES.add(0.0);								ADDUCT_NOMINAL_MASSES.add(0);	ADDUCT_CHARGES.add(true);
+		ADDUCT_TYPES.add("[M]-");		ADDUCT_NAMES.add("");		ADDUCT_MASSES.add(0.0);								ADDUCT_NOMINAL_MASSES.add(0);	ADDUCT_CHARGES.add(false);
 		
 		
 		/*
@@ -265,18 +265,30 @@ public class Constants {
 		return MONOISOTOPIC_MASSES.get(atomIndex);
 	}
 
-	public static String getIonisationTypeNameByNominalMassDifference(int nominalMassDifference) {
+	public static String getIonisationTypeByNominalMassDifference(int nominalMassDifference) {
 		return ADDUCT_NAMES.get(ADDUCT_NOMINAL_MASSES.indexOf(nominalMassDifference));
 	}
 	
-	public static boolean getIonisationChargeNameByNominalMassDifference(int nominalMassDifference) {
+	public static boolean getIonisationChargeByNominalMassDifference(int nominalMassDifference) {
 		return ADDUCT_CHARGES.get(ADDUCT_NOMINAL_MASSES.indexOf(nominalMassDifference));
 	}
 
 	public static double getIonisationMassByNominalMassDifference(int nominalMassDifference) {
 		return ADDUCT_MASSES.get(ADDUCT_NOMINAL_MASSES.indexOf(nominalMassDifference));
 	}
+
+	public static boolean checkIonisationType(String ionModeString) {
+		return ADDUCT_TYPES.contains(ionModeString);
+	}
 	
+	public static int getIonisationNominalMassByType(String ionModeString) {
+		return ADDUCT_NOMINAL_MASSES.get(ADDUCT_TYPES.indexOf(ionModeString));
+	}
+
+	public static boolean getIonisationChargeByType(String ionModeString) {
+		return ADDUCT_CHARGES.get(ADDUCT_TYPES.indexOf(ionModeString));
+	}
+
 	public static final Vector<Method> METHODS = new Vector<Method>();
 	public static final Vector<String> METHOD_NAMES = new Vector<String>();
 

@@ -11,6 +11,7 @@ public class VariableNames {
 	public static final String RELATIVE_MASS_DEVIATION_NAME 						= 	"FragmentPeakMatchRelativeMassDeviation";
 	public static final String MAXIMUM_TREE_DEPTH_NAME 							= 	"MaximumTreeDepth";
 	public static final String PRECURSOR_ION_MODE_NAME 							= 	"PrecursorIonMode";
+	public static final String PRECURSOR_ION_MODE_STRING_NAME 					= 	"PrecursorIonType";
 	public static final String IS_POSITIVE_ION_MODE_NAME							= 	"IsPositiveIonMode";
 	public static final String PRECURSOR_NEUTRAL_MASS_NAME 						= 	"NeutralPrecursorMass";
 	public static final String PRECURSOR_ION_MASS_NAME 							= 	"IonizedPrecursorMass";

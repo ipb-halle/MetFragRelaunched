@@ -226,10 +226,23 @@ public class SettingsChecker {
 		boolean checkPositive = true;
 		
 		Object PrecursorIonMode = settings.get(VariableNames.PRECURSOR_ION_MODE_NAME);
+		Object PrecursorIonModeString = settings.get(VariableNames.PRECURSOR_ION_MODE_STRING_NAME);
 		Object IsPositiveIonMode = settings.get(VariableNames.IS_POSITIVE_ION_MODE_NAME);
 		Object FragmentPeakMatchAbsoluteMassDeviation = settings.get(VariableNames.ABSOLUTE_MASS_DEVIATION_NAME);
 		Object FragmentPeakMatchRelativeMassDeviation = settings.get(VariableNames.RELATIVE_MASS_DEVIATION_NAME);
 		
+		if(PrecursorIonModeString != null) {
+			if(!Constants.checkIonisationType((String)PrecursorIonModeString)) {
+				this.logger.error(PrecursorIonModeString + " not known!");
+				checkPositive = false;
+			}
+			else {
+				PrecursorIonMode = Constants.getIonisationNominalMassByType((String)PrecursorIonModeString);
+				settings.set(VariableNames.PRECURSOR_ION_MODE_NAME, PrecursorIonMode);
+				IsPositiveIonMode = Constants.getIonisationChargeByType((String)PrecursorIonModeString);
+				settings.set(VariableNames.IS_POSITIVE_ION_MODE_NAME, IsPositiveIonMode);
+			}
+		}
 		if(PrecursorIonMode == null) {
 			this.logger.error(VariableNames.PRECURSOR_ION_MODE_NAME + " is not defined!");
 			checkPositive = false;
@@ -244,6 +257,7 @@ public class SettingsChecker {
 				PrecursorIonModeValue = (Integer)PrecursorIonMode;
 			}
 			catch(Exception e) {
+				e.printStackTrace();
 				this.logger.error("No valid value for " + VariableNames.PRECURSOR_ION_MODE_NAME + ": " + PrecursorIonModeValue + "!");
 				checkPositive = false;
 			}
