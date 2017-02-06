@@ -20,8 +20,10 @@ public class ParameterDataTypes {
 		parameterDatatypes.put(	VariableNames.IS_POSITIVE_ION_MODE_NAME, 								"Boolean"	);
 		parameterDatatypes.put(	VariableNames.MAXIMUM_TREE_DEPTH_NAME, 									"Byte"		);
 		parameterDatatypes.put(	VariableNames.PEAK_LIST_PATH_NAME, 										"String"	);
+		parameterDatatypes.put(	VariableNames.PEAK_LIST_STRING_NAME, 									"String"	);
 		parameterDatatypes.put(	VariableNames.PRECURSOR_DATABASE_IDS_NAME, 								"String[]"	);
 		parameterDatatypes.put(	VariableNames.PRECURSOR_ION_MODE_NAME, 									"Integer"	);
+		parameterDatatypes.put(	VariableNames.PRECURSOR_ION_MODE_STRING_NAME, 							"String"	);
 		parameterDatatypes.put(	VariableNames.PRECURSOR_MOLECULAR_FORMULA_NAME, 						"String"	);
 		parameterDatatypes.put(	VariableNames.PRECURSOR_NEUTRAL_MASS_NAME, 								"Double"	);
 		parameterDatatypes.put(	VariableNames.PRECURSOR_ION_MASS_NAME, 									"Double"	);

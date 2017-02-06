@@ -107,7 +107,13 @@ public class SimulateSpectrumHDX {
 			for (int k = 0; k < setAtoms.length; k++) {
 				numberDeuteriums += preHDX.getNumberDeuteriumsConnectedToAtomIndex(0, setAtoms[k]);
 			}
-			spectrumHDX[i][1] = peak.getAbsoluteIntensity();
+			if(method != 3) {
+				spectrumHDX[i][1] = peak.getAbsoluteIntensity();
+			}
+			else {
+				spectrumHDX[i * 2][0] = peak.getAbsoluteIntensity();
+				spectrumHDX[(i * 2) + 1][0] = peak.getAbsoluteIntensity();
+			}
 			// [M+D]+
 			if (method == 1) {
 				spectrumHDX[i][0] = peak.getMass() - (numberDeuteriums) * Constants.HYDROGEN_MASS

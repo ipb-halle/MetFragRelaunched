@@ -236,19 +236,16 @@ public class CommandLineTool {
 				}
 				// replace the placeholder | by =
 				current_argument[1] = current_argument[1].replaceAll("\\|", "=");
+				//check PeakListString
+				if(current_argument[0].equals(VariableNames.PEAK_LIST_STRING_NAME)) {
+					current_argument[1] = current_argument[1].replaceAll(";", "\\\n").replaceAll("_", " ");
+				}
 				arguments.put(current_argument[0], current_argument[1]);
 			}
 		} catch(Exception e) {
 			logger.error("Error: Check commandline parameters!");
 			return null;
 		}
-		/*
-		java.util.Enumeration<String> keys = arguments.keys();
-		while(keys.hasMoreElements()) {
-			String currentKey = keys.nextElement();
-			System.out.println(currentKey + " = " + arguments.get(currentKey));
-		}
-		*/
 		return arguments;
 	}
 	
