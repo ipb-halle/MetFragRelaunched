@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 
+import de.ipbhalle.metfraglib.additionals.MathTools;
 import de.ipbhalle.metfraglib.exceptions.AtomTypeNotKnownFromInputListException;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.interfaces.IFragment;
@@ -111,8 +112,8 @@ public class SimulateSpectrumHDX {
 				spectrumHDX[i][1] = peak.getAbsoluteIntensity();
 			}
 			else {
-				spectrumHDX[i * 2][0] = peak.getAbsoluteIntensity();
-				spectrumHDX[(i * 2) + 1][0] = peak.getAbsoluteIntensity();
+				spectrumHDX[i * 2][1] = peak.getAbsoluteIntensity();
+				spectrumHDX[(i * 2) + 1][1] = peak.getAbsoluteIntensity();
 			}
 			// [M+D]+
 			if (method == 1) {
@@ -150,6 +151,13 @@ public class SimulateSpectrumHDX {
 						+ (numberDeuteriums) * Constants.getMonoisotopicMassOfAtom("D");
 				if (adductTypeIndex == 2)
 					spectrumHDX[i][0] += Constants.getMonoisotopicMassOfAtom("D") - Constants.HYDROGEN_MASS;
+			}
+			if(method != 3) {
+				spectrumHDX[i][0] = MathTools.round(spectrumHDX[i][0], 5);
+			}
+			else {
+				spectrumHDX[i * 2][0] = MathTools.round(spectrumHDX[i * 2][0], 5);
+				spectrumHDX[(i * 2) + 1][0] = MathTools.round(spectrumHDX[(i * 2) + 1][0], 5);
 			}
 		}
 		return spectrumHDX;
