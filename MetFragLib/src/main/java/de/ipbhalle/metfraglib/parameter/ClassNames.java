@@ -16,6 +16,7 @@ import de.ipbhalle.metfraglib.candidatefilter.PreProcessingCandidateUnconnectedS
 import de.ipbhalle.metfraglib.database.LocalCSVDatabase;
 import de.ipbhalle.metfraglib.database.LocalChEBIDatabase;
 import de.ipbhalle.metfraglib.database.LocalDerivatisedKeggDatabase;
+import de.ipbhalle.metfraglib.database.LocalExtendedMetChemDatabase;
 import de.ipbhalle.metfraglib.database.LocalExtendedPubChemDatabase;
 import de.ipbhalle.metfraglib.database.LocalInMemoryDatabase;
 import de.ipbhalle.metfraglib.database.LocalMetChemDatabase;
@@ -176,6 +177,7 @@ public class ClassNames {
 		databaseNameToClassName.put("LocalInMemoryDatabase", LocalInMemoryDatabase.class.getName());
 		databaseNameToClassName.put("LocalChEBI", LocalChEBIDatabase.class.getName());
 		databaseNameToClassName.put("MetChem", LocalMetChemDatabase.class.getName());
+		databaseNameToClassName.put("ExtendedMetChem", LocalExtendedMetChemDatabase.class.getName());
 		
 		/*
 		 * new implemented candidateListWriter have to be added here

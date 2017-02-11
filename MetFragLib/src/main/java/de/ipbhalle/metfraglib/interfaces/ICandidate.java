@@ -62,5 +62,9 @@ public interface ICandidate {
 	public ICandidate clone();
 
 	public String[] getPropertyNames();
+
+	public void setUseSmiles(boolean useSmiles);
+
+	public boolean isUseSmiles();
 	
 }

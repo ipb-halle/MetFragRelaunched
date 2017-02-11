@@ -45,6 +45,7 @@ public class OnlineForIdentDatabase extends AbstractDatabase {
 
 	//ToDo: check whether identifiers are valid and exist
 	public java.util.Vector<String> getCandidateIdentifiers(java.util.Vector<String> identifiers) {
+		logger.info("Fetching candidates from FOR-IDENT");
 		return identifiers;
 	}
 
