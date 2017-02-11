@@ -40,7 +40,7 @@ public class LocalMetChemDatabase extends LocalPostgresDatabase {
 		
 	}
 	
-	private void fillCandidateVectors(ResultSet rs) {
+	protected void fillCandidateVectors(ResultSet rs) {
 		this.tempCandidates = new CandidateList();
 		this.tempSubstanceIDs = new Vector<String>();
 		try {
@@ -82,27 +82,17 @@ public class LocalMetChemDatabase extends LocalPostgresDatabase {
 	}
 	
 	public Vector<String> getCandidateIdentifiers(double monoisotopicMass, double relativeMassDeviation) {
+		logger.info("Fetching candidates from MetChem");
 		int library_id = this.getLibraryIdentifier();
 		if(library_id == -1) return null;
 		
 		double error = MathTools.calculateAbsoluteDeviation(monoisotopicMass, relativeMassDeviation);
-		/*	
-		String query = "select s.substance_id as substance_id, s." + this.CID_COLUMN_NAME + " as " + this.CID_COLUMN_NAME + ", n." + this.COMPOUND_NAME_COLUMN_NAME 
-				+ " as " + this.COMPOUND_NAME_COLUMN_NAME + ", c." + this.SMILES_COLUMN_NAME + " as " + this.SMILES_COLUMN_NAME 
-				+ ", c." + this.INCHI_COLUMN_NAME + " as " + this.INCHI_COLUMN_NAME + ", c." 
-				+ this.MASS_COLUMN_NAME + " as " + this.MASS_COLUMN_NAME + " ," + " c." + this.FORMULA_COLUMN_NAME 
-				+ " as " + this.FORMULA_COLUMN_NAME + ", c." + this.INCHIKEY1_COLUMN_NAME + " as " + this.INCHIKEY1_COLUMN_NAME 
-				+ ", c." + this.INCHIKEY2_COLUMN_NAME + " as " + this.INCHIKEY2_COLUMN_NAME + " " +
-				"from compound c inner join substance s on s.compound_id = c.compound_id " +
-				"inner join name n on n.substance_id = s.substance_id " +
-				"where c.monoisotopic_mass between " + (monoisotopicMass - error) + " and " + (monoisotopicMass + error) + " " +
-				"and s.library_id='" + library_id + "';";
-		*/
+		
 		String query = "select n.name, s.substance_id, s." + this.CID_COLUMN_NAME + ", comp.compound_id , comp." + this.INCHI_COLUMN_NAME + ", comp." + this.MASS_COLUMN_NAME + ", comp." + this.FORMULA_COLUMN_NAME  + ", comp." + this.SMILES_COLUMN_NAME + ", comp." + this.INCHIKEY1_COLUMN_NAME + ", comp." + this.INCHIKEY2_COLUMN_NAME + " "
 				+ "from (select c.compound_id, c." + this.INCHI_COLUMN_NAME + ", c." + this.MASS_COLUMN_NAME + ", c." + this.FORMULA_COLUMN_NAME  + ", c." + this.SMILES_COLUMN_NAME + ", c." + this.INCHIKEY1_COLUMN_NAME + ", c." + this.INCHIKEY2_COLUMN_NAME  + " "
 				+ 	"from compound c where c." + this.MASS_COLUMN_NAME + " between '" + (monoisotopicMass - error) + "' and '" + (monoisotopicMass + error) + "') as comp "
 				+	"left join substance s on s.compound_id = comp.compound_id "
-				+	"left join name n on s.substance_id = n.substance_id where s.library_id='2';";
+				+	"left join name n on s.substance_id = n.substance_id where s.library_id='" + library_id + "';";
 		
 		ResultSet rs = this.submitQuery(query);
 		if(rs == null) return new Vector<String>();
@@ -111,27 +101,15 @@ public class LocalMetChemDatabase extends LocalPostgresDatabase {
 	}
 	
 	public Vector<String> getCandidateIdentifiers(String molecularFormula) {
+		logger.info("Fetching candidates from MetChem");
 		int library_id = this.getLibraryIdentifier();
 		if(library_id == -1) return null;
-		
-		/*
-		String query = "select s.substance_id as substance_id, s." + this.CID_COLUMN_NAME + " as " + this.CID_COLUMN_NAME + ", n." + this.COMPOUND_NAME_COLUMN_NAME 
-				+ " as " + this.COMPOUND_NAME_COLUMN_NAME + ", c." + this.SMILES_COLUMN_NAME + " as " + this.SMILES_COLUMN_NAME 
-				+ ", c." + this.INCHI_COLUMN_NAME + " as " + this.INCHI_COLUMN_NAME + ", c." 
-				+ this.MASS_COLUMN_NAME + " as " + this.MASS_COLUMN_NAME + " ," + " c." + this.FORMULA_COLUMN_NAME 
-				+ " as " + this.FORMULA_COLUMN_NAME + ", c." + this.INCHIKEY1_COLUMN_NAME + " as " + this.INCHIKEY1_COLUMN_NAME 
-				+ ", c." + this.INCHIKEY2_COLUMN_NAME + " as " + this.INCHIKEY2_COLUMN_NAME + " " +
-				"from compound c inner join substance s on s.compound_id = c.compound_id " +
-				"inner join name n on n.substance_id = s.substance_id " +
-				"where c.molecular_formula ='" + molecularFormula + "' " +
-				"and s.library_id='" + library_id + "';";
-		*/
 
 		String query = "select n.name, s.substance_id, s." + this.CID_COLUMN_NAME + ", comp.compound_id, comp." + this.INCHI_COLUMN_NAME + ", comp." + this.MASS_COLUMN_NAME + ", comp." + this.FORMULA_COLUMN_NAME  + ", comp." + this.SMILES_COLUMN_NAME + ", comp." + this.INCHIKEY1_COLUMN_NAME + ", comp." + this.INCHIKEY2_COLUMN_NAME + " "
                                 + "from (select c.compound_id, c." + this.INCHI_COLUMN_NAME + ", c." + this.MASS_COLUMN_NAME + ", c." + this.FORMULA_COLUMN_NAME  + ", c." + this.SMILES_COLUMN_NAME + ", c." + this.INCHIKEY1_COLUMN_NAME + ", c." + this.INCHIKEY2_COLUMN_NAME  + " "
                                 +       "from compound c where c." + this.FORMULA_COLUMN_NAME + " = '" + molecularFormula + "') as comp "
                                 +       "left join substance s on s.compound_id = comp.compound_id "
-                                +       "left join name n on s.substance_id = n.substance_id where s.library_id='2';";
+                                +       "left join name n on s.substance_id = n.substance_id where s.library_id='" + library_id + "';";
 
 		ResultSet rs = this.submitQuery(query);
 		if(rs == null) return new Vector<String>();
@@ -140,6 +118,7 @@ public class LocalMetChemDatabase extends LocalPostgresDatabase {
 	}
 
 	public Vector<String> getCandidateIdentifiers(Vector<String> identifiers) {
+		logger.info("Fetching candidates from MetChem");
 		if(identifiers.size() == 0) return new Vector<String>();
 		
 		int library_id = this.getLibraryIdentifier();
@@ -226,7 +205,8 @@ public class LocalMetChemDatabase extends LocalPostgresDatabase {
 	 * @return
 	 */
 	protected int getLibraryIdentifier() {
-		ResultSet resultSet = this.submitQuery("select library_id from library where library_name=\'" + this.library + "\';");
+		String query = "select library_id from library where library_name=\'" + this.library + "\';";
+		ResultSet resultSet = this.submitQuery(query);
 		int library_id = -1;
 		if(resultSet == null) return -1;
 		try {

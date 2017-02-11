@@ -175,7 +175,8 @@ public class Molecule implements Serializable {
 		if(databaseName == null) return false;
 		if(databaseName.equals("PubChem") || databaseName.equals("KEGG") 
 				|| databaseName.equals("ChemSpider") || databaseName.equals("MetaCyc")
-				|| databaseName.equals("LipidMaps")) return true;
+				|| databaseName.equals("LipidMaps") || databaseName.equals("LocalHMDB")
+				|| databaseName.equals("LocalChEBI")) return true;
 		return false;
 	}
 	
@@ -189,6 +190,8 @@ public class Molecule implements Serializable {
 		else if(databaseName.equals("ChemSpider")) return "http://www.chemspider.com/Chemical-Structure." + this.identifier + ".html";
 		else if(databaseName.equals("MetaCyc")) return "http://metacyc.org/META/NEW-IMAGE?type=COMPOUND&object=" + this.identifier;
 		else if(databaseName.equals("LipidMaps")) return "http://www.lipidmaps.org/data/LMSDRecord.php?LMID=" + this.identifier;
+		else if(databaseName.equals("LocalHMDB")) return "http://www.hmdb.ca/metabolites/" + this.identifier;
+		else if(databaseName.equals("LocalChEBI")) return "https://www.ebi.ac.uk/chebi/searchId.do?chebiId=" + this.identifier;
 		return this.identifier; 
 	}
 	

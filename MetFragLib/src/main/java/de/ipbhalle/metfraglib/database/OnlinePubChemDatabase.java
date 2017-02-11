@@ -75,6 +75,7 @@ public class OnlinePubChemDatabase extends AbstractDatabase {
 	 * @throws Exception 
 	 */
 	public java.util.Vector<String> getCandidateIdentifiers(double monoisotopicMass, double relativeMassDeviation) throws Exception  {
+		logger.info("Fetching candidates from PubChem");
 		double mzabs = MathTools.calculateAbsoluteDeviation(monoisotopicMass, relativeMassDeviation);
 		double minMass = monoisotopicMass - mzabs;
 		double maxMass = monoisotopicMass + mzabs;
@@ -107,6 +108,7 @@ public class OnlinePubChemDatabase extends AbstractDatabase {
 	 * query is performed via PUB REST API
 	 */
 	public java.util.Vector<String> getCandidateIdentifiers(String molecularFormula) throws Exception {
+		logger.info("Fetching candidates from PubChem");
 		this.formulaSearch = true;
 		String urlname = "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/formula/" + molecularFormula + "/TXT";
 		/*
@@ -177,6 +179,7 @@ public class OnlinePubChemDatabase extends AbstractDatabase {
 	 */
 	public java.util.Vector<String> getCandidateIdentifiers(String[] identifiers) throws Exception 
 	{
+		logger.info("Fetching candidates from PubChem");
 		Vector<String> cids = null;
 		cids = this.savingRetrievedHits(identifiers);
 		if(cids != null)
@@ -188,6 +191,7 @@ public class OnlinePubChemDatabase extends AbstractDatabase {
 	 * 
 	 */
 	public java.util.Vector<String> getCandidateIdentifiers(Vector<String> identifiers) throws Exception {
+		logger.info("Fetching candidates from PubChem");
 		Vector<String> cids = null;
 		cids = this.savingRetrievedHits(identifiers);
 		if(cids != null)
