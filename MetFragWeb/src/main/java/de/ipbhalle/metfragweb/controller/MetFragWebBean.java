@@ -444,7 +444,7 @@ public class MetFragWebBean {
 		try {
 			if(identifiers != null && identifiers.trim().length() != 0) {
 				identifiers = identifiers.trim();
-				if(identifiers.startsWith(",") || identifiers.matches(",,") || identifiers.endsWith(",") || !identifiers.replaceAll(",", "").matches("\\w*"))
+				if(identifiers.startsWith(",") || identifiers.matches(",,") || identifiers.endsWith(",") || !identifiers.replaceAll(",", "").replaceAll(":", "").matches("\\w*"))
 					throw new Exception();
 				else
 					this.errorMessages.removeKey("identifierError");
@@ -531,7 +531,7 @@ public class MetFragWebBean {
 			this.errorMessages.removeKey("inputNeutralMonoisotopicMassError");
 		if (this.beanSettingsContainer.getIdentifiers() != null && this.beanSettingsContainer.getIdentifiers().trim().length() != 0) {
 			identifierIsGiven = true;
-			if (this.beanSettingsContainer.getIdentifiers().startsWith(",") || this.beanSettingsContainer.getIdentifiers().endsWith(",") || !this.beanSettingsContainer.getIdentifiers().replaceAll(",", "").matches("[A-Z0-9]*")) {
+			if (this.beanSettingsContainer.getIdentifiers().startsWith(",") || this.beanSettingsContainer.getIdentifiers().endsWith(",") || !this.beanSettingsContainer.getIdentifiers().replaceAll(",", "").replaceAll(":", "").matches("[A-Z0-9]*")) {
 				checksFine = false;
 				this.errorMessages.setMessage("inputIdentifiersError", "Error: Invalid identifiers value. Example: 932,2730,2519");
 			} else

@@ -81,6 +81,7 @@ public class BeanSettingsContainer {
 	protected String candidateFilePath = "";
 	//availability of search properties
 	protected boolean isLocalDatabaseDefined = false;
+	protected boolean metChemDatabaseDefined = false;
 	protected boolean massSearchAvailable = false;
 	protected boolean formulaSearchAvailable = false;
 	protected boolean identifierSearchAvailable = false;
@@ -841,7 +842,9 @@ public class BeanSettingsContainer {
 		/*
 		 * init the new combinedMetFragProcess
 		 */
+		
 		System.out.println("retrieveCompounds");
+		
 		this.combinedMetFragProcess = new CombinedMetFragProcess(this.getMetFragSettings());
 		try {
 			this.setCompoundsRetrieved(this.combinedMetFragProcess.retrieveCompounds());
@@ -1156,15 +1159,48 @@ public class BeanSettingsContainer {
 	 */
 	private void prepareDatabaseSettings() throws ParameterNotKnownException {
 		String database = this.database;
-		if(database.equals("PubChem")) {
-			if(this.localPubChemDatabase) {
-				if(this.includeReferences) database = "LocalExtendedPubChem";
-				else database = "LocalPubChem";
+		String metchemLibrary = "";
+		if(!this.metChemDatabaseDefined) {
+			if(database.equals("PubChem")) {
+				if(this.localPubChemDatabase) {
+					if(this.includeReferences) database = "LocalExtendedPubChem";
+					else database = "LocalPubChem";
+				}
+				else if(this.includeReferences) database = "ExtendedPubChem";
 			}
-			else if(this.includeReferences) database = "ExtendedPubChem";
+			else if(database.equals("KEGG") && this.localKeggDatabase) database = "LocalKegg";
 		}
-		else if(database.equals("KEGG") && this.localKeggDatabase) database = "LocalKegg";
+		else { // if MetChem definition is found previously
+			if(database.equals("PubChem")) {
+				database = "MetChem";
+				if(this.includeReferences) database = "ExtendedMetChem";
+				metchemLibrary = "pubchem";
+			}
+			else if(database.equals("KEGG")) {
+				metchemLibrary = "kegg";
+				database = "MetChem";
+			}
+			else if(database.equals("LipidMaps")) {
+				metchemLibrary = "LipidMaps";
+				database = "MetChem";
+			}
+			else if(database.equals("LocalDerivatisedKegg")) {
+				metchemLibrary = "kegg_derivatised";
+				database = "MetChem";
+			}
+			else if(database.equals("LocalChEBI")) {
+				metchemLibrary = "chebi";
+				database = "MetChem";
+			}
+			else if(database.equals("LocalHMDB")) {
+				metchemLibrary = "hmdb";
+				database = "MetChem";
+			}
+			this.getMetFragSettings().set(VariableNames.LOCAL_METCHEM_DATABASE_LIBRARY_NAME, metchemLibrary);
+		}
 		this.getMetFragSettings().set(VariableNames.METFRAG_DATABASE_TYPE_NAME, database);
+		System.out.println("prepareDatabaseSettings " + this.getMetFragSettings().get(VariableNames.LOCAL_METCHEM_DATABASE_LIBRARY_NAME) + " " 
+				+ this.getMetFragSettings().get(VariableNames.METFRAG_DATABASE_TYPE_NAME));
 		this.getMetFragSettings().set(VariableNames.PRECURSOR_NEUTRAL_MASS_NAME, Double.parseDouble(this.getNeutralMonoisotopicMass()));
 		if(this.isFormulaSearchAvailable()) 
 			this.getMetFragSettings().set(VariableNames.PRECURSOR_MOLECULAR_FORMULA_NAME, this.getFormula() == null || this.getFormula().trim().length() == 0 ? null : this.getFormula().trim());
@@ -1790,8 +1826,10 @@ public class BeanSettingsContainer {
 			this.bondEnergyLipidMapsFilePath = servletContext.getRealPath("/resources/BondEnergiesLipidMaps.txt");
 			String pathToProperties = servletContext.getRealPath("/resources/settings.properties");
 			MetFragGlobalSettings settings = MetFragGlobalSettings.readSettings(new java.io.File(pathToProperties), null);
+			// check local database settings within the settings file
 			if(settings.containsKey(VariableNames.LOCAL_KEGG_DATABASE_NAME) && settings.get(VariableNames.LOCAL_KEGG_DATABASE_NAME) != null) this.localKeggDatabase = true;
 			if(settings.containsKey(VariableNames.LOCAL_PUBCHEM_DATABASE_NAME) && settings.get(VariableNames.LOCAL_PUBCHEM_DATABASE_NAME) != null) this.localPubChemDatabase = true;
+			if(settings.containsKey(VariableNames.LOCAL_METCHEM_DATABASE_NAME) && settings.get(VariableNames.LOCAL_METCHEM_DATABASE_NAME) != null) this.metChemDatabaseDefined = true;
 			return settings;
 		} catch (Exception e) {
 			e.printStackTrace();
