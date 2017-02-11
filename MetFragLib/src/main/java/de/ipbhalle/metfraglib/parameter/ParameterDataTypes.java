@@ -48,6 +48,7 @@ public class ParameterDataTypes {
 		
 		parameterDatatypes.put(	VariableNames.SAMPLE_NAME, 												"String"	);
 		parameterDatatypes.put(	VariableNames.STORE_RESULTS_PATH_NAME, 									"String"	);
+		parameterDatatypes.put(	VariableNames.STORE_RESULTS_FILE_NAME, 									"String"	);
 		parameterDatatypes.put(	VariableNames.NUMBER_THREADS_NAME, 										"Byte"		);
 		parameterDatatypes.put(	VariableNames.MAXIMUM_NUMBER_OF_TOPDOWN_FRAGMENT_ADDED_TO_QUEUE, 		"Byte"		);
 		parameterDatatypes.put(	VariableNames.METFRAG_PEAK_LIST_READER_NAME, 							"String"	);

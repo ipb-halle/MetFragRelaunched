@@ -1,7 +1,6 @@
 package de.ipbhalle.metfraglib.tools;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
 
 import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.exception.CDKException;
@@ -48,7 +47,7 @@ public class ConvertSDFtoCSV {
 		CandidateListWriterPSV writer = new CandidateListWriterPSV();
 		try {
 			writer.write(candidates, args[1], args[2]);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		

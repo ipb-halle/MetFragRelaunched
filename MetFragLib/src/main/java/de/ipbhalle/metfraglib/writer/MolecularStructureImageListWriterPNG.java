@@ -18,7 +18,7 @@ public class MolecularStructureImageListWriterPNG implements IWriter {
 		return this.write(list, filename, path);
 	}
 	
-	public boolean write(IList list, String filename, String path) {
+	public boolean writeFile(File imageFile, IList list, Settings settings) {
 		if(list.getNumberElements() == 0) {
 			System.out.println("Warning: No image in the given list. Nothing to write.");
 			return true;
@@ -28,7 +28,6 @@ public class MolecularStructureImageListWriterPNG implements IWriter {
 		}
 		RenderedImage molecularStructureImage = (RenderedImage)((DefaultList)list).getElement(0);
 		try {
-			File imageFile = new File(path + Constants.OS_SPECIFIC_FILE_SEPARATOR + filename + ".png");
 			if(ImageIO.write(molecularStructureImage, "png", imageFile))
 				return true;
 		} catch (IOException e) {
@@ -51,6 +50,21 @@ public class MolecularStructureImageListWriterPNG implements IWriter {
 	public void nullify() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public boolean write(IList list, String filename, String path) throws Exception {
+		return this.writeFile(new File(path + Constants.OS_SPECIFIC_FILE_SEPARATOR + filename + ".png"), list, null);
+	}
+
+	@Override
+	public boolean write(IList list, String filename) throws Exception {
+		return this.writeFile(new File(filename), list, null);
+	}
+
+	@Override
+	public boolean writeFile(File file, IList list) throws Exception {
+		return this.writeFile(file, list, null);
 	}
 
 }

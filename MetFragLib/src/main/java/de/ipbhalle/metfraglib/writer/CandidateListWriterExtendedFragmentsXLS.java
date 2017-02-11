@@ -32,8 +32,7 @@ public class CandidateListWriterExtendedFragmentsXLS implements IWriter {
 		return this.write(list, filename, path);
 	}
 	
-	public boolean write(IList list, String filename, String path)
-			throws Exception {
+	public boolean writeFile(File xlsFile, IList list, Settings settings) throws Exception {
 		CandidateList candidateList = null;
 		int numberOfPeaksUsed = 0;
 		if (list instanceof ScoredCandidateList
@@ -108,9 +107,6 @@ public class CandidateListWriterExtendedFragmentsXLS implements IWriter {
 
 		boolean withImages = true;
 		boolean withFragments = true;
-
-		File xlsFile = new File(path + Constants.OS_SPECIFIC_FILE_SEPARATOR
-				+ filename + "_extendedFragments.xls");
 
 		xlsFile.createNewFile();
 		WritableWorkbook workbook = Workbook.createWorkbook(xlsFile);
@@ -284,5 +280,21 @@ public class CandidateListWriterExtendedFragmentsXLS implements IWriter {
 	public void nullify() {
 
 	}
+
+	@Override
+	public boolean write(IList list, String filename) throws Exception {
+		return this.writeFile(new File(filename), list);
+	}
+
+	@Override
+	public boolean write(IList list, String filename, String path) throws Exception {
+		return this.writeFile(new File(path + Constants.OS_SPECIFIC_FILE_SEPARATOR + filename + "_extendedFragments.xls"), list);
+	}
+
+	@Override
+	public boolean writeFile(File file, IList list) throws Exception {
+		return this.writeFile(file, list, null);
+	}
+
 
 }

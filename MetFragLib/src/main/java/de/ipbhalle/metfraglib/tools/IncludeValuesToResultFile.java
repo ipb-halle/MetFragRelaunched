@@ -1,6 +1,5 @@
 package de.ipbhalle.metfraglib.tools;
 
-import java.io.IOException;
 import java.util.Vector;
 
 import de.ipbhalle.metfraglib.database.LocalPSVDatabase;
@@ -75,7 +74,7 @@ public class IncludeValuesToResultFile {
 		String path = args[2].replaceAll(filename + "\\..*$", "");
 		try {
 			writer.write(candidatesTo, filename, path);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

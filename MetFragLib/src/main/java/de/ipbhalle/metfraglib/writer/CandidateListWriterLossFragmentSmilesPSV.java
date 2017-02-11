@@ -21,10 +21,10 @@ import de.ipbhalle.metfraglib.settings.Settings;
 public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 	
 	public boolean write(IList list, String filename, String path) {
-		return write(list, filename, path, null);
+		return this.writeFile(new File(path + Constants.OS_SPECIFIC_FILE_SEPARATOR + filename + ".psv"), list, null);
 	}
 	
-	public boolean write(IList list, String filename, String path, Settings settings) {
+	public boolean writeFile(File file, IList list, Settings settings) {
 		CandidateList candidateList = null;
 		int numberOfPeaksUsed = 0;
 		if(list instanceof ScoredCandidateList || list instanceof SortedScoredCandidateList) {
@@ -114,7 +114,7 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 		}
 		java.io.BufferedWriter bwriter;
 		try {
-			bwriter = new java.io.BufferedWriter(new FileWriter(new File(path + Constants.OS_SPECIFIC_FILE_SEPARATOR + filename + ".psv")));
+			bwriter = new java.io.BufferedWriter(new FileWriter(file));
 			bwriter.write(heading);
 			bwriter.newLine();
 			for(int i = 0; i < lines.length; i++) {
@@ -192,6 +192,21 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 	
 	public void nullify() {
 		
+	}
+
+	@Override
+	public boolean write(IList list, String filename, String path, Settings settings) throws Exception {
+		return this.writeFile(new File(path + Constants.OS_SPECIFIC_FILE_SEPARATOR + filename + ".psv"), list, settings);
+	}
+
+	@Override
+	public boolean write(IList list, String filename) throws Exception {
+		return this.writeFile(new File(filename), list, null);
+	}
+
+	@Override
+	public boolean writeFile(File file, IList list) throws Exception {
+		return this.writeFile(file, list, null);
 	}
 
 }

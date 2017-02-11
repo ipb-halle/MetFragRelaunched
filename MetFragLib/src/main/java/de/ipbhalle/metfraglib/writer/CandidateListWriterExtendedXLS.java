@@ -33,7 +33,7 @@ public class CandidateListWriterExtendedXLS implements IWriter {
 		return this.write(list, filename, path);
 	}
 	
-	public boolean write(IList list, String filename, String path)
+	public boolean writeFile(File xlsFile, IList list, Settings settings)
 			throws Exception {
 		CandidateList candidateList = null;
 		int numberOfPeaksUsed = 0;
@@ -110,8 +110,6 @@ public class CandidateListWriterExtendedXLS implements IWriter {
 		boolean withImages = true;
 		boolean withFragments = false;
 
-		File xlsFile = new File(path + Constants.OS_SPECIFIC_FILE_SEPARATOR
-				+ filename + "_extended.xls");
 		xlsFile.createNewFile();
 		WritableWorkbook workbook = Workbook.createWorkbook(xlsFile);
 		WritableSheet sheet1 = workbook.createSheet("MetFrag result list", 0);
@@ -260,6 +258,22 @@ public class CandidateListWriterExtendedXLS implements IWriter {
 
 	public void nullify() {
 
+	}
+
+	@Override
+	public boolean write(IList list, String filename, String path) throws Exception {
+		return this.writeFile(new File(path + Constants.OS_SPECIFIC_FILE_SEPARATOR
+				+ filename + "_extended.xls"), list);
+	}
+
+	@Override
+	public boolean write(IList list, String filename) throws Exception {
+		return this.writeFile(new File(filename), list);
+	}
+
+	@Override
+	public boolean writeFile(File file, IList list) throws Exception {
+		return this.writeFile(file, list, null);
 	}
 
 }

@@ -84,7 +84,18 @@ public class SettingsChecker {
 			checkPositive = false;
 		}
 		else if(checkPositive) {
-			if(ResultsFile != null) checkPositive = this.checkDirectory(VariableNames.STORE_RESULTS_PATH_NAME, (String)ResultsPath);
+			if(ResultsPath != null) checkPositive = this.checkDirectory(VariableNames.STORE_RESULTS_PATH_NAME, (String)ResultsPath);
+			if(ResultsFile != null) {
+				String[] tmp = ((String)ResultsFile).split(Constants.OS_SPECIFIC_FILE_SEPARATOR);
+				if(tmp.length > 1) {
+					String path = tmp[0];
+					for(int k = 1; k < (tmp.length - 1); k++) path += Constants.OS_SPECIFIC_FILE_SEPARATOR + tmp[k];
+					ResultsPath = path;
+					SampleName = tmp[tmp.length - 1];
+					settings.set(VariableNames.SAMPLE_NAME, SampleName);
+					settings.set(VariableNames.STORE_RESULTS_PATH_NAME, ResultsPath);
+				}
+			}
 			if(checkPositive && (ResultsPath != null && ResultsFile != null)) {
 				this.logger.info(VariableNames.STORE_RESULTS_PATH_NAME + " and " + VariableNames.STORE_RESULTS_FILE_NAME + " are specified. " + VariableNames.STORE_RESULTS_FILE_NAME + " has higher priority.");
 			}

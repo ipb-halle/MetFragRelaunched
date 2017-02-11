@@ -21,20 +21,21 @@ import org.apache.commons.csv.CSVPrinter;
 
 public class CandidateListWriterCSV implements IWriter {
 
-	public boolean write(IList list, String filename, String path, Settings settings) throws IOException {
+	public boolean write(IList list, String filename, String path, Settings settings) throws Exception {
 		return this.write(list, filename, path);
 	}
 	
-	public boolean write(IList list, String filename, String path) throws IOException {
+	public boolean write(IList list, String filename, String path) throws Exception {
 		File file = new File(path + Constants.OS_SPECIFIC_FILE_SEPARATOR + filename + ".csv");
-		return writeFile(file, list);
+		return this.writeFile(file, list);
 	}
 
-	public boolean write(IList list, String filename) throws IOException {
+	public boolean write(IList list, String filename) throws Exception {
 		return this.writeFile(new File(filename), list);
 	}
 	
-	protected boolean writeFile(File file, IList list) throws IOException {
+	 @Override
+	public boolean writeFile(File file, IList list, Settings settings) throws Exception {
 		CandidateList candidateList = null;
 		int numberOfPeaksUsed = 0;
 		if(list instanceof ScoredCandidateList || list instanceof SortedScoredCandidateList) {
@@ -140,6 +141,11 @@ public class CandidateListWriterCSV implements IWriter {
 		csvFilePrinter.printRecord(header);
 		writer.close();
 		csvFilePrinter.close();
+	}
+
+	@Override
+	public boolean writeFile(File file, IList list) throws Exception {
+		return this.writeFile(file, list, null);
 	}
 
 }

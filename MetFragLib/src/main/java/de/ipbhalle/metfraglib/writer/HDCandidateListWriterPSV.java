@@ -22,7 +22,7 @@ public class HDCandidateListWriterPSV implements IWriter {
 		return this.write(list, filename, path);
 	}
 	
-	public boolean write(IList list, String filename, String path) throws IOException {
+	public boolean writeFile(File file, IList list, Settings settings) throws IOException {
 		CandidateList candidateList = null;
 		int numberOfPeaksUsed = 0;
 		if(list instanceof ScoredCandidateList || list instanceof SortedScoredCandidateList) {
@@ -139,9 +139,7 @@ public class HDCandidateListWriterPSV implements IWriter {
 			}
 		}
 		
-		java.io.BufferedWriter bwriter;
-		File file = new File(path + Constants.OS_SPECIFIC_FILE_SEPARATOR + filename + ".psv");
-		bwriter = new java.io.BufferedWriter(new FileWriter(file));
+		java.io.BufferedWriter bwriter = new java.io.BufferedWriter(new FileWriter(file));
 		bwriter.write(heading);
 		bwriter.newLine();
 		for(int i = 0; i < lines.length; i++) {
@@ -166,6 +164,21 @@ public class HDCandidateListWriterPSV implements IWriter {
 	
 	public void nullify() {
 		
+	}
+
+	@Override
+	public boolean write(IList list, String filename, String path) throws Exception {
+		return this.writeFile(new File(path + Constants.OS_SPECIFIC_FILE_SEPARATOR + filename + ".psv"), list, null);
+	}
+
+	@Override
+	public boolean write(IList list, String filename) throws Exception {
+		return this.writeFile(new File(filename), list, null);
+	}
+
+	@Override
+	public boolean writeFile(File file, IList list) throws Exception {
+		return this.writeFile(file, list, null);
 	}
 
 }
