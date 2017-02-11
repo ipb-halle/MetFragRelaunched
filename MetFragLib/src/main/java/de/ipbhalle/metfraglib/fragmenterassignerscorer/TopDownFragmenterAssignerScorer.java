@@ -10,9 +10,15 @@ import de.ipbhalle.metfraglib.match.MatchFragmentNode;
 import de.ipbhalle.metfraglib.match.MatchPeakList;
 import de.ipbhalle.metfraglib.match.MatchPeakNode;
 import de.ipbhalle.metfraglib.settings.Settings;
+import de.ipbhalle.metfraglib.similarity.TanimotoSimilarity;
 import de.ipbhalle.metfraglib.parameter.Constants;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.precursor.AbstractTopDownBitArrayPrecursor;
+
+import java.io.IOException;
+import java.util.Vector;
+
+import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
 import de.ipbhalle.metfraglib.fragment.AbstractTopDownBitArrayFragment;
 import de.ipbhalle.metfraglib.fragment.AbstractTopDownBitArrayFragmentWrapper;
 
@@ -61,6 +67,8 @@ public class TopDownFragmenterAssignerScorer extends AbstractFragmenterAssignerS
 		java.util.HashMap<Integer, MatchFragmentList> peakIndexToPeakMatch = new java.util.HashMap<Integer, MatchFragmentList>();
 		java.util.HashMap<Integer, MatchPeakList> fragmentIndexToPeakMatch = new java.util.HashMap<Integer, MatchPeakList>();
 		MatchPeakList sortedScoredPeaks = null;
+		
+		Vector<String> fingerprints = new Vector<String>();
 		/*
 		 * iterate over the maximal allowed tree depth
 		 */
@@ -74,6 +82,7 @@ public class TopDownFragmenterAssignerScorer extends AbstractFragmenterAssignerS
 				 * generate fragments of new tree depth
 				 */
 				AbstractTopDownBitArrayFragmentWrapper wrappedPrecursorFragment = toProcessFragments.poll();
+				
 				if(wrappedPrecursorFragment.getWrappedFragment().isDiscardedForFragmentation()) {
 					AbstractTopDownBitArrayFragment clonedFragment = (AbstractTopDownBitArrayFragment)wrappedPrecursorFragment.getWrappedFragment().clone();
 					clonedFragment.setAsDiscardedForFragmentation();
@@ -84,6 +93,8 @@ public class TopDownFragmenterAssignerScorer extends AbstractFragmenterAssignerS
 				 * generate fragments of next tree depth
 				 */
 				java.util.Vector<AbstractTopDownBitArrayFragment> fragmentsOfCurrentTreeDepth = this.fragmenter.getFragmentsOfNextTreeDepth(wrappedPrecursorFragment.getWrappedFragment());
+				this.addFingerPrintsToVector(fragmentsOfCurrentTreeDepth, fingerprints);
+				
 				/*
 				 * get peak pointer of current precursor fragment
 				 */
@@ -94,13 +105,7 @@ public class TopDownFragmenterAssignerScorer extends AbstractFragmenterAssignerS
 				 */
 				for(int l = 0; l < fragmentsOfCurrentTreeDepth.size(); l++) {
 					AbstractTopDownBitArrayFragment currentFragment = fragmentsOfCurrentTreeDepth.get(l);
-					/*
-					if(currentFragment.getAtomsBitArray().toString().equals("111110001100010001")) {
-						System.out.println(currentFragment.getAtomsBitArray().toString() + " " + 
-								currentFragment.getBrokenBondsBitArray().toString() + " " + 
-								currentFragment.getBondsBitArray().toString() + " " + currentFragment.getID());
-					}
-					*/
+					
 					if(!fragmentsOfCurrentTreeDepth.get(l).isValidFragment()) {
 						newToProcessFragments.add(new AbstractTopDownBitArrayFragmentWrapper(fragmentsOfCurrentTreeDepth.get(l), currentPeakPointer));
 						continue;
@@ -226,6 +231,8 @@ public class TopDownFragmenterAssignerScorer extends AbstractFragmenterAssignerS
 			}
 			toProcessFragments = newToProcessFragments;
 		}
+		
+		this.writeFingerPrintsToFile(fingerprints, Constants.OS_TEMP_DIR + Constants.OS_SPECIFIC_FILE_SEPARATOR + this.candidates[0].getIdentifier() + ".txt");
 		
 		this.matchList = new MatchList();
 		
@@ -544,6 +551,26 @@ public class TopDownFragmenterAssignerScorer extends AbstractFragmenterAssignerS
 	public void shallowNullify() {
 		super.shallowNullify();
 		this.bitArrayToFragment = null;
+	}
+	
+	protected void addFingerPrintsToVector(java.util.Vector<AbstractTopDownBitArrayFragment> fragments, Vector<String> fps) {
+		for(int i = 0; i < fragments.size(); i++) {
+			fps.add(MoleculeFunctions.fingerPrintToString(TanimotoSimilarity.calculateFingerPrint(fragments.get(i).getStructureAsIAtomContainer())));
+		}
+	}
+	
+	protected void writeFingerPrintsToFile(Vector<String> fps, String filename) {
+		try {
+			java.io.BufferedWriter bwriter = new java.io.BufferedWriter(new java.io.FileWriter(new java.io.File(filename)));
+			for(int i = 0; i < fps.size(); i++) {
+				bwriter.write(fps.get(i));
+				bwriter.newLine();
+			}
+			bwriter.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 }
