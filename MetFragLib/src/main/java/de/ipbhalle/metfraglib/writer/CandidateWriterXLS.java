@@ -42,7 +42,7 @@ public class CandidateWriterXLS implements IWriter {
 	}
 	
 	@Override
-	public boolean write(IList list, String filename, String path) throws Exception {
+	public boolean writeFile(File xlsFile, IList list, Settings settings) throws Exception {
 
 		CandidateList candidateList = null;
 		boolean isScoredCandidate = false;
@@ -59,7 +59,6 @@ public class CandidateWriterXLS implements IWriter {
 		
 		ICandidate candidate = candidateList.getElement(0);
 		
-		File xlsFile = new File(path + Constants.OS_SPECIFIC_FILE_SEPARATOR + filename + ".xls");
 		xlsFile.createNewFile();
 		WritableWorkbook workbook = Workbook.createWorkbook(xlsFile);
 		WritableSheet sheet1 = workbook.createSheet("MetFrag Candidate Result", 0);
@@ -233,6 +232,23 @@ public class CandidateWriterXLS implements IWriter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public boolean write(IList list, String filename, String path) throws Exception {
+		return this.writeFile(new File(path + Constants.OS_SPECIFIC_FILE_SEPARATOR + filename + ".xls"), 
+				list, null);
+	}
+
+	@Override
+	public boolean write(IList list, String filename) throws Exception {
+		return this.writeFile(new File(filename), 
+				list, null);
+	}
+
+	@Override
+	public boolean writeFile(File file, IList list) throws Exception {
+		return this.writeFile(file, list, null);
 	}
 
 }

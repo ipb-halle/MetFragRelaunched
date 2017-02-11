@@ -1,6 +1,5 @@
 package de.ipbhalle.metfraglib.tools;
 
-import java.io.IOException;
 import java.util.Vector;
 
 import de.ipbhalle.metfraglib.database.LocalPSVDatabase;
@@ -69,7 +68,7 @@ public class DownloadEntriesFromPubChem {
 		String path = filenameOut.replaceAll(filename + "\\..*$", "");
 		try {
 			writer.write(candidates, filename, path);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

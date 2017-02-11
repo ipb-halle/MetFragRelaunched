@@ -22,7 +22,7 @@ public class CandidateListWriterPSV implements IWriter {
 		return this.write(list, filename, path);
 	}
 	
-	public boolean write(IList list, String filename, String path) throws IOException {
+	public boolean writeFile(File file, IList list, Settings settings) throws IOException {
 		CandidateList candidateList = null;
 		int numberOfPeaksUsed = 0;
 		if(list instanceof ScoredCandidateList || list instanceof SortedScoredCandidateList) {
@@ -94,7 +94,6 @@ public class CandidateListWriterPSV implements IWriter {
 			}
 		}
 		java.io.BufferedWriter bwriter;
-		File file = new File(path + Constants.OS_SPECIFIC_FILE_SEPARATOR + filename + ".csv");
 		bwriter = new java.io.BufferedWriter(new FileWriter(file));
 		bwriter.write(heading);
 		bwriter.newLine();
@@ -120,6 +119,21 @@ public class CandidateListWriterPSV implements IWriter {
 	
 	public void nullify() {
 		
+	}
+
+	@Override
+	public boolean write(IList list, String filename, String path) throws Exception {
+		return this.writeFile(new File(path + Constants.OS_SPECIFIC_FILE_SEPARATOR + filename + ".csv"), list);
+	}
+
+	@Override
+	public boolean write(IList list, String filename) throws Exception {
+		return this.writeFile(new File(filename), list);
+	}
+
+	@Override
+	public boolean writeFile(File file, IList list) throws Exception {
+		return this.writeFile(file, list, null);
 	}
 
 }

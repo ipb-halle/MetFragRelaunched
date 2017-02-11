@@ -1,6 +1,5 @@
 package de.ipbhalle.metfraglib.tools;
 
-import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
@@ -273,7 +272,7 @@ public class CalculateHydrogenDeuteriumScore {
 
 		try {
 			candidateWriter.write(mergedCandidateList, outputFile.getName(), outputFile.getParent());
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

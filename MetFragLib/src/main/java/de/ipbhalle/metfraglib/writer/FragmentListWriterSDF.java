@@ -79,4 +79,22 @@ public class FragmentListWriterSDF implements IWriter {
 		return;
 	}
 
+	@Override
+	public boolean write(IList list, String filename) throws Exception {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean writeFile(File file, IList list, Settings settings) throws Exception {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean writeFile(File file, IList list) throws Exception {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

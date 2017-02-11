@@ -27,7 +27,7 @@ public class CandidateListWriterSDF implements IWriter {
 		return this.write(list, filename, path);
 	}
 	
-	public boolean write(IList list, String filename, String path) throws Exception {
+	public boolean writeFile(File file, IList list, Settings settings) throws Exception {
 		IAtomContainerSet set = new AtomContainerSet();
 		CandidateList candidateList = null;
 		int numberOfPeaksUsed = 0;
@@ -145,8 +145,7 @@ public class CandidateListWriterSDF implements IWriter {
 			set.addAtomContainer(candidateAtomContainer);
 		}
 
-		SDFWriter writer = new SDFWriter(new FileWriter(new File(path
-				+ Constants.OS_SPECIFIC_FILE_SEPARATOR + filename + ".sdf")));
+		SDFWriter writer = new SDFWriter(new FileWriter(file));
 		writer.write(set);
 		writer.close();
 		return true;
@@ -165,6 +164,22 @@ public class CandidateListWriterSDF implements IWriter {
 	
 	public void nullify() {
 
+	}
+
+	@Override
+	public boolean write(IList list, String filename, String path) throws Exception {
+		return this.writeFile(new File(path
+				+ Constants.OS_SPECIFIC_FILE_SEPARATOR + filename + ".sdf"), list, null);
+	}
+
+	@Override
+	public boolean write(IList list, String filename) throws Exception {
+		return this.writeFile(new File(filename), list, null);
+	}
+
+	@Override
+	public boolean writeFile(File file, IList list) throws Exception {
+		return this.writeFile(file, list, null);
 	}
 
 }
