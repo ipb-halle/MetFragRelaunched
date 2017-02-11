@@ -136,7 +136,10 @@ public class LocalSDFDatabase extends AbstractDatabase {
 
 				if (identifier == null || identifier.length() == 0)
 					identifier = String.valueOf(index);
-				if(identifiers.contains(identifier)) throw new Exception();
+				if(identifiers.contains(identifier)) {
+					reader.close();
+					throw new Exception();
+				}
 				identifiers.add(identifier);
 				String[] inchiInfo = MoleculeFunctions.getInChIInfoFromAtomContainer(molecule);
 				ICandidate precursorCandidate = new TopDownPrecursorCandidate(inchiInfo[0], identifier);
@@ -158,6 +161,7 @@ public class LocalSDFDatabase extends AbstractDatabase {
 				this.candidates.add(precursorCandidate);
 				index++;
 			}
+			reader.close();
 		}
 	}
 
