@@ -55,6 +55,7 @@ public class OnlineChemSpiderDatabase extends AbstractDatabase {
 	 * 
 	 */
 	public Vector<String> getCandidateIdentifiers(double monoisotopicMass, double relativeMassDeviation) throws Exception {
+		logger.info("Fetching candidates from ChemSpider");
 		double mzabs = MathTools.calculateAbsoluteDeviation(monoisotopicMass, relativeMassDeviation);
 		MassSpecAPIStub stub = null;
 		try {
@@ -97,6 +98,7 @@ public class OnlineChemSpiderDatabase extends AbstractDatabase {
 	 * 
 	 */
 	public Vector<String> getCandidateIdentifiers(String formula) throws Exception {
+		logger.info("Fetching candidates from ChemSpider");
 		String molecularFormula = formula.replaceAll("([0-9]+)", "_{$1}");
 		molecularFormula = formula.replaceAll("\\[_\\{([0-9]+)\\}([A-Z][a-z]{0,3})\\]", "^\\{$1\\}$2");
 		
@@ -139,6 +141,7 @@ public class OnlineChemSpiderDatabase extends AbstractDatabase {
 	 * 
 	 */
 	public Vector<String> getCandidateIdentifiers(Vector<String> identifiers) {
+		logger.info("Fetching candidates from ChemSpider");
 		Vector<String> uniqueCsidArray = new Vector<String>();
         for(int i = 0; i < identifiers.size(); i++) {
                 if(!uniqueCsidArray.contains(identifiers.get(i)))

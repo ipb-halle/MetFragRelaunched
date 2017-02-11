@@ -147,6 +147,7 @@ public class CombinedMetFragProcess implements Runnable {
 			/*
 			 * necessary to define number of hydrogens and make the implicit
 			 */
+			this.sortedScoredCandidateList.getElement(i).setUseSmiles((Boolean)this.globalSettings.get(VariableNames.USE_SMILES_NAME));
 			CombinedSingleCandidateMetFragProcess scmfp = new CombinedSingleCandidateMetFragProcess(singleProcessSettings, this.sortedScoredCandidateList.getElement(i));
 			scmfp.setPreProcessingCandidateFilterCollection(this.preProcessingCandidateFilterCollection);
 			

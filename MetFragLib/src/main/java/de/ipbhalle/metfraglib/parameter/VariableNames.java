@@ -23,6 +23,7 @@ public class VariableNames {
 	public static final String NUMBER_OF_DIGITS_AFTER_ROUNDING_NAME				= 	"NumberOfDigitsAfterRounding";
 	public static final String PARAMETER_FILE_NAME								= 	"ParameterFile";
 	public static final String PROCESS_CANDIDATES									=	"ProcessCandidates";
+	public static final String USE_SMILES_NAME									=	"UseSmiles";
 	
 	public static final String METFRAG_DATABASE_TYPE_NAME 						= 	"MetFragDatabaseType";
 	public static final String METFRAG_FRAGMENTER_TYPE_NAME 						= 	"MetFragFragmenterType";
