@@ -21,6 +21,8 @@ import de.ipbhalle.metfraglib.settings.MetFragGlobalSettings;
 
 public class CommandLineTool {
 	
+	public static boolean printHelp = false;
+	
 	/**
 	 * @param args
 	 */
@@ -30,7 +32,14 @@ public class CommandLineTool {
 		 * read in commandline arguments
 		 */
 		java.util.Hashtable<String, String> commandLineArguments = processCommandLineArguments(args, logger);
-		if(commandLineArguments == null) return;
+		if(commandLineArguments == null) {
+			System.exit(1);
+		}
+		if(printHelp) {
+			printHelp();
+			System.exit(0);
+		}
+		
 		
 		File parameterFile = null;
 		MetFragGlobalSettings settings = null;
@@ -38,15 +47,15 @@ public class CommandLineTool {
 			parameterFile = new File((String)commandLineArguments.get(VariableNames.PARAMETER_FILE_NAME));
 			if(!parameterFile.exists()) {
 				logger.error("Parameter file " + parameterFile.getAbsolutePath() + " not found!");
-				return;
+				System.exit(1);
 			}
 			if(!parameterFile.canRead()) {
 				logger.error("Parameter file " + parameterFile.getAbsolutePath() + " has no read permissions!");
-				return;
+				System.exit(1);
 			}
 			if(!parameterFile.isFile()) {
 				logger.error("Parameter file " + parameterFile.getAbsolutePath() + " is no regular file!"); 
-				return;
+				System.exit(1);
 			}
 			/*
 			 * read settings
@@ -76,13 +85,13 @@ public class CommandLineTool {
 		
 		//check settings with SettingsChecker	
 		SettingsChecker settingsChecker = new SettingsChecker();
-		if(!settingsChecker.check(settings)) return;
+		if(!settingsChecker.check(settings)) System.exit(2);
 		
 		/*
 		 * load hd plugin
 		 */
 		HydrogenDeuteriumPlugin hdPlugin = new HydrogenDeuteriumPlugin();
-		if(!hdPlugin.load(settings)) return;
+		if(!hdPlugin.load(settings)) System.exit(3);
 
 		//init the MetFrag process
 		CombinedMetFragProcess mp = new CombinedMetFragProcess(settings);
@@ -94,7 +103,7 @@ public class CommandLineTool {
 		} catch (Exception e1) {
 			e1.printStackTrace();
 			logger.error("Error when retrieving compounds.");
-			System.exit(2);
+			System.exit(4);
 		}
 		//run the MetFrag process -> in silico fragmentation, fragment-peak-assignment, scoring
 		try {
@@ -102,7 +111,7 @@ public class CommandLineTool {
 		} catch (Exception e1) {
 			e1.printStackTrace();
 			logger.error("Error when processing compounds.");
-			System.exit(3);
+			System.exit(5);
 		}
 		//fetch the scored candidate list
 		CandidateList scoredCandidateList = mp.getCandidateList();
@@ -124,7 +133,7 @@ public class CommandLineTool {
 					} catch (Exception e) {
 						e.printStackTrace();
 						logger.error("Error: Could not write candidate file.");
-						System.exit(4);
+						System.exit(6);
 					}
 				}
 			}
@@ -137,7 +146,7 @@ public class CommandLineTool {
 					candidateWriter.write(scoredCandidateList, (String)settings.get(VariableNames.SAMPLE_NAME), (String)settings.get(VariableNames.STORE_RESULTS_PATH_NAME), settings);
 				} catch (Exception e) {
 					logger.error("Error: Could not write fragment files.");
-					System.exit(5);
+					System.exit(7);
 				}
 			}
 			/*
@@ -154,7 +163,7 @@ public class CommandLineTool {
 						imageWriter.write(imageList, (String)settings.get(VariableNames.SAMPLE_NAME) + "_" + scoredCandidateList.getElement(i).getIdentifier(), (String)settings.get(VariableNames.STORE_RESULTS_PATH_NAME));
 					} catch (Exception e) {
 						logger.error("Error: Could not write candidate image files.");
-						System.exit(5);
+						System.exit(8);
 					}
 				}
 			}
@@ -174,25 +183,32 @@ public class CommandLineTool {
 							imageWriter.write(imageList, (String)settings.get(VariableNames.SAMPLE_NAME) + "_" + scoredCandidateList.getElement(i).getIdentifier() + "_fragment_id" + (j+1), (String)settings.get(VariableNames.STORE_RESULTS_PATH_NAME));
 						} catch (Exception e) {
 							logger.error("Error: Could not write fragment image files.");
-							System.exit(6);
+							System.exit(9);
 						}
 					}
 				}
 			}
 		} catch (InstantiationException e) {
 			e.printStackTrace();
+			System.exit(10);
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
+			System.exit(10);
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
+			System.exit(10);
 		} catch (InvocationTargetException e) {
 			e.printStackTrace();
+			System.exit(10);
 		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
+			System.exit(10);
 		} catch (SecurityException e) {
 			e.printStackTrace();
+			System.exit(10);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
+			System.exit(10);
 		}
 	}
 
@@ -220,10 +236,16 @@ public class CommandLineTool {
 		// if length 0 then it must be a parameter file
 		try {
 			if(arguments_splitted.length == 1) {
-				if(arguments_splitted[0].contains("="))
+				if(arguments_splitted[0].contains("=")) {
 					arguments.put(VariableNames.PARAMETER_FILE_NAME, arguments_splitted[0].split("=")[1]);
-				else 
+				}
+				else if(arguments_splitted[0].equals("-help") || arguments_splitted[0].equals("--help")) {
+					printHelp = true;
+					return arguments;
+				}
+				else {
 					arguments.put(VariableNames.PARAMETER_FILE_NAME, arguments_splitted[0]);
+				}
 				return arguments;
 			}
 			for(int i = 0; i < arguments_splitted.length; i++) {
@@ -249,6 +271,13 @@ public class CommandLineTool {
 			return null;
 		}
 		return arguments;
+	}
+	
+	public static void printHelp() {
+		System.out.println("Usage: java -jar MetFragCL.jar ParameterFile='path_to_parameterfile'");
+		System.out.println("\t\t\t(to execute MetFrag with a parameter file)");
+		System.out.println("\tor java -jar MetFragCL.jar [args...]");
+		System.out.println("\t\t\t(to execute MetFrag with parameters given on command line)");
 	}
 	
 }
