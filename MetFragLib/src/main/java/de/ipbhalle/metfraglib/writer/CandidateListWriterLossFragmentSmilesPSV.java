@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
 import de.ipbhalle.metfraglib.exceptions.RelativeIntensityNotDefinedException;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.interfaces.IFragment;
@@ -17,6 +18,7 @@ import de.ipbhalle.metfraglib.list.SortedScoredCandidateList;
 import de.ipbhalle.metfraglib.parameter.Constants;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.settings.Settings;
+import de.ipbhalle.metfraglib.similarity.TanimotoSimilarity;
 
 public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 	
@@ -59,6 +61,8 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 			String smilesOfFragmentsExplainedPeaks = "";
 			String aromaticSmilesOfFragmentsExplainedPeaks = "";
 			
+			String fingerprintOfFragmentsExplainedPeaks = "";
+			
 			if(scoredCandidate.getMatchList() != null) 
 			{
 				for(int ii = 0; ii < scoredCandidate.getMatchList().getNumberElements(); ii++) 
@@ -73,11 +77,15 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 					String formula = scoredCandidate.getMatchList().getElement(ii).getModifiedFormulaStringOfBestMatchedFragment();
 					
 					sumFormulasOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + formula + ";";
-					smilesOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + scoredCandidate.getMatchList().getElement(ii).getBestMatchedFragment().getSmiles() + ";";
-					aromaticSmilesOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + scoredCandidate.getMatchList().getElement(ii).getBestMatchedFragment().getAromaticSmiles() + ";";
+					// get fragment of explained peak
+					IFragment frag = scoredCandidate.getMatchList().getElement(ii).getBestMatchedFragment();
+					fingerprintOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + MoleculeFunctions.fingerPrintToString(TanimotoSimilarity.calculateFingerPrint(frag.getStructureAsIAtomContainer())) + ";";	
+					smilesOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + frag.getSmiles() + ";";
+					aromaticSmilesOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + frag.getAromaticSmiles() + ";";
 				}
 				if(sumFormulasOfFragmentsExplainedPeaks.length() != 0) sumFormulasOfFragmentsExplainedPeaks = sumFormulasOfFragmentsExplainedPeaks.substring(0, sumFormulasOfFragmentsExplainedPeaks.length() - 1);
 				if(peaksExplained.length() != 0) peaksExplained = peaksExplained.substring(0, peaksExplained.length() - 1);
+				if(fingerprintOfFragmentsExplainedPeaks.length() != 0) fingerprintOfFragmentsExplainedPeaks = fingerprintOfFragmentsExplainedPeaks.substring(0, fingerprintOfFragmentsExplainedPeaks.length() - 1);
 				if(smilesOfFragmentsExplainedPeaks.length() != 0) smilesOfFragmentsExplainedPeaks = smilesOfFragmentsExplainedPeaks.substring(0, smilesOfFragmentsExplainedPeaks.length() - 1);
 				if(aromaticSmilesOfFragmentsExplainedPeaks.length() != 0) aromaticSmilesOfFragmentsExplainedPeaks = aromaticSmilesOfFragmentsExplainedPeaks.substring(0, aromaticSmilesOfFragmentsExplainedPeaks.length() - 1);
 				
@@ -89,6 +97,7 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 				scoredCandidate.setProperty("ExplPeaks", peaksExplained);
 				scoredCandidate.setProperty("FormulasOfExplPeaks", sumFormulasOfFragmentsExplainedPeaks);
 				scoredCandidate.setProperty("SmilesOfExplPeaks", smilesOfFragmentsExplainedPeaks);
+				scoredCandidate.setProperty("FragmentFingerPrintOfExplPeaks", fingerprintOfFragmentsExplainedPeaks);
 				scoredCandidate.setProperty("AromaticSmilesOfExplPeaks", aromaticSmilesOfFragmentsExplainedPeaks);
 				scoredCandidate.setProperty("NumberPeaksUsed", numberOfPeaksUsed);
 				scoredCandidate.setProperty("NoExplPeaks", countExplainedPeaks);
@@ -97,6 +106,7 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 					String[] lossesInformation = createLossAnnotations(scoredCandidate.getMatchList(), settings);
 					scoredCandidate.setProperty("LossSmilesOfExplPeaks", lossesInformation[0]);
 					scoredCandidate.setProperty("LossAromaticSmilesOfExplPeaks", lossesInformation[1]);
+					scoredCandidate.setProperty("LossFingerPrintOfExplPeaks", lossesInformation[2]);
 				}
 			}
 	
@@ -136,6 +146,7 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 	 * @param settings
 	 */
 	private String[] createLossAnnotations(MatchList matchList, Settings settings) {
+		java.util.Vector<String> lossFingerprint = new java.util.Vector<String>();
 		java.util.Vector<String> lossSmiles = new java.util.Vector<String>();
 		java.util.Vector<String> lossSmarts = new java.util.Vector<String>();
 		java.util.Vector<Double> lossMassDiff = new java.util.Vector<Double>();
@@ -163,6 +174,7 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 					double diff = peakMassJ - peakMassI;
 					IFragment diffFragment = fragmentJ.getDifferenceFragment(fragmentI);
 					if(diffFragment == null) continue;
+					lossFingerprint.add(MoleculeFunctions.fingerPrintToString(TanimotoSimilarity.calculateFingerPrint(diffFragment.getStructureAsIAtomContainer())));
 					lossSmiles.add(diffFragment.getSmiles());
 					lossSmarts.add(diffFragment.getAromaticSmiles());
 					lossMassDiff.add(diff);
@@ -172,6 +184,7 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 			double diff = ionmass - peakMassI;
 			IFragment diffFragment = fragmentI.getDifferenceFragment();
 			if(diffFragment == null) continue;
+			lossFingerprint.add(MoleculeFunctions.fingerPrintToString(TanimotoSimilarity.calculateFingerPrint(diffFragment.getStructureAsIAtomContainer())));
 			lossSmiles.add(diffFragment.getSmiles());
 			lossSmarts.add(diffFragment.getAromaticSmiles());
 			lossMassDiff.add(diff);
@@ -179,15 +192,18 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 
 		String diffSmiles = "NA";
 		String diffSmarts = "NA";
+		String diffFingerPrint = "NA";
 		if(lossMassDiff.size() >= 1) {
 			diffSmiles = lossMassDiff.get(0) + ":" + lossSmiles.get(0);
 			diffSmarts = lossMassDiff.get(0) + ":" + lossSmarts.get(0);
+			diffFingerPrint = lossMassDiff.get(0) + ":" + lossFingerprint.get(0);
 		}
 		for(int i = 1; i < lossMassDiff.size(); i++) {
 			diffSmiles += ";" + lossMassDiff.get(i) + ":" + lossSmiles.get(i);
 			diffSmarts += ";" + lossMassDiff.get(i) + ":" + lossSmarts.get(i);
+			diffFingerPrint += ";" + lossMassDiff.get(i) + ":" + lossFingerprint.get(i);
 		}
-		return new String[] {diffSmiles, diffSmarts};
+		return new String[] {diffSmiles, diffSmarts, diffFingerPrint};
 	}
 	
 	public void nullify() {
