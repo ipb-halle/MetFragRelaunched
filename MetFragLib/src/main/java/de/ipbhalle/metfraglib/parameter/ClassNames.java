@@ -75,6 +75,7 @@ import de.ipbhalle.metfraglib.writer.CandidateListWriterFragmentSmilesPSV;
 import de.ipbhalle.metfraglib.writer.CandidateListWriterSDF;
 import de.ipbhalle.metfraglib.writer.CandidateListWriterXLS;
 import de.ipbhalle.metfraglib.writer.FragmentListWriterSDF;
+import de.ipbhalle.metfraglib.writer.HDCandidateListWriterExtendedPSV;
 import de.ipbhalle.metfraglib.writer.HDCandidateListWriterPSV;
 
 public class ClassNames {
@@ -151,6 +152,7 @@ public class ClassNames {
 		scoreNameToScoreInitialiserClassName.put("HDExchangedHydrogendsScore", DefaultScoreInitialiser.class.getName());
 		
 		candidateListWriterNameToClassName.put("HDCSV", HDCandidateListWriterPSV.class.getName());
+		candidateListWriterNameToClassName.put("ExtendedHDCSV", HDCandidateListWriterExtendedPSV.class.getName());
 		
 		postProcessingCandidateFilterNameToClassName.put("HDGroupFlagFilter", PostProcessingCandidateHDGroupFlagFilter.class.getName());
 		

@@ -206,7 +206,7 @@ public class SmilesDeuteriumGeneration {
 				its.setProperty("M-H", mass - Constants.getMonoisotopicMassOfAtom("H") + Constants.ELECTRON_MASS);
 				its.setProperty("M-D", mass - Constants.getMonoisotopicMassOfAtom("D") + Constants.ELECTRON_MASS);
 				
-				IAtomContainer con = removeHydrogens(its, toExchange);
+				IAtomContainer con = MoleculeFunctions.removeHydrogens(its, toExchange);
 				
 				its.setProperty("DeuteratedSMILES", MoleculeFunctions.generateSmiles(con).replaceAll("\\[H\\]", "[2H]"));
 				set.addAtomContainer(its);
@@ -267,37 +267,6 @@ public class SmilesDeuteriumGeneration {
 		
 		formula.setNumberDeuterium(numberDeuterium);
 		return formulas;
-	}
-
-	public static IAtomContainer removeHydrogens(IAtomContainer target, int[] skipPositions) throws CloneNotSupportedException {
-		IAtomContainer molecule = target.clone();
-		java.util.Vector<IAtom> hydrogenAtoms = new java.util.Vector<IAtom>();
-		java.util.Iterator<IAtom> atoms = molecule.atoms().iterator();
-		java.util.Vector<IAtom> atomsToSkip = new java.util.Vector<IAtom>();
-		for(int i = 0; i < skipPositions.length; i++) {
-			atomsToSkip.add(molecule.getAtom(skipPositions[i]));
-		}
-		while(atoms.hasNext()) {
-			IAtom currentAtom = atoms.next();
-			if(currentAtom.getSymbol().equals("H")) {
-				//hydrogen can only have one neighbour
-				if(atomsToSkip.contains(molecule.getConnectedAtomsList(currentAtom).get(0))) {
-					molecule.getConnectedAtomsList(currentAtom).get(0).setImplicitHydrogenCount(0);
-					continue;
-				}
-				else hydrogenAtoms.add(currentAtom);
-			}
-			java.util.List<IAtom> neighbours = molecule.getConnectedAtomsList(currentAtom);
-			int numberHydrogens = 0;
-			for(int k = 0; k < neighbours.size(); k++) {
-				if(neighbours.get(k).getSymbol().equals("H")) numberHydrogens++;
-			}
-			currentAtom.setImplicitHydrogenCount(numberHydrogens);
-		}
-		for(IAtom atom : hydrogenAtoms) {
-			molecule.removeAtomAndConnectedElectronContainers(atom);
-		}
-		return molecule;
 	}
 	
 	/**
