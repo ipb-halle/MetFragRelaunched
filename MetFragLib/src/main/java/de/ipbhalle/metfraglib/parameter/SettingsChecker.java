@@ -11,7 +11,7 @@ public class SettingsChecker {
 	protected Logger logger = Logger.getLogger(this.getClass());
 	
 	public boolean check(Settings settings) {
-		
+
 		if(!checkPeakListFileSettings(settings)) return false;
 		if(!checkDatabaseSettings(settings)) return false;
 		if(!checkFragmenterSettings(settings)) return false;
@@ -70,7 +70,7 @@ public class SettingsChecker {
 		Object ResultsPath = settings.get(VariableNames.STORE_RESULTS_PATH_NAME);
 		Object MetFragCandidateWriter = settings.get(VariableNames.METFRAG_CANDIDATE_WRITER_NAME);
 		Object ResultsFile = settings.get(VariableNames.STORE_RESULTS_FILE_NAME);
-		
+
 		/**
 		 * check peak list file
 		 */

@@ -14,6 +14,7 @@ import de.ipbhalle.metfraglib.parameter.Constants;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.peak.TandemMassPeak;
 import de.ipbhalle.metfraglib.precursor.HDTopDownBitArrayPrecursor;
+import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
 import de.ipbhalle.metfraglib.candidate.HDPrecursorCandidateWrapper;
 import de.ipbhalle.metfraglib.candidate.TopDownPrecursorCandidate;
 import de.ipbhalle.metfraglib.collection.ScoreCollection;
@@ -29,6 +30,7 @@ public class HDTopDownFragmenterAssignerScorer extends TopDownFragmenterAssigner
 	protected int precursorIonTypeIndexHD;
 	protected boolean positiveModeHD;
 	protected HDPrecursorCandidateWrapper candidateWrapper;
+	protected boolean extendedWriter = false;
 
 	public HDTopDownFragmenterAssignerScorer(Settings settings, ICandidate candidate) {
 		super(settings, candidate);
@@ -40,7 +42,7 @@ public class HDTopDownFragmenterAssignerScorer extends TopDownFragmenterAssigner
 		HDTopDownBitArrayPrecursor candidatePrecursor = (HDTopDownBitArrayPrecursor)(this.candidates[0]).getPrecursorMolecule();
 		//one native candidate can have multiple deuterated precursors
 		int deuteratedCandidateNumber = candidatePrecursor.getNumberDeuteratedCombinations();
-		
+
 		/*
 		 * generate root fragment
 		 */
@@ -195,7 +197,7 @@ public class HDTopDownFragmenterAssignerScorer extends TopDownFragmenterAssigner
 		
 		this.calculateFragmenterScores(peakIndexToPeakMatch, singleScores, summedScores);
 		for(int d = 0; d < deuteratedCandidateNumber; d++) {
-			this.calculateFragmenterScoresHD(peakIndexToPeakMatchHD[d], singleScoresHD.get(d), summedScoresHD[d], deuteratedCandidates[d]);
+			this.calculateFragmenterScoresHD(peakIndexToPeakMatchHD[d], singleScoresHD.get(d), summedScoresHD[d], deuteratedCandidates[d], d);
 		}
 		
 		this.settings.set(VariableNames.PEAK_INDEX_TO_PEAK_MATCH_NAME, peakIndexToPeakMatch);
@@ -318,12 +320,13 @@ public class HDTopDownFragmenterAssignerScorer extends TopDownFragmenterAssigner
 	 * @param summedScores
 	 */
 	protected void calculateFragmenterScoresHD(java.util.HashMap<Integer, MatchFragmentList> peakIndexToPeakMatchHD, double[][] singleScores, 
-			double[] summedScores, ICandidate candidate) {
+			double[] summedScores, ICandidate candidate, int precursorID) {
 		
 		java.util.Iterator<Integer> it = peakIndexToPeakMatchHD.keySet().iterator();
 		int index = 0;
 
 		String sumFormulasOfFragmentsExplainedPeaks = "";
+		String smilesOfFragmentsExplainedPeaks = "";
 		
 		while(it.hasNext()) {
 			int key = it.next();
@@ -332,7 +335,15 @@ public class HDTopDownFragmenterAssignerScorer extends TopDownFragmenterAssigner
 			IMatch match = bestFragment.getMatch();
 			
 			sumFormulasOfFragmentsExplainedPeaks += match.getMatchedPeak().getMass() + ":" + match.getModifiedFormulaStringOfBestMatchedFragment() + ";";
-			
+			// write out fragment smiles of HDX candidates if extended writer is set
+			if(this.extendedWriter) {
+				try {
+					smilesOfFragmentsExplainedPeaks += match.getMatchedPeak().getMass() + ":" + MoleculeFunctions.getFragmentSmilesHD(match.getBestMatchedFragment(), precursorID) + ";";
+				} catch (CloneNotSupportedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 			Double[] scoreValuesSingleMatch = null;
 			try {
 				scoreValuesSingleMatch = bestFragment.getFragmentScores();
@@ -362,7 +373,9 @@ public class HDTopDownFragmenterAssignerScorer extends TopDownFragmenterAssigner
 		}
 		
 		if(sumFormulasOfFragmentsExplainedPeaks.length() != 0) sumFormulasOfFragmentsExplainedPeaks = sumFormulasOfFragmentsExplainedPeaks.substring(0, sumFormulasOfFragmentsExplainedPeaks.length() - 1);
-		
+		if(smilesOfFragmentsExplainedPeaks.length() != 0) smilesOfFragmentsExplainedPeaks = smilesOfFragmentsExplainedPeaks.substring(0, smilesOfFragmentsExplainedPeaks.length() - 1);
+
+		candidate.setProperty("HDSmilesOfExplPeaks", smilesOfFragmentsExplainedPeaks);
 		candidate.setProperty("HDFormulasOfExplPeaks", sumFormulasOfFragmentsExplainedPeaks);
 		candidate.setProperty("HDNoExplPeaks", index);
 	}
@@ -631,5 +644,19 @@ public class HDTopDownFragmenterAssignerScorer extends TopDownFragmenterAssigner
 		}
 		//add hd fragmenter score
 		this.scoreCollection = new ScoreCollection(scores);
+		
+		Object writer = this.settings.get(VariableNames.METFRAG_CANDIDATE_WRITER_NAME);
+		
+		if(writer != null) {
+			String[] writers = (String[])writer;
+			for(int i = 0; i < writers.length; i++) {
+				if(writers[i].equals("ExtendedHDCSV")) {
+					this.extendedWriter = true;
+					break;
+				}
+			}
+		}
 	}
+	
+	
 }

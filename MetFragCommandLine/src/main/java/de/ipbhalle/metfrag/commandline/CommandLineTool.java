@@ -40,7 +40,6 @@ public class CommandLineTool {
 			System.exit(0);
 		}
 		
-		
 		File parameterFile = null;
 		MetFragGlobalSettings settings = null;
 		if(commandLineArguments.containsKey(VariableNames.PARAMETER_FILE_NAME)) {
@@ -57,6 +56,7 @@ public class CommandLineTool {
 				logger.error("Parameter file " + parameterFile.getAbsolutePath() + " is no regular file!"); 
 				System.exit(1);
 			}
+			
 			/*
 			 * read settings
 			 */
@@ -68,6 +68,7 @@ public class CommandLineTool {
 				System.exit(1);
 			}
 		}
+
 		/*
 		 * read additional parameters
 		 */
@@ -86,7 +87,7 @@ public class CommandLineTool {
 		//check settings with SettingsChecker	
 		SettingsChecker settingsChecker = new SettingsChecker();
 		if(!settingsChecker.check(settings)) System.exit(2);
-		
+
 		/*
 		 * load hd plugin
 		 */

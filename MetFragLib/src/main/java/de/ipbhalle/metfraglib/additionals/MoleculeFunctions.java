@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import net.sf.jniinchi.INCHI_RET;
 
+import org.openscience.cdk.Atom;
 import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.aromaticity.Aromaticity;
 import org.openscience.cdk.aromaticity.ElectronDonation;
@@ -16,6 +17,8 @@ import org.openscience.cdk.fingerprint.IBitFingerprint;
 import org.openscience.cdk.graph.Cycles;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.interfaces.IBond;
+import org.openscience.cdk.interfaces.IChemObjectBuilder;
 import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.smiles.SmilesGenerator;
 import org.openscience.cdk.smiles.SmilesParser;
@@ -23,8 +26,10 @@ import org.openscience.cdk.tools.CDKHydrogenAdder;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
 import de.ipbhalle.metfraglib.exceptions.ExplicitHydrogenRepresentationException;
+import de.ipbhalle.metfraglib.interfaces.IFragment;
 import de.ipbhalle.metfraglib.parameter.Constants;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
+import de.ipbhalle.metfraglib.precursor.HDTopDownBitArrayPrecursor;
 
 public class MoleculeFunctions {
 	
@@ -255,46 +260,6 @@ public class MoleculeFunctions {
         hAdder = null;
 	}
 	
-	public static void prepareDeuteriumAtomContainer(IAtomContainer container) {
-		while(true) {
-    		try {
-        		AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(container);
-				Aromaticity arom = new Aromaticity(ElectronDonation.cdk(), Cycles.cdkAromaticSet());
-				arom.apply(container);
-        	} catch (CDKException e1) {
-        		e1.printStackTrace();
-        	} catch (java.lang.NullPointerException e) { //bad workaround for cdk bug?! but what shall I do... 
-        		continue;
-        	}
-    		break;
-        }
-        CDKHydrogenAdder hAdder = CDKHydrogenAdder.getInstance(container.getBuilder());
-        for(int i = 0; i < container.getAtomCount(); i++) {
-        	try {
-        		hAdder.addImplicitHydrogens(container, container.getAtom(i));
-        	} catch(Exception e) {
-        		container.getAtom(i).setImplicitHydrogenCount(0);
-        	}
-        }
-        AtomContainerManipulator.convertImplicitToExplicitHydrogens(container);
-        java.util.Iterator<IAtom> atoms = container.atoms().iterator();
-        while(atoms.hasNext()) {
-        	IAtom currentAtom = atoms.next();
-        	if(currentAtom.getSymbol().equals("H") || currentAtom.getProperty(VariableNames.DEUTERIUM_COUNT_NAME) != null) continue;
-        	java.util.List<IAtom> neighbourAtoms = container.getConnectedAtomsList(currentAtom);
-        	int numberDeuteriums = 0;
-        	for(int k = 0; k < neighbourAtoms.size(); k++) {
-        		IAtom currentNeighbouredAtom = neighbourAtoms.get(k);
-        		if(currentNeighbouredAtom.getSymbol().equals("H") 
-        				&& isotopeFactory.configure(currentNeighbouredAtom).getMassNumber() == 2) {
-        			numberDeuteriums++;
-        		}
-        	}
-        	currentAtom.setProperty(VariableNames.DEUTERIUM_COUNT_NAME, numberDeuteriums);
-        }
-        hAdder = null;
-	}
-	
 	public static void removeHydrogens(IAtomContainer molecule) {
 		java.util.Vector<IAtom> hydrogenAtoms = new java.util.Vector<IAtom>();
 		java.util.Iterator<IAtom> atoms = molecule.atoms().iterator();
@@ -338,4 +303,94 @@ public class MoleculeFunctions {
 	public static double getCDKALogValue(IAtomContainer molecule) {
 		return 0.0;
 	}
+	
+	public static IAtomContainer removeHydrogens(IAtomContainer target, int[] skipPositions) throws CloneNotSupportedException {
+		IAtomContainer molecule = target.clone();
+		java.util.Vector<IAtom> hydrogenAtoms = new java.util.Vector<IAtom>();
+		java.util.Iterator<IAtom> atoms = molecule.atoms().iterator();
+		java.util.Vector<IAtom> atomsToSkip = new java.util.Vector<IAtom>();
+		for(int i = 0; i < skipPositions.length; i++) {
+			atomsToSkip.add(molecule.getAtom(skipPositions[i]));
+		}
+		while(atoms.hasNext()) {
+			IAtom currentAtom = atoms.next();
+			if(currentAtom.getSymbol().equals("H")) {
+				//hydrogen can only have one neighbour
+				if(atomsToSkip.contains(molecule.getConnectedAtomsList(currentAtom).get(0))) {
+					molecule.getConnectedAtomsList(currentAtom).get(0).setImplicitHydrogenCount(0);
+					continue;
+				}
+				else hydrogenAtoms.add(currentAtom);
+			}
+			java.util.List<IAtom> neighbours = molecule.getConnectedAtomsList(currentAtom);
+			int numberHydrogens = 0;
+			for(int k = 0; k < neighbours.size(); k++) {
+				if(neighbours.get(k).getSymbol().equals("H")) numberHydrogens++;
+			}
+			currentAtom.setImplicitHydrogenCount(numberHydrogens);
+		}
+		for(IAtom atom : hydrogenAtoms) {
+			molecule.removeAtomAndConnectedElectronContainers(atom);
+		}
+		return molecule;
+	}
+	
+
+	public static String getFragmentSmilesHD(IFragment fragment, int precursorID) throws CloneNotSupportedException {	
+		return generateSmiles(getStructureAsIAtomContainerHD(fragment, precursorID)).replaceAll("\\[H\\]", "[2H]");
+	}
+	
+	public static IAtomContainer getStructureAsIAtomContainerHD(IFragment fragment, int precursorIndexHD) throws CloneNotSupportedException {
+		HDTopDownBitArrayPrecursor precursor = (HDTopDownBitArrayPrecursor)fragment.getPrecursorMolecule();
+		de.ipbhalle.metfraglib.BitArray atomsBitArray = ((de.ipbhalle.metfraglib.fragment.DefaultBitArrayFragment)fragment).getAtomsBitArray();
+		de.ipbhalle.metfraglib.BitArray bondsBitArray = ((de.ipbhalle.metfraglib.fragment.DefaultBitArrayFragment)fragment).getBondsBitArray();
+		
+		IAtomContainer mol = precursor.getStructureAsIAtomContainer().clone();
+		prepareAtomContainer(mol, false);
+		IChemObjectBuilder builder = DefaultChemObjectBuilder.getInstance();
+		IAtomContainer fragmentStructure = builder.newInstance(IAtomContainer.class);
+		if(atomsBitArray.cardinality() == 1) {
+			int firstSetBit = atomsBitArray.getFirstSetBit();
+			IAtom atom = (IAtom)mol.getAtom(firstSetBit).clone();
+			fragmentStructure.addAtom(atom);
+			int numberDeuteriums = precursor.getNumberDeuteriumsConnectedToAtomIndex(precursorIndexHD, firstSetBit);
+			for(int i = 0; i < numberDeuteriums; i++) {
+				IAtom hydrogen = new Atom("H");
+				fragmentStructure.addAtom(hydrogen);
+				atom.setImplicitHydrogenCount(atom.getImplicitHydrogenCount() - 1);
+				IBond bond = new org.openscience.cdk.Bond(hydrogen, atom);
+				fragmentStructure.addBond(bond);
+			}
+			return fragmentStructure;
+		}
+		for(int i = 0; i < atomsBitArray.getSize(); i++) {
+			if(atomsBitArray.get(i)) {
+				int numberDeuteriums = precursor.getNumberDeuteriumsConnectedToAtomIndex(precursorIndexHD, i);
+				IAtom atom = mol.getAtom(i);
+				for(int k = 0; k < numberDeuteriums; k++) {
+					IAtom hydrogen = new Atom("H");
+					fragmentStructure.addAtom(hydrogen);
+					atom.setImplicitHydrogenCount(atom.getImplicitHydrogenCount() - 1);
+					IBond bond = new org.openscience.cdk.Bond(hydrogen, atom);
+					fragmentStructure.addBond(bond);
+				}
+			}
+		}
+		
+		for(int i = 0; i < bondsBitArray.getSize(); i++) {
+			if(bondsBitArray.get(i)) {
+				IBond curBond = mol.getBond(i);
+				for(IAtom atom : curBond.atoms()) {
+					fragmentStructure.addAtom(atom);
+				}
+				fragmentStructure.addBond(curBond);
+			}
+		}
+	//	loss of hydrogens
+		MoleculeFunctions.prepareAtomContainer(fragmentStructure, false);
+		
+		return fragmentStructure;
+	}
+
 }
+
