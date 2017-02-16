@@ -272,4 +272,6 @@ public class VariableNames {
 	public static final String PUBCHEM_PROXY_SERVER				 		= 	"PubChemProxyServer";
 	public static final String PUBCHEM_PROXY_PORT				 			= 	"PubChemProxyPort";
 	
+	public static final String CHEMSPIDER_PROXY_SERVER					=	"ChemSpiderProxyServer";
+	public static final String CHEMSPIDER_PROXY_PORT						=	"ChemSpiderProxyPort";
 }
