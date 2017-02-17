@@ -136,7 +136,11 @@ class MetfRag {
 			return new CandidateList();
 		}
 		
-		return mp.getCandidateList();
+		SortedScoredCandidateList scoredCandidateList = (SortedScoredCandidateList)mp.getCandidateList();
+		
+		addPropertiesToCandidateList(scoredCandidateList);
+		
+		return scoredCandidateList;
 	}
 	
 	/**
@@ -704,5 +708,44 @@ class MetfRag {
 		}
 		
 		return assignedFragments;
+	}
+	
+	/**
+	 * adds properties 
+	 * 
+	 * EXPLAINED_PEAKS_COLUMN, FORMULAS_OF_PEAKS_EXPLAINED_COLUMN, NUMBER_PEAKS_USED_COLUMN
+	 * 
+	 * to candidate list
+	 * 
+	 * @param scoredCandidateList
+	 */
+	public static void addPropertiesToCandidateList(SortedScoredCandidateList scoredCandidateList) {
+		int numberOfPeaksUsed = scoredCandidateList.getNumberPeaksUsed();
+		
+		for(int i = 0; i < scoredCandidateList.getNumberElements(); i++) {
+			ICandidate candidate = scoredCandidateList.getElement(i);
+		
+			if(candidate.getMatchList() != null) candidate.setProperty(VariableNames.NUMBER_EXPLAINED_PEAKS_COLUMN, candidate.getMatchList().getNumberElements());
+			String peaksExplained = "";
+			String sumFormulasOfFragmentsExplainedPeaks = "";
+			if(candidate.getMatchList() != null) {
+				for(int ii = 0; ii < candidate.getMatchList().getNumberElements(); ii++) {
+					try {
+						peaksExplained += candidate.getMatchList().getElement(ii).getMatchedPeak().getMass() 
+								+ "_" + candidate.getMatchList().getElement(ii).getMatchedPeak().getIntensity() + ";";
+					} catch (RelativeIntensityNotDefinedException e1) {
+						e1.printStackTrace();
+					}
+					sumFormulasOfFragmentsExplainedPeaks += candidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + candidate.getMatchList().getElement(ii).getBestMatchedFragment().getMolecularFormula() + ";";
+				}
+				if(peaksExplained.length() == 0) peaksExplained = "NA";
+				else peaksExplained = peaksExplained.substring(0, peaksExplained.length() - 1);
+				if(sumFormulasOfFragmentsExplainedPeaks.length() == 0) sumFormulasOfFragmentsExplainedPeaks = "NA";
+				else sumFormulasOfFragmentsExplainedPeaks = sumFormulasOfFragmentsExplainedPeaks.substring(0, sumFormulasOfFragmentsExplainedPeaks.length() - 1);
+				candidate.setProperty(VariableNames.EXPLAINED_PEAKS_COLUMN, peaksExplained);
+				candidate.setProperty(VariableNames.FORMULAS_OF_PEAKS_EXPLAINED_COLUMN, sumFormulasOfFragmentsExplainedPeaks);
+			}
+			candidate.setProperty(VariableNames.NUMBER_PEAKS_USED_COLUMN, numberOfPeaksUsed);
+		}
 	}
 }

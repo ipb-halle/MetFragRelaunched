@@ -210,6 +210,8 @@ public class ParameterDataTypes {
 		parameterDatatypes.put(	VariableNames.METACYC_PROXY_PORT, 										"Integer"	);
 		parameterDatatypes.put(	VariableNames.PUBCHEM_PROXY_SERVER, 									"String"	);
 		parameterDatatypes.put(	VariableNames.PUBCHEM_PROXY_PORT, 										"Integer"	);
+		parameterDatatypes.put(	VariableNames.CHEMSPIDER_PROXY_SERVER, 									"String"	);
+		parameterDatatypes.put(	VariableNames.CHEMSPIDER_PROXY_PORT, 									"String"	);
 		
 		/*
 		 * hd settings
