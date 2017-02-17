@@ -7,7 +7,7 @@ NULL
 require(rJava, quietly=TRUE)
 
 .onLoad<-function(libname, pkgname) {
-	jar.metfrag <- paste(libname, pkgname, "java", "MetFragR-2.3-jar-with-dependencies.jar", sep=.Platform$file.sep)	
+	jar.metfrag <- paste(libname, pkgname, "java", "MetFragR-2.4.2-jar-with-dependencies.jar", sep=.Platform$file.sep)	
 	.jinit(classpath=c(jar.metfrag))
 }
 
@@ -84,6 +84,7 @@ run.metfrag<-function(settingsObject) {
 	  else if(name == "KeggProxyPort") {return("integer")}
 	  else if(name == "MoNAProxyPort") {return("integer")}
 	  else if(name == "MetaCycProxyPort") {return("integer")}
+	  else if(name == "PubChemProxyPort") {return("integer")}
 	  else if(name == "NeutralPrecursorMass") {return("double")}
 	  else if(name == "DatabaseSearchRelativeMassDeviation") {return("double")}
 	  else if(name == "FragmentPeakMatchAbsoluteMassDeviation") {return("double")}
