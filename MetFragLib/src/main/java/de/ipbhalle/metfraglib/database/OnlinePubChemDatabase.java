@@ -279,7 +279,6 @@ public class OnlinePubChemDatabase extends AbstractDatabase {
 			idString += "," + cidsVec[i];
 			if((i % 100 == 0 && i != 0) || (i == cidsVec.length - 1)) {
 				idString = idString.substring(1, idString.length());
-			//	String urlname = "http://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/" + idString + "/property/inchi,XLogP,InChIKey,MolecularFormula,IsotopeAtomCount,IsomericSMILES,MonoisotopicMass,IUPACName/CSV";
 				String urlname = "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/" + idString + "/property/inchi,XLogP,InChIKey,MolecularFormula,IsotopeAtomCount,IsomericSMILES,MonoisotopicMass/CSV";
 				logger.trace(urlname);
 				java.io.InputStream stream = HelperFunctions.getInputStreamFromURL(urlname);
