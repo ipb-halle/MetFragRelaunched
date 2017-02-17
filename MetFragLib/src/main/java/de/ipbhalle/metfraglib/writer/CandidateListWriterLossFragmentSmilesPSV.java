@@ -97,7 +97,7 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 				scoredCandidate.setProperty("ExplPeaks", peaksExplained);
 				scoredCandidate.setProperty("FormulasOfExplPeaks", sumFormulasOfFragmentsExplainedPeaks);
 				scoredCandidate.setProperty("SmilesOfExplPeaks", smilesOfFragmentsExplainedPeaks);
-				scoredCandidate.setProperty("FragmentFingerPrintOfExplPeaks", fingerprintOfFragmentsExplainedPeaks);
+				scoredCandidate.setProperty("FragmentFingerprintOfExplPeaks", fingerprintOfFragmentsExplainedPeaks);
 				scoredCandidate.setProperty("AromaticSmilesOfExplPeaks", aromaticSmilesOfFragmentsExplainedPeaks);
 				scoredCandidate.setProperty("NumberPeaksUsed", numberOfPeaksUsed);
 				scoredCandidate.setProperty("NoExplPeaks", countExplainedPeaks);
@@ -106,7 +106,7 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 					String[] lossesInformation = createLossAnnotations(scoredCandidate.getMatchList(), settings);
 					scoredCandidate.setProperty("LossSmilesOfExplPeaks", lossesInformation[0]);
 					scoredCandidate.setProperty("LossAromaticSmilesOfExplPeaks", lossesInformation[1]);
-					scoredCandidate.setProperty("LossFingerPrintOfExplPeaks", lossesInformation[2]);
+					scoredCandidate.setProperty("LossFingerprintOfExplPeaks", lossesInformation[2]);
 				}
 			}
 	
