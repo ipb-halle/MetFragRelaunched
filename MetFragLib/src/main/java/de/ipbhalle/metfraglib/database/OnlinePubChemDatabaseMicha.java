@@ -71,7 +71,7 @@ public class OnlinePubChemDatabaseMicha {
 		double minMass = monoisotopicMass - mzabs;
 		double maxMass = monoisotopicMass + mzabs;
 
-		String urlname = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pccompound&term=" + minMass + "[MIMass]:" + maxMass + "[MIMass]&retmode=json&retmax=100000";
+		String urlname = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pccompound&term=" + minMass + "[MIMass]:" + maxMass + "[MIMass]&retmode=json&retmax=100000";
 		java.io.InputStream stream = this.getInputStreamFromURL(urlname);
 		if(stream == null) return new Vector<String>();
 		JSONParser parser = new JSONParser();
@@ -98,7 +98,7 @@ public class OnlinePubChemDatabaseMicha {
 	 * @throws Exception
 	 */
 	public java.util.Vector<String> getCandidateIdentifiers(String molecularFormula) throws Exception {
-		String urlname = "http://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/formula/" + molecularFormula + "/TXT";
+		String urlname = "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/formula/" + molecularFormula + "/TXT";
 		/*
 		 * get stream to retrieve listkey
 		 */
@@ -118,7 +118,7 @@ public class OnlinePubChemDatabaseMicha {
 		/*
 		 * build url to get cids
 		 */
-		urlname = "http://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/listkey/" + listKey + "/cids/TXT";
+		urlname = "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/listkey/" + listKey + "/cids/TXT";
 		stream = this.getInputStreamFromURL(urlname);
 		java.util.Vector<String> cids = new Vector<String>();
 		if(stream == null) {
@@ -240,7 +240,7 @@ public class OnlinePubChemDatabaseMicha {
 			//only fetch 100 at once
 			if((i % 100 == 0 && i != 0) || (i == cidsVec.length - 1)) {
 				idString = idString.substring(1, idString.length());
-				String urlname = "http://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/" + idString + "/property/inchi,XLogP,InChIKey,MolecularFormula,IsotopeAtomCount,IsomericSMILES,MonoisotopicMass/CSV";
+				String urlname = "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/" + idString + "/property/inchi,XLogP,InChIKey,MolecularFormula,IsotopeAtomCount,IsomericSMILES,MonoisotopicMass/CSV";
 				java.io.InputStream stream = this.getInputStreamFromURL(urlname);
 				if(stream == null) return new Vector<String>();
 				java.io.BufferedReader breader = new java.io.BufferedReader(new java.io.InputStreamReader(stream));
@@ -320,7 +320,7 @@ public class OnlinePubChemDatabaseMicha {
 			idString += "," + cidsVec.get(i);
 			if((i % 100 == 0 && i != 0) || (i == cidsVec.size() - 1)) {
 				idString = idString.substring(1, idString.length());
-				String urlname = "http://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/" + idString + "/description/JSON";
+				String urlname = "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/" + idString + "/description/JSON";
 				java.io.InputStream stream = this.getStreamForPubChemInfo(urlname);
 				if(stream == null) {
 					String[] tmp_cids = idString.split(",");
