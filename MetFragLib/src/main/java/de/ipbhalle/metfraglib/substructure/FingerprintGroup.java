@@ -35,6 +35,10 @@ public class FingerprintGroup {
 		this.numberObserved = numberObserved;
 	}
 
+	public void incerementNumberObserved() {
+		this.numberObserved++;
+	}
+	
 	public void setFingerprint(String fingerprint) {
 		this.fingerprint = fingerprint;
 	}

@@ -14,9 +14,6 @@ import de.ipbhalle.metfraglib.settings.Settings;
 import de.ipbhalle.metfraglib.substructure.FingerprintGroup;
 import de.ipbhalle.metfraglib.substructure.PeakToFingerprintGroupList;
 import de.ipbhalle.metfraglib.substructure.PeakToFingerprintGroupListCollection;
-import de.ipbhalle.metfraglib.substructure.PeakToSmartsGroupList;
-import de.ipbhalle.metfraglib.substructure.PeakToSmartsGroupListCollection;
-import de.ipbhalle.metfraglib.substructure.SmartsGroup;
 
 public class WriteFingerprintSubstructureAnnotationFile {
 
@@ -81,6 +78,7 @@ public class WriteFingerprintSubstructureAnnotationFile {
 				String fingerprint = null;
 				try {
 					fingerprint = tmp[1];
+					addSortedFeature(peak, fingerprint, peakMassesSorted, fingerprintsSorted);
 				}
 				catch(Exception e) {
 					continue;
@@ -89,143 +87,116 @@ public class WriteFingerprintSubstructureAnnotationFile {
 			}
 		}
 		for(int i = 0; i < peakMassesSorted.size(); i++) {
-			PeakToFingerprintGroupList peakToFingerprintGroupList = peakToFingerprintGroupListCollection.getElementByPeak(peak, mzppm, mzabs);
+			Double currentPeak = peakMassesSorted.get(i);
+			PeakToFingerprintGroupList peakToFingerprintGroupList = peakToFingerprintGroupListCollection.getElementByPeakInterval(currentPeak, mzppm, mzabs);
 			if(peakToFingerprintGroupList == null) {
-				peakToFingerprintGroupList = new PeakToFingerprintGroupList(peak);
+				peakToFingerprintGroupList = new PeakToFingerprintGroupList(currentPeak);
 				FingerprintGroup obj = new FingerprintGroup(0.0, null, null, null);
-				obj.setFingerprint(fingerprint);
+				obj.setFingerprint(fingerprintsSorted.get(i));
 				peakToFingerprintGroupList.addElement(obj);
 				peakToFingerprintGroupListCollection.addElementSorted(peakToFingerprintGroupList);
 			}
 			else {
-				peakToSmartGroupList.setPeakmz((peakToSmartGroupList.getPeakmz() + peak) / 2.0);
-				SmartsGroup smartsGroup = peakToSmartGroupList.getElementBySmiles(smiles, 1.0);
-				if(smartsGroup != null) {
-					smartsGroup.addElement(smarts);
-					smartsGroup.addSmiles(smiles);
+				FingerprintGroup fingerprintGroup = peakToFingerprintGroupList.getElementByFingerprint(fingerprintsSorted.get(i));
+				if(fingerprintGroup != null) {
+					fingerprintGroup.incerementNumberObserved();
 				}
 				else {
-					smartsGroup = new SmartsGroup(0.0, null, null, null);
-					smartsGroup.addElement(smarts);
-					smartsGroup.addSmiles(smiles);
-					peakToSmartGroupList.addElement(smartsGroup);
+					fingerprintGroup = new FingerprintGroup(0.0, null, null, null);
+					fingerprintGroup.setFingerprint(fingerprintsSorted.get(i));
+					fingerprintGroup.incerementNumberObserved();
+					peakToFingerprintGroupList.addElement(fingerprintGroup);
 				}
 			}
 		}
 
 		// test filtering
-		if(occurThresh != null) peakToSmartGroupListCollection.filterByOccurence(occurThresh);
+		if(occurThresh != null) peakToFingerprintGroupListCollection.filterByOccurence(occurThresh);
 		
-		peakToSmartGroupListCollection.annotateIds();
+		peakToFingerprintGroupListCollection.annotateIds();
 		//get absolute numbers of single substructure occurences
 		//N^(s)
-		int[] substrOccurences = peakToSmartGroupListCollection.calculateSubstructureAbsoluteProbabilities();
-		int[] peakOccurences = peakToSmartGroupListCollection.calculatePeakAbsoluteProbabilities();
+		int[] substrOccurences = peakToFingerprintGroupListCollection.calculateSubstructureAbsoluteProbabilities();
+		int[] peakOccurences = peakToFingerprintGroupListCollection.calculatePeakAbsoluteProbabilities();
 		
 		//P ( s | p ) 
 		if(probabilityType == 1) {
 			// calculate P ( s | p ) 
-			peakToSmartGroupListCollection.updateConditionalProbabilities();
+			peakToFingerprintGroupListCollection.updateConditionalProbabilities();
 
-			peakToSmartGroupListCollection.removeDuplicates();
-			peakToSmartGroupListCollection.setProbabilityToConditionalProbability_sp();
-			peakToSmartGroupListCollection.sortElementsByProbability();
+			peakToFingerprintGroupListCollection.setProbabilityToConditionalProbability_sp();
+			peakToFingerprintGroupListCollection.sortElementsByProbability();
 		}
 		//P ( p | s ) 
 		if(probabilityType == 2) {
 			System.out.println("annotating IDs");
 			// calculate P ( p | s ) 
-			peakToSmartGroupListCollection.updateProbabilities(substrOccurences);
+			peakToFingerprintGroupListCollection.updateProbabilities(substrOccurences);
 			
-			peakToSmartGroupListCollection.removeDuplicates();
-			peakToSmartGroupListCollection.setProbabilityToConditionalProbability_ps();
-			peakToSmartGroupListCollection.sortElementsByProbability();
+			peakToFingerprintGroupListCollection.setProbabilityToConditionalProbability_ps();
+			peakToFingerprintGroupListCollection.sortElementsByProbability();
 		}
 		
 		//P ( p , s )_s 
 		if(probabilityType == 3) {
 			System.out.println("annotating IDs");
 			// calculate P ( p , s ) 
-			peakToSmartGroupListCollection.updateJointProbabilitiesWithSubstructures(substrOccurences);
+			peakToFingerprintGroupListCollection.updateJointProbabilitiesWithSubstructures(substrOccurences);
 			
-			peakToSmartGroupListCollection.removeDuplicates();
-			peakToSmartGroupListCollection.setProbabilityToJointProbability();
-			peakToSmartGroupListCollection.sortElementsByProbability();
+			peakToFingerprintGroupListCollection.setProbabilityToJointProbability();
+			peakToFingerprintGroupListCollection.sortElementsByProbability();
 		}
 
 		//P ( p , s )_p
 		if(probabilityType == 4) {
 			System.out.println("annotating IDs");
 			// calculate P ( p , s ) 
-			peakToSmartGroupListCollection.updateJointProbabilitiesWithPeaks(peakOccurences);
+			peakToFingerprintGroupListCollection.updateJointProbabilitiesWithPeaks(peakOccurences);
 			
-			peakToSmartGroupListCollection.removeDuplicates();
-			peakToSmartGroupListCollection.setProbabilityToJointProbability();
-			peakToSmartGroupListCollection.sortElementsByProbability();
+			peakToFingerprintGroupListCollection.setProbabilityToJointProbability();
+			peakToFingerprintGroupListCollection.sortElementsByProbability();
 		}
 		
 		//P ( s | p ) P ( p | s ) P( s, p )_s
 		if(probabilityType == 5) {
 			System.out.println("annotating IDs");
-			peakToSmartGroupListCollection.updateConditionalProbabilities();
-			peakToSmartGroupListCollection.updateProbabilities(substrOccurences);
-			peakToSmartGroupListCollection.updateJointProbabilitiesWithSubstructures(substrOccurences);
-
-			peakToSmartGroupListCollection.removeDuplicates();
+			peakToFingerprintGroupListCollection.updateConditionalProbabilities();
+			peakToFingerprintGroupListCollection.updateProbabilities(substrOccurences);
+			peakToFingerprintGroupListCollection.updateJointProbabilitiesWithSubstructures(substrOccurences);
 			
-			peakToSmartGroupListCollection.setProbabilityToConditionalProbability_sp();
-			peakToSmartGroupListCollection.sortElementsByProbability();
-			if(output == null) peakToSmartGroupListCollection.print();
+			peakToFingerprintGroupListCollection.setProbabilityToConditionalProbability_sp();
+			peakToFingerprintGroupListCollection.sortElementsByProbability();
+			if(output == null) peakToFingerprintGroupListCollection.print();
 			else {
 				BufferedWriter bwriter = new BufferedWriter(new FileWriter(new File(output + "_1")));
-				bwriter.write(peakToSmartGroupListCollection.toString());
+				bwriter.write(peakToFingerprintGroupListCollection.toString());
 				bwriter.close();
 			}
-			if(outputSmiles != null) {
-				BufferedWriter bwriter = new BufferedWriter(new FileWriter(new File(outputSmiles + "_1")));
-				bwriter.write(peakToSmartGroupListCollection.toStringSmiles());
-				bwriter.close();
-			}
-
-			peakToSmartGroupListCollection.setProbabilityToConditionalProbability_ps();
-			peakToSmartGroupListCollection.sortElementsByProbability();
-			if(output == null) peakToSmartGroupListCollection.print();
+			
+			peakToFingerprintGroupListCollection.setProbabilityToConditionalProbability_ps();
+			peakToFingerprintGroupListCollection.sortElementsByProbability();
+			if(output == null) peakToFingerprintGroupListCollection.print();
 			else {
 				BufferedWriter bwriter = new BufferedWriter(new FileWriter(new File(output + "_2")));
-				bwriter.write(peakToSmartGroupListCollection.toString());
-				bwriter.close();
-			}
-			if(outputSmiles != null) {
-				BufferedWriter bwriter = new BufferedWriter(new FileWriter(new File(outputSmiles + "_2")));
-				bwriter.write(peakToSmartGroupListCollection.toStringSmiles());
+				bwriter.write(peakToFingerprintGroupListCollection.toString());
 				bwriter.close();
 			}
 
-			peakToSmartGroupListCollection.setProbabilityToJointProbability();
-			peakToSmartGroupListCollection.sortElementsByProbability();
-			if(output == null) peakToSmartGroupListCollection.print();
+			peakToFingerprintGroupListCollection.setProbabilityToJointProbability();
+			peakToFingerprintGroupListCollection.sortElementsByProbability();
+			if(output == null) peakToFingerprintGroupListCollection.print();
 			else {
 				BufferedWriter bwriter = new BufferedWriter(new FileWriter(new File(output + "_3")));
-				bwriter.write(peakToSmartGroupListCollection.toString());
-				bwriter.close();
-			}
-			if(outputSmiles != null) {
-				BufferedWriter bwriter = new BufferedWriter(new FileWriter(new File(outputSmiles + "_3")));
-				bwriter.write(peakToSmartGroupListCollection.toStringSmiles());
+				bwriter.write(peakToFingerprintGroupListCollection.toString());
 				bwriter.close();
 			}
 		}
 
 		if(probabilityType != 5) {
-			if(output == null) peakToSmartGroupListCollection.print();
+			if(output == null) peakToFingerprintGroupListCollection.print();
 			else {
 				BufferedWriter bwriter = new BufferedWriter(new FileWriter(new File(output)));
-				bwriter.write(peakToSmartGroupListCollection.toString());
-				bwriter.close();
-			}
-			if(outputSmiles != null) {
-				BufferedWriter bwriter = new BufferedWriter(new FileWriter(new File(outputSmiles)));
-				bwriter.write(peakToSmartGroupListCollection.toStringSmiles());
+				bwriter.write(peakToFingerprintGroupListCollection.toString());
 				bwriter.close();
 			}
 		}
