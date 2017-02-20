@@ -662,7 +662,7 @@ public class MetFragWebBean {
 				this.isDatabaseProcessing = false;
 				System.out.println("checkDatabaseThread thread is dead");
 				this.threadExecutionStarted = false;
-			
+				
 				if (this.beanSettingsContainer.getRetrievedCandidateList() != null) {
 					if(this.beanSettingsContainer.getRetrievedCandidateList().getNumberElements() != 1) 
 						FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Candidate retrieval finished", "Got " + this.beanSettingsContainer.getRetrievedCandidateList().getNumberElements() + " candidates"));
@@ -2165,7 +2165,6 @@ public class MetFragWebBean {
 				//reset the header of the processing dialog
 				this.beanSettingsContainer.setProcessCompoundsDialogHeader("");
 				this.beanSettingsContainer.resetProcessStatus();
-				
 				//start clustering compounds
 				if(this.compoundClusteringEnabled) {
 					if(this.filteredMetFragResultsContainer.getMetFragResults().size() >= 5) {
