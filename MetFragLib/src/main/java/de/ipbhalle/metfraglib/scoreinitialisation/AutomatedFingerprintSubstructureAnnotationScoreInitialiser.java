@@ -44,7 +44,7 @@ public class AutomatedFingerprintSubstructureAnnotationScoreInitialiser  impleme
 						fingerprintGroup = new FingerprintGroup(Double.parseDouble(tmp[i]));
 					}
 					else {
-						fingerprintGroup.addElement(tmp[i]);
+						fingerprintGroup.setFingerprint(tmp[i]);
 					}
 					if(i == (tmp.length - 1)) {
 						peakToFingerprintGroupList.addElement(fingerprintGroup);
