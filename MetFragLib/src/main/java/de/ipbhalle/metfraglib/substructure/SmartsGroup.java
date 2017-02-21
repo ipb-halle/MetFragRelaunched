@@ -1,5 +1,7 @@
 package de.ipbhalle.metfraglib.substructure;
 
+import java.util.Vector;
+
 import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -19,6 +21,7 @@ public class SmartsGroup extends DefaultList {
 	private Double probability = null;
 	
 	private java.util.Vector<String> smiles;
+	private java.util.Vector<String> fingerprints;
 	private Integer id = null;
 
 	public SmartsGroup(Double probability) {
@@ -37,6 +40,11 @@ public class SmartsGroup extends DefaultList {
 	public void addSmiles(String smiles) {
 		if(this.smiles == null) this.smiles = new java.util.Vector<String>();
 		this.smiles.add(smiles);
+	}
+
+	public void addFingerprint(String fingerprint) {
+		if(this.fingerprints == null) this.fingerprints = new java.util.Vector<String>();
+		this.fingerprints.add(fingerprint);
 	}
 	
 	public double getBestSimilarity(String smiles) {
@@ -110,6 +118,15 @@ public class SmartsGroup extends DefaultList {
 		this.list.add(index, obj);
 	}
 	
+	public boolean fingerprintMatches(Vector<String> _fingerprints) {
+		for(int i = 0; i < _fingerprints.size(); i++) {
+			for(int j = 0; j < this.fingerprints.size(); j++) {
+				if(_fingerprints.get(i).equals(this.fingerprints.get(j))) return true;
+			}
+		}
+		return false;
+	}
+	
 	public boolean smartsMatches(ICandidate candidate) {
 		IAtomContainer con = null;
 		try {
@@ -149,11 +166,13 @@ public class SmartsGroup extends DefaultList {
 	public void removeDuplicates() {
 		java.util.Vector<Object> newList = new java.util.Vector<Object>();
 		java.util.Vector<String> newSmiles = new java.util.Vector<String>();
+		java.util.Vector<String> newFingerprints = new java.util.Vector<String>();
 		for(int i = 0; i < this.list.size(); i++) {
 			String current = ((SMARTSQueryTool)this.list.get(i)).getSmarts();
 			if(!newList.contains(current)) {
 				newList.add(current);
 				newSmiles.add(this.smiles.get(i));
+				newFingerprints.add(this.fingerprints.get(i));
 			}
 		}
 		this.list = new java.util.Vector<Object>();
@@ -162,6 +181,7 @@ public class SmartsGroup extends DefaultList {
 			this.list.add(sqt);
 		}
 		this.smiles = newSmiles;
+		this.fingerprints = newFingerprints;
 	}
 	
 	public String toStringSmiles() {
@@ -182,5 +202,9 @@ public class SmartsGroup extends DefaultList {
 	
 	public java.util.Vector<String> getSmiles() {
 		return this.smiles;
+	}
+	
+	public java.util.Vector<String> getFingerprints() {
+		return this.fingerprints;
 	}
 }

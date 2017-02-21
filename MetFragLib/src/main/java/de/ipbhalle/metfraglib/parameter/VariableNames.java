@@ -90,6 +90,12 @@ public class VariableNames {
 	public static final String PEAK_TO_SMARTS_GROUP_LIST_COLLECTION_NAME		= "peakToSmartGroupListCollection";
 	public static final String LOSS_TO_SMARTS_GROUP_LIST_COLLECTION_NAME		= "lossToSmartGroupListCollection";
 	
+	public static final String FINGERPRINT_PEAK_ANNOTATION_FILE_NAME				= "FingerprintPeakAnnotationFile";
+	public static final String FINGERPRINT_LOSS_ANNOTATION_FILE_NAME				= "FingerprintLossAnnotationFile";
+	public static final String PEAK_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME		= "peakToFingerprintGroupListCollection";
+	public static final String LOSS_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME		= "lossToFingerprintGroupListCollection";
+	
+	
 	/*
 	 * single process thread settings
 	 */
