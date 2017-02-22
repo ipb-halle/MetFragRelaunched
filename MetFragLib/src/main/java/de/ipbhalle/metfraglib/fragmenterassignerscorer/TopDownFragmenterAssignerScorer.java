@@ -18,6 +18,8 @@ import de.ipbhalle.metfraglib.precursor.AbstractTopDownBitArrayPrecursor;
 import java.io.IOException;
 import java.util.Vector;
 
+import org.openscience.cdk.fingerprint.IBitFingerprint;
+
 import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
 import de.ipbhalle.metfraglib.fragment.AbstractTopDownBitArrayFragment;
 import de.ipbhalle.metfraglib.fragment.AbstractTopDownBitArrayFragmentWrapper;
@@ -69,6 +71,8 @@ public class TopDownFragmenterAssignerScorer extends AbstractFragmenterAssignerS
 		MatchPeakList sortedScoredPeaks = null;
 		
 		Vector<String> fingerprints = new Vector<String>();
+		Vector<IBitFingerprint> fps = new Vector<IBitFingerprint>();
+		
 		/*
 		 * iterate over the maximal allowed tree depth
 		 */
@@ -93,7 +97,7 @@ public class TopDownFragmenterAssignerScorer extends AbstractFragmenterAssignerS
 				 * generate fragments of next tree depth
 				 */
 				java.util.Vector<AbstractTopDownBitArrayFragment> fragmentsOfCurrentTreeDepth = this.fragmenter.getFragmentsOfNextTreeDepth(wrappedPrecursorFragment.getWrappedFragment());
-				this.addFingerPrintsToVector(fragmentsOfCurrentTreeDepth, fingerprints);
+				this.addFingerPrintsToVector(fragmentsOfCurrentTreeDepth, fingerprints, fps);
 				
 				/*
 				 * get peak pointer of current precursor fragment
@@ -285,7 +289,7 @@ public class TopDownFragmenterAssignerScorer extends AbstractFragmenterAssignerS
 			}
 			index++;
 		}
-
+		
 		this.settings.set(VariableNames.MATCH_LIST_NAME, this.matchList);
 		this.candidates[0].setMatchList(matchList);
 		
@@ -553,9 +557,21 @@ public class TopDownFragmenterAssignerScorer extends AbstractFragmenterAssignerS
 		this.bitArrayToFragment = null;
 	}
 	
-	protected void addFingerPrintsToVector(java.util.Vector<AbstractTopDownBitArrayFragment> fragments, Vector<String> fps) {
+	protected void addFingerPrintsToVector(java.util.Vector<AbstractTopDownBitArrayFragment> fragments, Vector<String> fingerprints, Vector<IBitFingerprint> fps) {
 		for(int i = 0; i < fragments.size(); i++) {
-			fps.add(MoleculeFunctions.fingerPrintToString(TanimotoSimilarity.calculateFingerPrint(fragments.get(i).getStructureAsIAtomContainer())));
+			int index = 0;
+			IBitFingerprint fp = TanimotoSimilarity.calculateFingerPrint(fragments.get(i).getStructureAsIAtomContainer());
+			String fingerprint = MoleculeFunctions.fingerPrintToString(fp);
+			int compareResult = -1;
+			while(index < fingerprints.size()) {
+				compareResult = fingerprints.get(index).compareTo(fingerprint);
+				if(compareResult < 0) index++;
+				else break; 
+			}
+			if(compareResult != 0) {
+				fingerprints.add(index, fingerprint);
+				fps.add(index, fp);
+			}
 		}
 	}
 	

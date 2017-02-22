@@ -23,6 +23,12 @@ public class PeakToFingerprintGroupListCollection extends DefaultList {
 		this.list = filteredList;
 	}
 	
+	public void calculateSumProbabilities() {
+		for(int i = 0; i < this.getNumberElements(); i++) {
+			this.getElement(i).calculateSumProbabilites();
+		}
+	}
+	
 	public void addElement(PeakToFingerprintGroupList obj) {
 		this.list.add(obj);
 	}
@@ -74,6 +80,19 @@ public class PeakToFingerprintGroupListCollection extends DefaultList {
 			}
 		}
 		return bestMatch;
+	}
+	
+	/**
+	 * 
+	 * @param mzValue
+	 * @return
+	 */
+	public PeakToFingerprintGroupList getElementByPeak(Double mzValue) {
+		for(int i = 0; i < this.list.size(); i++) {
+			PeakToFingerprintGroupList peakToFingerprintGroupList = (PeakToFingerprintGroupList)this.list.get(i);
+			if(peakToFingerprintGroupList.getPeakmz().equals(mzValue)) return peakToFingerprintGroupList;
+		}
+		return null;
 	}
 	
 	/**
