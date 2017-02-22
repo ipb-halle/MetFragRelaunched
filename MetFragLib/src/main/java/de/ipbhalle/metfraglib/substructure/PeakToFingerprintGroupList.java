@@ -5,10 +5,12 @@ import de.ipbhalle.metfraglib.list.DefaultList;
 public class PeakToFingerprintGroupList extends DefaultList {
 
 	private Double peakmz;
+	private Double sumProbabilities;
 	
 	public PeakToFingerprintGroupList(Double peakmz) {
 		super();
 		this.peakmz = peakmz;
+		this.sumProbabilities = 0.0;
 	}
 	
 	public void filterByOccurence(int minimumNumberOccurences) {
@@ -19,6 +21,17 @@ public class PeakToFingerprintGroupList extends DefaultList {
 				filteredList.add(fingerprintGroup);
 		}
 		this.list = filteredList;
+	}
+	
+	public void calculateSumProbabilites() {
+		this.sumProbabilities = 0.0;
+		for(int i = 0; i < this.getNumberElements(); i++) {
+			this.sumProbabilities += this.getElement(i).getProbability();
+		}
+	}
+	
+	public double getSumProbabilites() {
+		return this.sumProbabilities;
 	}
 	
 	public double getMaximalMatchingProbability(String fingerprint) {
@@ -32,11 +45,10 @@ public class PeakToFingerprintGroupList extends DefaultList {
 		return maxProbability;
 	}
 
-	public double getMaximalMatchingProbabilitySorted(String fingerprint) {
+	public double getMatchingProbability(String fingerprint) {
 		for(int i = 0; i < this.list.size(); i++) {
 			FingerprintGroup fingerprintGroup = this.getElement(i);
 			if(fingerprintGroup.getFingerprint().equals(fingerprint)) {
-				//if already matched you can discard all others (if sorted!!)
 				return fingerprintGroup.getProbability();
 			}
 		}
@@ -105,6 +117,13 @@ public class PeakToFingerprintGroupList extends DefaultList {
 		this.peakmz = peakmz;
 	}
 
+	public boolean containsFingerprint(String fingerprint) {
+		for(int i = 0; i < this.getNumberElements(); i++) {
+			if(this.getElement(i).getFingerprint().equals(fingerprint)) return true;
+		}
+		return false;
+	}
+	
 	// P ( s | p )
 	public void updateConditionalProbabilities() {
 		// numberSubstructures = how often we have seen the peak peakmz

@@ -103,7 +103,7 @@ public class SiriusNodePeak extends TandemMassPeak {
 		this.flag = flag;
 	}
 	
-	public double getMass() {
+	public Double getMass() {
 		return this.molecularFormula.getMonoisotopicMass();
 	}
 	
