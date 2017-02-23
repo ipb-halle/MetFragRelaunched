@@ -37,9 +37,10 @@ public class AutomatedFingerprintSubstructureAnnotationScore extends AbstractSco
 				this.value += (Double)this.settings.get(VariableNames.FINGERPRINT_ANNOTATION_BETA_VALUE_NAME) / (Double)this.settings.get(VariableNames.BETA_PSEUDO_COUNT_DENOMINATOR_VALUE_NAME);
 			} else {
 				String currentFingerprint = MoleculeFunctions.fingerPrintToString(TanimotoSimilarity.calculateFingerPrint(currentMatch.getBestMatchedFragment().getStructureAsIAtomContainer()));
-				
+			
 				// |F|
 				double numberPseudoCountsFingerprint = (massToFingerprints.getSize(currentMass) + 1.0);
+				System.out.println(numberPseudoCountsFingerprint);
 				double alpha = 1.0 / numberPseudoCountsFingerprint;
 				
 				// (p(m,f) + alpha) / sum_F(p(m,f)) + |F| * alpha
@@ -62,11 +63,13 @@ public class AutomatedFingerprintSubstructureAnnotationScore extends AbstractSco
 		// the mass object can be used directly as it was used for initialisation of the list 
 		PeakToFingerprintGroupList peakToFingerprintGroupList = peakToFingerprintGroupListCollection.getElementByPeak(match.getMatchedPeak().getMass());
 		// 3. use this list to filter background fingerprints
+		System.out.println(peakToFingerprintGroupList.getPeakmz());
 		MassToFingerprints massToFingerprints = (MassToFingerprints)this.settings.get(VariableNames.PEAK_TO_BACKGROUND_FINGERPRINTS_NAME);
 		FragmentList fragmentList = match.getMatchedFragmentList();
 		for(int i = 0; i < fragmentList.getNumberElements(); i++) {
 			String currentFingerprint = MoleculeFunctions.fingerPrintToString(TanimotoSimilarity.calculateFingerPrint(fragmentList.getElement(i).getStructureAsIAtomContainer()));
 			// check whether fingerprint was observed for current peak mass in the training data
+			System.out.println(peakToFingerprintGroupList.containsFingerprint(currentFingerprint));
 			if (!peakToFingerprintGroupList.containsFingerprint(currentFingerprint)) {
 				// if not add the fingerprint to background by addFingerprint function
 				// addFingerprint checks also whether fingerprint was already added

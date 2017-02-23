@@ -24,8 +24,8 @@ public class WriteFingerprintSubstructureAnnotationFile {
 	 * mzppm
 	 * mzabs
 	 * probtype - probability type: 1 - P ( s | p ); 2 - P ( p | s ); 3 - P ( p , s ) from s; 4 - P ( p , s ) from p; 5 - P ( s | p ) P ( p | s ) P ( p , s )_s P ( p , s )_p
-	 * output - output smarts
 	 * occurThresh
+	 * output
 	 * 
 	 */
 	
@@ -86,6 +86,10 @@ public class WriteFingerprintSubstructureAnnotationFile {
 				
 			}
 		}
+		
+		print(peakMassesSorted, fingerprintsSorted);
+		System.out.println(peakMassesSorted.size() + " peak fingerprint pairs");
+		
 		for(int i = 0; i < peakMassesSorted.size(); i++) {
 			Double currentPeak = peakMassesSorted.get(i);
 			PeakToFingerprintGroupList peakToFingerprintGroupList = peakToFingerprintGroupListCollection.getElementByPeakInterval(currentPeak, mzppm, mzabs);
@@ -93,6 +97,7 @@ public class WriteFingerprintSubstructureAnnotationFile {
 				peakToFingerprintGroupList = new PeakToFingerprintGroupList(currentPeak);
 				FingerprintGroup obj = new FingerprintGroup(0.0, null, null, null);
 				obj.setFingerprint(fingerprintsSorted.get(i));
+				obj.incerementNumberObserved();
 				peakToFingerprintGroupList.addElement(obj);
 				peakToFingerprintGroupListCollection.addElementSorted(peakToFingerprintGroupList);
 			}
@@ -109,7 +114,8 @@ public class WriteFingerprintSubstructureAnnotationFile {
 				}
 			}
 		}
-
+		System.out.println("before filtering " + peakToFingerprintGroupListCollection.getNumberElements());
+		
 		// test filtering
 		if(occurThresh != null) peakToFingerprintGroupListCollection.filterByOccurence(occurThresh);
 		
@@ -220,5 +226,11 @@ public class WriteFingerprintSubstructureAnnotationFile {
 			parameters.put(tmp[0], tmp[1]);
 		}
 		return parameters;
+	}
+	
+	public static void print(Vector<Double> peakMassesSorted, Vector<String> fingerprintsSorted) {
+		for(int i = 0; i < peakMassesSorted.size(); i++) {
+			System.out.println(peakMassesSorted.get(i) + " " + fingerprintsSorted.get(i));
+		}
 	}
 }

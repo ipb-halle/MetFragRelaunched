@@ -59,13 +59,13 @@ public class PeakToFingerprintGroupList extends DefaultList {
 		DefaultList newlist = new DefaultList();
 		for(int i = 0; i < this.list.size(); i++) {
 			int index = 0;
-			while(index < newlist.getNumberElements() && ((SmartsGroup)newlist.getElement(index)).getProbability() > this.getElement(i).getProbability()) {
+			while(index < newlist.getNumberElements() && ((FingerprintGroup)newlist.getElement(index)).getProbability() > this.getElement(i).getProbability()) {
 				index++;
 			}
 			newlist.addElement(index, this.getElement(i));
 		}
 		this.list.clear();
-		for(int i = 0; i < newlist.getNumberElements(); i++) this.addElement((SmartsGroup)newlist.getElement(i));
+		for(int i = 0; i < newlist.getNumberElements(); i++) this.addElement((FingerprintGroup)newlist.getElement(i));
 	}
 	
 	public FingerprintGroup getElement(int index) {
@@ -119,7 +119,14 @@ public class PeakToFingerprintGroupList extends DefaultList {
 
 	public boolean containsFingerprint(String fingerprint) {
 		for(int i = 0; i < this.getNumberElements(); i++) {
-			if(this.getElement(i).getFingerprint().equals(fingerprint)) return true;
+			try {
+				if(this.getElement(i).getFingerprint().equals(fingerprint)) return true;
+			} catch(Exception e) {
+				System.out.println(fingerprint);
+				System.out.println(this.getElement(i));
+				e.printStackTrace();
+				System.exit(1);
+			}
 		}
 		return false;
 	}
