@@ -103,6 +103,7 @@ public class PeakToFingerprintGroupListCollection extends DefaultList {
 	 * @return
 	 */
 	public PeakToFingerprintGroupList getElementByPeakInterval(Double mzValue, Double mzppm, Double mzabs) {
+	//	System.out.println("-> getElementByPeakInterval " + mzValue);
 		double minDev = Integer.MAX_VALUE;
 		PeakToFingerprintGroupList bestMatch = null;
 		for(int i = 0; i < this.list.size(); i++) {
@@ -110,6 +111,7 @@ public class PeakToFingerprintGroupListCollection extends DefaultList {
 			double dev = MathTools.calculateAbsoluteDeviation(peakToFingerprintGroupList.getPeakmz(), mzppm) + mzabs;
 			double lowerMassBorder = peakToFingerprintGroupList.getPeakmz();
 			double upperMassBorder = peakToFingerprintGroupList.getPeakmz() + (2.0 * dev);
+	//		System.out.println("-> [" + lowerMassBorder + ", " + upperMassBorder + "]");
 			
 			if(mzValue < upperMassBorder && mzValue >= lowerMassBorder) {
 				double currentDev = Math.abs(mzValue - peakToFingerprintGroupList.getPeakmz());
@@ -119,6 +121,8 @@ public class PeakToFingerprintGroupListCollection extends DefaultList {
 				}
 			}
 		}
+	//	if(bestMatch == null) System.out.println("-> nothing found");
+	//	else System.out.println("-> found " + bestMatch.getPeakmz());
 		return bestMatch;
 	}
 	

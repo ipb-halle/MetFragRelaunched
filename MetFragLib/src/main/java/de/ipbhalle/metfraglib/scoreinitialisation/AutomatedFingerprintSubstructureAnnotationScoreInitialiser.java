@@ -38,7 +38,7 @@ public class AutomatedFingerprintSubstructureAnnotationScoreInitialiser  impleme
 				PeakToFingerprintGroupList peakToFingerprintGroupList = new PeakToFingerprintGroupList(matchedMass);
 				FingerprintGroup fingerprintGroup = null;
 				for(int i = 1; i < tmp.length; i++) {
-					if(this.isDoubleValue(tmp[i])) {
+					if((i % 2) == 1) {
 						if(fingerprintGroup != null) 
 							peakToFingerprintGroupList.addElement(fingerprintGroup);
 						fingerprintGroup = new FingerprintGroup(Double.parseDouble(tmp[i]));
@@ -79,16 +79,6 @@ public class AutomatedFingerprintSubstructureAnnotationScoreInitialiser  impleme
 			currentMass = currentMass + ((currentMass / 1000000.0) * mzppm) + mzabs;
 		}
 		return numberIntervals - numberForeGroundPeaks;
-	}
-	
-	private boolean isDoubleValue(String value) {
-		try {
-			Double.parseDouble(value);
-		}
-		catch(Exception e) {
-			return false;
-		}
-		return true;
 	}
 
 }
