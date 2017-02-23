@@ -1637,6 +1637,17 @@ public class BeanSettingsContainer {
 		excludeKeys.add(VariableNames.LOCAL_CHEBI_DATABASE_COMPOUND_NAME_COLUMN_NAME);
 		excludeKeys.add(VariableNames.LOCAL_CHEBI_DATABASE_USER_NAME);
 		excludeKeys.add(VariableNames.LOCAL_CHEBI_DATABASE_PASSWORD_NAME);
+		//local metchem database
+		excludeKeys.add(VariableNames.LOCAL_METCHEM_DATABASE_LIBRARY_NAME);
+		excludeKeys.add(VariableNames.LOCAL_METCHEM_DATABASE_NAME);
+		excludeKeys.add(VariableNames.LOCAL_METCHEM_DATABASE_PASSWORD_NAME);
+		excludeKeys.add(VariableNames.LOCAL_METCHEM_DATABASE_PORT_NUMBER_NAME);
+		excludeKeys.add(VariableNames.LOCAL_METCHEM_DATABASE_SERVER_IP_NAME);
+		excludeKeys.add(VariableNames.LOCAL_METCHEM_DATABASE_USER_NAME);
+		
+		excludeKeys.add(VariableNames.PEAK_LIST_STRING_NAME);
+		excludeKeys.add(VariableNames.PUBCHEM_PROXY_PORT);
+		excludeKeys.add(VariableNames.PUBCHEM_PROXY_SERVER);
 		
 		return excludeKeys;
 	}
