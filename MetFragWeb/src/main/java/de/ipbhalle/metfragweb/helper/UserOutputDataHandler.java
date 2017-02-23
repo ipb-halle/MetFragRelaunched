@@ -104,6 +104,20 @@ public class UserOutputDataHandler {
 			if(databasename.equals("LocalPubChem")) this.beanSettingsContainer.getMetFragSettings().set(VariableNames.METFRAG_DATABASE_TYPE_NAME, "PubChem");
 			if(databasename.equals("LocalKegg")) this.beanSettingsContainer.getMetFragSettings().set(VariableNames.METFRAG_DATABASE_TYPE_NAME, "KEGG");
 			if(databasename.equals("LocalExtendedPubChem")) this.beanSettingsContainer.getMetFragSettings().set(VariableNames.METFRAG_DATABASE_TYPE_NAME, "ExtendedPubChem");
+			if(databasename.equals("MetChem")) {
+				String library = (String)this.beanSettingsContainer.getMetFragSettings().get(VariableNames.LOCAL_METCHEM_DATABASE_LIBRARY_NAME);
+				if(library.equals("pubchem")) {
+					this.beanSettingsContainer.getMetFragSettings().set(VariableNames.METFRAG_DATABASE_TYPE_NAME, "PubChem");
+					this.beanSettingsContainer.getMetFragSettings().remove(VariableNames.LOCAL_METCHEM_DATABASE_LIBRARY_NAME);
+				}
+				else if(library.equals("kegg")) {
+					this.beanSettingsContainer.getMetFragSettings().set(VariableNames.METFRAG_DATABASE_TYPE_NAME, "KEGG");
+					this.beanSettingsContainer.getMetFragSettings().remove(VariableNames.LOCAL_METCHEM_DATABASE_LIBRARY_NAME);
+				}
+			} else {
+				this.beanSettingsContainer.getMetFragSettings().remove(VariableNames.LOCAL_METCHEM_DATABASE_LIBRARY_NAME);
+			}
+			this.beanSettingsContainer.getMetFragSettings().remove(VariableNames.PEAK_LIST_STRING_NAME);
 			
 			// setting missing values
 			this.beanSettingsContainer.getMetFragSettings().set(VariableNames.SAMPLE_NAME, "MetFragWeb_Sample");
@@ -111,9 +125,9 @@ public class UserOutputDataHandler {
 			this.beanSettingsContainer.getMetFragSettings().set(VariableNames.PEAK_LIST_PATH_NAME, "MetFragWeb_Peaklist.txt");
 			
 			if(this.beanSettingsContainer.getDatabase().equals("ChemSpider")) 
-				this.beanSettingsContainer.getMetFragSettings().set("ChemSpiderToken", "");
+				this.beanSettingsContainer.getMetFragSettings().set(VariableNames.CHEMSPIDER_TOKEN_NAME, "");
 			else 
-				this.beanSettingsContainer.getMetFragSettings().remove("ChemSpiderToken");
+				this.beanSettingsContainer.getMetFragSettings().remove(VariableNames.CHEMSPIDER_TOKEN_NAME);
 			// in case local database is defined, set the parameter to the
 			// candidates
 			if (this.beanSettingsContainer.isLocalDatabaseDefined()) {
