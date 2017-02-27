@@ -139,7 +139,6 @@ public class TopDownFragmenterAssignerScorer extends AbstractFragmenterAssignerS
 						if(matched == 0) {
 							currentFragment.setPrecursorFragments(true);
 							Double[][] currentScores = this.scoreCollection.calculateSingleMatch(match[0]);
-							if(currentFragment.getID() == 10)
 							if(sortedScoredPeaks == null) 
 							{
 								sortedScoredPeaks = new MatchPeakList(tandemMassPeakList.getElement(tempPeakPointer), currentScores[0][0], tempPeakPointer);
@@ -235,8 +234,6 @@ public class TopDownFragmenterAssignerScorer extends AbstractFragmenterAssignerS
 			}
 			toProcessFragments = newToProcessFragments;
 		}
-		
-		this.writeFingerPrintsToFile(fingerprints, Constants.OS_TEMP_DIR + Constants.OS_SPECIFIC_FILE_SEPARATOR + this.candidates[0].getIdentifier() + ".txt");
 		
 		this.matchList = new MatchList();
 		

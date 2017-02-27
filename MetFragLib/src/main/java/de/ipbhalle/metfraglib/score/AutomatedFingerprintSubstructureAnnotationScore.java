@@ -40,17 +40,19 @@ public class AutomatedFingerprintSubstructureAnnotationScore extends AbstractSco
 		// 2. extract fingerprint list for current matched mass
 		// the mass object can be used directly as it was used for initialisation of the list 
 		PeakToFingerprintGroupList peakToFingerprintGroupList = peakToFingerprintGroupListCollection.getElementByPeak(match.getMatchedPeak().getMass());
-		// 3. use this list to filter background fingerprints
-		MassToFingerprints massToFingerprints = (MassToFingerprints)this.settings.get(VariableNames.PEAK_TO_BACKGROUND_FINGERPRINTS_NAME);
-		FragmentList fragmentList = match.getMatchedFragmentList();
-		for(int i = 0; i < fragmentList.getNumberElements(); i++) {
-			String currentFingerprint = MoleculeFunctions.fingerPrintToString(TanimotoSimilarity.calculateFingerPrint(fragmentList.getElement(i).getStructureAsIAtomContainer()));
-			// check whether fingerprint was observed for current peak mass in the training data
-			if (!peakToFingerprintGroupList.containsFingerprint(currentFingerprint)) {
-				// if not add the fingerprint to background by addFingerprint function
-				// addFingerprint checks also whether fingerprint was already added
-				synchronized(massToFingerprints) {
-					massToFingerprints.addFingerprint(match.getMatchedPeak().getMass(), currentFingerprint);
+		if(peakToFingerprintGroupList != null) {
+			// 3. use this list to filter background fingerprints
+			MassToFingerprints massToFingerprints = (MassToFingerprints)this.settings.get(VariableNames.PEAK_TO_BACKGROUND_FINGERPRINTS_NAME);
+			FragmentList fragmentList = match.getMatchedFragmentList();
+			for(int i = 0; i < fragmentList.getNumberElements(); i++) {
+				String currentFingerprint = MoleculeFunctions.fingerPrintToString(TanimotoSimilarity.calculateFingerPrint(fragmentList.getElement(i).getStructureAsIAtomContainer()));
+				// check whether fingerprint was observed for current peak mass in the training data
+				if (!peakToFingerprintGroupList.containsFingerprint(currentFingerprint)) {
+					// if not add the fingerprint to background by addFingerprint function
+					// addFingerprint checks also whether fingerprint was already added
+					synchronized(massToFingerprints) {
+						massToFingerprints.addFingerprint(match.getMatchedPeak().getMass(), currentFingerprint);
+					}
 				}
 			}
 		}
