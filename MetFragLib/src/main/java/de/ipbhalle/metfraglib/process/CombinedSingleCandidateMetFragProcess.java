@@ -104,7 +104,8 @@ public class CombinedSingleCandidateMetFragProcess implements Runnable {
 		 * fragment candidate, assign fragments and score
 		 */
 		this.fas.calculate();
-		this.fas.assignScores();
+		//removing score assignment and shifted to CombinedMetFragProcess after postCalculating scores
+		this.fas.assignInteremScoresResults();
 		//set the reference to the scored candidate(s)
 		this.scoredPrecursorCandidates = this.fas.getCandidates();
 		
@@ -121,6 +122,14 @@ public class CombinedSingleCandidateMetFragProcess implements Runnable {
 		//this.scoredPrecursorCandidates[0].nullify();
 		this.fas.shallowNullify();
 		this.wasSuccessful = true;
+	}
+	
+	public void postCalculateScores() throws Exception {
+		this.fas.postCalculateScore();
+	}
+	
+	public void assignScores() {
+		this.fas.assignScores();
 	}
 	
 	public AbstractFragmenterAssignerScorer getFragmenterAssignerScorer() {

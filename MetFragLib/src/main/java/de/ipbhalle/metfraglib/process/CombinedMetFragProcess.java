@@ -190,6 +190,14 @@ public class CombinedMetFragProcess implements Runnable {
 			 * check whether the single run was successful
 			 */
 			if(scmfp.wasSuccessful()) {
+				try {
+					scmfp.postCalculateScores();
+					scmfp.assignScores();
+				} catch (Exception e) {
+					this.logger.error("Error when processing candidate ID " + scmfp.getScoredPrecursorCandidate().getIdentifier());
+					scmfp.getFragmenterAssignerScorer().nullifyScoresCollection();
+					return;
+				}
 				numberCandidatesProcessed++;
 				ICandidate[] candidates = scmfp.getScoredPrecursorCandidates();
 				for(int i = 0; i < candidates.length; i++) scoredCandidateList.addElement(candidates[i]);

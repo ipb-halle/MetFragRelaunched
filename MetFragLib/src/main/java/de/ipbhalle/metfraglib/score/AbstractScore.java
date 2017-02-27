@@ -115,7 +115,10 @@ public abstract class AbstractScore implements IScore {
 
 	public void shallowNullify() {
 		this.optimalValues = null;
-		this.value = null;
 	}
 	
+	@Override
+	public void postCalculate() {
+		return;
+	}
 }

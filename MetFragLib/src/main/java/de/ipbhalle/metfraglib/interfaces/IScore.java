@@ -26,6 +26,14 @@ public interface IScore {
 	public void calculate() throws Exception;
 
 	/**
+	 * re-calculated score after all candidates have been processed
+	 * performed in CombinedMetFragProcess
+	 * 
+	 * @throws Exception
+	 */
+	public void postCalculate() throws Exception;
+	
+	/**
 	 * delete all objects
 	 */
 	public void nullify();

@@ -45,12 +45,19 @@ public class ScoredCandidateList extends CandidateList {
 				}
 				if(scoreValues[ii] == null) throw new ScorePropertyNotDefinedException(scoreNames[i] + " not known or defined for " + currentCandidate.getIdentifier());
 				if(scoreValues[ii] > maximumScore) maximumScore = scoreValues[ii];
-				
+			}
+			boolean negativeValues = false;
+			if(maximumScore < 0) {
+				negativeValues = true;
+				maximumScore = 1.0 / Math.abs(maximumScore);
 			}
 			for(int ii = 0; ii < normalisedValues[0].length; ii++) {
 				if(maximumScore != 0.0) {
 					normalisedValues[i][ii] = scoreValues[ii];
-					if(scaleValue) normalisedValues[i][ii] /= maximumScore;
+					if(scaleValue) {
+						if(!negativeValues) normalisedValues[i][ii] /= maximumScore;
+						else normalisedValues[i][ii] = (1.0 / Math.abs(normalisedValues[i][ii])) / maximumScore;
+					}
 				}
 			}
 		}

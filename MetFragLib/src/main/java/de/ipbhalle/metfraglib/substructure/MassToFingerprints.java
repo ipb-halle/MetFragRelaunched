@@ -39,4 +39,16 @@ public class MassToFingerprints {
 			return 0;
 		}
 	}
+	
+	public void print(Double mass) {
+		try {
+			Vector<String> fingerprints = this.massesToFingerprints.get(mass);
+			System.out.println(mass + ":");
+			for(int i = 0; i < fingerprints.size(); i++) {
+				System.out.println("-> " + fingerprints.get(i));
+			}
+		} catch(Exception e) {
+			return;
+		}
+	}
 }
