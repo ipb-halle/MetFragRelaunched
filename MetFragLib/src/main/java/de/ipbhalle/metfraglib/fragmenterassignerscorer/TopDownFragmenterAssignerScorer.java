@@ -122,7 +122,6 @@ public class TopDownFragmenterAssignerScorer extends AbstractFragmenterAssignerS
 						if(matched == 0) {
 							currentFragment.setPrecursorFragments(true);
 							Double[][] currentScores = this.scoreCollection.calculateSingleMatch(match[0]);
-							if(currentFragment.getID() == 10)
 							if(sortedScoredPeaks == null) 
 							{
 								sortedScoredPeaks = new MatchPeakList(tandemMassPeakList.getElement(tempPeakPointer), currentScores[0][0], tempPeakPointer);
