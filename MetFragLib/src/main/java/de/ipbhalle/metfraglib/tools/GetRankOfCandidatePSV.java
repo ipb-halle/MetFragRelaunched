@@ -126,10 +126,16 @@ public class GetRankOfCandidatePSV {
 					scorePropertyToMaximumValue[l] = curVal;
 			}
 		}
-
+		
+		boolean[] negativeScore = new boolean[scoringPropertyNames.size()];
+		
 		for(int l = 0; l < scorePropertyToMaximumValue.length; l++) {
 			if(scorePropertyToMaximumValue[l] == 0.0) 
 				scorePropertyToMaximumValue[l] = 1.0;
+			else if(scorePropertyToMaximumValue[l] < 0) {
+				negativeScore[l] = true;
+				scorePropertyToMaximumValue[l] = 1.0 / Math.abs(scorePropertyToMaximumValue[l]);
+			}
 		}
 
 		if(found == -1 && !outputSortedList) {
@@ -149,6 +155,8 @@ public class GetRankOfCandidatePSV {
 				else currentValue = Double.parseDouble((String)candidates.getElement(j).getProperty(scoringPropertyNames.get(l)));
 				if(!scorePropertyNamesForTakeRawValue.contains(scoringPropertyNames.get(l))) 
 					curScore += (currentValue / scorePropertyToMaximumValue[l]) * scorePropertyToWeight.get(scoringPropertyNames.get(l));
+				else if(negativeScore[l]) 
+					curScore += (1.0 / Math.abs(currentValue)) * scorePropertyToWeight.get(scoringPropertyNames.get(l));
 				else 
 					curScore += (currentValue) * scorePropertyToWeight.get(scoringPropertyNames.get(l));
 			}
