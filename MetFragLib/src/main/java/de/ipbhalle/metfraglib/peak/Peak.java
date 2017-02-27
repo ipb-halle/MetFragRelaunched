@@ -5,7 +5,7 @@ import de.ipbhalle.metfraglib.interfaces.IPeak;
 
 public class Peak implements IPeak, Comparable<IPeak> {
 
-	protected double mass;
+	protected Double mass;
 	protected double absoluteIntensity;
 	protected double relativeIntensity;
 	protected boolean relativeIntensityDefined;
@@ -35,7 +35,7 @@ public class Peak implements IPeak, Comparable<IPeak> {
 		this.relativeIntensityDefined = true;
 	}
 	
-	public double getMass() {
+	public Double getMass() {
 		return this.mass;
 	}
 
@@ -57,7 +57,7 @@ public class Peak implements IPeak, Comparable<IPeak> {
 		return this.relativeIntensity;
 	}
 
-	public void setMass(double mass) {
+	public void setMass(Double mass) {
 		this.mass = mass;
 	}
 	
