@@ -98,11 +98,6 @@ public class HDTopDownFragmenterAssignerScorer extends TopDownFragmenterAssigner
 		}
 		
 		/*
-		 * 
-		 */
-		MatchPeakList sortedScoredPeaks = null;
-		MatchPeakList[] sortedScoredPeaksHD = new MatchPeakList[deuteratedCandidateNumber];
-		/*
 		 * iterate over the maximal allowed tree depth
 		 */
 		for(int k = 1; k <= maximumTreeDepth; k++) {
@@ -154,13 +149,13 @@ public class HDTopDownFragmenterAssignerScorer extends TopDownFragmenterAssigner
 					
 					
 					int tempPeakPointer = currentPeakPointer;
-					this.matchFragment(tempPeakPointer, newFragmentWrapper, tandemMassPeakList, sortedScoredPeaks, peakIndexToPeakMatch, fragmentIndexToPeakMatch);
+					this.matchFragment(tempPeakPointer, newFragmentWrapper, tandemMassPeakList, peakIndexToPeakMatch, fragmentIndexToPeakMatch);
 					
 					//run over all deuterated combinations
 					for(int d = 0; d < deuteratedCandidateNumber; d++) {
 						newFragmentWrapper.setPrecursorIndex(d);
 						int tempPeakPointerHD = newFragmentWrapper.getCurrentPeakIndexPointerHD();
-						this.matchFragmentHD(tempPeakPointerHD, newFragmentWrapper, tandemMassPeakListHD, sortedScoredPeaksHD[d], peakIndexToPeakMatchHD[d], fragmentIndexToPeakMatchHD[d]);
+						this.matchFragmentHD(tempPeakPointerHD, newFragmentWrapper, tandemMassPeakListHD, peakIndexToPeakMatchHD[d], fragmentIndexToPeakMatchHD[d]);
 					}
 					newToProcessFragments.add(newFragmentWrapper);
 				}
@@ -169,11 +164,6 @@ public class HDTopDownFragmenterAssignerScorer extends TopDownFragmenterAssigner
 		}
 		
 		this.matchList = new MatchList();
-		
-		if(this.uniqueFragmentMatches) {
-			this.cleanMatchLists(sortedScoredPeaks, peakIndexToPeakMatch, fragmentIndexToPeakMatch);
-			for(int d = 0; d < deuteratedCandidateNumber; d++) this.cleanMatchLists(sortedScoredPeaksHD[d], peakIndexToPeakMatchHD[d], fragmentIndexToPeakMatchHD[d]);
-		}
 		
 		/*
 		 * collect score of all scores over all matches
@@ -380,7 +370,7 @@ public class HDTopDownFragmenterAssignerScorer extends TopDownFragmenterAssigner
 	 * @return
 	 */
 	protected boolean matchFragment(int tempPeakPointer, HDTopDownBitArrayFragmentWrapper currentFragmentWrapper, 
-			SortedTandemMassPeakList tandemMassPeakList, MatchPeakList sortedScoredPeaks, 
+			SortedTandemMassPeakList tandemMassPeakList, 
 			java.util.HashMap<Integer, MatchFragmentList> peakIndexToPeakMatch,
 			java.util.HashMap<Integer, MatchPeakList> fragmentIndexToPeakMatch) {
 		byte matched = -1;
@@ -400,23 +390,6 @@ public class HDTopDownFragmenterAssignerScorer extends TopDownFragmenterAssigner
 			if(matched == 0) {
 				currentFragmentWrapper.getWrappedFragment().setPrecursorFragments(true);
 				Double[][] currentScores = this.scoreCollection.calculateSingleMatch(match[0]);
-				if(sortedScoredPeaks == null) 
-				{
-					sortedScoredPeaks = new MatchPeakList(currentPeak, currentScores[0][0], tempPeakPointer);
-				}
-				else {
-					/*
-					 * gives score and id of peak
-					 */
-					Double[] oldPeakValues = sortedScoredPeaks.contains(tempPeakPointer);
-					if(oldPeakValues != null && oldPeakValues[0] < currentScores[0][0]) {
-						sortedScoredPeaks.removeElementByID((int)Math.floor(oldPeakValues[1]));
-						sortedScoredPeaks.insert(currentPeak, currentScores[0][0], tempPeakPointer);
-					}
-					else if(oldPeakValues == null) {
-						sortedScoredPeaks.insert(currentPeak, currentScores[0][0], tempPeakPointer);
-					}
-				}	
 				/*
 				 * first generate the new fragment node and set the score values
 				 */
@@ -496,7 +469,7 @@ public class HDTopDownFragmenterAssignerScorer extends TopDownFragmenterAssigner
 	 * @return
 	 */
 	protected boolean matchFragmentHD(int tempPeakPointer, HDTopDownBitArrayFragmentWrapper currentFragmentWrapper, 
-			SortedTandemMassPeakList tandemMassPeakList, MatchPeakList sortedScoredPeaks, 
+			SortedTandemMassPeakList tandemMassPeakList, 
 			java.util.HashMap<Integer, MatchFragmentList> peakIndexToPeakMatch,
 			java.util.HashMap<Integer, MatchPeakList> fragmentIndexToPeakMatch) 
 	{
@@ -517,24 +490,6 @@ public class HDTopDownFragmenterAssignerScorer extends TopDownFragmenterAssigner
 				matchedAndAdded = true;
 				currentFragmentWrapper.getWrappedFragment().setPrecursorFragments(true);
 				Double[][] currentScores = this.scoreCollection.calculateSingleMatch(match[0]);
-
-				if(sortedScoredPeaks == null) 
-				{
-					sortedScoredPeaks = new MatchPeakList(currentPeak, currentScores[0][0], tempPeakPointer);
-				}
-				else {
-					/*
-					 * gives score and id of peak
-					 */
-					Double[] oldPeakValues = sortedScoredPeaks.contains(tempPeakPointer);
-					if(oldPeakValues != null && oldPeakValues[0] < currentScores[0][0]) {
-						sortedScoredPeaks.removeElementByID((int)Math.floor(oldPeakValues[1]));
-						sortedScoredPeaks.insert(currentPeak, currentScores[0][0], tempPeakPointer);
-					}
-					else if(oldPeakValues == null) {
-						sortedScoredPeaks.insert(currentPeak, currentScores[0][0], tempPeakPointer);
-					}
-				}	
 				/*
 				 * insert fragment into peak's fragment list 
 				 */
