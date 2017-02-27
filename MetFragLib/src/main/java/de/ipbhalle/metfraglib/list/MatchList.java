@@ -41,6 +41,15 @@ public class MatchList extends DefaultList {
 		return false;
 	}
 
+	public IMatch getMatchByMass(Double peakMass) {
+		for(int i = 0; i < this.list.size(); i++) {
+			IMatch match = (IMatch)this.list.get(i);
+			match.getMatchedPeak().getMass();
+			if(match.getMatchedPeak().getMass().equals(peakMass)) return match;
+		}
+		return null;
+	}
+	
 	public boolean containsPeakID(int peakID) {
 		for(int i = 0; i < this.list.size(); i++)
 			if(((IMatch)this.list.get(i)).getMatchedPeak().getID() == peakID) return true;

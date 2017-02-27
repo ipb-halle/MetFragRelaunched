@@ -35,6 +35,11 @@ public class ScoreCollection {
 			this.scores[i].calculate();
 	}
 
+	public void postCalculate() throws Exception {
+		for(int i = 0; i < this.scores.length; i++)
+			this.scores[i].postCalculate();
+	}
+	
 	public Double[][] calculateSingleMatch(IMatch match) {
 		Double[][] values = new Double[2][this.scores.length + 1];
 		Double sumValue = 0.0;
