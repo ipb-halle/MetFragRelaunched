@@ -68,7 +68,6 @@ public class TopDownFragmenterAssignerScorer extends AbstractFragmenterAssignerS
 		toProcessFragments.add(rootFragmentWrapper);
 		java.util.HashMap<Integer, MatchFragmentList> peakIndexToPeakMatch = new java.util.HashMap<Integer, MatchFragmentList>();
 		java.util.HashMap<Integer, MatchPeakList> fragmentIndexToPeakMatch = new java.util.HashMap<Integer, MatchPeakList>();
-		MatchPeakList sortedScoredPeaks = null;
 		
 		Vector<String> fingerprints = new Vector<String>();
 		Vector<IBitFingerprint> fps = new Vector<IBitFingerprint>();
@@ -139,23 +138,6 @@ public class TopDownFragmenterAssignerScorer extends AbstractFragmenterAssignerS
 						if(matched == 0) {
 							currentFragment.setPrecursorFragments(true);
 							Double[][] currentScores = this.scoreCollection.calculateSingleMatch(match[0]);
-							if(sortedScoredPeaks == null) 
-							{
-								sortedScoredPeaks = new MatchPeakList(tandemMassPeakList.getElement(tempPeakPointer), currentScores[0][0], tempPeakPointer);
-							}
-							else {
-								/*
-								 * gives score and id of peak
-								 */
-								Double[] oldPeakValues = sortedScoredPeaks.contains(tempPeakPointer);
-								if(oldPeakValues != null && oldPeakValues[0] < currentScores[0][0]) {
-									sortedScoredPeaks.removeElementByID((int)Math.floor(oldPeakValues[1]));
-									sortedScoredPeaks.insert(tandemMassPeakList.getElement(tempPeakPointer), currentScores[0][0], tempPeakPointer);
-								}
-								else if(oldPeakValues == null) {
-									sortedScoredPeaks.insert(tandemMassPeakList.getElement(tempPeakPointer), currentScores[0][0], tempPeakPointer);
-								}
-							}	
 							/*
 							 * insert fragment into peak's fragment list 
 							 */
@@ -237,8 +219,6 @@ public class TopDownFragmenterAssignerScorer extends AbstractFragmenterAssignerS
 		
 		this.matchList = new MatchList();
 		
-		if(this.uniqueFragmentMatches) this.cleanMatchLists(sortedScoredPeaks, peakIndexToPeakMatch, fragmentIndexToPeakMatch);
-
 		/*
 		 * collect score of all scores over all matches
 		 */
