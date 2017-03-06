@@ -93,6 +93,7 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 				if(sumFormulasOfFragmentsExplainedPeaks.length() == 0) sumFormulasOfFragmentsExplainedPeaks = "NA";
 				if(smilesOfFragmentsExplainedPeaks.length() == 0) smilesOfFragmentsExplainedPeaks = "NA";
 				if(aromaticSmilesOfFragmentsExplainedPeaks.length() == 0) aromaticSmilesOfFragmentsExplainedPeaks = "NA";
+				if(fingerprintOfFragmentsExplainedPeaks.length() == 0) fingerprintOfFragmentsExplainedPeaks = "NA";
 				
 				scoredCandidate.setProperty("ExplPeaks", peaksExplained);
 				scoredCandidate.setProperty("FormulasOfExplPeaks", sumFormulasOfFragmentsExplainedPeaks);

@@ -70,6 +70,7 @@ public class WriteFingerprintSubstructureAnnotationFile {
 		for(int i = 0; i < candidateList.getNumberElements(); i++) {
 			ICandidate candidate = candidateList.getElement(i);
 			String fingerprintsOfExplPeaks = (String)candidate.getProperty("FragmentFingerprintOfExplPeaks");
+			if(fingerprintsOfExplPeaks.equals("NA") || fingerprintsOfExplPeaks.length() == 0) continue;
 			fingerprintsOfExplPeaks = fingerprintsOfExplPeaks.trim();
 			String[] fingerprintPairs = fingerprintsOfExplPeaks.split(";");
 			for(int k = 0; k < fingerprintPairs.length; k++) {
@@ -87,7 +88,7 @@ public class WriteFingerprintSubstructureAnnotationFile {
 			}
 		}
 		
-		print(peakMassesSorted, fingerprintsSorted);
+		//print(peakMassesSorted, fingerprintsSorted);
 		System.out.println(peakMassesSorted.size() + " peak fingerprint pairs");
 		
 		for(int i = 0; i < peakMassesSorted.size(); i++) {

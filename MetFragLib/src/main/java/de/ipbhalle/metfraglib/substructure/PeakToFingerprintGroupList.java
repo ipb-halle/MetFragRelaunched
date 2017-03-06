@@ -83,7 +83,7 @@ public class PeakToFingerprintGroupList extends DefaultList {
 	public FingerprintGroup getElementByFingerprint(String fingerprint) {
 		for(int i = 0; i < this.list.size(); i++) {
 			FingerprintGroup fingerprintGroup = this.getElement(i);
-			if(fingerprintGroup.equals(fingerprint)) return fingerprintGroup;
+			if(fingerprintGroup.getFingerprint().equals(fingerprint)) return fingerprintGroup;
 		}
 		return null;
 	}
