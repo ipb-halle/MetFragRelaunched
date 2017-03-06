@@ -69,9 +69,6 @@ public class TopDownFragmenterAssignerScorer extends AbstractFragmenterAssignerS
 		java.util.HashMap<Integer, MatchFragmentList> peakIndexToPeakMatch = new java.util.HashMap<Integer, MatchFragmentList>();
 		java.util.HashMap<Integer, MatchPeakList> fragmentIndexToPeakMatch = new java.util.HashMap<Integer, MatchPeakList>();
 		
-		Vector<String> fingerprints = new Vector<String>();
-		Vector<IBitFingerprint> fps = new Vector<IBitFingerprint>();
-		
 		/*
 		 * iterate over the maximal allowed tree depth
 		 */
@@ -96,7 +93,6 @@ public class TopDownFragmenterAssignerScorer extends AbstractFragmenterAssignerS
 				 * generate fragments of next tree depth
 				 */
 				java.util.Vector<AbstractTopDownBitArrayFragment> fragmentsOfCurrentTreeDepth = this.fragmenter.getFragmentsOfNextTreeDepth(wrappedPrecursorFragment.getWrappedFragment());
-				this.addFingerPrintsToVector(fragmentsOfCurrentTreeDepth, fingerprints, fps);
 				
 				/*
 				 * get peak pointer of current precursor fragment

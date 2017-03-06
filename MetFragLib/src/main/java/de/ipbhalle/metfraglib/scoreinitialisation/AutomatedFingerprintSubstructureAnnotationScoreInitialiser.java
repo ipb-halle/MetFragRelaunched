@@ -57,7 +57,7 @@ public class AutomatedFingerprintSubstructureAnnotationScoreInitialiser  impleme
 			// calculate pseudo count for a non-annotated peak
 			double numberPseudoCounts = (double)this.calculateNumberBackgroundPeaks(0.0, 1000.0, mzppm, mzabs, peakToFingerprintGroupListCollection.getNumberElements()) + 1.0;
 			double beta = 1.0 / numberPseudoCounts;
-			settings.set(VariableNames.FINGERPRINT_ANNOTATION_BETA_VALUE_NAME, beta);
+			settings.set(VariableNames.PEAK_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME, beta);
 			settings.set(VariableNames.BETA_PSEUDO_COUNT_DENOMINATOR_VALUE_NAME, beta * numberPseudoCounts);
 			settings.set(VariableNames.PEAK_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME, peakToFingerprintGroupListCollection);
 		}

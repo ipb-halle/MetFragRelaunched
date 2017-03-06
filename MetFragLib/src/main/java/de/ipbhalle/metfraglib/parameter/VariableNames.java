@@ -93,18 +93,22 @@ public class VariableNames {
 	public static final String FINGERPRINT_PEAK_ANNOTATION_FILE_NAME				= "FingerprintPeakAnnotationFile";
 	public static final String FINGERPRINT_LOSS_ANNOTATION_FILE_NAME				= "FingerprintLossAnnotationFile";
 	public static final String PEAK_TO_BACKGROUND_FINGERPRINTS_NAME					= "PeakToBackgroundFingerprints";	
+	public static final String LOSS_TO_BACKGROUND_FINGERPRINTS_NAME					= "LossToBackgroundFingerprints";	
 	// denominator for pseudo counts for peak of probability function
 	public static final String BETA_PSEUDO_COUNT_DENOMINATOR_VALUE_NAME				= "BetaPseudoCountDenominatorValue";
 	// calculated beta value as pseudo count for non-annotated peaks
-	public static final String FINGERPRINT_ANNOTATION_BETA_VALUE_NAME				= "FingerprintAnnotationBetaValue";	
+	public static final String PEAK_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME				= "PeakFingerprintAnnotationBetaValue";	
+	public static final String LOSS_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME				= "LossFingerprintAnnotationBetaValue";	
 	// denominator for pseudo counts for fingerprint of probability function
-	public static final String ALPHA_PSEUDO_COUNT_DENOMINATOR_VALUE_NAME			= "AlphaPseudoCountDenominatorValue";
+	public static final String PEAK_ALPHA_PSEUDO_COUNT_DENOMINATOR_VALUE_NAME			= "PeakAlphaPseudoCountDenominatorValue";
+	public static final String LOSS_ALPHA_PSEUDO_COUNT_DENOMINATOR_VALUE_NAME			= "LossAlphaPseudoCountDenominatorValue";
 	// calculated beta value as pseudo count for non-annotated fingerprints
-	public static final String FINGERPRINT_ANNOTATION_ALPHA_VALUE_NAME				= "FingerprintAnnotationAlphaValue";	
+	public static final String PEAK_FINGERPRINT_ANNOTATION_ALPHA_VALUE_NAME				= "PeakFingerprintAnnotationAlphaValue";	
+	public static final String LOSS_FINGERPRINT_ANNOTATION_ALPHA_VALUE_NAME				= "LossFingerprintAnnotationAlphaValue";	
 	
 	
-	public static final String PEAK_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME		= "peakToFingerprintGroupListCollection";
-	public static final String LOSS_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME		= "lossToFingerprintGroupListCollection";
+	public static final String PEAK_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME		= "PeakToFingerprintGroupListCollection";
+	public static final String LOSS_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME		= "LossToFingerprintGroupListCollection";
 	
 	
 	/*

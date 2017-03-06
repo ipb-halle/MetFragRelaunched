@@ -64,7 +64,6 @@ public class DefaultPeakList extends AbstractPeakList {
 	public Double getBestMatchingMass(double mass, double mzppm, double mzabs) {
 		double dev = MathTools.calculateAbsoluteDeviation(mass, mzppm);
 		dev += mzabs;
-		
 		double bestDev = Integer.MAX_VALUE;
 		int bestPeakIndex = -1;
 		

@@ -70,7 +70,7 @@ public class AutomatedFingerprintSubstructureAnnotationScore extends AbstractSco
 			Double currentMass = peakToFingerprintGroupList.getPeakmz();
 			IMatch currentMatch = matchList.getMatchByMass(currentMass); 
 			if(currentMatch == null) {
-				this.value += Math.log((Double)this.settings.get(VariableNames.FINGERPRINT_ANNOTATION_BETA_VALUE_NAME) / (Double)this.settings.get(VariableNames.BETA_PSEUDO_COUNT_DENOMINATOR_VALUE_NAME));
+				this.value += Math.log((Double)this.settings.get(VariableNames.PEAK_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME) / (Double)this.settings.get(VariableNames.BETA_PSEUDO_COUNT_DENOMINATOR_VALUE_NAME));
 			} else {
 				String currentFingerprint = MoleculeFunctions.fingerPrintToString(TanimotoSimilarity.calculateFingerPrint(currentMatch.getBestMatchedFragment().getStructureAsIAtomContainer()));
 				// |F|
