@@ -1181,7 +1181,7 @@ public class BeanSettingsContainer {
 				database = "MetChem";
 			}
 			else if(database.equals("LipidMaps")) {
-				metchemLibrary = "LipidMaps";
+				metchemLibrary = "lipidmaps";
 				database = "MetChem";
 			}
 			else if(database.equals("LocalDerivatisedKegg")) {
