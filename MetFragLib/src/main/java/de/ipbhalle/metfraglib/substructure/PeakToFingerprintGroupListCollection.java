@@ -146,6 +146,15 @@ public class PeakToFingerprintGroupListCollection extends DefaultList {
 		return string;
 	}
 
+	public String toStringSmiles() {
+		String string = "";
+		for(int i = 0; i < this.list.size(); i++) {
+			PeakToFingerprintGroupList peakToFingerprintGroupList = this.getElement(i);
+			string += peakToFingerprintGroupList.getPeakmz() + " " + peakToFingerprintGroupList.toStringSmiles();
+		}
+		return string;
+	}
+
 	public String toStringDetail() {
 		String string = "";
 		for(int i = 0; i < this.list.size(); i++) {

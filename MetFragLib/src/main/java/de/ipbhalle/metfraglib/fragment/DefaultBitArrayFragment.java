@@ -9,6 +9,7 @@ import org.openscience.cdk.interfaces.IChemObjectBuilder;
 import org.openscience.cdk.smiles.SmilesGenerator;
 
 import de.ipbhalle.metfraglib.BitArray;
+import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
 import de.ipbhalle.metfraglib.exceptions.AtomTypeNotKnownFromInputListException;
 import de.ipbhalle.metfraglib.interfaces.IFragment;
 import de.ipbhalle.metfraglib.interfaces.IMatch;
@@ -276,6 +277,7 @@ public class DefaultBitArrayFragment extends AbstractFragment {
 
 	public String getSmiles() {
 		IAtomContainer molecule = this.getStructureAsIAtomContainer();
+		MoleculeFunctions.prepareAtomContainer(molecule, false);
 		SmilesGenerator sg = new SmilesGenerator();
 		String smiles = null;
 		try {

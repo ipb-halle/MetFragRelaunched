@@ -59,7 +59,6 @@ public class WriteSubstructureAnnotationFile {
 		if(readParameters.containsKey("outputSMILES")) outputSmiles = readParameters.get("outputSMILES");
 		if(readParameters.containsKey("occurThresh")) occurThresh = Integer.parseInt(readParameters.get("occurThresh"));
 		
-		
 		Settings settings = new Settings();
 		settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, filename);
 		LocalPSVDatabase db = new LocalPSVDatabase(settings);
@@ -68,6 +67,7 @@ public class WriteSubstructureAnnotationFile {
 		//SmilesOfExplPeaks
 		PeakToSmartsGroupListCollection peakToSmartGroupListCollection = new PeakToSmartsGroupListCollection();
 		for(int i = 0; i < candidateList.getNumberElements(); i++) {
+			System.out.println(i);
 			ICandidate candidate = candidateList.getElement(i);
 			String smilesOfExplPeaks = (String)candidate.getProperty("SmilesOfExplPeaks");
 			String aromaticSmilesOfExplPeaks = (String)candidate.getProperty("AromaticSmilesOfExplPeaks");

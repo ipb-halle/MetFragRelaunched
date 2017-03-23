@@ -16,7 +16,7 @@ import de.ipbhalle.metfraglib.substructure.FingerprintGroup;
 import de.ipbhalle.metfraglib.substructure.PeakToFingerprintGroupList;
 import de.ipbhalle.metfraglib.substructure.PeakToFingerprintGroupListCollection;
 
-public class WriteFingerprintSubstructureAnnotationFile {
+public class WriteFingerprintLossAnnotationFile {
 
 	/*
 	 * write annotation file
@@ -60,7 +60,6 @@ public class WriteFingerprintSubstructureAnnotationFile {
 		
 		Vector<Double> peakMassesSorted = new Vector<Double>();
 		Vector<String> fingerprintsSorted = new Vector<String>();
-		Vector<String> smilesSorted = new Vector<String>();
 		
 		Settings settings = new Settings();
 		settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, filename);
@@ -71,31 +70,17 @@ public class WriteFingerprintSubstructureAnnotationFile {
 		PeakToFingerprintGroupListCollection peakToFingerprintGroupListCollection = new PeakToFingerprintGroupListCollection();
 		for(int i = 0; i < candidateList.getNumberElements(); i++) {
 			ICandidate candidate = candidateList.getElement(i);
-			String fingerprintsOfExplPeaks = (String)candidate.getProperty("FragmentFingerprintOfExplPeaks");
-			String smilesOfExplPeaks = (String)candidate.getProperty("SmilesOfExplPeaks");
+			String fingerprintsOfExplPeaks = (String)candidate.getProperty("LossFingerprintOfExplPeaks");
 			if(fingerprintsOfExplPeaks.equals("NA") || fingerprintsOfExplPeaks.length() == 0) continue;
 			fingerprintsOfExplPeaks = fingerprintsOfExplPeaks.trim();
-			smilesOfExplPeaks = smilesOfExplPeaks.trim();
-			
 			String[] fingerprintPairs = fingerprintsOfExplPeaks.split(";");
-			String[] smilesPairs = smilesOfExplPeaks.split(";");
-			
 			for(int k = 0; k < fingerprintPairs.length; k++) {
-				String[] tmp1 = fingerprintPairs[k].split(":");
-				String[] tmp2 = smilesPairs[k].split(":");
-				Double peak1 = Double.parseDouble(tmp1[0]);
-				Double peak2= Double.parseDouble(tmp2[0]);
-				if(Math.abs(peak1 - peak2) >= 0.00001) {
-					System.out.println(peak1 + " " + peak2 + " " + candidate.getIdentifier());
-					System.err.println("Error peaks don't match");
-					System.exit(1);
-				}
+				String[] tmp = fingerprintPairs[k].split(":");
+				Double peak = Double.parseDouble(tmp[0]);
 				String fingerprint = null;
-				String smiles = null;
 				try {
-					fingerprint = tmp1[1];
-					smiles = tmp2[1];
-					addSortedFeature(peak1, fingerprint, smiles, peakMassesSorted, fingerprintsSorted, smilesSorted);
+					fingerprint = tmp[1];
+					addSortedFeature(peak, fingerprint, peakMassesSorted, fingerprintsSorted);
 				}
 				catch(Exception e) {
 					continue;
@@ -114,7 +99,6 @@ public class WriteFingerprintSubstructureAnnotationFile {
 				peakToFingerprintGroupList = new PeakToFingerprintGroupList(currentPeak);
 				FingerprintGroup obj = new FingerprintGroup(0.0, null, null, null);
 				obj.setFingerprint(fingerprintsSorted.get(i));
-				obj.setSmiles(smilesSorted.get(i));
 				obj.incerementNumberObserved();
 				peakToFingerprintGroupList.addElement(obj);
 				peakToFingerprintGroupListCollection.addElementSorted(peakToFingerprintGroupList);
@@ -127,7 +111,6 @@ public class WriteFingerprintSubstructureAnnotationFile {
 				else {
 					fingerprintGroup = new FingerprintGroup(0.0, null, null, null);
 					fingerprintGroup.setFingerprint(fingerprintsSorted.get(i));
-					fingerprintGroup.setSmiles(smilesSorted.get(i));
 					fingerprintGroup.incerementNumberObserved();
 					peakToFingerprintGroupList.addElement(fingerprintGroup);
 				}
@@ -220,7 +203,6 @@ public class WriteFingerprintSubstructureAnnotationFile {
 		if(probabilityType != 5) {
 			if(output == null) peakToFingerprintGroupListCollection.print();
 			else {
-				System.out.println("writing to output");
 				BufferedWriter bwriter = new BufferedWriter(new FileWriter(new File(output)));
 				bwriter.write(peakToFingerprintGroupListCollection.toString());
 				bwriter.close();
@@ -228,14 +210,13 @@ public class WriteFingerprintSubstructureAnnotationFile {
 		}
 	}
 	
-	public static void addSortedFeature(double mass, String fingerprint, String smilesString, Vector<Double> masses, Vector<String> fingerprints, Vector<String> smiles) {
+	public static void addSortedFeature(double mass, String fingerprint, Vector<Double> masses, Vector<String> fingerprints) {
 		int index = 0;
 		while(index < masses.size() && masses.get(index) < mass) {
 			index++;
 		}
 		masses.add(index, mass);
 		fingerprints.add(index, fingerprint);
-		smiles.add(index, smilesString);
 	}
 	
 	public static java.util.Hashtable<String, String> readParameters(String[] params) {

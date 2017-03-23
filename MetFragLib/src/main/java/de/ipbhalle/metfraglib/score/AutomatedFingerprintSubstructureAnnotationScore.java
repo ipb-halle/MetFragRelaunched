@@ -1,5 +1,6 @@
 package de.ipbhalle.metfraglib.score;
 
+import de.ipbhalle.metfraglib.BitArray;
 import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.interfaces.IMatch;
@@ -7,7 +8,6 @@ import de.ipbhalle.metfraglib.list.FragmentList;
 import de.ipbhalle.metfraglib.list.MatchList;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.settings.Settings;
-import de.ipbhalle.metfraglib.similarity.TanimotoSimilarity;
 import de.ipbhalle.metfraglib.substructure.MassToFingerprints;
 import de.ipbhalle.metfraglib.substructure.PeakToFingerprintGroupList;
 import de.ipbhalle.metfraglib.substructure.PeakToFingerprintGroupListCollection;
@@ -33,6 +33,9 @@ public class AutomatedFingerprintSubstructureAnnotationScore extends AbstractSco
 		this.optimalValues[0] = values[0];
 	}
 	
+	/**
+	 * collects the background fingerprints
+	 */
 	public Double[] calculateSingleMatch(IMatch match) {
 		//add fragments to background data
 		// 1. get the peak fingerprint collection from the training
@@ -45,7 +48,8 @@ public class AutomatedFingerprintSubstructureAnnotationScore extends AbstractSco
 			MassToFingerprints massToFingerprints = (MassToFingerprints)this.settings.get(VariableNames.PEAK_TO_BACKGROUND_FINGERPRINTS_NAME);
 			FragmentList fragmentList = match.getMatchedFragmentList();
 			for(int i = 0; i < fragmentList.getNumberElements(); i++) {
-				String currentFingerprint = MoleculeFunctions.fingerPrintToString(TanimotoSimilarity.calculateFingerPrint(fragmentList.getElement(i).getStructureAsIAtomContainer()));
+				BitArray currentFingerprint = new BitArray(MoleculeFunctions.getNormalizedFingerprint(fragmentList.getElement(i)));
+			//	if(match.getMatchedPeak().getMass() < 60) System.out.println(match.getMatchedPeak().getMass() + " " + currentFingerprint + " " + fragSmiles);
 				// check whether fingerprint was observed for current peak mass in the training data
 				if (!peakToFingerprintGroupList.containsFingerprint(currentFingerprint)) {
 					// if not add the fingerprint to background by addFingerprint function
@@ -70,14 +74,24 @@ public class AutomatedFingerprintSubstructureAnnotationScore extends AbstractSco
 			Double currentMass = peakToFingerprintGroupList.getPeakmz();
 			IMatch currentMatch = matchList.getMatchByMass(currentMass); 
 			if(currentMatch == null) {
-				this.value += Math.log((Double)this.settings.get(VariableNames.PEAK_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME) / (Double)this.settings.get(VariableNames.BETA_PSEUDO_COUNT_DENOMINATOR_VALUE_NAME));
+				double toAdd = Math.log((Double)this.settings.get(VariableNames.PEAK_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME) / (Double)this.settings.get(VariableNames.BETA_PSEUDO_COUNT_DENOMINATOR_VALUE_NAME));
+			//	System.out.println("not_annotated " + currentMass + " " + toAdd);
+				this.value += toAdd;
 			} else {
-				String currentFingerprint = MoleculeFunctions.fingerPrintToString(TanimotoSimilarity.calculateFingerPrint(currentMatch.getBestMatchedFragment().getStructureAsIAtomContainer()));
+				// ToDo: at this stage try to check all fragments not only the best one
+				BitArray currentFingerprint = new BitArray(MoleculeFunctions.getNormalizedFingerprint(currentMatch.getBestMatchedFragment()));
+				
+				// (p(m,f) + alpha) / sum_F(p(m,f)) + |F| * alpha
+				double matching_prob = peakToFingerprintGroupList.getMatchingProbability(currentFingerprint);
 				// |F|
 				double numberPseudoCountsFingerprint = (massToFingerprints.getSize(currentMass) + 1.0);
 				double alpha = 1.0 / numberPseudoCountsFingerprint;
-				// (p(m,f) + alpha) / sum_F(p(m,f)) + |F| * alpha
-				double p_f_given_m = (peakToFingerprintGroupList.getMatchingProbability(currentFingerprint) + alpha) / (peakToFingerprintGroupList.getSumProbabilites() + (alpha * numberPseudoCountsFingerprint)); 
+				double p_f_given_m = (matching_prob) / (peakToFingerprintGroupList.getSumProbabilites() + (alpha * numberPseudoCountsFingerprint));
+	/*			if(matching_prob == 0.0)
+					System.out.println("annotated wrong_fp\t" + MathTools.round(currentMass,5) + " \t" + MathTools.round(Math.log(p_f_given_m), 10) + " \t" + matching_prob + " \t\t\t" + MathTools.round(alpha, 5) + " \t" + (new BitArray(currentFingerprint)).toStringIDs());
+				else
+					System.out.println("annotated correct_fp\t" + MathTools.round(currentMass,5) + " \t" + MathTools.round(Math.log(p_f_given_m), 10) + " \t" + matching_prob + " \t" + MathTools.round(alpha, 5) + " \t" + (new BitArray(currentFingerprint)).toStringIDs());
+			*/
 				this.value += Math.log(p_f_given_m);
 			}
 		}
