@@ -1,5 +1,6 @@
 package de.ipbhalle.metfraglib.substructure;
 
+import de.ipbhalle.metfraglib.BitArray;
 import de.ipbhalle.metfraglib.list.DefaultList;
 
 public class PeakToFingerprintGroupList extends DefaultList {
@@ -34,7 +35,7 @@ public class PeakToFingerprintGroupList extends DefaultList {
 		return this.sumProbabilities;
 	}
 	
-	public double getMaximalMatchingProbability(String fingerprint) {
+	public double getMaximalMatchingProbability(BitArray fingerprint) {
 		double maxProbability = 0.0;
 		for(int i = 0; i < this.list.size(); i++) {
 			FingerprintGroup fingerprintGroup = this.getElement(i);
@@ -45,7 +46,7 @@ public class PeakToFingerprintGroupList extends DefaultList {
 		return maxProbability;
 	}
 
-	public double getMatchingProbability(String fingerprint) {
+	public double getMatchingProbability(BitArray fingerprint) {
 		for(int i = 0; i < this.list.size(); i++) {
 			FingerprintGroup fingerprintGroup = this.getElement(i);
 			if(fingerprintGroup.getFingerprint().equals(fingerprint)) {
@@ -80,10 +81,12 @@ public class PeakToFingerprintGroupList extends DefaultList {
 		this.list.add(index, obj);
 	}
 
-	public FingerprintGroup getElementByFingerprint(String fingerprint) {
+	public FingerprintGroup getElementByFingerprint(BitArray fingerprint) {
 		for(int i = 0; i < this.list.size(); i++) {
 			FingerprintGroup fingerprintGroup = this.getElement(i);
-			if(fingerprintGroup.getFingerprint().equals(fingerprint)) return fingerprintGroup;
+			if(fingerprintGroup.getFingerprint().equals(fingerprint)) {
+				return fingerprintGroup;
+			}
 		}
 		return null;
 	}
@@ -117,7 +120,7 @@ public class PeakToFingerprintGroupList extends DefaultList {
 		this.peakmz = peakmz;
 	}
 
-	public boolean containsFingerprint(String fingerprint) {
+	public boolean containsFingerprint(BitArray fingerprint) {
 		for(int i = 0; i < this.getNumberElements(); i++) {
 			try {
 				if(this.getElement(i).getFingerprint().equals(fingerprint)) return true;
@@ -195,12 +198,22 @@ public class PeakToFingerprintGroupList extends DefaultList {
 		return string + "\n";
 	}
 
-	public String toStringDetail() {
+	public String toStringSmiles() {
 		String string = "";
-		if(this.list.size() > 0) string += this.getElement(0).toString() + ":" + this.getElement(0).getId();
+		if(this.list.size() > 0) string += this.getElement(0).toStringSmiles();
 		for(int i = 1; i < this.list.size(); i++) {
 			FingerprintGroup fingerprintGroup = this.getElement(i);
-			string += " " + fingerprintGroup.toString() + ":" + fingerprintGroup.getId();
+			string += " " + fingerprintGroup.toStringSmiles();
+		}
+		return string + "\n";
+	}
+
+	public String toStringDetail() {
+		String string = "";
+		if(this.list.size() > 0) string += this.getElement(0).toStringDetail();
+		for(int i = 1; i < this.list.size(); i++) {
+			FingerprintGroup fingerprintGroup = this.getElement(i);
+			string += " " + fingerprintGroup.toStringDetail();
 		}
 		return string + "\n";
 	}

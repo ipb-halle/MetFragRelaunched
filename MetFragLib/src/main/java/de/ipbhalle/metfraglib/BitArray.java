@@ -45,6 +45,18 @@ public class BitArray {
 		for(int i = 0; i < this.bitArray.length; i++)
 			this.bitArray[i] = value;
 	}
+
+	/**
+	 * initialises BitArray with a bitstring
+	 * 
+	 * @param nbits
+	 * @param value
+	 */
+	public BitArray(String bitstring) {
+		this.bitArray = new boolean[bitstring.length()];
+		for(int i = 0; i < this.bitArray.length; i++)
+			this.bitArray[i] = bitstring.charAt(i) == '0' ? false : true;
+	}
 	
 	/**
 	 * get next bit index in the BitArray that is set to true after the given index n
@@ -206,6 +218,20 @@ public class BitArray {
 			if(this.bitArray[i] != bitArray.get(i)) return false;
 		return true;
 	}
+
+	/**
+	 * returns true if the current and the given BitArray are of same length and have exactly the same
+	 * bits set to true 
+	 * 
+	 * @param bitArray
+	 * @return
+	 */
+	public boolean equals(String bitString) {
+		if(this.bitArray.length != bitString.length()) return false;
+		for(int i = 0; i < this.bitArray.length; i++) 
+			if((this.bitArray[i] && bitString.charAt(i) == '0') || (!this.bitArray[i] && bitString.charAt(i) == '1')) return false;
+		return true;
+	}
 	
 	/**
 	 * sets all bits of the BitArray to val
@@ -319,6 +345,20 @@ public class BitArray {
 	
 	public boolean[] getArray() {
 		return this.bitArray;
+	}
+	
+	public int compareTo(BitArray array) {
+		int len1 = this.getSize();
+		int len2 = array.getSize();
+		int minLen = Math.min(len1, len2);
+		for(int i = 0; i < minLen; i++) {
+			//check if obj smaller
+			if(!this.get(i) && array.get(i)) return -1;
+			if(this.get(i) && !array.get(i)) return 1;
+		}
+		if(len1 < len2) return -1;
+		if(len1 > len2) return 1;
+		return 0;
 	}
 	
 	/**

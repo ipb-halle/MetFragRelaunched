@@ -2,6 +2,8 @@ package de.ipbhalle.metfraglib.substructure;
 
 import java.util.Vector;
 
+import de.ipbhalle.metfraglib.BitArray;
+
 public class FingerprintGroup {
 
 	private Double jointProbability = null;
@@ -11,7 +13,8 @@ public class FingerprintGroup {
 	private int numberObserved = 0;
 	private Double probability = null;
 	
-	String fingerprint;
+	BitArray fingerprint;
+	String smiles;
 	private Integer id = null;
 
 	public FingerprintGroup(Double probability) {
@@ -40,11 +43,19 @@ public class FingerprintGroup {
 	}
 	
 	public void setFingerprint(String fingerprint) {
-		this.fingerprint = fingerprint;
+		this.fingerprint = new BitArray(fingerprint);
 	}
 
-	public String getFingerprint() {
+	public BitArray getFingerprint() {
 		return this.fingerprint;
+	}
+
+	public void setSmiles(String smiles) {
+		this.smiles = smiles;
+	}
+
+	public String getSmiles() {
+		return this.smiles;
 	}
 	
 	public void setProbabilityToJointProbability() {
@@ -105,6 +116,16 @@ public class FingerprintGroup {
 	
 	public String toString() {
 		String string = this.probability + " " + this.fingerprint;
+		return string;
+	}
+
+	public String toStringSmiles() {
+		String string = this.probability + " " + this.fingerprint + "|" + this.smiles;
+		return string;
+	}
+
+	public String toStringDetail() {
+		String string = this.probability + " " + this.fingerprint + "|" + this.fingerprint.toStringIDs() + "|" + this.smiles;
 		return string;
 	}
 

@@ -30,6 +30,7 @@ import de.ipbhalle.metfraglib.interfaces.IFragment;
 import de.ipbhalle.metfraglib.parameter.Constants;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.precursor.HDTopDownBitArrayPrecursor;
+import de.ipbhalle.metfraglib.similarity.TanimotoSimilarity;
 
 public class MoleculeFunctions {
 	
@@ -58,6 +59,35 @@ public class MoleculeFunctions {
 			e.printStackTrace();
 		}
 		return smiles;
+	}
+	
+	public static String[] getNormalizedFingerprintSmiles(IFragment frag) {
+		String preSmiles = frag.getSmiles();
+		String inchi1 = MoleculeFunctions.getInChIFromSmiles(preSmiles);
+		IAtomContainer con = null;
+		try {
+			con = getAtomContainerFromInChI(inchi1);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		String fpString = MoleculeFunctions.fingerPrintToString(TanimotoSimilarity.calculateFingerPrint(con));
+		String smiles = MoleculeFunctions.generateSmiles(con);
+		
+		return new String[] {fpString, smiles};
+	}
+
+	public static String getNormalizedFingerprint(IFragment frag) {
+		String preSmiles = frag.getSmiles();
+		String inchi1 = MoleculeFunctions.getInChIFromSmiles(preSmiles);
+		IAtomContainer con = null;
+		try {
+			con = getAtomContainerFromInChI(inchi1);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		String fpString = MoleculeFunctions.fingerPrintToString(TanimotoSimilarity.calculateFingerPrint(con));
+		
+		return fpString;
 	}
 	
 	public static String getInChIFromSmiles(String smiles) {
