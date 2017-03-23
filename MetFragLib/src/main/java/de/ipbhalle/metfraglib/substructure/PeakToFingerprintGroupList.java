@@ -55,6 +55,17 @@ public class PeakToFingerprintGroupList extends DefaultList {
 		}
 		return 0.0;
 	}
+
+	public double getMatchingProbability(BitArray fingerprint, boolean debug) {
+		for(int i = 0; i < this.list.size(); i++) {
+			FingerprintGroup fingerprintGroup = this.getElement(i);
+			if(debug) System.out.println("\t compare " + fingerprint.toStringIDs() + " " + fingerprintGroup.getFingerprint().toStringIDs());
+			if(fingerprintGroup.getFingerprint().equals(fingerprint)) {
+				return fingerprintGroup.getProbability();
+			}
+		}
+		return 0.0;
+	}
 	
 	public void sortElementsByProbability() {
 		DefaultList newlist = new DefaultList();

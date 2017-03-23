@@ -1,6 +1,7 @@
 package de.ipbhalle.metfraglib.score;
 
 import de.ipbhalle.metfraglib.BitArray;
+import de.ipbhalle.metfraglib.additionals.MathTools;
 import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.interfaces.IMatch;
@@ -79,6 +80,7 @@ public class AutomatedFingerprintSubstructureAnnotationScore extends AbstractSco
 				this.value += toAdd;
 			} else {
 				// ToDo: at this stage try to check all fragments not only the best one
+				String[] stuff = MoleculeFunctions.getNormalizedFingerprintSmiles(currentMatch.getBestMatchedFragment());
 				BitArray currentFingerprint = new BitArray(MoleculeFunctions.getNormalizedFingerprint(currentMatch.getBestMatchedFragment()));
 				
 				// (p(m,f) + alpha) / sum_F(p(m,f)) + |F| * alpha
@@ -87,11 +89,12 @@ public class AutomatedFingerprintSubstructureAnnotationScore extends AbstractSco
 				double numberPseudoCountsFingerprint = (massToFingerprints.getSize(currentMass) + 1.0);
 				double alpha = 1.0 / numberPseudoCountsFingerprint;
 				double p_f_given_m = (matching_prob) / (peakToFingerprintGroupList.getSumProbabilites() + (alpha * numberPseudoCountsFingerprint));
-	/*			if(matching_prob == 0.0)
-					System.out.println("annotated wrong_fp\t" + MathTools.round(currentMass,5) + " \t" + MathTools.round(Math.log(p_f_given_m), 10) + " \t" + matching_prob + " \t\t\t" + MathTools.round(alpha, 5) + " \t" + (new BitArray(currentFingerprint)).toStringIDs());
+				System.out.println(matching_prob + " " + peakToFingerprintGroupList.getSumProbabilites() + " " + alpha + " " + numberPseudoCountsFingerprint);
+				if(matching_prob == 0.0)
+					System.out.println("annotated wrong_fp\t" + MathTools.round(currentMass,5) + " \t" + MathTools.round(Math.log(p_f_given_m), 10) + " \t" + matching_prob + " \t\t\t" + MathTools.round(alpha, 5) + " \t" + stuff[1] + " " + currentFingerprint.toStringIDs());
 				else
-					System.out.println("annotated correct_fp\t" + MathTools.round(currentMass,5) + " \t" + MathTools.round(Math.log(p_f_given_m), 10) + " \t" + matching_prob + " \t" + MathTools.round(alpha, 5) + " \t" + (new BitArray(currentFingerprint)).toStringIDs());
-			*/
+					System.out.println("annotated correct_fp\t" + MathTools.round(currentMass,5) + " \t" + MathTools.round(Math.log(p_f_given_m), 10) + " \t" + matching_prob + " \t" + MathTools.round(alpha, 5) + " \t" + stuff[1] + " " + currentFingerprint.toStringIDs());
+				System.out.println(p_f_given_m);
 				this.value += Math.log(p_f_given_m);
 			}
 		}

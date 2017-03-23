@@ -222,7 +222,7 @@ public class WriteFingerprintSubstructureAnnotationFile {
 			else {
 				System.out.println("writing to output");
 				BufferedWriter bwriter = new BufferedWriter(new FileWriter(new File(output)));
-				bwriter.write(peakToFingerprintGroupListCollection.toString());
+				bwriter.write(peakToFingerprintGroupListCollection.toStringDetail());
 				bwriter.close();
 			}
 		}
