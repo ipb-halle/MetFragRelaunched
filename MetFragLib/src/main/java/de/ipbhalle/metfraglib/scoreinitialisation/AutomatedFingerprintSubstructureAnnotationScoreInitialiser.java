@@ -57,6 +57,7 @@ public class AutomatedFingerprintSubstructureAnnotationScoreInitialiser  impleme
 			for(int i = 0; i < peakToFingerprintGroupListCollection.getNumberElements(); i++) {
 				System.out.println(peakToFingerprintGroupListCollection.getElement(i).getPeakmz());
 			}
+			
 			breader.close();
 			peakToFingerprintGroupListCollection.calculateSumProbabilities();
 			// calculate pseudo count for a non-annotated peak
