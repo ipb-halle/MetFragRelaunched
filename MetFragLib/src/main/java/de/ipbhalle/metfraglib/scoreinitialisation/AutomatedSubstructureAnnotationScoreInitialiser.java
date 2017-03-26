@@ -22,7 +22,7 @@ public class AutomatedSubstructureAnnotationScoreInitialiser  implements IScoreI
 			DefaultPeakList peakList = (DefaultPeakList)settings.get(VariableNames.PEAK_LIST_NAME);
 			Double mzppm = (Double)settings.get(VariableNames.RELATIVE_MASS_DEVIATION_NAME);
 			Double mzabs = (Double)settings.get(VariableNames.ABSOLUTE_MASS_DEVIATION_NAME);
-			
+		
 			BufferedReader breader = new BufferedReader(new FileReader(new File(filename)));
 			String line = "";
 			while((line = breader.readLine()) != null) {
