@@ -1,7 +1,6 @@
 package de.ipbhalle.metfraglib.score;
 
 import de.ipbhalle.metfraglib.BitArray;
-import de.ipbhalle.metfraglib.additionals.MathTools;
 import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.interfaces.IMatch;
@@ -66,7 +65,8 @@ public class AutomatedFingerprintSubstructureAnnotationScore extends AbstractSco
 	
 	@Override
 	public void postCalculate() {
-		this.value = 0.0;
+		//this.value = 0.0;
+		this.value = 1.0;
 		PeakToFingerprintGroupListCollection peakToFingerprintGroupListCollection = (PeakToFingerprintGroupListCollection)this.settings.get(VariableNames.PEAK_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME);
 		MatchList matchList = this.candidate.getMatchList();
 		MassToFingerprints massToFingerprints = (MassToFingerprints)this.settings.get(VariableNames.PEAK_TO_BACKGROUND_FINGERPRINTS_NAME);
@@ -76,11 +76,11 @@ public class AutomatedFingerprintSubstructureAnnotationScore extends AbstractSco
 			IMatch currentMatch = matchList.getMatchByMass(currentMass); 
 			if(currentMatch == null) {
 				double toAdd = Math.log((Double)this.settings.get(VariableNames.PEAK_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME) / (Double)this.settings.get(VariableNames.BETA_PSEUDO_COUNT_DENOMINATOR_VALUE_NAME));
+			//	double toAdd = (Double)this.settings.get(VariableNames.PEAK_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME) / (Double)this.settings.get(VariableNames.BETA_PSEUDO_COUNT_DENOMINATOR_VALUE_NAME);
 			//	System.out.println("not_annotated " + currentMass + " " + toAdd);
 				this.value += toAdd;
 			} else {
 				// ToDo: at this stage try to check all fragments not only the best one
-				String[] stuff = MoleculeFunctions.getNormalizedFingerprintSmiles(currentMatch.getBestMatchedFragment());
 				BitArray currentFingerprint = new BitArray(MoleculeFunctions.getNormalizedFingerprint(currentMatch.getBestMatchedFragment()));
 				
 				// (p(m,f) + alpha) / sum_F(p(m,f)) + |F| * alpha
@@ -88,14 +88,18 @@ public class AutomatedFingerprintSubstructureAnnotationScore extends AbstractSco
 				// |F|
 				double numberPseudoCountsFingerprint = (massToFingerprints.getSize(currentMass) + 1.0);
 				double alpha = 1.0 / numberPseudoCountsFingerprint;
-				double p_f_given_m = (matching_prob) / (peakToFingerprintGroupList.getSumProbabilites() + (alpha * numberPseudoCountsFingerprint));
-				System.out.println(matching_prob + " " + peakToFingerprintGroupList.getSumProbabilites() + " " + alpha + " " + numberPseudoCountsFingerprint);
-				if(matching_prob == 0.0)
-					System.out.println("annotated wrong_fp\t" + MathTools.round(currentMass,5) + " \t" + MathTools.round(Math.log(p_f_given_m), 10) + " \t" + matching_prob + " \t\t\t" + MathTools.round(alpha, 5) + " \t" + stuff[1] + " " + currentFingerprint.toStringIDs());
-				else
-					System.out.println("annotated correct_fp\t" + MathTools.round(currentMass,5) + " \t" + MathTools.round(Math.log(p_f_given_m), 10) + " \t" + matching_prob + " \t" + MathTools.round(alpha, 5) + " \t" + stuff[1] + " " + currentFingerprint.toStringIDs());
-				System.out.println(p_f_given_m);
+				double p_f_given_m = (matching_prob + alpha) / (peakToFingerprintGroupList.getSumProbabilites() + (alpha * numberPseudoCountsFingerprint));
+				
+				boolean debug = false;
+				if(debug) { 
+					java.text.DecimalFormat numberFormat = new java.text.DecimalFormat("0.00000");
+					if(matching_prob == 0.0) 
+						System.out.println("annotated wrong_fp\tm:" + numberFormat.format(currentMass) + " \tp_f_given_m:" + numberFormat.format(p_f_given_m) + "|" + numberFormat.format(Math.log(p_f_given_m)) + " \tsum:" + numberFormat.format(peakToFingerprintGroupList.getSumProbabilites()) + " \tp_f_joint_m:" + numberFormat.format(matching_prob) + " \talpha:" + numberFormat.format(alpha) + " \tpseudo:" + numberPseudoCountsFingerprint + " \t" + currentFingerprint.toStringIDs());
+					else
+						System.out.println("annotated correct_fp\tm:" + numberFormat.format(currentMass) + " \tp_f_given_m:" + numberFormat.format(p_f_given_m) + "|" +numberFormat.format(Math.log(p_f_given_m)) + " \tsum:" + numberFormat.format(peakToFingerprintGroupList.getSumProbabilites()) + " \tp_f_joint_m:" + numberFormat.format(matching_prob) + " \talpha:" + numberFormat.format(alpha) + " \tpseudo:" + numberPseudoCountsFingerprint + " \t" + currentFingerprint.toStringIDs());
+				}	
 				this.value += Math.log(p_f_given_m);
+				//this.value *= p_f_given_m;
 			}
 		}
  	}

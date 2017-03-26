@@ -166,13 +166,11 @@ public class SmartsGroup extends DefaultList {
 	public void removeDuplicates() {
 		java.util.Vector<Object> newList = new java.util.Vector<Object>();
 		java.util.Vector<String> newSmiles = new java.util.Vector<String>();
-		java.util.Vector<String> newFingerprints = new java.util.Vector<String>();
 		for(int i = 0; i < this.list.size(); i++) {
 			String current = ((SMARTSQueryTool)this.list.get(i)).getSmarts();
 			if(!newList.contains(current)) {
 				newList.add(current);
 				newSmiles.add(this.smiles.get(i));
-				newFingerprints.add(this.fingerprints.get(i));
 			}
 		}
 		this.list = new java.util.Vector<Object>();
@@ -181,7 +179,6 @@ public class SmartsGroup extends DefaultList {
 			this.list.add(sqt);
 		}
 		this.smiles = newSmiles;
-		this.fingerprints = newFingerprints;
 	}
 	
 	public String toStringSmiles() {
