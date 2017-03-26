@@ -21,11 +21,15 @@ public class AutomatedSubstructureAnnotationScore extends AbstractScore {
 	
 	public void calculate() {
 		this.value = 0.0;
+		int matches = 0;
 		PeakToSmartsGroupListCollection peakToSmartGroupListCollection = (PeakToSmartsGroupListCollection)this.settings.get(VariableNames.PEAK_TO_SMARTS_GROUP_LIST_COLLECTION_NAME);
 		for(int i = 0; i < peakToSmartGroupListCollection.getNumberElements(); i++) {
 			PeakToSmartsGroupList peakToSmartsGroupList = peakToSmartGroupListCollection.getElement(i);
-			this.value += peakToSmartsGroupList.getMaximalMatchingProbabilitySorted(this.candidate);
+			double currentValue = peakToSmartsGroupList.getMaximalMatchingProbabilitySorted(this.candidate);
+			if(currentValue != 0.0) matches++;
+			this.value += value;
 		}
+		this.candidate.setProperty("AutomatedSubstructureAnnotationScore_Matches", matches);
  		this.calculationFinished = true;
 	}
 

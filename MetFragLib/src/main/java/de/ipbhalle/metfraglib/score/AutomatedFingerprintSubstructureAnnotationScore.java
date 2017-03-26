@@ -70,6 +70,7 @@ public class AutomatedFingerprintSubstructureAnnotationScore extends AbstractSco
 		PeakToFingerprintGroupListCollection peakToFingerprintGroupListCollection = (PeakToFingerprintGroupListCollection)this.settings.get(VariableNames.PEAK_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME);
 		MatchList matchList = this.candidate.getMatchList();
 		MassToFingerprints massToFingerprints = (MassToFingerprints)this.settings.get(VariableNames.PEAK_TO_BACKGROUND_FINGERPRINTS_NAME);
+		int matches = 0;
 		for(int i = 0; i < peakToFingerprintGroupListCollection.getNumberElements(); i++) {
 			PeakToFingerprintGroupList peakToFingerprintGroupList = peakToFingerprintGroupListCollection.getElement(i);
 			Double currentMass = peakToFingerprintGroupList.getPeakmz();
@@ -82,7 +83,7 @@ public class AutomatedFingerprintSubstructureAnnotationScore extends AbstractSco
 			} else {
 				// ToDo: at this stage try to check all fragments not only the best one
 				BitArray currentFingerprint = new BitArray(MoleculeFunctions.getNormalizedFingerprint(currentMatch.getBestMatchedFragment()));
-				
+				matches++;
 				// (p(m,f) + alpha) / sum_F(p(m,f)) + |F| * alpha
 				double matching_prob = peakToFingerprintGroupList.getMatchingProbability(currentFingerprint);
 				// |F|
@@ -102,6 +103,7 @@ public class AutomatedFingerprintSubstructureAnnotationScore extends AbstractSco
 				//this.value *= p_f_given_m;
 			}
 		}
+		this.candidate.setProperty("AutomatedFingerprintSubstructureAnnotationScore_Matches", matches);
  	}
 	
 	@Override
