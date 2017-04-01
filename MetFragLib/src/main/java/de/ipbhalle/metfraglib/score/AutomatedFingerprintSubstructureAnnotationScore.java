@@ -103,6 +103,7 @@ public class AutomatedFingerprintSubstructureAnnotationScore extends AbstractSco
 				//this.value *= p_f_given_m;
 			}
 		}
+		if(this.value == 1.0) this.value = 0.0;
 		this.candidate.setProperty("AutomatedFingerprintSubstructureAnnotationScore_Matches", matches);
  	}
 	
