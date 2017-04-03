@@ -8,16 +8,17 @@ import de.ipbhalle.metfraglib.interfaces.IScoreInitialiser;
 import de.ipbhalle.metfraglib.list.DefaultPeakList;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.settings.Settings;
+import de.ipbhalle.metfraglib.substructure.FingeprintObservations;
 import de.ipbhalle.metfraglib.substructure.FingerprintGroup;
-import de.ipbhalle.metfraglib.substructure.MassToFingerprints;
+import de.ipbhalle.metfraglib.substructure.FingerprintToMasses;
 import de.ipbhalle.metfraglib.substructure.PeakToFingerprintGroupList;
 import de.ipbhalle.metfraglib.substructure.PeakToFingerprintGroupListCollection;
 
-public class AutomatedFingerprintSubstructureAnnotationScoreInitialiser  implements IScoreInitialiser {
+public class AutomatedFingerprintSubstructureAnnotationScoreInitialiser2  implements IScoreInitialiser {
 
 	@Override
 	public void initScoreParameters(Settings settings) throws Exception {
-		settings.set(VariableNames.PEAK_TO_BACKGROUND_FINGERPRINTS_NAME, new MassToFingerprints());
+		settings.set(VariableNames.PEAK_TO_BACKGROUND_MASSES_NAME, new FingerprintToMasses());
 		if(!settings.containsKey(VariableNames.PEAK_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME) || settings.get(VariableNames.PEAK_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME) == null) {
 			PeakToFingerprintGroupListCollection peakToFingerprintGroupListCollection = new PeakToFingerprintGroupListCollection();
 			String filename = (String)settings.get(VariableNames.FINGERPRINT_PEAK_ANNOTATION_FILE_NAME);
@@ -52,12 +53,6 @@ public class AutomatedFingerprintSubstructureAnnotationScoreInitialiser  impleme
 					}
 				}
 			}
-			/*
-			System.out.println(peakToFingerprintGroupListCollection.getNumberElements() + " peaks found");
-			for(int i = 0; i < peakToFingerprintGroupListCollection.getNumberElements(); i++) {
-				System.out.println(peakToFingerprintGroupListCollection.getElement(i).getPeakmz());
-			}
-			*/
 			breader.close();
 			peakToFingerprintGroupListCollection.calculateSumProbabilities();
 			// calculate pseudo count for a non-annotated peak
@@ -66,6 +61,8 @@ public class AutomatedFingerprintSubstructureAnnotationScoreInitialiser  impleme
 			settings.set(VariableNames.PEAK_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME, beta);
 			//set alpha equal to beta
 			settings.set(VariableNames.PEAK_FINGERPRINT_ANNOTATION_ALPHA_VALUE_NAME, beta);
+			
+		//	peakToFingerprintGroupListCollection.c
 			settings.set(VariableNames.PEAK_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME, peakToFingerprintGroupListCollection);
 		}
 	}

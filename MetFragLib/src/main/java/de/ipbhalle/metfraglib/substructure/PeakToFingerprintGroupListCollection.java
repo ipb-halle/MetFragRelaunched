@@ -1,5 +1,6 @@
 package de.ipbhalle.metfraglib.substructure;
 
+import de.ipbhalle.metfraglib.BitArray;
 import de.ipbhalle.metfraglib.additionals.MathTools;
 import de.ipbhalle.metfraglib.list.DefaultList;
 
@@ -8,11 +9,28 @@ public class PeakToFingerprintGroupListCollection extends DefaultList {
 	// P ( p )
 	private double[] peakProbabilities;
 	private Integer maximumAnnotatedID = null;
+	// needed for p_m_given_f
+	FingeprintObservations fingerprintObservations = null;
 	
 	public PeakToFingerprintGroupListCollection() {
 		super();
 	}
 
+	public double getSumProbability(BitArray fingerprint) {
+		return this.fingerprintObservations.getSumProbabilities(fingerprint);
+	}
+	
+	public void calculateFingeprintObservations() {
+		this.fingerprintObservations = new FingeprintObservations();
+		for(int i = 0; i < this.getNumberElements(); i++) {
+			PeakToFingerprintGroupList groupList = this.getElement(i);
+			for(int j = 0; j < groupList.getNumberElements(); j++) {
+				this.fingerprintObservations.addFingerprint(groupList.getElement(j).getFingerprint());
+			}
+		}
+		this.fingerprintObservations.calculateSumProbabilities(this);
+	}
+	
 	public void filterByOccurence(int minimumNumberOccurences) {
 		java.util.Vector<Object> filteredList = new java.util.Vector<Object>();
 		for(int i = 0; i < this.getNumberElements(); i++) {
