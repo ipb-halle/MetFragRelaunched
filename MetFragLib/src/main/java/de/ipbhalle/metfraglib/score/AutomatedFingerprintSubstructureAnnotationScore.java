@@ -91,7 +91,7 @@ public class AutomatedFingerprintSubstructureAnnotationScore extends AbstractSco
 				// |F|
 				toMultiply = matching_prob + alphaValue;
 			}
-			this.value *= (toMultiply / (peakToFingerprintGroupList.getSumProbabilites() + (alphaValue * (f_m_unseen + peakToFingerprintGroupList.getNumberElements()))) + betaValue);
+			this.value *= (toMultiply / (peakToFingerprintGroupList.getSumProbabilites() + (alphaValue * (f_m_unseen + peakToFingerprintGroupList.getNumberElements())) + betaValue));
 		}
 		if(peakToFingerprintGroupListCollection.getNumberElements() == 0) this.value = 0.0;
 		this.candidate.setProperty("AutomatedFingerprintSubstructureAnnotationScore_Matches", matches);
