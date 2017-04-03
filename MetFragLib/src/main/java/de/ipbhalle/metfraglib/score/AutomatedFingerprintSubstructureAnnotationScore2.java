@@ -8,15 +8,15 @@ import de.ipbhalle.metfraglib.list.FragmentList;
 import de.ipbhalle.metfraglib.list.MatchList;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.settings.Settings;
-import de.ipbhalle.metfraglib.substructure.MassToFingerprints;
+import de.ipbhalle.metfraglib.substructure.FingerprintToMasses;
 import de.ipbhalle.metfraglib.substructure.PeakToFingerprintGroupList;
 import de.ipbhalle.metfraglib.substructure.PeakToFingerprintGroupListCollection;
 
-public class AutomatedFingerprintSubstructureAnnotationScore extends AbstractScore {
+public class AutomatedFingerprintSubstructureAnnotationScore2 extends AbstractScore {
 
 	protected ICandidate candidate;
 	
-	public AutomatedFingerprintSubstructureAnnotationScore(Settings settings) {
+	public AutomatedFingerprintSubstructureAnnotationScore2(Settings settings) {
 		super(settings);
 		this.optimalValues = new double[1];
 		this.optimalValues[0] = 0.0;
@@ -43,9 +43,10 @@ public class AutomatedFingerprintSubstructureAnnotationScore extends AbstractSco
 		// 2. extract fingerprint list for current matched mass
 		// the mass object can be used directly as it was used for initialisation of the list 
 		PeakToFingerprintGroupList peakToFingerprintGroupList = peakToFingerprintGroupListCollection.getElementByPeak(match.getMatchedPeak().getMass());
+		// get foregound fingerprint observations
 		if(peakToFingerprintGroupList != null) {
 			// 3. use this list to filter background fingerprints
-			MassToFingerprints massToFingerprints = (MassToFingerprints)this.settings.get(VariableNames.PEAK_TO_BACKGROUND_FINGERPRINTS_NAME);
+			FingerprintToMasses fingerprintToMasses = (FingerprintToMasses)this.settings.get(VariableNames.PEAK_TO_BACKGROUND_MASSES_NAME);
 			FragmentList fragmentList = match.getMatchedFragmentList();
 			for(int i = 0; i < fragmentList.getNumberElements(); i++) {
 				BitArray currentFingerprint = new BitArray(MoleculeFunctions.getNormalizedFingerprint(fragmentList.getElement(i)));
@@ -54,8 +55,8 @@ public class AutomatedFingerprintSubstructureAnnotationScore extends AbstractSco
 				if (!peakToFingerprintGroupList.containsFingerprint(currentFingerprint)) {
 					// if not add the fingerprint to background by addFingerprint function
 					// addFingerprint checks also whether fingerprint was already added
-					synchronized(massToFingerprints) {
-						massToFingerprints.addFingerprint(match.getMatchedPeak().getMass(), currentFingerprint);
+					synchronized(fingerprintToMasses) {
+						fingerprintToMasses.addMass(currentFingerprint, match.getMatchedPeak().getMass());
 					}
 				}
 			}
@@ -69,31 +70,34 @@ public class AutomatedFingerprintSubstructureAnnotationScore extends AbstractSco
 		this.value = 1.0;
 		PeakToFingerprintGroupListCollection peakToFingerprintGroupListCollection = (PeakToFingerprintGroupListCollection)this.settings.get(VariableNames.PEAK_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME);
 		MatchList matchList = this.candidate.getMatchList();
-		MassToFingerprints massToFingerprints = (MassToFingerprints)this.settings.get(VariableNames.PEAK_TO_BACKGROUND_FINGERPRINTS_NAME);
+		FingerprintToMasses fingerprintToMasses = (FingerprintToMasses)this.settings.get(VariableNames.PEAK_TO_BACKGROUND_MASSES_NAME);
 		int matches = 0;
+		// get foreground fingerprint observations (m_f_observed)
 		for(int i = 0; i < peakToFingerprintGroupListCollection.getNumberElements(); i++) {
 			// get f_m_observed
 			PeakToFingerprintGroupList peakToFingerprintGroupList = peakToFingerprintGroupListCollection.getElement(i);
 			Double currentMass = peakToFingerprintGroupList.getPeakmz();
-			IMatch currentMatch = matchList.getMatchByMass(currentMass); 
+			IMatch currentMatch = matchList.getMatchByMass(currentMass);
 			double alphaValue = (Double)this.settings.get(VariableNames.PEAK_FINGERPRINT_ANNOTATION_ALPHA_VALUE_NAME);
 			double betaValue = (Double)this.settings.get(VariableNames.PEAK_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME);
 			double toMultiply = 1.0;
-			double f_m_unseen = (massToFingerprints.getSize(currentMass));
+			// todo
+			double f_m_unseen = 0.0;
+			//(fingerprintToMasses.getSize(currentFingerprint));
 			if(currentMatch == null) {
 				toMultiply = betaValue;
 			} else {
-				// ToDo: at this stage try to check all fragments not only the best one
 				BitArray currentFingerprint = new BitArray(MoleculeFunctions.getNormalizedFingerprint(currentMatch.getBestMatchedFragment()));
+				// ToDo: at this stage try to check all fragments not only the best one
 				matches++;
 				// (p(m,f) + alpha) / sum_F(p(m,f)) + |F| * alpha
 				double matching_prob = peakToFingerprintGroupList.getMatchingProbability(currentFingerprint);
 				// |F|
 				toMultiply = matching_prob + alphaValue;
 			}
-			this.value *= (toMultiply / (peakToFingerprintGroupList.getSumProbabilites() + (alphaValue * (f_m_unseen + peakToFingerprintGroupList.getNumberElements()))) + betaValue);
+			this.value *= (toMultiply / (peakToFingerprintGroupList.getSumProbabilites() + (alphaValue * (f_m_unseen + peakToFingerprintGroupList.getNumberElements()))));
 		}
-		if(peakToFingerprintGroupListCollection.getNumberElements() == 0) this.value = 0.0;
+		if(this.value == 1.0) this.value = 0.0;
 		this.candidate.setProperty("AutomatedFingerprintSubstructureAnnotationScore_Matches", matches);
  	}
 	

@@ -11,7 +11,6 @@ public class PeakToFingerprintGroupList extends DefaultList {
 	public PeakToFingerprintGroupList(Double peakmz) {
 		super();
 		this.peakmz = peakmz;
-		this.sumProbabilities = 0.0;
 	}
 	
 	public void filterByOccurence(int minimumNumberOccurences) {

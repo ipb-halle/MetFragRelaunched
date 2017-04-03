@@ -148,7 +148,6 @@ public class WriteFingerprintSubstructureAnnotationFile {
 		if(probabilityType == 1) {
 			// calculate P ( s | p ) 
 			peakToFingerprintGroupListCollection.updateConditionalProbabilities();
-
 			peakToFingerprintGroupListCollection.setProbabilityToConditionalProbability_sp();
 			peakToFingerprintGroupListCollection.sortElementsByProbability();
 		}

@@ -238,6 +238,9 @@ public class Constants {
 	public static final String 				DEFAULT_LOCAL_DATABASE_PASSWORD				=	null;
 	public static final String 				DEFAULT_LOCAL_DATABASE_PORT_NUMBER			=	null;
 
+	public static final Double 				DEFAULT_PEAK_FINGERPRINT_ANNOTATION_ALPHA_VALUE		=	0.001;
+	public static final Double 				DEFAULT_PEAK_FINGERPRINT_ANNOTATION_BETA_VALUE		=	0.001;
+	
 	public static final String 				DEFAULT_LOCAL_METCHEM_DATABASE_LIBRARY_NAME		= 	"pubchem";
 	/*
 	 * 
