@@ -2,7 +2,7 @@ package de.ipbhalle.metfraglib.substructure;
 
 import java.util.Vector;
 
-import de.ipbhalle.metfraglib.BitArray;
+import de.ipbhalle.metfraglib.FastBitArray;
 
 public class FingerprintGroup {
 
@@ -13,7 +13,7 @@ public class FingerprintGroup {
 	private int numberObserved = 0;
 	private Double probability = null;
 	
-	BitArray fingerprint;
+	FastBitArray fingerprint;
 	String smiles;
 	private Integer id = null;
 
@@ -43,10 +43,10 @@ public class FingerprintGroup {
 	}
 	
 	public void setFingerprint(String fingerprint) {
-		this.fingerprint = new BitArray(fingerprint);
+		this.fingerprint = new FastBitArray(fingerprint);
 	}
 
-	public BitArray getFingerprint() {
+	public FastBitArray getFingerprint() {
 		return this.fingerprint;
 	}
 

@@ -52,9 +52,9 @@ public class CandidateListWriterExtendedPSV implements IWriter {
 			String peaksExplained = "";
 			String sumFormulasOfFragmentsExplainedPeaks = "";
 			
-			String atomBitArray = "";
-			String bondBitArray = "";
-			String brokenBondBitArray = "";
+			String atomFastBitArray = "";
+			String bondFastBitArray = "";
+			String brokenBondFastBitArray = "";
 			
 			if(scoredCandidate.getMatchList() != null) {
 				for(int ii = 0; ii < scoredCandidate.getMatchList().getNumberElements(); ii++) {
@@ -68,24 +68,24 @@ public class CandidateListWriterExtendedPSV implements IWriter {
 					String formula = scoredCandidate.getMatchList().getElement(ii).getModifiedFormulasStringOfBestMatchedFragment();
 					sumFormulasOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + formula + ";";
 				
-					atomBitArray += scoredCandidate.getMatchList().getElement(ii).getMatchFragmentsAtomsInfo() + ";";
-					bondBitArray += scoredCandidate.getMatchList().getElement(ii).getMatchFragmentsBondsInfo() + ";";
-					brokenBondBitArray += scoredCandidate.getMatchList().getElement(ii).getMatchFragmentsBrokenBondsInfo() + ";";
+					atomFastBitArray += scoredCandidate.getMatchList().getElement(ii).getMatchFragmentsAtomsInfo() + ";";
+					bondFastBitArray += scoredCandidate.getMatchList().getElement(ii).getMatchFragmentsBondsInfo() + ";";
+					brokenBondFastBitArray += scoredCandidate.getMatchList().getElement(ii).getMatchFragmentsBrokenBondsInfo() + ";";
 				
 				}
 				if(sumFormulasOfFragmentsExplainedPeaks.length() != 0) sumFormulasOfFragmentsExplainedPeaks = sumFormulasOfFragmentsExplainedPeaks.substring(0, sumFormulasOfFragmentsExplainedPeaks.length() - 1);
 				if(peaksExplained.length() != 0) peaksExplained = peaksExplained.substring(0, peaksExplained.length() - 1);
-				if(atomBitArray.length() != 0) {
-					atomBitArray = atomBitArray.substring(0, atomBitArray.length() - 1);
-					bondBitArray = bondBitArray.substring(0, bondBitArray.length() - 1);
-					brokenBondBitArray = brokenBondBitArray.substring(0, brokenBondBitArray.length() - 1);
+				if(atomFastBitArray.length() != 0) {
+					atomFastBitArray = atomFastBitArray.substring(0, atomFastBitArray.length() - 1);
+					bondFastBitArray = bondFastBitArray.substring(0, bondFastBitArray.length() - 1);
+					brokenBondFastBitArray = brokenBondFastBitArray.substring(0, brokenBondFastBitArray.length() - 1);
 				}
 				if(peaksExplained.length() == 0) peaksExplained = "NA";
 				if(sumFormulasOfFragmentsExplainedPeaks.length() == 0) sumFormulasOfFragmentsExplainedPeaks = "NA";
 				
-				scoredCandidate.setProperty("FragmentAtomBitArrays", atomBitArray);
-				scoredCandidate.setProperty("FragmentBondBitArrays", bondBitArray);
-				scoredCandidate.setProperty("FragmentBrokenBondBitArrays", brokenBondBitArray);
+				scoredCandidate.setProperty("FragmentAtomFastBitArrays", atomFastBitArray);
+				scoredCandidate.setProperty("FragmentBondFastBitArrays", bondFastBitArray);
+				scoredCandidate.setProperty("FragmentBrokenBondFastBitArrays", brokenBondFastBitArray);
 				scoredCandidate.setProperty("ExplPeaks", peaksExplained);
 				scoredCandidate.setProperty("FormulasOfExplPeaks", sumFormulasOfFragmentsExplainedPeaks);
 				scoredCandidate.setProperty("NumberPeaksUsed", numberOfPeaksUsed);

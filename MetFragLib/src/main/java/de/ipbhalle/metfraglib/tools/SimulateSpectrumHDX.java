@@ -103,7 +103,7 @@ public class SimulateSpectrumHDX {
 		for (int i = 0; i < matchList.getNumberElements(); i++) {
 			IFragment frag = matchList.getElement(i).getBestMatchedFragment();
 			IPeak peak = matchList.getElement(i).getMatchedPeak();
-			int[] setAtoms = ((DefaultBitArrayFragment) frag).getAtomsBitArray().getSetIndeces();
+			int[] setAtoms = ((DefaultBitArrayFragment) frag).getAtomsFastBitArray().getSetIndeces();
 			int numberDeuteriums = 0;
 			for (int k = 0; k < setAtoms.length; k++) {
 				numberDeuteriums += preHDX.getNumberDeuteriumsConnectedToAtomIndex(0, setAtoms[k]);
@@ -185,7 +185,7 @@ public class SimulateSpectrumHDX {
 		for (int i = 0; i < matchList.getNumberElements(); i++) {
 			IFragment frag = matchList.getElement(i).getBestMatchedFragment();
 			IPeak peak = matchList.getElement(i).getMatchedPeak();
-			int[] setAtoms = ((DefaultBitArrayFragment) frag).getAtomsBitArray().getSetIndeces();
+			int[] setAtoms = ((DefaultBitArrayFragment) frag).getAtomsFastBitArray().getSetIndeces();
 			int numberDeuteriums = 0;
 			for (int k = 0; k < setAtoms.length; k++) {
 				numberDeuteriums += preHDX.getNumberDeuteriumsConnectedToAtomIndex(0, setAtoms[k]);

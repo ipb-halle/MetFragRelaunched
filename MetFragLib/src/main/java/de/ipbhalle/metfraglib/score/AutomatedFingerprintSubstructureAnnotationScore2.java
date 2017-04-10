@@ -1,6 +1,6 @@
 package de.ipbhalle.metfraglib.score;
 
-import de.ipbhalle.metfraglib.BitArray;
+import de.ipbhalle.metfraglib.FastBitArray;
 import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.interfaces.IMatch;
@@ -49,7 +49,7 @@ public class AutomatedFingerprintSubstructureAnnotationScore2 extends AbstractSc
 			FingerprintToMasses fingerprintToMasses = (FingerprintToMasses)this.settings.get(VariableNames.PEAK_TO_BACKGROUND_MASSES_NAME);
 			FragmentList fragmentList = match.getMatchedFragmentList();
 			for(int i = 0; i < fragmentList.getNumberElements(); i++) {
-				BitArray currentFingerprint = new BitArray(MoleculeFunctions.getNormalizedFingerprint(fragmentList.getElement(i)));
+				FastBitArray currentFingerprint = new FastBitArray(MoleculeFunctions.getNormalizedFingerprint(fragmentList.getElement(i)));
 			//	if(match.getMatchedPeak().getMass() < 60) System.out.println(match.getMatchedPeak().getMass() + " " + currentFingerprint + " " + fragSmiles);
 				// check whether fingerprint was observed for current peak mass in the training data
 				if (!peakToFingerprintGroupList.containsFingerprint(currentFingerprint)) {
@@ -87,7 +87,7 @@ public class AutomatedFingerprintSubstructureAnnotationScore2 extends AbstractSc
 			if(currentMatch == null) {
 				toMultiply = betaValue;
 			} else {
-				BitArray currentFingerprint = new BitArray(MoleculeFunctions.getNormalizedFingerprint(currentMatch.getBestMatchedFragment()));
+				FastBitArray currentFingerprint = new FastBitArray(MoleculeFunctions.getNormalizedFingerprint(currentMatch.getBestMatchedFragment()));
 				// ToDo: at this stage try to check all fragments not only the best one
 				matches++;
 				// (p(m,f) + alpha) / sum_F(p(m,f)) + |F| * alpha

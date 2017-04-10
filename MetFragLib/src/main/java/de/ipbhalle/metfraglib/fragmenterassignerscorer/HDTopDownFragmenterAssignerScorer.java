@@ -416,7 +416,7 @@ public class HDTopDownFragmenterAssignerScorer extends TopDownFragmenterAssigner
 				 */
 				boolean similarFragmentFound = false;
 				if(peakIndexToPeakMatch.containsKey(tempPeakPointer)) {
-					Double[] values = peakIndexToPeakMatch.get(tempPeakPointer).containsByFingerprint(currentFragmentWrapper.getWrappedFragment().getAtomsBitArray());
+					Double[] values = peakIndexToPeakMatch.get(tempPeakPointer).containsByFingerprint(currentFragmentWrapper.getWrappedFragment().getAtomsFastBitArray());
 					if(values == null) {
 						peakIndexToPeakMatch.get(tempPeakPointer).insert(newNode);
 					}
@@ -519,7 +519,7 @@ public class HDTopDownFragmenterAssignerScorer extends TopDownFragmenterAssigner
 				 */
 				boolean similarFragmentFound = false;
 				if(peakIndexToPeakMatch.containsKey(tempPeakPointer)) {
-					Double[] values = peakIndexToPeakMatch.get(tempPeakPointer).containsByFingerprint(currentFragmentWrapper.getWrappedFragment().getAtomsBitArray());
+					Double[] values = peakIndexToPeakMatch.get(tempPeakPointer).containsByFingerprint(currentFragmentWrapper.getWrappedFragment().getAtomsFastBitArray());
 					if(values == null) {
 						peakIndexToPeakMatch.get(tempPeakPointer).insert(newNode);
 					}

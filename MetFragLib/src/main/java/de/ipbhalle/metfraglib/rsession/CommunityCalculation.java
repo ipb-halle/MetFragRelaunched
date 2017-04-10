@@ -1,6 +1,6 @@
 package de.ipbhalle.metfraglib.rsession;
 
-import de.ipbhalle.metfraglib.BitArray;
+import de.ipbhalle.metfraglib.FastBitArray;
 import de.ipbhalle.metfraglib.fragment.DefaultBitArrayFragment;
 import de.ipbhalle.metfraglib.precursor.BitArrayPrecursor;
 
@@ -46,17 +46,17 @@ public class CommunityCalculation {
 				this.numberCommunities = this.memberships[i] + 1;
 		}
 
-		BitArray[] atomBitArrays = new BitArray[this.numberCommunities];
+		FastBitArray[] atomFastBitArrays = new FastBitArray[this.numberCommunities];
 		for(int i = 0; i < this.numberCommunities; i++) 
-			atomBitArrays[i] = new BitArray(this.memberships.length, false);
+			atomFastBitArrays[i] = new FastBitArray(this.memberships.length, false);
 		
 		for(int i = 0; i < this.memberships.length; i++) {
-			atomBitArrays[this.memberships[i]].set(i);
+			atomFastBitArrays[this.memberships[i]].set(i);
 		}
 		
 		this.communityFragments = new DefaultBitArrayFragment[this.numberCommunities];
 		for(int i = 0; i < this.communityFragments.length; i++) {
-			this.communityFragments[i] = new DefaultBitArrayFragment(this.precursor, atomBitArrays[i]);
+			this.communityFragments[i] = new DefaultBitArrayFragment(this.precursor, atomFastBitArrays[i]);
 		}
 	}
 	

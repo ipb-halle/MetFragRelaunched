@@ -93,15 +93,15 @@ public class CandidateListWriterSDF implements IWriter {
 							+ ":" + formula + ";";
 					fragmentAtomArrays += ((DefaultBitArrayFragment) scoredCandidate
 							.getMatchList().getElement(ii)
-							.getBestMatchedFragment()).getAtomsBitArray()
+							.getBestMatchedFragment()).getAtomsFastBitArray()
 							+ ";";
 					fragmentBondArrays += ((DefaultBitArrayFragment) scoredCandidate
 							.getMatchList().getElement(ii)
-							.getBestMatchedFragment()).getBondsBitArray()
+							.getBestMatchedFragment()).getBondsFastBitArray()
 							+ ";";
 					fragmentBrokenBondArrays += ((DefaultBitArrayFragment) scoredCandidate
 							.getMatchList().getElement(ii)
-							.getBestMatchedFragment()).getBrokenBondsBitArray()
+							.getBestMatchedFragment()).getBrokenBondsFastBitArray()
 							+ ";";
 				}
 				if (sumFormulasOfFragmentsExplainedPeaks.length() != 0)

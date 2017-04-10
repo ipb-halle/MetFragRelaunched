@@ -1,6 +1,6 @@
 package de.ipbhalle.metfraglib.substructure;
 
-import de.ipbhalle.metfraglib.BitArray;
+import de.ipbhalle.metfraglib.FastBitArray;
 import de.ipbhalle.metfraglib.list.DefaultList;
 
 public class PeakToFingerprintGroupList extends DefaultList {
@@ -34,7 +34,7 @@ public class PeakToFingerprintGroupList extends DefaultList {
 		return this.sumProbabilities;
 	}
 	
-	public double getMaximalMatchingProbability(BitArray fingerprint) {
+	public double getMaximalMatchingProbability(FastBitArray fingerprint) {
 		double maxProbability = 0.0;
 		for(int i = 0; i < this.list.size(); i++) {
 			FingerprintGroup fingerprintGroup = this.getElement(i);
@@ -45,7 +45,7 @@ public class PeakToFingerprintGroupList extends DefaultList {
 		return maxProbability;
 	}
 
-	public double getMatchingProbability(BitArray fingerprint) {
+	public double getMatchingProbability(FastBitArray fingerprint) {
 		for(int i = 0; i < this.list.size(); i++) {
 			FingerprintGroup fingerprintGroup = this.getElement(i);
 			if(fingerprintGroup.getFingerprint().equals(fingerprint)) {
@@ -55,7 +55,7 @@ public class PeakToFingerprintGroupList extends DefaultList {
 		return 0.0;
 	}
 
-	public double getMatchingProbability(BitArray fingerprint, boolean debug) {
+	public double getMatchingProbability(FastBitArray fingerprint, boolean debug) {
 		for(int i = 0; i < this.list.size(); i++) {
 			FingerprintGroup fingerprintGroup = this.getElement(i);
 			if(debug) System.out.println("\t compare " + fingerprint.toStringIDs() + " " + fingerprintGroup.getFingerprint().toStringIDs());
@@ -91,7 +91,7 @@ public class PeakToFingerprintGroupList extends DefaultList {
 		this.list.add(index, obj);
 	}
 
-	public FingerprintGroup getElementByFingerprint(BitArray fingerprint) {
+	public FingerprintGroup getElementByFingerprint(FastBitArray fingerprint) {
 		for(int i = 0; i < this.list.size(); i++) {
 			FingerprintGroup fingerprintGroup = this.getElement(i);
 			if(fingerprintGroup.getFingerprint().equals(fingerprint)) {
@@ -137,7 +137,7 @@ public class PeakToFingerprintGroupList extends DefaultList {
 		this.peakmz = peakmz;
 	}
 
-	public boolean containsFingerprint(BitArray fingerprint) {
+	public boolean containsFingerprint(FastBitArray fingerprint) {
 		for(int i = 0; i < this.getNumberElements(); i++) {
 			try {
 				if(this.getElement(i).getFingerprint().equals(fingerprint)) return true;

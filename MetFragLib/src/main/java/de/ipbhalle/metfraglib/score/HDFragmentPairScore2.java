@@ -1,6 +1,6 @@
 package de.ipbhalle.metfraglib.score;
 
-import de.ipbhalle.metfraglib.BitArray;
+import de.ipbhalle.metfraglib.FastBitArray;
 import de.ipbhalle.metfraglib.match.HDFragmentMassToPeakMatch;
 import de.ipbhalle.metfraglib.additionals.MathTools;
 import de.ipbhalle.metfraglib.interfaces.IFragment;
@@ -49,7 +49,7 @@ public class HDFragmentPairScore2 extends AbstractScore {
 		double mzabs = (Double)this.settings.get(VariableNames.ABSOLUTE_MASS_DEVIATION_NAME);
 		//store whether native peak was already used within a pair
 		//a peak can only once be used
-		BitArray peaksPaired = new BitArray(peakIndeces.length);
+		FastBitArray peaksPaired = new FastBitArray(peakIndeces.length);
 		peaksPaired.setAll(false);
 		
 		//now search for peak pairs

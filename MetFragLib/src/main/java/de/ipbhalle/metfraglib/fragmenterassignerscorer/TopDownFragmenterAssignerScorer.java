@@ -157,7 +157,7 @@ public class TopDownFragmenterAssignerScorer extends AbstractFragmenterAssignerS
 							 */
 							boolean similarFragmentFound = false;
 							if(peakIndexToPeakMatch.containsKey(tempPeakPointer)) {
-								Double[] values = peakIndexToPeakMatch.get(tempPeakPointer).containsByFingerprint(currentFragment.getAtomsBitArray());
+								Double[] values = peakIndexToPeakMatch.get(tempPeakPointer).containsByFingerprint(currentFragment.getAtomsFastBitArray());
 								if(values == null) {
 									peakIndexToPeakMatch.get(tempPeakPointer).insert(newNode);
 								}
@@ -487,7 +487,7 @@ public class TopDownFragmenterAssignerScorer extends AbstractFragmenterAssignerS
 			java.util.Vector<AbstractTopDownBitArrayFragment> children = precursorOfFragment.getChildren();
 		
 		for(int i = 0; i < children.size(); i++) {
-			if(children.get(i).getID() < currentFragment.getID() && children.get(i).getAtomsBitArray().equals(currentFragment.getAtomsBitArray())) 
+			if(children.get(i).getID() < currentFragment.getID() && children.get(i).getAtomsFastBitArray().equals(currentFragment.getAtomsFastBitArray())) 
 			{
 				return true;
 			}
@@ -496,7 +496,7 @@ public class TopDownFragmenterAssignerScorer extends AbstractFragmenterAssignerS
 	}
 
 	protected boolean wasAlreadyGeneratedByHashtable(AbstractTopDownBitArrayFragment currentFragment) {
-		String currentHash = currentFragment.getAtomsBitArray().toString();
+		String currentHash = currentFragment.getAtomsFastBitArray().toString();
 		Integer minimalTreeDepth = this.bitArrayToFragment.get(currentHash);
 		if(minimalTreeDepth == null) {
 			this.bitArrayToFragment.put(currentHash, (int)currentFragment.getTreeDepth());

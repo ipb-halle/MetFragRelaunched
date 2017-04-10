@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 
-import de.ipbhalle.metfraglib.BitArray;
+import de.ipbhalle.metfraglib.FastBitArray;
 import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.interfaces.IFragment;
@@ -103,7 +103,7 @@ public class AutomatedFingerprintSubstructureAnnotationScoreInitialiser3  implem
 						IMatch match = matchlist.getElement(j);
 						PeakToFingerprintGroupList peakToFingerprintGroupList = peakToFingerprintGroupListCollection.getElementByPeak(match.getMatchedPeak().getMass());
 						IFragment frag = match.getBestMatchedFragment();
-						BitArray currentFingerprint = new BitArray(MoleculeFunctions.getNormalizedFingerprint(frag));
+						FastBitArray currentFingerprint = new FastBitArray(MoleculeFunctions.getNormalizedFingerprint(frag));
 						//	if(match.getMatchedPeak().getMass() < 60) System.out.println(match.getMatchedPeak().getMass() + " " + currentFingerprint + " " + fragSmiles);
 						// check whether fingerprint was observed for current peak mass in the training data
 						if (!peakToFingerprintGroupList.containsFingerprint(currentFingerprint)) {

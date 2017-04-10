@@ -2,7 +2,7 @@ package de.ipbhalle.metfraglib.fragmenter;
 
 import java.util.Vector;
 
-import de.ipbhalle.metfraglib.BitArray;
+import de.ipbhalle.metfraglib.FastBitArray;
 import de.ipbhalle.metfraglib.fragment.AbstractTopDownBitArrayFragment;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.list.FragmentList;
@@ -18,7 +18,7 @@ public class TopDownFragmenter extends AbstractTopDownFragmenter {
 	protected Byte maximumNumberOfAFragmentAddedToQueue;
 	protected int numberOfGeneratedFragments = 0;
 	protected boolean ringBondsInitialised;
-	protected BitArray ringBondBitArray;
+	protected FastBitArray ringBondFastBitArray;
 	
 	public TopDownFragmenter(Settings settings) throws Exception {
 		super(settings);
@@ -27,14 +27,14 @@ public class TopDownFragmenter extends AbstractTopDownFragmenter {
 		this.minimumFragmentMassLimit = (Double)settings.get(VariableNames.MINIMUM_FRAGMENT_MASS_LIMIT_NAME);
 		this.maximumNumberOfAFragmentAddedToQueue = (Byte)settings.get(VariableNames.MAXIMUM_NUMBER_OF_TOPDOWN_FRAGMENT_ADDED_TO_QUEUE);
 		this.ringBondsInitialised = false;
-		this.ringBondBitArray = new BitArray(this.scoredCandidate.getPrecursorMolecule().getNonHydrogenBondCount(), false);
+		this.ringBondFastBitArray = new FastBitArray(this.scoredCandidate.getPrecursorMolecule().getNonHydrogenBondCount(), false);
 	}
 
 	public FragmentList generateFragments() {
 		FragmentList generatedFragments = new FragmentList();
 		java.util.Queue<AbstractTopDownBitArrayFragment> temporaryFragments = new java.util.LinkedList<AbstractTopDownBitArrayFragment>();
 		java.util.Queue<Byte> numberOfFragmentAddedToQueue = new java.util.LinkedList<Byte>();
-		java.util.Queue<de.ipbhalle.metfraglib.BitArray> nextBondIndecesToRemove = new java.util.LinkedList<de.ipbhalle.metfraglib.BitArray>();
+		java.util.Queue<de.ipbhalle.metfraglib.FastBitArray> nextBondIndecesToRemove = new java.util.LinkedList<de.ipbhalle.metfraglib.FastBitArray>();
 		
 		/*
 		 * set first fragment as root for fragment generation (precursor)
@@ -44,12 +44,12 @@ public class TopDownFragmenter extends AbstractTopDownFragmenter {
 		temporaryFragments.add(root);
 		generatedFragments.addElement(root);
 		numberOfFragmentAddedToQueue.add((byte)1);
-		nextBondIndecesToRemove.add(root.getBondsBitArray());
+		nextBondIndecesToRemove.add(root.getBondsFastBitArray());
 		
 		for(int k = 1; k <= this.maximumTreeDepth; k++) {
 			java.util.Queue<AbstractTopDownBitArrayFragment> newTemporaryFragments = new java.util.LinkedList<AbstractTopDownBitArrayFragment>();
 			java.util.Queue<Byte> newNumberOfFragmentAddedToQueue = new java.util.LinkedList<Byte>();
-			java.util.Queue<de.ipbhalle.metfraglib.BitArray> newNextBondIndecesToRemove = new java.util.LinkedList<de.ipbhalle.metfraglib.BitArray>();
+			java.util.Queue<de.ipbhalle.metfraglib.FastBitArray> newNextBondIndecesToRemove = new java.util.LinkedList<de.ipbhalle.metfraglib.FastBitArray>();
 			
 			while (!temporaryFragments.isEmpty()) {
 				AbstractTopDownBitArrayFragment nextTopDownFragmentForFragmentation = temporaryFragments.poll();
@@ -64,7 +64,7 @@ public class TopDownFragmenter extends AbstractTopDownFragmenter {
 					* prevents generating fragments redundantly
 					*/
 					if (nextBondIndexToRemove < nextTopDownFragmentForFragmentation.getMaximalIndexOfRemovedBond()
-							|| !nextTopDownFragmentForFragmentation.getBondsBitArray().get(nextBondIndexToRemove)) {
+							|| !nextTopDownFragmentForFragmentation.getBondsFastBitArray().get(nextBondIndexToRemove)) {
 						continue;
 					}
 					short[] indecesOfBondConnectedAtoms = ((BitArrayPrecursor)this.scoredCandidate.getPrecursorMolecule()).getConnectedAtomIndecesOfBondIndex(nextBondIndexToRemove);
@@ -81,14 +81,14 @@ public class TopDownFragmenter extends AbstractTopDownFragmenter {
 						if (newGeneratedTopDownFragments[0].getMonoisotopicMass() > this.minimumFragmentMassLimit - this.minimumMassDeviationForFragmentGeneration) {
 							newGeneratedTopDownFragments[0].setID(++this.numberOfGeneratedFragments);
 							generatedFragments.addElement(newGeneratedTopDownFragments[0]);
-							newNextBondIndecesToRemove.add(newGeneratedTopDownFragments[0].getBondsBitArray());
+							newNextBondIndecesToRemove.add(newGeneratedTopDownFragments[0].getBondsFastBitArray());
 							newNumberOfFragmentAddedToQueue.add((byte)1);
 							newTemporaryFragments.add(newGeneratedTopDownFragments[0]);
 						}
 						if (newGeneratedTopDownFragments[1].getMonoisotopicMass() > this.minimumFragmentMassLimit - this.minimumMassDeviationForFragmentGeneration) {
 							newGeneratedTopDownFragments[1].setID(++this.numberOfGeneratedFragments);
 							generatedFragments.addElement(newGeneratedTopDownFragments[1]);
-							newNextBondIndecesToRemove.add(newGeneratedTopDownFragments[1].getBondsBitArray());
+							newNextBondIndecesToRemove.add(newGeneratedTopDownFragments[1].getBondsFastBitArray());
 							newNumberOfFragmentAddedToQueue.add((byte)1);
 							newTemporaryFragments.add(newGeneratedTopDownFragments[1]);
 						}
@@ -102,13 +102,13 @@ public class TopDownFragmenter extends AbstractTopDownFragmenter {
 							if (numberOfNextTopDownFragmentForFragmentationAddedToQueue < this.maximumNumberOfAFragmentAddedToQueue) {
 								temporaryFragments.add(newGeneratedTopDownFragments[0]);
 								numberOfFragmentAddedToQueue.add((byte)(numberOfNextTopDownFragmentForFragmentationAddedToQueue + 1));
-							//	nextBondIndecesToRemove.add(this.precursorMolecule.getBitArrayOfBondsBelongingtoRingLikeBondIndex(nextBondIndexToRemove));
-								nextBondIndecesToRemove.add(newGeneratedTopDownFragments[0].getBondsBitArray());
+							//	nextBondIndecesToRemove.add(this.precursorMolecule.getFastBitArrayOfBondsBelongingtoRingLikeBondIndex(nextBondIndexToRemove));
+								nextBondIndecesToRemove.add(newGeneratedTopDownFragments[0].getBondsFastBitArray());
 							}
 							else {
 								newTemporaryFragments.add(newGeneratedTopDownFragments[0]);
 								newNumberOfFragmentAddedToQueue.add((byte)1);
-								newNextBondIndecesToRemove.add(newGeneratedTopDownFragments[0].getBondsBitArray());
+								newNextBondIndecesToRemove.add(newGeneratedTopDownFragments[0].getBondsFastBitArray());
 							}
 						}
 					}
@@ -152,7 +152,7 @@ public class TopDownFragmenter extends AbstractTopDownFragmenter {
 	 */
 	@Override
 	public Vector<AbstractTopDownBitArrayFragment> getFragmentsOfNextTreeDepth(AbstractTopDownBitArrayFragment precursorFragment) {
-		BitArray ringBonds = new BitArray(precursorFragment.getBondsBitArray().getSize(), false);
+		FastBitArray ringBonds = new FastBitArray(precursorFragment.getBondsFastBitArray().getSize(), false);
 		java.util.Queue<AbstractTopDownBitArrayFragment> ringBondCuttedFragments = new java.util.LinkedList<AbstractTopDownBitArrayFragment>();
 		java.util.Queue<Short> lastCuttedBondOfRing = new java.util.LinkedList<Short>();
 		Vector<AbstractTopDownBitArrayFragment> fragmentsOfNextTreeDepth = new Vector<AbstractTopDownBitArrayFragment>();
@@ -169,8 +169,8 @@ public class TopDownFragmenter extends AbstractTopDownFragmenter {
 		/*
 		 * start from the last broken bond index
 		 */
-		for(short i = nextBrokenIndexBondIndexToRemove; i < precursorFragment.getBondsBitArray().getSize(); i++) {		
-			if(!precursorFragment.getBondsBitArray().get(i)) continue;
+		for(short i = nextBrokenIndexBondIndexToRemove; i < precursorFragment.getBondsFastBitArray().getSize(); i++) {		
+			if(!precursorFragment.getBondsFastBitArray().get(i)) continue;
 			short[] indecesOfBondConnectedAtoms = ((BitArrayPrecursor)this.scoredCandidate.getPrecursorMolecule()).getConnectedAtomIndecesOfBondIndex(i);
 			/*
 			 * try to generate at most two fragments by the removal of the given bond
@@ -188,7 +188,7 @@ public class TopDownFragmenter extends AbstractTopDownFragmenter {
 				ringBonds.set(i, true);
 				ringBondCuttedFragments.add(newGeneratedTopDownFragments[0]);
 				lastCuttedBondOfRing.add(i);
-				if(!this.ringBondsInitialised) this.ringBondBitArray.set(i);
+				if(!this.ringBondsInitialised) this.ringBondFastBitArray.set(i);
 			}
 			/*
 			 * pre-processing of the generated fragment/s
@@ -229,11 +229,11 @@ public class TopDownFragmenter extends AbstractTopDownFragmenter {
 	 * @param newGeneratedTopDownFragments
 	 * @param precursorFragment
 	 * @param toProcess
-	 * @param ringBondBitArray
+	 * @param ringBondFastBitArray
 	 * @param lastCuttedRingBond
 	 * @return
 	 */
-	protected Vector<AbstractTopDownBitArrayFragment> createRingBondCleavedFragments(Vector<AbstractTopDownBitArrayFragment> newGeneratedTopDownFragments, AbstractTopDownBitArrayFragment precursorFragment, java.util.Queue<AbstractTopDownBitArrayFragment> toProcess, BitArray ringBondBitArray, java.util.Queue<Short> lastCuttedRingBond) {
+	protected Vector<AbstractTopDownBitArrayFragment> createRingBondCleavedFragments(Vector<AbstractTopDownBitArrayFragment> newGeneratedTopDownFragments, AbstractTopDownBitArrayFragment precursorFragment, java.util.Queue<AbstractTopDownBitArrayFragment> toProcess, FastBitArray ringBondFastBitArray, java.util.Queue<Short> lastCuttedRingBond) {
 		/*
 		 * process all fragments that have been cutted in a ring without generating 
 		 * a new one
@@ -247,10 +247,10 @@ public class TopDownFragmenter extends AbstractTopDownFragmenter {
 			/*
 			 * 
 			 */ 
-			for(short currentBond = nextRingBondToCut; currentBond < ringBondBitArray.getSize(); currentBond++) 
+			for(short currentBond = nextRingBondToCut; currentBond < ringBondFastBitArray.getSize(); currentBond++) 
 			{
-			 	if(!ringBondBitArray.get(currentBond)) continue;
-				if(currentFragment.getBrokenBondsBitArray().get(currentBond)) continue;
+			 	if(!ringBondFastBitArray.get(currentBond)) continue;
+				if(currentFragment.getBrokenBondsFastBitArray().get(currentBond)) continue;
 				AbstractTopDownBitArrayFragment[] newFragments = {currentFragment}; 
 				short[] connectedAtomIndeces = ((BitArrayPrecursor)this.scoredCandidate.getPrecursorMolecule()).getConnectedAtomIndecesOfBondIndex((short)currentBond);
 				newFragments = currentFragment.traverseMolecule((short)currentBond, connectedAtomIndeces);
@@ -305,10 +305,10 @@ public class TopDownFragmenter extends AbstractTopDownFragmenter {
 		short lastSkippedBonds = precursorFragment.getLastSkippedBond();
 		if(lastSkippedBonds == -1 || precursorFragment.getNonHydrogenBondCount() <= lastSkippedBonds) return;
 		
-		for(short currentBond = lastSkippedBonds; currentBond < ringBondBitArray.getSize(); currentBond++) 
+		for(short currentBond = lastSkippedBonds; currentBond < ringBondFastBitArray.getSize(); currentBond++) 
 		{
-		 	if(!this.ringBondBitArray.get(currentBond)) continue;
-		 	if(!precursorFragment.getBondsBitArray().get(currentBond)) continue;
+		 	if(!this.ringBondFastBitArray.get(currentBond)) continue;
+		 	if(!precursorFragment.getBondsFastBitArray().get(currentBond)) continue;
 			short[] connectedAtomIndeces = ((BitArrayPrecursor)this.scoredCandidate.getPrecursorMolecule()).getConnectedAtomIndecesOfBondIndex((short)currentBond);
 			AbstractTopDownBitArrayFragment[] newFragments = precursorFragment.traverseMolecule((short)currentBond, connectedAtomIndeces);
 			this.processGeneratedFragments(newFragments);

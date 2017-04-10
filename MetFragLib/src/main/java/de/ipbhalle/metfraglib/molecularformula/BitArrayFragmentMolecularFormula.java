@@ -1,6 +1,6 @@
 package de.ipbhalle.metfraglib.molecularformula;
 
-import de.ipbhalle.metfraglib.BitArray;
+import de.ipbhalle.metfraglib.FastBitArray;
 import de.ipbhalle.metfraglib.additionals.MathTools;
 import de.ipbhalle.metfraglib.exceptions.AtomTypeNotKnownFromInputListException;
 import de.ipbhalle.metfraglib.parameter.Constants;
@@ -21,16 +21,16 @@ public class BitArrayFragmentMolecularFormula extends ByteMolecularFormula {
 		this.precursorMolecule = precursorMolecule;
 	}
 	
-	public BitArrayFragmentMolecularFormula(DefaultPrecursor precursorMolecule, BitArray atomsBitArray) throws AtomTypeNotKnownFromInputListException {
+	public BitArrayFragmentMolecularFormula(DefaultPrecursor precursorMolecule, FastBitArray atomsFastBitArray) throws AtomTypeNotKnownFromInputListException {
 		super(precursorMolecule);
 		this.precursorMolecule = precursorMolecule;
-		this.initialise(atomsBitArray);
+		this.initialise(atomsFastBitArray);
 	}
 
 	/**
 	 * 
 	 */
-	private void initialise(BitArray atomsBitArray) {
+	private void initialise(FastBitArray atomsFastBitArray) {
 		this.numberHydrogens = 0;
 		for(int i = 0; i < this.numberOfAtoms.length; i++)
 			this.numberOfAtoms[i] = 0;
@@ -38,7 +38,7 @@ public class BitArrayFragmentMolecularFormula extends ByteMolecularFormula {
 			String currentAtomSymbol = this.getAtomSymbol(this.precursorMolecule.getStructureAsIAtomContainer().getAtom(i));
 			byte atomNumber = (byte)Constants.ELEMENTS.indexOf(currentAtomSymbol);
 			if(atomNumber == 0 || atomNumber == 1) this.containsC = true;
-			if(atomsBitArray.get(i)) {
+			if(atomsFastBitArray.get(i)) {
 				for(int ii = 0; ii < this.atomsAsIndeces.length; ii++) {
 					if(this.atomsAsIndeces[ii] == atomNumber) {
 						this.numberOfAtoms[ii]++;
@@ -52,7 +52,7 @@ public class BitArrayFragmentMolecularFormula extends ByteMolecularFormula {
 	
 	/**
 	 * 
-	 * @param atomBitArray
+	 * @param atomFastBitArray
 	 * @return
 	 */
 	public double getMonoisotopicMass() {

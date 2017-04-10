@@ -9,7 +9,7 @@ import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IRingSet;
 import org.openscience.cdk.ringsearch.AllRingsFinder;
 
-import de.ipbhalle.metfraglib.BitArray;
+import de.ipbhalle.metfraglib.FastBitArray;
 import de.ipbhalle.metfraglib.additionals.Bond;
 import de.ipbhalle.metfraglib.exceptions.AtomTypeNotKnownFromInputListException;
 import de.ipbhalle.metfraglib.fragment.DefaultBitArrayFragment;
@@ -18,8 +18,8 @@ public class BitArrayPrecursor extends DefaultPrecursor {
 
 	protected java.util.Vector<short[]> atomIndexToConnectedAtomIndeces;
 	protected short[][] bondIndexToConnectedAtomIndeces;
-	protected BitArray[] ringBondToBelongingRingBondIndeces;
-	protected BitArray aromaticBonds;
+	protected FastBitArray[] ringBondToBelongingRingBondIndeces;
+	protected FastBitArray aromaticBonds;
 	protected short[] atomAdjacencyList;
 	
 	public BitArrayPrecursor(IAtomContainer precursorMolecule) {
@@ -31,7 +31,7 @@ public class BitArrayPrecursor extends DefaultPrecursor {
 		super.preprocessPrecursor();
 		this.initiliseAtomIndexToConnectedAtomIndeces();
 		this.initiliseBondIndexToConnectedAtomIndeces();
-		this.initialiseRingBondsBitArray();
+		this.initialiseRingBondsFastBitArray();
 		this.initialiseAtomAdjacencyList();
 	}
 	
@@ -85,11 +85,11 @@ public class BitArrayPrecursor extends DefaultPrecursor {
 	/**
 	 * initialise indeces belonging to a ring in the precursor molecule
 	 */
-	protected void initialiseRingBondsBitArray() throws Exception {
-		this.aromaticBonds = new BitArray(this.getNonHydrogenBondCount());
+	protected void initialiseRingBondsFastBitArray() throws Exception {
+		this.aromaticBonds = new FastBitArray(this.getNonHydrogenBondCount());
 		AllRingsFinder allRingsFinder = new AllRingsFinder();
 		IRingSet ringSet = allRingsFinder.findAllRings(this.precursorMolecule);
-		this.initialiseRingBondToBelongingRingBondIndecesBitArrays(ringSet);
+		this.initialiseRingBondToBelongingRingBondIndecesFastBitArrays(ringSet);
 		if (ringSet.getAtomContainerCount() != 0) {
 			Aromaticity arom = new Aromaticity(ElectronDonation.cdk(), Cycles.cdkAromaticSet());
 			java.util.Set<IBond> aromaticBonds = arom.findBonds(this.precursorMolecule);
@@ -102,15 +102,15 @@ public class BitArrayPrecursor extends DefaultPrecursor {
 	}
 	
 	/**
-	 * initialises ringBondToBelongingRingBondIndeces BitArray array
+	 * initialises ringBondToBelongingRingBondIndeces FastBitArray array
 	 * fast and easy way to retrieve all bond indeces belonging to a ring including the bond at specified index of that array 
 	 * 
 	 * @param ringSet
 	 */
-	protected void initialiseRingBondToBelongingRingBondIndecesBitArrays(IRingSet ringSet) {
-		this.ringBondToBelongingRingBondIndeces = new BitArray[this.precursorMolecule.getBondCount() + 1];
+	protected void initialiseRingBondToBelongingRingBondIndecesFastBitArrays(IRingSet ringSet) {
+		this.ringBondToBelongingRingBondIndeces = new FastBitArray[this.precursorMolecule.getBondCount() + 1];
 		for (int i = 0; i < this.ringBondToBelongingRingBondIndeces.length; i++)
-			this.ringBondToBelongingRingBondIndeces[i] = new BitArray(
+			this.ringBondToBelongingRingBondIndeces[i] = new FastBitArray(
 					this.precursorMolecule.getBondCount() + 1);
 
 		for (int i = 0; i < ringSet.getAtomContainerCount(); i++) {
@@ -144,7 +144,7 @@ public class BitArrayPrecursor extends DefaultPrecursor {
 	 * @param bondIndex
 	 * @return
 	 */
-	public BitArray getBitArrayOfBondsBelongingtoRingLikeBondIndex(short bondIndex) {
+	public FastBitArray getFastBitArrayOfBondsBelongingtoRingLikeBondIndex(short bondIndex) {
 		return this.ringBondToBelongingRingBondIndeces[bondIndex];
 	}
 	

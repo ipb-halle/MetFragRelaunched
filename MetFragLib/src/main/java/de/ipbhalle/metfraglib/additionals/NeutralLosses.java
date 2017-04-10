@@ -4,7 +4,7 @@ import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.smiles.smarts.SMARTSQueryTool;
 
-import de.ipbhalle.metfraglib.BitArray;
+import de.ipbhalle.metfraglib.FastBitArray;
 import de.ipbhalle.metfraglib.fragment.BitArrayNeutralLoss;
 import de.ipbhalle.metfraglib.precursor.DefaultPrecursor;
 
@@ -33,7 +33,7 @@ public class NeutralLosses {
 					 * store which is a valid loss based on the number of hydrogens
 					 */
 					boolean[] validMatches = new boolean[matchingAtoms.size()];
-					BitArray[] allMatches = new BitArray[matchingAtoms.size()];
+					FastBitArray[] allMatches = new FastBitArray[matchingAtoms.size()];
 					int numberOfValidNeutralLosses = 0;
 					/*
 					 * check each part that is marked as neutral loss
@@ -44,7 +44,7 @@ public class NeutralLosses {
 						 * count number of implicit hydrogens of this neutral loss
 						 */
 						int numberImplicitHydrogens = 0;
-						allMatches[ii] = new BitArray(precursorMolecule.getNonHydrogenAtomCount());
+						allMatches[ii] = new FastBitArray(precursorMolecule.getNonHydrogenAtomCount());
 						/*
 						 * check all atoms 
 						 */

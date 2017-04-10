@@ -372,15 +372,15 @@ public class MoleculeFunctions {
 	
 	public static IAtomContainer getStructureAsIAtomContainerHD(IFragment fragment, int precursorIndexHD) throws CloneNotSupportedException {
 		HDTopDownBitArrayPrecursor precursor = (HDTopDownBitArrayPrecursor)fragment.getPrecursorMolecule();
-		de.ipbhalle.metfraglib.BitArray atomsBitArray = ((de.ipbhalle.metfraglib.fragment.DefaultBitArrayFragment)fragment).getAtomsBitArray();
-		de.ipbhalle.metfraglib.BitArray bondsBitArray = ((de.ipbhalle.metfraglib.fragment.DefaultBitArrayFragment)fragment).getBondsBitArray();
+		de.ipbhalle.metfraglib.FastBitArray atomsFastBitArray = ((de.ipbhalle.metfraglib.fragment.DefaultBitArrayFragment)fragment).getAtomsFastBitArray();
+		de.ipbhalle.metfraglib.FastBitArray bondsFastBitArray = ((de.ipbhalle.metfraglib.fragment.DefaultBitArrayFragment)fragment).getBondsFastBitArray();
 		
 		IAtomContainer mol = precursor.getStructureAsIAtomContainer().clone();
 		prepareAtomContainer(mol, false);
 		IChemObjectBuilder builder = DefaultChemObjectBuilder.getInstance();
 		IAtomContainer fragmentStructure = builder.newInstance(IAtomContainer.class);
-		if(atomsBitArray.cardinality() == 1) {
-			int firstSetBit = atomsBitArray.getFirstSetBit();
+		if(atomsFastBitArray.cardinality() == 1) {
+			int firstSetBit = atomsFastBitArray.getFirstSetBit();
 			IAtom atom = (IAtom)mol.getAtom(firstSetBit).clone();
 			fragmentStructure.addAtom(atom);
 			int numberDeuteriums = precursor.getNumberDeuteriumsConnectedToAtomIndex(precursorIndexHD, firstSetBit);
@@ -393,8 +393,8 @@ public class MoleculeFunctions {
 			}
 			return fragmentStructure;
 		}
-		for(int i = 0; i < atomsBitArray.getSize(); i++) {
-			if(atomsBitArray.get(i)) {
+		for(int i = 0; i < atomsFastBitArray.getSize(); i++) {
+			if(atomsFastBitArray.get(i)) {
 				int numberDeuteriums = precursor.getNumberDeuteriumsConnectedToAtomIndex(precursorIndexHD, i);
 				IAtom atom = mol.getAtom(i);
 				for(int k = 0; k < numberDeuteriums; k++) {
@@ -407,8 +407,8 @@ public class MoleculeFunctions {
 			}
 		}
 		
-		for(int i = 0; i < bondsBitArray.getSize(); i++) {
-			if(bondsBitArray.get(i)) {
+		for(int i = 0; i < bondsFastBitArray.getSize(); i++) {
+			if(bondsFastBitArray.get(i)) {
 				IBond curBond = mol.getBond(i);
 				for(IAtom atom : curBond.atoms()) {
 					fragmentStructure.addAtom(atom);
