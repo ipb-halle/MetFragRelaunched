@@ -57,7 +57,11 @@ public class FingerprintGroup {
 	public String getSmiles() {
 		return this.smiles;
 	}
-	
+
+	public void setProbabilityToNumberObserved() {
+		this.probability = (double)this.numberObserved;
+	}
+
 	public void setProbabilityToJointProbability() {
 		this.probability = this.jointProbability;
 	}

@@ -31,7 +31,7 @@ public interface IScore {
 	 * 
 	 * @throws Exception
 	 */
-	public void postCalculate() throws Exception;
+	public void singlePostCalculate() throws Exception;
 	
 	/**
 	 * delete all objects

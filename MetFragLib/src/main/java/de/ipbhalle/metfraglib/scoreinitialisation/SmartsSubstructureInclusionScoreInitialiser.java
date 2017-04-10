@@ -28,4 +28,8 @@ public class SmartsSubstructureInclusionScoreInitialiser implements IScoreInitia
 		}
 	}
 
+	public void postProcessScoreParameters(Settings settings) {
+		return;
+	}
+	
 }

@@ -35,9 +35,9 @@ public class ScoreCollection {
 			this.scores[i].calculate();
 	}
 
-	public void postCalculate() throws Exception {
+	public void singlePostCalculate() throws Exception {
 		for(int i = 0; i < this.scores.length; i++)
-			this.scores[i].postCalculate();
+			this.scores[i].singlePostCalculate();
 	}
 	
 	public Double[][] calculateSingleMatch(IMatch match) {

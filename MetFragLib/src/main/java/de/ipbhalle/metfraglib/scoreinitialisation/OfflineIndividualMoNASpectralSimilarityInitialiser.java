@@ -35,4 +35,8 @@ public class OfflineIndividualMoNASpectralSimilarityInitialiser implements IScor
 		}
 	}
 
+	public void postProcessScoreParameters(Settings settings) {
+		return;
+	}
+	
 }

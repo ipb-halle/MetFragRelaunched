@@ -61,6 +61,10 @@ public class AutomatedLossAnnotationScoreInitialiser implements IScoreInitialise
 			settings.set(VariableNames.LOSS_TO_SMARTS_GROUP_LIST_COLLECTION_NAME, peakToSmartGroupListCollection);
 		}
 	}
+
+	public void postProcessScoreParameters(Settings settings) {
+		return;
+	}
 	
 	private boolean containsMass(double mass, java.util.Vector<Double> massVector, double mzabs, double mzppm) {
 		double dev = MathTools.calculateAbsoluteDeviation(mass, mzppm);
