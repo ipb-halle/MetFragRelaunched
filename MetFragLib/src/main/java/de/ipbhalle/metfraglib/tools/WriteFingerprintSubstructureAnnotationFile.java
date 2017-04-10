@@ -24,7 +24,7 @@ public class WriteFingerprintSubstructureAnnotationFile {
 	 * filename - input file name
 	 * mzppm
 	 * mzabs
-	 * probtype - probability type: 1 - P ( s | p ); 2 - P ( p | s ); 3 - P ( p , s ) from s; 4 - P ( p , s ) from p; 5 - P ( s | p ) P ( p | s ) P ( p , s )_s P ( p , s )_p
+	 * probtype - probability type: 0 - counts; 1 - P ( s | p ); 2 - P ( p | s ); 3 - P ( p , s ) from s; 4 - P ( p , s ) from p; 5 - P ( s | p ) P ( p | s ) P ( p , s )_s P ( p , s )_p
 	 * occurThresh
 	 * output
 	 * 
@@ -143,7 +143,14 @@ public class WriteFingerprintSubstructureAnnotationFile {
 		//N^(s)
 		int[] substrOccurences = peakToFingerprintGroupListCollection.calculateSubstructureAbsoluteProbabilities();
 		int[] peakOccurences = peakToFingerprintGroupListCollection.calculatePeakAbsoluteProbabilities();
-		
+
+		//counts
+		if(probabilityType == 0) {
+			// calculate P ( s | p ) 
+			peakToFingerprintGroupListCollection.updateConditionalProbabilities();
+			peakToFingerprintGroupListCollection.setProbabilityToNumberObserved();
+			peakToFingerprintGroupListCollection.sortElementsByProbability();
+		}
 		//P ( s | p ) 
 		if(probabilityType == 1) {
 			// calculate P ( s | p ) 
@@ -253,4 +260,5 @@ public class WriteFingerprintSubstructureAnnotationFile {
 			System.out.println(peakMassesSorted.get(i) + " " + fingerprintsSorted.get(i));
 		}
 	}
+	
 }

@@ -37,4 +37,8 @@ public class MetFusionMoNASpectralSimilarityInitialiser implements IScoreInitial
 			
 	}
 
+	public void postProcessScoreParameters(Settings settings) {
+		return;
+	}
+	
 }

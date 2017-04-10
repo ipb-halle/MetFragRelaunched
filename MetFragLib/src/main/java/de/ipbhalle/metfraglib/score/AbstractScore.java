@@ -118,7 +118,8 @@ public abstract class AbstractScore implements IScore {
 	}
 	
 	@Override
-	public void postCalculate() {
+	public void singlePostCalculate() {
 		return;
 	}
+
 }

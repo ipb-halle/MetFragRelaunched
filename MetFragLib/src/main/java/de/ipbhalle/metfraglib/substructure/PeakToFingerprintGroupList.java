@@ -101,6 +101,13 @@ public class PeakToFingerprintGroupList extends DefaultList {
 		return null;
 	}
 
+	public void setProbabilityToNumberObserved() {
+		for(int i = 0; i < this.list.size(); i++) {
+			FingerprintGroup fingerprintGroup = (FingerprintGroup)this.list.get(i);
+			fingerprintGroup.setProbabilityToNumberObserved();
+		}
+	}
+
 	public void setProbabilityToJointProbability() {
 		for(int i = 0; i < this.list.size(); i++) {
 			FingerprintGroup fingerprintGroup = (FingerprintGroup)this.list.get(i);

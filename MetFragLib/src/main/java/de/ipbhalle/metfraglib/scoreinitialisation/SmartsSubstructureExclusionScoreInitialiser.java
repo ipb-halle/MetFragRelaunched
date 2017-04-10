@@ -27,4 +27,8 @@ public class SmartsSubstructureExclusionScoreInitialiser implements IScoreInitia
 		}
 	}
 
+	public void postProcessScoreParameters(Settings settings) {
+		return;
+	}
+	
 }

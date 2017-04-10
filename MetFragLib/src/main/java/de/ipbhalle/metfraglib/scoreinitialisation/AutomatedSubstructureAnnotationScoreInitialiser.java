@@ -53,6 +53,10 @@ public class AutomatedSubstructureAnnotationScoreInitialiser  implements IScoreI
 			settings.set(VariableNames.PEAK_TO_SMARTS_GROUP_LIST_COLLECTION_NAME, peakToSmartGroupListCollection);
 		}
 	}
+
+	public void postProcessScoreParameters(Settings settings) {
+		return;
+	}
 	
 	private boolean isDoubleValue(String value) {
 		try {

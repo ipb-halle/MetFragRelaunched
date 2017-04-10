@@ -111,8 +111,8 @@ public abstract class AbstractFragmenterAssignerScorer implements IFragmenterAss
 		this.scoreCollection.calculate();
 	}
 
-	public void postCalculateScore() throws Exception {
-		this.scoreCollection.postCalculate();
+	public void singlePostCalculateScore() throws Exception {
+		this.scoreCollection.singlePostCalculate();
 	}
 	
 	public ScoreCollection getScoreCollection() {

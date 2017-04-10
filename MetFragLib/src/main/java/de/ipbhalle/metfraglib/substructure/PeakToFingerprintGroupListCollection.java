@@ -205,7 +205,6 @@ public class PeakToFingerprintGroupListCollection extends DefaultList {
 		}
 		return peakOccurences;
 	}
-	
 	public void setProbabilityToJointProbability() {
 		for(int i = 0; i < this.list.size(); i++) {
 			PeakToFingerprintGroupList peakToFingerprintGroupList = this.getElement(i);
@@ -224,6 +223,13 @@ public class PeakToFingerprintGroupListCollection extends DefaultList {
 		for(int i = 0; i < this.list.size(); i++) {
 			PeakToFingerprintGroupList peakToFingerprintGroupList = this.getElement(i);
 			peakToFingerprintGroupList.setProbabilityToConditionalProbability_ps();
+		}
+	}
+	
+	public void setProbabilityToNumberObserved() {
+		for(int i = 0; i < this.list.size(); i++) {
+			PeakToFingerprintGroupList peakToFingerprintGroupList = this.getElement(i);
+			peakToFingerprintGroupList.setProbabilityToNumberObserved();
 		}
 	}
 	

@@ -66,6 +66,10 @@ public class CombinedAutomatedAnnotationScoreInitialiser implements IScoreInitia
 			settings.set(VariableNames.LOSS_TO_SMARTS_GROUP_LIST_COLLECTION_NAME, peakToSmartGroupListCollection);
 		}
 	}
+
+	public void postProcessScoreParameters(Settings settings) {
+		return;
+	}
 	
 	public void initPeakParameters(Settings settings) throws Exception {
 		if(!settings.containsKey(VariableNames.PEAK_TO_SMARTS_GROUP_LIST_COLLECTION_NAME) || settings.get(VariableNames.PEAK_TO_SMARTS_GROUP_LIST_COLLECTION_NAME) == null) {

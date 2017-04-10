@@ -19,4 +19,8 @@ public class RetentionTimeScoreInitialiser implements IScoreInitialiser {
 		settings.set(VariableNames.RETENTION_TIME_SCORE_LINEAR_MODEL_NAME, linearModel);
 	}
 
+	public void postProcessScoreParameters(Settings settings) {
+		return;
+	}
+	
 }

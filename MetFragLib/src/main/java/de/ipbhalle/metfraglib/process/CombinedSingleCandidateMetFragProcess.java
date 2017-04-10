@@ -124,8 +124,8 @@ public class CombinedSingleCandidateMetFragProcess implements Runnable {
 		this.wasSuccessful = true;
 	}
 	
-	public void postCalculateScores() throws Exception {
-		this.fas.postCalculateScore();
+	public void singlePostCalculateScores() throws Exception {
+		this.fas.singlePostCalculateScore();
 	}
 	
 	public void assignScores() {

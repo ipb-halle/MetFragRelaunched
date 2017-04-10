@@ -184,6 +184,13 @@ public class CombinedMetFragProcess implements Runnable {
 	     */
 	    ScoredCandidateList scoredCandidateList = new ScoredCandidateList();
 	    if(this.processes == null) return;
+	    
+	    /**
+	     * perform post processing of scores
+	     */
+	    this.globalSettings.set(VariableNames.METFRAG_PROCESSES_NAME, this.processes);
+	    this.postProcessScoresGlobal(this.globalSettings); 
+	    
 	    int numberCandidatesProcessed = 0;
 		for(CombinedSingleCandidateMetFragProcess scmfp : this.processes) {
 			/*
@@ -191,7 +198,7 @@ public class CombinedMetFragProcess implements Runnable {
 			 */
 			if(scmfp.wasSuccessful()) {
 				try {
-					scmfp.postCalculateScores();
+					scmfp.singlePostCalculateScores();
 					scmfp.assignScores();
 				} catch (Exception e) {
 					this.logger.error("Error when processing candidate ID " + scmfp.getScoredPrecursorCandidate().getIdentifier());
@@ -374,6 +381,32 @@ public class CombinedMetFragProcess implements Runnable {
 			try {
 				IScoreInitialiser scoreInitialiser = (IScoreInitialiser) Class.forName(ClassNames.getClassNameOfScoreInitialiser(score_types[i])).getConstructor().newInstance();
 				scoreInitialiser.initScoreParameters(globalSettings);
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+			} catch (NoSuchMethodException e) {
+				e.printStackTrace();
+			} catch (SecurityException e) {
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void postProcessScoresGlobal(MetFragGlobalSettings globalSettings) {
+		String[] score_types = (String[])globalSettings.get(VariableNames.METFRAG_SCORE_TYPES_NAME);
+		for(int i = 0; i < score_types.length; i++) {
+			try {
+				IScoreInitialiser scoreInitialiser = (IScoreInitialiser) Class.forName(ClassNames.getClassNameOfScoreInitialiser(score_types[i])).getConstructor().newInstance();
+				scoreInitialiser.postProcessScoreParameters(globalSettings);
 			} catch (InstantiationException e) {
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {

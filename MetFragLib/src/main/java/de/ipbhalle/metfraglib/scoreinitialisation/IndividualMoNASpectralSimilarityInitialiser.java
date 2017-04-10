@@ -34,4 +34,8 @@ public class IndividualMoNASpectralSimilarityInitialiser implements IScoreInitia
 		settings.set(VariableNames.INDIVIDUAL_MONA_SPECTRAL_SIMILARITY_WEB_SERVICE_NAME, webService);
 	}
 
+	public void postProcessScoreParameters(Settings settings) {
+		return;
+	}
+	
 }

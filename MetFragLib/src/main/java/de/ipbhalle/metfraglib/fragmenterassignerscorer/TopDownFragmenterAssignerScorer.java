@@ -264,7 +264,7 @@ public class TopDownFragmenterAssignerScorer extends AbstractFragmenterAssignerS
 		}
 		
 		this.settings.set(VariableNames.MATCH_LIST_NAME, this.matchList);
-		this.candidates[0].setMatchList(matchList);
+		this.candidates[0].setMatchList(this.matchList);
 		
 		if(this.scoreCollection == null) return;
 		try {

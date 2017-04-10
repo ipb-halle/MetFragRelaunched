@@ -22,4 +22,8 @@ public class SuspectListScoreInitialiser implements IScoreInitialiser {
 		settings.set(VariableNames.SUSPECTLIST_SCORE_LIST_NAME, suspectLists);
 	}
 
+	public void postProcessScoreParameters(Settings settings) {
+		return;
+	}
+	
 }

@@ -61,13 +61,12 @@ public class AutomatedFingerprintSubstructureAnnotationScoreInitialiser  impleme
 			breader.close();
 			peakToFingerprintGroupListCollection.calculateSumProbabilities();
 			// calculate pseudo count for a non-annotated peak
-			double numberPseudoCounts = (double)this.calculateNumberBackgroundPeaks(0.0, 1000.0, mzppm, mzabs, peakToFingerprintGroupListCollection.getNumberElements()) + 1.0;
-			double beta = 1.0 / numberPseudoCounts;
-			settings.set(VariableNames.PEAK_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME, beta);
-			//set alpha equal to beta
-			settings.set(VariableNames.PEAK_FINGERPRINT_ANNOTATION_ALPHA_VALUE_NAME, beta);
 			settings.set(VariableNames.PEAK_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME, peakToFingerprintGroupListCollection);
 		}
+	}
+
+	public void postProcessScoreParameters(Settings settings) {
+		return;
 	}
 	
 	/**
@@ -78,7 +77,7 @@ public class AutomatedFingerprintSubstructureAnnotationScoreInitialiser  impleme
 	 * @param mzppm
 	 * @param mzabs
 	 */
-	private int calculateNumberBackgroundPeaks(double startMass, double endMass, double mzppm, double mzabs, int numberForeGroundPeaks) {
+	protected int calculateNumberBackgroundPeaks(double startMass, double endMass, double mzppm, double mzabs, int numberForeGroundPeaks) {
 		double currentMass = startMass;
 		int numberIntervals = 0;
 		while(currentMass < endMass) {

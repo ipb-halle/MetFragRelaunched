@@ -34,4 +34,8 @@ public class OfflineMetFusionSpectralSimilarityScoreInitialiser implements IScor
 		}
 	}
 
+	public void postProcessScoreParameters(Settings settings) {
+		return;
+	}
+	
 }

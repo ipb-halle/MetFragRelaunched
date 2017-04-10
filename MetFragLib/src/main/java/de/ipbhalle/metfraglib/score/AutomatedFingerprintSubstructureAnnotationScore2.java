@@ -65,7 +65,7 @@ public class AutomatedFingerprintSubstructureAnnotationScore2 extends AbstractSc
 	}
 	
 	@Override
-	public void postCalculate() {
+	public void singlePostCalculate() {
 		//this.value = 0.0;
 		this.value = 1.0;
 		PeakToFingerprintGroupListCollection peakToFingerprintGroupListCollection = (PeakToFingerprintGroupListCollection)this.settings.get(VariableNames.PEAK_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME);
