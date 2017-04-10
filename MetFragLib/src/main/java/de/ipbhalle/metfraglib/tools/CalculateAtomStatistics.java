@@ -12,7 +12,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.smiles.smarts.SMARTSQueryTool;
 
-import de.ipbhalle.metfraglib.BitArray;
+import de.ipbhalle.metfraglib.FastBitArray;
 import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
 import de.ipbhalle.metfraglib.database.LocalPropertyFileDatabase;
 import de.ipbhalle.metfraglib.exceptions.MultipleHeadersFoundInInputDatabaseException;
@@ -173,7 +173,7 @@ public class CalculateAtomStatistics {
 		int numberCO = 0;
 		int numberCOOH = 0;
 		int numberOnoH = 0;
-		BitArray carboxyGroupsMarkedOxygens = new BitArray(mol.getAtomCount());
+		FastBitArray carboxyGroupsMarkedOxygens = new FastBitArray(mol.getAtomCount());
 		if(smartsQuerytools.matches(mol)) {
 			List<List<Integer>> groups = smartsQuerytools.getMatchingAtoms();
 			numberCOOH = groups.size();
@@ -185,7 +185,7 @@ public class CalculateAtomStatistics {
 				}
 			}
 		}
-		BitArray carbonylGroupsMarkedOxygens = new BitArray(mol.getAtomCount());
+		FastBitArray carbonylGroupsMarkedOxygens = new FastBitArray(mol.getAtomCount());
 		smartsQuerytools = new SMARTSQueryTool("[CX3]=[OX1] ", DefaultChemObjectBuilder.getInstance());
 		if(smartsQuerytools.matches(mol)) {
 			List<List<Integer>> groups = smartsQuerytools.getMatchingAtoms();

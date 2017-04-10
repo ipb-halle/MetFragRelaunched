@@ -118,7 +118,7 @@ public class NewFragmenterLipidScore extends AbstractScore {
 			 * check if current fragment is valid based on the tree depth
 			 */
 //			if(currentFragment.getTreeDepth() > this.maximumTreeDepth) continue;
-			int[] brokenBondIndeces = ((AbstractTopDownBitArrayFragment)currentFragment).getBrokenBondsBitArray().getSetIndeces();
+			int[] brokenBondIndeces = ((AbstractTopDownBitArrayFragment)currentFragment).getBrokenBondsFastBitArray().getSetIndeces();
 			double energyOfFragment = 0.0;
 			for(int bondIndex : brokenBondIndeces) {
 				energyOfFragment += this.bondEnergies[bondIndex];
@@ -133,10 +133,10 @@ public class NewFragmenterLipidScore extends AbstractScore {
 				indexOfBestFragment = ii;
 			}
 			/*
-			if(((AbstractTopDownBitArrayFragment)currentFragment).getAtomsBitArray().toString().equals("111110001100010001")) {
-				System.out.println(((AbstractTopDownBitArrayFragment)currentFragment).getAtomsBitArray().toString() + " " + 
-						((AbstractTopDownBitArrayFragment)currentFragment).getBondsBitArray().toString() + " " + 
-						((AbstractTopDownBitArrayFragment)currentFragment).getBrokenBondsBitArray().toString() + " " + currentFragment.getID()
+			if(((AbstractTopDownBitArrayFragment)currentFragment).getAtomsFastBitArray().toString().equals("111110001100010001")) {
+				System.out.println(((AbstractTopDownBitArrayFragment)currentFragment).getAtomsFastBitArray().toString() + " " + 
+						((AbstractTopDownBitArrayFragment)currentFragment).getBondsFastBitArray().toString() + " " + 
+						((AbstractTopDownBitArrayFragment)currentFragment).getBrokenBondsFastBitArray().toString() + " " + currentFragment.getID()
 						+ " " + energyOfFragment);
 			}
 			*/

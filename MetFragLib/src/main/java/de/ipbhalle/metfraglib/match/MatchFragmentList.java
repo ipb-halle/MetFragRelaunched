@@ -58,11 +58,11 @@ public class MatchFragmentList {
 	 * @param fingerprint
 	 * @return
 	 */
-	public Double[] containsByFingerprint(de.ipbhalle.metfraglib.BitArray fingerprint) {
+	public Double[] containsByFingerprint(de.ipbhalle.metfraglib.FastBitArray fingerprint) {
 		MatchFragmentNode currentNode = this.rootNode;
 		Double[] values = new Double[2];
 		while(currentNode != null) {
-			if(((DefaultBitArrayFragment)currentNode.getFragment()).getAtomsBitArray().equals(fingerprint)) {
+			if(((DefaultBitArrayFragment)currentNode.getFragment()).getAtomsFastBitArray().equals(fingerprint)) {
 				values[0] = currentNode.getScore();
 				values[1] = (double)currentNode.getFragment().getID();
 				return values;

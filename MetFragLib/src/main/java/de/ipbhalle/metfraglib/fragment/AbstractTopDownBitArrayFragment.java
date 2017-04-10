@@ -1,6 +1,6 @@
 package de.ipbhalle.metfraglib.fragment;
 
-import de.ipbhalle.metfraglib.BitArray;
+import de.ipbhalle.metfraglib.FastBitArray;
 import de.ipbhalle.metfraglib.precursor.AbstractTopDownBitArrayPrecursor;
 
 public abstract class AbstractTopDownBitArrayFragment extends DefaultBitArrayFragment {
@@ -27,16 +27,16 @@ public abstract class AbstractTopDownBitArrayFragment extends DefaultBitArrayFra
 	}
 	
 	public AbstractTopDownBitArrayFragment(AbstractTopDownBitArrayPrecursor precursorMolecule,
-			BitArray atomsBitArray, BitArray bondsBitArray,
-			BitArray brokenBondsBitArray) {
-		super(precursorMolecule, atomsBitArray, bondsBitArray, brokenBondsBitArray);
+			FastBitArray atomsFastBitArray, FastBitArray bondsFastBitArray,
+			FastBitArray brokenBondsFastBitArray) {
+		super(precursorMolecule, atomsFastBitArray, bondsFastBitArray, brokenBondsFastBitArray);
 		this.lastSkippedBond = -1;
 	}
 
 	public abstract AbstractTopDownBitArrayFragment[] traverseMolecule(short bondIndexToRemove, short[] indecesOfBondConnectedAtoms);
 
 	public int getMaximalIndexOfRemovedBond() {
-		return this.brokenBondsBitArray.getLastSetBit();
+		return this.brokenBondsFastBitArray.getLastSetBit();
 	}
 
 	public boolean hasMatchedChild() {

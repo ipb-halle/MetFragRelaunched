@@ -47,7 +47,7 @@ public class HDNewFragmenterScore extends NewFragmenterScore {
 			 * check if current fragment is valid based on the tree depth
 			 */
 //			if(currentFragment.getTreeDepth() > this.maximumTreeDepth) continue;
-			int[] brokenBondIndeces = ((AbstractTopDownBitArrayFragment)currentFragment).getBrokenBondsBitArray().getSetIndeces();
+			int[] brokenBondIndeces = ((AbstractTopDownBitArrayFragment)currentFragment).getBrokenBondsFastBitArray().getSetIndeces();
 			double energyOfFragment = 0.0;
 			for(int bondIndex : brokenBondIndeces) {
 				energyOfFragment += this.bondEnergies[bondIndex];

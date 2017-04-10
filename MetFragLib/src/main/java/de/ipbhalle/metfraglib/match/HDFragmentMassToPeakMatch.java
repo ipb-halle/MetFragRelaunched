@@ -1,6 +1,6 @@
 package de.ipbhalle.metfraglib.match;
 
-import de.ipbhalle.metfraglib.BitArray;
+import de.ipbhalle.metfraglib.FastBitArray;
 import de.ipbhalle.metfraglib.fragment.AbstractTopDownBitArrayFragment;
 import de.ipbhalle.metfraglib.interfaces.IFragment;
 import de.ipbhalle.metfraglib.interfaces.IMatch;
@@ -124,10 +124,10 @@ public class HDFragmentMassToPeakMatch extends FragmentMassToPeakMatch {
 	
 	public void addToMatch(IMatch match) {
 		HDFragmentMassToPeakMatch currentMatch = (HDFragmentMassToPeakMatch)match;
-		BitArray atomsBitArrayOfCurrentFragment = ((AbstractTopDownBitArrayFragment)currentMatch.getMatchedFragmentList().getElement(0)).getAtomsBitArray();
+		FastBitArray atomsFastBitArrayOfCurrentFragment = ((AbstractTopDownBitArrayFragment)currentMatch.getMatchedFragmentList().getElement(0)).getAtomsFastBitArray();
 		for(int i = 0; i < this.matchedFragmentsList.getNumberElements(); i++) {
 			AbstractTopDownBitArrayFragment tmpFragment = (AbstractTopDownBitArrayFragment)this.matchedFragmentsList.getElement(i);
-			if(tmpFragment.getAtomsBitArray().equals(atomsBitArrayOfCurrentFragment))
+			if(tmpFragment.getAtomsFastBitArray().equals(atomsFastBitArrayOfCurrentFragment))
 					return;
 		}
 		if(match.getBestMatchedFragment() != null) {

@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 import org.openscience.cdk.interfaces.IAtomContainer;
 
-import de.ipbhalle.metfraglib.BitArray;
+import de.ipbhalle.metfraglib.FastBitArray;
 import de.ipbhalle.metfraglib.exceptions.AtomTypeNotKnownFromInputListException;
 import de.ipbhalle.metfraglib.molecularformula.HDByteMolecularFormula;
 import de.ipbhalle.metfraglib.parameter.Constants;
@@ -28,7 +28,7 @@ public class HDTopDownBitArrayPrecursor extends TopDownBitArrayPrecursor {
 		this.neutralMonoisotopicMass = this.molecularFormula.getMonoisotopicMass();
 		this.initiliseAtomIndexToConnectedAtomIndeces();
 		this.initiliseBondIndexToConnectedAtomIndeces();
-		this.initialiseRingBondsBitArray();
+		this.initialiseRingBondsFastBitArray();
 		this.initialiseAtomAdjacencyList();
 	}
 
@@ -39,7 +39,7 @@ public class HDTopDownBitArrayPrecursor extends TopDownBitArrayPrecursor {
 	protected void initialise() {
 		int[] posToExchange = this.searchForDeuteriumExchangeablePositions(Constants.EXCHANGEABLE_DEUTERIUM_POSITIONS);
 		this.numberExchangeableHydrogens = (byte)posToExchange.length;
-		BitArray atomsWithDeuterium = new BitArray(this.getNonHydrogenAtomCount());
+		FastBitArray atomsWithDeuterium = new FastBitArray(this.getNonHydrogenAtomCount());
 		//just one molecule needs to be generated
 		if(this.numberOverallDeuteriums == 0 || posToExchange.length <= this.numberOverallDeuteriums) {	
 			this.numberDeuteriums = new short[1][this.getNonHydrogenAtomCount()];

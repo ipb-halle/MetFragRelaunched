@@ -2,19 +2,19 @@ package de.ipbhalle.metfraglib.substructure;
 
 import java.util.Vector;
 
-import de.ipbhalle.metfraglib.BitArray;
+import de.ipbhalle.metfraglib.FastBitArray;
 
 public class MassToFingerprints {
 
-	private Vector<Vector<BitArray>> massesToFingerprints; 
+	private Vector<Vector<FastBitArray>> massesToFingerprints; 
 	private Vector<Double> masses;
 	
 	public MassToFingerprints() {
-		this.massesToFingerprints = new Vector<Vector<BitArray>>();
+		this.massesToFingerprints = new Vector<Vector<FastBitArray>>();
 		this.masses = new Vector<Double>();
 	}
 	
-	public void addFingerprint(Double mass, BitArray fingerprint) {
+	public void addFingerprint(Double mass, FastBitArray fingerprint) {
 		for(int i = 0; i < this.masses.size(); i++) {
 			if(this.masses.get(i).equals(mass)) {
 				this.addToFingerprints(fingerprint, this.massesToFingerprints.get(i));
@@ -22,21 +22,21 @@ public class MassToFingerprints {
 			}
 			if(this.masses.get(i) > mass) {
 				this.masses.add(i, mass);
-				this.massesToFingerprints.add(i, new Vector<BitArray>());
+				this.massesToFingerprints.add(i, new Vector<FastBitArray>());
 				this.massesToFingerprints.get(i).add(fingerprint);
 				return;
 			}
 		}
 		this.masses.add(mass);
-		this.massesToFingerprints.add(new Vector<BitArray>());
+		this.massesToFingerprints.add(new Vector<FastBitArray>());
 		this.massesToFingerprints.get(this.massesToFingerprints.size() - 1).add(fingerprint);
 	}
 	
 	public void addFingerprint(Double mass, String fingerprint) {
-		this.addFingerprint(mass, new BitArray(fingerprint));
+		this.addFingerprint(mass, new FastBitArray(fingerprint));
 	}
 	
-	protected void addToFingerprints(BitArray fingerprint, Vector<BitArray> fingerprints) {
+	protected void addToFingerprints(FastBitArray fingerprint, Vector<FastBitArray> fingerprints) {
 		for(int i = 0; i < fingerprints.size(); i++) {
 			int compareResult = fingerprints.get(i).compareTo(fingerprint);
 			if(compareResult < 0) {
@@ -48,9 +48,9 @@ public class MassToFingerprints {
 		fingerprints.add(fingerprint);
 	}
 	
-	public Vector<BitArray> getFingerprints(Double mass) {
+	public Vector<FastBitArray> getFingerprints(Double mass) {
 		int index = this.getIndexOfMass(mass);
-		if(index == -1) return new Vector<BitArray>();
+		if(index == -1) return new Vector<FastBitArray>();
 		return this.massesToFingerprints.get(index);
 	}
 	
@@ -62,7 +62,7 @@ public class MassToFingerprints {
 		return false;
 	}
 	
-	public boolean containsFingerprint(BitArray fingerprint, Vector<BitArray> fingerprints) {
+	public boolean containsFingerprint(FastBitArray fingerprint, Vector<FastBitArray> fingerprints) {
 		for(int i = 0; i < fingerprints.size(); i++) {
 			int compareResult = fingerprints.get(i).compareTo(fingerprint);
 			if(compareResult < 0) return false;
@@ -79,7 +79,7 @@ public class MassToFingerprints {
 		return -1;
 	}
 	
-	public boolean contains(Double mass, BitArray fingerprint) {
+	public boolean contains(Double mass, FastBitArray fingerprint) {
 		int index = this.getIndexOfMass(mass);
 		if(index == -1) return false;
 		return this.containsFingerprint(fingerprint, this.massesToFingerprints.get(index));
@@ -93,7 +93,7 @@ public class MassToFingerprints {
 	
 	public int getOverallSize() {
 		int size = 0;
-		for(Vector<BitArray> fingerprints : massesToFingerprints) {
+		for(Vector<FastBitArray> fingerprints : massesToFingerprints) {
 			size += fingerprints.size();
 		}
 		return size;
@@ -101,7 +101,7 @@ public class MassToFingerprints {
 	
 	public void print(Double mass) {
 		int index = this.getIndexOfMass(mass);
-		Vector<BitArray> fingerprints = this.massesToFingerprints.get(index);
+		Vector<FastBitArray> fingerprints = this.massesToFingerprints.get(index);
 		System.out.println(mass + ":");
 		for(int i = 0; i < fingerprints.size(); i++) {
 			System.out.println("-> " + fingerprints.get(i).toStringIDs());

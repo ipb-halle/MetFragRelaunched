@@ -78,8 +78,8 @@ public class HDTopDownBitArrayFragmentWrapper extends AbstractTopDownBitArrayFra
 		//get current precursor 
 		HDTopDownBitArrayPrecursor currentPrecursor = (HDTopDownBitArrayPrecursor)this.wrappedFragment.getPrecursorMolecule();
 		
-		for(int i = 0; i < this.wrappedFragment.getAtomsBitArray().getSize(); i++) 
-			if(this.wrappedFragment.getAtomsBitArray().get(i)) 
+		for(int i = 0; i < this.wrappedFragment.getAtomsFastBitArray().getSize(); i++) 
+			if(this.wrappedFragment.getAtomsFastBitArray().get(i)) 
 				numberDeuteriums += currentPrecursor.getNumberDeuteriumsConnectedToAtomIndex(this.precursorIndex, i);
 		//correct ionisation type in case no deuterium is attached to fragment
 		if(numberDeuteriums == 0 && Constants.ADDUCT_NOMINAL_MASSES.get(precursorIonTypeIndex) == -2)
@@ -214,10 +214,10 @@ public class HDTopDownBitArrayFragmentWrapper extends AbstractTopDownBitArrayFra
 
 	public HDFragmentMolecularFormulaWrapper getMolecularFormula() throws AtomTypeNotKnownFromInputListException {
 		HDTopDownBitArrayPrecursor currentPrecursor = (HDTopDownBitArrayPrecursor)this.wrappedFragment.getPrecursorMolecule();
-		BitArrayFragmentMolecularFormula formula = new BitArrayFragmentMolecularFormula(currentPrecursor, this.wrappedFragment.getAtomsBitArray());
+		BitArrayFragmentMolecularFormula formula = new BitArrayFragmentMolecularFormula(currentPrecursor, this.wrappedFragment.getAtomsFastBitArray());
 		byte numberDeuteriums = 0;
-		for(int i = 0; i < this.wrappedFragment.getAtomsBitArray().getSize(); i++) 
-			if(this.wrappedFragment.getAtomsBitArray().get(i)) 
+		for(int i = 0; i < this.wrappedFragment.getAtomsFastBitArray().getSize(); i++) 
+			if(this.wrappedFragment.getAtomsFastBitArray().get(i)) 
 				numberDeuteriums += currentPrecursor.getNumberDeuteriumsConnectedToAtomIndex(this.precursorIndex, i);
 		return new HDFragmentMolecularFormulaWrapper(formula, numberDeuteriums);
 	}

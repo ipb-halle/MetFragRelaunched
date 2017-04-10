@@ -24,7 +24,7 @@ import org.openscience.cdk.smiles.SmilesGenerator;
 import org.openscience.cdk.tautomers.InChITautomerGenerator;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
-import de.ipbhalle.metfraglib.BitArray;
+import de.ipbhalle.metfraglib.FastBitArray;
 import de.ipbhalle.metfraglib.inchi.InChIToStructure;
 import de.ipbhalle.metfraglib.molecularformula.HDByteMolecularFormula;
 import de.ipbhalle.metfraglib.parameter.Constants;
@@ -78,7 +78,7 @@ public class InChIDeuteriumGeneration {
 			int numberDeuteriumsEasilyExchanged = 0;
 			int numberDeuteriumsAromaticExchanged = 0;
 			JniInchiOutputStructure jios = its.getInchiOutputStructure();
-			BitArray atomsWithDeuterium = new BitArray(jios.getNumAtoms());
+			FastBitArray atomsWithDeuterium = new FastBitArray(jios.getNumAtoms());
 			
 			int[] toExchange = searchForDeuteriumExchangeablePositions(
 					new String[] { "O", "N", "S" }, jios);
@@ -185,7 +185,7 @@ public class InChIDeuteriumGeneration {
 			
 			if(withAromaticRings || (numberToAddDeuteriums.size() != 0 && numberToAddDeuteriums.get(j) > numberDeuteriums)) { 
 				IAtomContainer container = its.getAtomContainer();
-				BitArray aromaticAtoms = getAromaticAtoms(container);
+				FastBitArray aromaticAtoms = getAromaticAtoms(container);
 				int[] indeces = aromaticAtoms.getSetIndeces();
 				if(withAromaticRings) {
 					for(int i : indeces) {
@@ -384,10 +384,10 @@ public class InChIDeuteriumGeneration {
 	 * @param molecule
 	 * @return
 	 */
-	public static BitArray getAromaticAtoms(IAtomContainer molecule) {
+	public static FastBitArray getAromaticAtoms(IAtomContainer molecule) {
 		Aromaticity arom = new Aromaticity(ElectronDonation.cdk(),
 		Cycles.cdkAromaticSet());
-		BitArray aromaticAtoms = new BitArray(molecule.getAtomCount());
+		FastBitArray aromaticAtoms = new FastBitArray(molecule.getAtomCount());
 		try {
 			AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(molecule);
 			arom.apply(molecule);

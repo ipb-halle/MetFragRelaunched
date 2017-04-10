@@ -1,6 +1,6 @@
 package de.ipbhalle.metfraglib.score;
 
-import de.ipbhalle.metfraglib.BitArray;
+import de.ipbhalle.metfraglib.FastBitArray;
 import de.ipbhalle.metfraglib.additionals.Bond;
 import de.ipbhalle.metfraglib.additionals.BondEnergies;
 import de.ipbhalle.metfraglib.exceptions.RelativeIntensityNotDefinedException;
@@ -154,18 +154,18 @@ public class NewFragmenterHierarchicalScore extends AbstractScore {
 	 */
 	protected int[] getBrokenBondIndeces(IFragment currentFragment) {
 		AbstractTopDownBitArrayFragment castFragment = null;
-		BitArray currentBrokenBondIndeces = null;
+		FastBitArray currentBrokenBondIndeces = null;
 		try {
 			castFragment = ((AbstractTopDownBitArrayFragment)currentFragment);
 		}
 		catch(ClassCastException e) {
 			return currentFragment.getBrokenBondIndeces();
 		}
-		currentBrokenBondIndeces = castFragment.getBrokenBondsBitArray();
+		currentBrokenBondIndeces = castFragment.getBrokenBondsFastBitArray();
 		AbstractTopDownBitArrayFragment father = castFragment.getPrecursorFragment();
 		while (father != null) {
 			if(father.hasMatched()) {
-				currentBrokenBondIndeces = currentBrokenBondIndeces.getDiff(father.getBrokenBondsBitArray());
+				currentBrokenBondIndeces = currentBrokenBondIndeces.getDiff(father.getBrokenBondsFastBitArray());
 				
 				break;
 			}

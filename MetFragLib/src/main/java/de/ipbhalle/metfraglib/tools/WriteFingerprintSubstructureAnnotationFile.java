@@ -5,7 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.util.Vector;
 
-import de.ipbhalle.metfraglib.BitArray;
+import de.ipbhalle.metfraglib.FastBitArray;
 import de.ipbhalle.metfraglib.database.LocalPSVDatabase;
 import de.ipbhalle.metfraglib.exceptions.MultipleHeadersFoundInInputDatabaseException;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
@@ -120,7 +120,7 @@ public class WriteFingerprintSubstructureAnnotationFile {
 				peakToFingerprintGroupListCollection.addElementSorted(peakToFingerprintGroupList);
 			}
 			else {
-				FingerprintGroup fingerprintGroup = peakToFingerprintGroupList.getElementByFingerprint(new BitArray(fingerprintsSorted.get(i)));
+				FingerprintGroup fingerprintGroup = peakToFingerprintGroupList.getElementByFingerprint(new FastBitArray(fingerprintsSorted.get(i)));
 				if(fingerprintGroup != null) {
 					fingerprintGroup.incerementNumberObserved();
 				}

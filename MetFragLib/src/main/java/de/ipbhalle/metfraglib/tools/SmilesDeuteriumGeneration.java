@@ -26,7 +26,7 @@ import org.openscience.cdk.tools.CDKHydrogenAdder;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 
-import de.ipbhalle.metfraglib.BitArray;
+import de.ipbhalle.metfraglib.FastBitArray;
 import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
 import de.ipbhalle.metfraglib.inchi.InChIToStructure;
 import de.ipbhalle.metfraglib.molecularformula.HDByteMolecularFormula;
@@ -379,10 +379,10 @@ public class SmilesDeuteriumGeneration {
 	 * @param molecule
 	 * @return
 	 */
-	public static BitArray getAromaticAtoms(IAtomContainer molecule) {
+	public static FastBitArray getAromaticAtoms(IAtomContainer molecule) {
 		Aromaticity arom = new Aromaticity(ElectronDonation.cdk(),
 		Cycles.cdkAromaticSet());
-		BitArray aromaticAtoms = new BitArray(molecule.getAtomCount());
+		FastBitArray aromaticAtoms = new FastBitArray(molecule.getAtomCount());
 		try {
 			AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(molecule);
 			arom.apply(molecule);

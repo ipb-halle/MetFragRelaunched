@@ -1,6 +1,6 @@
 package de.ipbhalle.metfraglib.list;
 
-import de.ipbhalle.metfraglib.BitArray;
+import de.ipbhalle.metfraglib.FastBitArray;
 import de.ipbhalle.metfraglib.additionals.MathTools;
 import de.ipbhalle.metfraglib.peak.Peak;
 import de.ipbhalle.metfraglib.peak.TandemMassPeak;
@@ -81,7 +81,7 @@ public class SortedTandemMassPeakList extends DefaultPeakList {
 		double numerator = 0.0;
 		double asquare = 0.0;
 		double bsquare = 0.0;
-		BitArray foundPeaks = new BitArray(this.getNumberElements());
+		FastBitArray foundPeaks = new FastBitArray(this.getNumberElements());
 		for(int i = 0; i < peakList.getNumberElements(); i++) {
 			double mass = peakList.getElement(i).getMass();
 			double intensity1 = peakList.getElement(i).getRelativeIntensity();
@@ -106,7 +106,7 @@ public class SortedTandemMassPeakList extends DefaultPeakList {
 		double numerator = 0.0;
 		double asquare = 0.0;
 		double bsquare = 0.0;
-		BitArray foundPeaks = new BitArray(this.getNumberElements());
+		FastBitArray foundPeaks = new FastBitArray(this.getNumberElements());
 		for(int i = 0; i < peakList.getNumberElements(); i++) {
 			double mass = peakList.getElement(i).getMass();
 			if(peakList.getElement(i).getRelativeIntensity() <= 1.0) continue;

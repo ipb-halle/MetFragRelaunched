@@ -21,7 +21,7 @@ import org.openscience.cdk.renderer.visitor.AWTDrawVisitor;
 import org.openscience.cdk.silent.AtomContainer;
 import org.openscience.cdk.layout.StructureDiagramGenerator;
 
-import de.ipbhalle.metfraglib.BitArray;
+import de.ipbhalle.metfraglib.FastBitArray;
 import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
 import de.ipbhalle.metfraglib.fragment.DefaultBitArrayFragment;
 import de.ipbhalle.metfraglib.fragment.TopDownBitArrayFragment;
@@ -85,13 +85,13 @@ public class HighlightSubStructureImageGenerator extends StandardSingleStructure
 			rendererModel.set(StandardGenerator.Highlighting.class, StandardGenerator.HighlightStyle.OuterGlow);
     		rendererModel.set(StandardGenerator.StrokeRatio.class, this.strokeRatio);
 
-			BitArray atoms = structure.getAtomsBitArray();
+			FastBitArray atoms = structure.getAtomsFastBitArray();
 			for (int i = 0; i < atoms.getSize(); i++) {
 				if(atoms.get(i)) moleculeToDraw.getAtom(i).setProperty(StandardGenerator.HIGHLIGHT_COLOR, this.highlightColor);
 				else moleculeToDraw.getAtom(i).removeProperty(StandardGenerator.HIGHLIGHT_COLOR);
 			}
 
-			BitArray bonds = structure.getBondsBitArray();
+			FastBitArray bonds = structure.getBondsFastBitArray();
 			for (int i = 0; i < bonds.getSize(); i++) {
 				if(bonds.get(i)) moleculeToDraw.getBond(i).setProperty(StandardGenerator.HIGHLIGHT_COLOR, this.highlightColor);
 				else moleculeToDraw.getBond(i).removeProperty(StandardGenerator.HIGHLIGHT_COLOR);
@@ -109,7 +109,7 @@ public class HighlightSubStructureImageGenerator extends StandardSingleStructure
 		return (RenderedImage) image;
 	}
 
-	public RenderedImage generateImage(final BitArray toHighlightAtoms, final BitArray toHighlightBonds, final IAtomContainer molecule) {
+	public RenderedImage generateImage(final FastBitArray toHighlightAtoms, final FastBitArray toHighlightBonds, final IAtomContainer molecule) {
 		Image image = new BufferedImage(this.imageWidth, this.imageHeight, BufferedImage.TYPE_INT_ARGB);
 		try {
 			StructureDiagramGenerator sdg = new StructureDiagramGenerator();
@@ -171,16 +171,16 @@ public class HighlightSubStructureImageGenerator extends StandardSingleStructure
 		s.setStrokeRation(1.2);
 		
 		//1111101110001100001
-		BitArray bitArrayAtoms = generateAndSetBistString(21, new int[] {19,12,5});
-		BitArray bitArrayBonds = generateAndSetBistString(23, new int[] {11,20});
+		FastBitArray bitArrayAtoms = generateAndSetBistString(21, new int[] {19,12,5});
+		FastBitArray bitArrayBonds = generateAndSetBistString(23, new int[] {11,20});
 		
 		
 		RenderedImage img = s.generateImage(bitArrayAtoms, bitArrayBonds, m);
 		ImageIO.write((RenderedImage) img, "PNG", new java.io.File("/tmp/file2.png"));
 	}
 	
-	public static BitArray convertBitString(String bitString) {
-		BitArray bitArray = new BitArray(bitString.length());
+	public static FastBitArray convertBitString(String bitString) {
+		FastBitArray bitArray = new FastBitArray(bitString.length());
 		for(int i = 0; i < bitString.length(); i++) {
 			char pos = bitString.charAt(i);
 			if(pos == '1') bitArray.set(i, true);
@@ -197,16 +197,16 @@ public class HighlightSubStructureImageGenerator extends StandardSingleStructure
 		}
 	}
 	
-	public static BitArray generateAndSetBistString(int size, int[] toSet) {
-		BitArray bitArray = new BitArray(size, false);
+	public static FastBitArray generateAndSetBistString(int size, int[] toSet) {
+		FastBitArray bitArray = new FastBitArray(size, false);
 		for(int i = 0; i < toSet.length; i++) {
 			bitArray.set(toSet[i]);
 		}
 		return bitArray;
 	}
 	
-	public static BitArray generateAndUnSetBistString(int size, int[] toUnSet) {
-		BitArray bitArray = new BitArray(size, true);
+	public static FastBitArray generateAndUnSetBistString(int size, int[] toUnSet) {
+		FastBitArray bitArray = new FastBitArray(size, true);
 		for(int i = 0; i < toUnSet.length; i++) {
 			bitArray.set(toUnSet[i], false);
 		}

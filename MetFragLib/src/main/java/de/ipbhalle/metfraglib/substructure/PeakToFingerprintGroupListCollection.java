@@ -1,6 +1,6 @@
 package de.ipbhalle.metfraglib.substructure;
 
-import de.ipbhalle.metfraglib.BitArray;
+import de.ipbhalle.metfraglib.FastBitArray;
 import de.ipbhalle.metfraglib.additionals.MathTools;
 import de.ipbhalle.metfraglib.list.DefaultList;
 
@@ -16,7 +16,7 @@ public class PeakToFingerprintGroupListCollection extends DefaultList {
 		super();
 	}
 
-	public double getSumProbability(BitArray fingerprint) {
+	public double getSumProbability(FastBitArray fingerprint) {
 		return this.fingerprintObservations.getSumProbabilities(fingerprint);
 	}
 	

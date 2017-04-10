@@ -2,16 +2,16 @@ package de.ipbhalle.metfraglib.substructure;
 
 import java.util.Vector;
 
-import de.ipbhalle.metfraglib.BitArray;
+import de.ipbhalle.metfraglib.FastBitArray;
 
 public class FingeprintObservations {
 
-	private Vector<BitArray> fingerprints;
+	private Vector<FastBitArray> fingerprints;
 	private Vector<Integer> observations;
 	private Double[] sumProbabilities; // sum_m p(f,m) -> f fixed
 	
 	public FingeprintObservations() {
-		this.fingerprints = new Vector<BitArray>();
+		this.fingerprints = new Vector<FastBitArray>();
 		this.observations = new Vector<Integer>();
 	}
 
@@ -32,7 +32,7 @@ public class FingeprintObservations {
 		}
 	}
 	
-	public double getSumProbabilities(BitArray fingerprint) {
+	public double getSumProbabilities(FastBitArray fingerprint) {
 		int currentIndex = getIndexOfFingerprint(fingerprint);
 		if(currentIndex == -1) {
 			return 0.0;
@@ -40,7 +40,7 @@ public class FingeprintObservations {
 		return this.sumProbabilities[currentIndex];
 	}
 	
-	protected int getIndexOfFingerprint(BitArray fingerprint) {
+	protected int getIndexOfFingerprint(FastBitArray fingerprint) {
 		for(int i = 0; i < this.fingerprints.size(); i++) {
 			if(this.fingerprints.get(i).equals(fingerprint)) {
 				return i;
@@ -52,7 +52,7 @@ public class FingeprintObservations {
 		return -1;
 	}
 	
-	public void addFingerprint(BitArray fingerprint) {
+	public void addFingerprint(FastBitArray fingerprint) {
 		for(int i = 0; i < this.fingerprints.size(); i++) {
 			if(this.fingerprints.get(i).equals(fingerprint)) {
 				this.observations.set(i, this.observations.get(i) + 1);
@@ -66,7 +66,7 @@ public class FingeprintObservations {
 		}
 	}
 	
-	public int getNumberObservations(BitArray fingerprint) {
+	public int getNumberObservations(FastBitArray fingerprint) {
 		for(int i = 0; i < this.fingerprints.size(); i++) {
 			int res = this.fingerprints.get(i).compareTo(fingerprint);
 			if(res == 0) return this.observations.get(i);
@@ -76,6 +76,6 @@ public class FingeprintObservations {
 	}
 	
 	public void addFingerprint(String fingerprint) {
-		this.addFingerprint(new BitArray(fingerprint));
+		this.addFingerprint(new FastBitArray(fingerprint));
 	}
 }

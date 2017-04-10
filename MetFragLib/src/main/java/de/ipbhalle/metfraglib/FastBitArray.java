@@ -188,7 +188,7 @@ public class FastBitArray {
 	 * @return
 	 */
 	public int cardinality() {
-		return this.cardinality();
+		return this.bitArray.cardinality();
 	}
 	
 	/**
