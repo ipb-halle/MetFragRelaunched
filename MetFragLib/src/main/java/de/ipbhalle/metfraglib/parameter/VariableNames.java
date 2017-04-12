@@ -25,15 +25,15 @@ public class VariableNames {
 	public static final String PROCESS_CANDIDATES									=	"ProcessCandidates";
 	public static final String USE_SMILES_NAME									=	"UseSmiles";
 	
-	public static final String METFRAG_DATABASE_TYPE_NAME 						= 	"MetFragDatabaseType";
+	public static final String METFRAG_DATABASE_TYPE_NAME 							= 	"MetFragDatabaseType";
 	public static final String METFRAG_FRAGMENTER_TYPE_NAME 						= 	"MetFragFragmenterType";
-	public static final String METFRAG_CANDIDATE_TYPE_NAME 						= 	"MetFragCandidateType";
-	public static final String METFRAG_ASSIGNER_TYPE_NAME 						=	"MetFragAssignerType";
+	public static final String METFRAG_CANDIDATE_TYPE_NAME 							= 	"MetFragCandidateType";
+	public static final String METFRAG_ASSIGNER_TYPE_NAME 							=	"MetFragAssignerType";
 	public static final String METFRAG_SCORE_TYPES_NAME 							= 	"MetFragScoreTypes";
 	public static final String METFRAG_ASSIGNER_SCORER_NAME 						=	"MetFragAssignerScorer";
 	public static final String METFRAG_PRE_PROCESSING_CANDIDATE_FILTER_NAME 		= 	"MetFragPreProcessingCandidateFilter";
-	public static final String PRE_CANDIDATE_FILTER_EXCLUDED_ELEMENTS_NAME		=	"FilterExcludedElements";	
-	public static final String PRE_CANDIDATE_FILTER_INCLUDED_ELEMENTS_NAME		=	"FilterIncludedElements";	
+	public static final String PRE_CANDIDATE_FILTER_EXCLUDED_ELEMENTS_NAME			=	"FilterExcludedElements";	
+	public static final String PRE_CANDIDATE_FILTER_INCLUDED_ELEMENTS_NAME			=	"FilterIncludedElements";	
 	public static final String PRE_CANDIDATE_FILTER_MAXIMUM_ELEMENTS_NAME			=	"FilterMaximumElements";	
 	public static final String PRE_CANDIDATE_FILTER_MINIMUM_ELEMENTS_NAME			=	"FilterMinimumElements";	
 	public static final String METFRAG_POST_PROCESSING_CANDIDATE_FILTER_NAME 		= 	"MetFragPostProcessingCandidateFilter";
@@ -70,10 +70,10 @@ public class VariableNames {
 	public static final String SMARTS_SUBSTRUCTURE_INCLUSION_SCORE_LIST_NAME = "SmartsSubstructureInclusionScoreSmartsList";
 	
 	public static final String PRE_CANDIDATE_FILTER_SMARTS_LIST_NAME 			= "SmartsSubstructureFilterSmartsList";
-	public static final String PRE_CANDIDATE_FILTER_SMARTS_FORMULA_NAME		= "SmartsSubstructureFilterSmartsFormula";
-	public static final String PRE_CANDIDATE_FILTER_SMARTS_STRING_NAME 		= "SmartsSubstructureFilterSmartsString";
+	public static final String PRE_CANDIDATE_FILTER_SMARTS_FORMULA_NAME			= "SmartsSubstructureFilterSmartsFormula";
+	public static final String PRE_CANDIDATE_FILTER_SMARTS_STRING_NAME 			= "SmartsSubstructureFilterSmartsString";
 	
-	public static final String SUSPECTLIST_SCORE_LIST_NAME 		= "SuspectListScoreList";
+	public static final String SUSPECTLIST_SCORE_LIST_NAME 						= "SuspectListScoreList";
 	
 	public static final String CHEMSPIDER_TOKEN_NAME					= 	"ChemSpiderToken";
 	
@@ -111,7 +111,9 @@ public class VariableNames {
 	public static final String PEAK_FINGERPRINT_DENOMINATOR_COUNT_NAME			= "PeakFingerprintDenominatorCount";
 	public static final String PEAK_FINGERPRINT_DENOMINATOR_VALUE_NAME			= "PeakFingerprintDenominatorValue";
 	public static final String PEAK_FINGERPRINT_TUPLE_COUNT_NAME				= "PeakFingerprintTupleCount";
-	
+
+	public static final String PEAK_FINGERPRINT_JOINT_PROBABILITY_ALPHA_NAME			= "PeakFingerprintJointProbabilityAlpha";
+	public static final String PEAK_FINGERPRINT_JOINT_PROBABILITY_BETA_NAME			= "PeakFingerprintJointProbabilityBeta";
 	
 	public static final String METFRAG_PROCESSES_NAME							= "MetFragProcesses";
 	

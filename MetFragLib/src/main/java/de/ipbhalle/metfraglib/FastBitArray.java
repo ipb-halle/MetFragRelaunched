@@ -79,8 +79,9 @@ public class FastBitArray {
 	 */
 	public FastBitArray(String bitstring) {
 		this.bitArray = new FastBitSet(bitstring.length());
-		for(int i = 0; i < this.getSize(); i++)
+		for(int i = 0; i < bitstring.length(); i++) {
 			this.bitArray.set(i, bitstring.charAt(i) == '0' ? false : true);
+		}
 		this.size = (short)bitstring.length();
 	}
 	

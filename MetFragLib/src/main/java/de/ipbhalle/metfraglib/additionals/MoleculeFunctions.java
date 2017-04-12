@@ -61,12 +61,20 @@ public class MoleculeFunctions {
 		return smiles;
 	}
 	
-	public static String[] getNormalizedFingerprintSmiles(IFragment frag) {
+	public static String[] getNormalizedFingerprintSmiles(IFragment frag) throws Exception {
 		String preSmiles = frag.getSmiles();
-		String inchi1 = MoleculeFunctions.getInChIFromSmiles(preSmiles);
+		String inchi1 = ""; 
+		boolean useSmiles = false;
+		try {
+			inchi1 = MoleculeFunctions.getInChIFromSmiles(preSmiles);
+		} catch(Exception e) {
+			System.err.println("Problems converting " + preSmiles);
+			useSmiles = true;
+		}
 		IAtomContainer con = null;
 		try {
-			con = getAtomContainerFromInChI(inchi1);
+			if(!useSmiles) con = getAtomContainerFromInChI(inchi1);
+			else con = getAtomContainerFromSMILES(preSmiles);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

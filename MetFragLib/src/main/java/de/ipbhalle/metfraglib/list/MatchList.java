@@ -44,7 +44,6 @@ public class MatchList extends DefaultList {
 	public IMatch getMatchByMass(Double peakMass) {
 		for(int i = 0; i < this.list.size(); i++) {
 			IMatch match = (IMatch)this.list.get(i);
-			match.getMatchedPeak().getMass();
 			if(match.getMatchedPeak().getMass().equals(peakMass)) return match;
 		}
 		return null;

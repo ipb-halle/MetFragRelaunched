@@ -81,7 +81,12 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 					sumFormulasOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + formula + ";";
 					// get fragment of explained peak
 					IFragment frag = scoredCandidate.getMatchList().getElement(ii).getBestMatchedFragment();
-					String[] fpsm = MoleculeFunctions.getNormalizedFingerprintSmiles(frag);			
+					String[] fpsm = null;
+					try {
+						fpsm = MoleculeFunctions.getNormalizedFingerprintSmiles(frag);
+					} catch(Exception e) {
+						continue;
+					}
 					
 					fingerprintOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + fpsm[0] + ";";	
 					smilesOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + fpsm[1] + ";";
