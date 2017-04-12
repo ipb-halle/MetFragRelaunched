@@ -100,7 +100,6 @@ public class WriteFingerprintSubstructureAnnotationFile {
 				catch(Exception e) {
 					continue;
 				}
-				
 			}
 		}
 		
@@ -201,6 +200,8 @@ public class WriteFingerprintSubstructureAnnotationFile {
 			else {
 				BufferedWriter bwriter = new BufferedWriter(new FileWriter(new File(output + "_1")));
 				bwriter.write(peakToFingerprintGroupListCollection.toString());
+				bwriter.write("SUMMARY " + getNumberElements(peakToFingerprintGroupListCollection) + " " + getNumberOccurences(peakToFingerprintGroupListCollection));
+				bwriter.newLine();
 				bwriter.close();
 			}
 			
@@ -210,6 +211,8 @@ public class WriteFingerprintSubstructureAnnotationFile {
 			else {
 				BufferedWriter bwriter = new BufferedWriter(new FileWriter(new File(output + "_2")));
 				bwriter.write(peakToFingerprintGroupListCollection.toString());
+				bwriter.write("SUMMARY " + getNumberElements(peakToFingerprintGroupListCollection) + " " + getNumberOccurences(peakToFingerprintGroupListCollection));
+				bwriter.newLine();
 				bwriter.close();
 			}
 
@@ -219,6 +222,8 @@ public class WriteFingerprintSubstructureAnnotationFile {
 			else {
 				BufferedWriter bwriter = new BufferedWriter(new FileWriter(new File(output + "_3")));
 				bwriter.write(peakToFingerprintGroupListCollection.toString());
+				bwriter.write("SUMMARY " + getNumberElements(peakToFingerprintGroupListCollection) + " " + getNumberOccurences(peakToFingerprintGroupListCollection));
+				bwriter.newLine();
 				bwriter.close();
 			}
 		}
@@ -228,11 +233,34 @@ public class WriteFingerprintSubstructureAnnotationFile {
 			else {
 				System.out.println("writing to output");
 				BufferedWriter bwriter = new BufferedWriter(new FileWriter(new File(output)));
-				bwriter.write(peakToFingerprintGroupListCollection.toStringDetail());
+				bwriter.write(peakToFingerprintGroupListCollection.toString());
+				bwriter.write("SUMMARY " + getNumberElements(peakToFingerprintGroupListCollection) + " " + getNumberOccurences(peakToFingerprintGroupListCollection));
+				bwriter.newLine();
 				bwriter.close();
 			}
 		}
 	}
+	
+	public static int getNumberElements(PeakToFingerprintGroupListCollection peakToFingerprintGroupListCollections) {
+		int count = 0;
+		for(int i = 0; i < peakToFingerprintGroupListCollections.getNumberElements(); i++) {
+			PeakToFingerprintGroupList groupList = peakToFingerprintGroupListCollections.getElement(i);
+			count += groupList.getNumberElements();
+		}
+		return count;
+	}
+	
+	public static int getNumberOccurences(PeakToFingerprintGroupListCollection peakToFingerprintGroupListCollections) {
+		int count = 0;
+		for(int i = 0; i < peakToFingerprintGroupListCollections.getNumberElements(); i++) {
+			PeakToFingerprintGroupList groupList = peakToFingerprintGroupListCollections.getElement(i);
+			for(int j = 0; j < groupList.getNumberElements(); j++) {
+				count += groupList.getElement(j).getNumberObserved();
+			}
+		}
+		return count;
+	}
+	
 	
 	public static void addSortedFeature(double mass, String fingerprint, String smilesString, Vector<Double> masses, Vector<String> fingerprints, Vector<String> smiles) {
 		int index = 0;

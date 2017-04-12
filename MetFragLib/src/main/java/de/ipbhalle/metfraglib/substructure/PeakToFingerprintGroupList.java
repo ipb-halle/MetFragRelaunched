@@ -7,6 +7,9 @@ public class PeakToFingerprintGroupList extends DefaultList {
 
 	private Double peakmz;
 	private Double sumProbabilities;
+	private Double alphaProb;
+	private Double betaProb;
+	
 	
 	public PeakToFingerprintGroupList(Double peakmz) {
 		super();
@@ -23,6 +26,7 @@ public class PeakToFingerprintGroupList extends DefaultList {
 		this.list = filteredList;
 	}
 	
+	// sum_f P(m,f) = P(m)
 	public void calculateSumProbabilites() {
 		this.sumProbabilities = 0.0;
 		for(int i = 0; i < this.getNumberElements(); i++) {
@@ -32,6 +36,10 @@ public class PeakToFingerprintGroupList extends DefaultList {
 	
 	public double getSumProbabilites() {
 		return this.sumProbabilities;
+	}
+
+	public void setSumProbabilites(double sumProbability) {
+		this.sumProbabilities = sumProbability;
 	}
 	
 	public double getMaximalMatchingProbability(FastBitArray fingerprint) {
