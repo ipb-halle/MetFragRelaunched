@@ -125,26 +125,37 @@ public class AutomatedFingerprintSubstructureAnnotationScoreInitialiser3  implem
 		double denominatorValue = sumFingerprintFrequencies + alpha * f_seen + alpha * f_unseen + beta;
 		settings.set(VariableNames.PEAK_FINGERPRINT_DENOMINATOR_VALUE_NAME, denominatorValue);
 		
-		settings.set(VariableNames.PEAK_FINGERPRINT_PROBABILITY_ALPHA_NAME, alpha / denominatorValue);
-		settings.set(VariableNames.PEAK_FINGERPRINT_PROBABILITY_BETA_NAME, beta / denominatorValue);
+		double alphaProbability = alpha / denominatorValue; // P(f,m) F_u
+		double betaProbability = beta / denominatorValue;	// p(f,m) not annotated
 		
 		for(int i = 0; i < peakToFingerprintGroupListCollection.getNumberElements(); i++) {
 			PeakToFingerprintGroupList groupList = peakToFingerprintGroupListCollection.getElement(i);
-			double sum = 0.0;
+
+			double sum_f = 0.0;
+			double sumFsProbabilities = 0.0;
 			for(int ii = 0; ii < groupList.getNumberElements(); ii++) {
 				// first calculate P(f,m)
-				groupList.getElement(ii).setConditionalProbability_sp((groupList.getElement(ii).getProbability() + alpha) / denominatorValue);
-				sum += groupList.getElement(ii).getConditionalProbability_sp();
+				groupList.getElement(ii).setJointProbability((groupList.getElement(ii).getProbability() + alpha) / denominatorValue);
+				// sum_f P(f,m) -> for F_s
+				sumFsProbabilities += groupList.getElement(ii).getJointProbability();
 			}
+
+			double sumFuProbabilities = alphaProbability * massToFingerprints.getSize(groupList.getPeakmz());
+			
+			sum_f += sumFsProbabilities;
+			sum_f += sumFuProbabilities;
+			sum_f += betaProbability;
+			
 			for(int ii = 0; ii < groupList.getNumberElements(); ii++) {
 				// second calculate P(f|m)
-				groupList.getElement(ii).setConditionalProbability_sp(groupList.getElement(ii).getConditionalProbability_sp() / sum);
+				groupList.getElement(ii).setConditionalProbability_sp(groupList.getElement(ii).getJointProbability() / sum_f);
 			}
+
+			groupList.setAlphaProb(alphaProbability / sum_f);
+			groupList.setBetaProb(betaProbability / sum_f);
+			groupList.setProbabilityToConditionalProbability_sp();
+			groupList.calculateSumProbabilites();
 		}
-		
-		peakToFingerprintGroupListCollection.setProbabilityToConditionalProbability_sp();
-		peakToFingerprintGroupListCollection.calculateSumProbabilities();
-		
 		return;
 	}
 	

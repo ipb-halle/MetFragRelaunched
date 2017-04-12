@@ -43,8 +43,6 @@ public class AutomatedFingerprintSubstructureAnnotationScore3 extends AbstractSc
 		//this.value = 0.0;
 		this.value = 1.0;
 		PeakToFingerprintGroupListCollection peakToFingerprintGroupListCollection = (PeakToFingerprintGroupListCollection)this.settings.get(VariableNames.PEAK_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME);
-		double alphaProbability = (double)this.settings.get(VariableNames.PEAK_FINGERPRINT_ANNOTATION_ALPHA_VALUE_NAME);
-		double betaProbability = (double)this.settings.get(VariableNames.PEAK_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME);
 		
 		MatchList matchList = this.candidate.getMatchList();
 	
@@ -58,7 +56,7 @@ public class AutomatedFingerprintSubstructureAnnotationScore3 extends AbstractSc
 
 			//(fingerprintToMasses.getSize(currentFingerprint));
 			if(currentMatch == null) {
-				this.value *= betaProbability;
+				this.value *= peakToFingerprintGroupList.getBetaProb();
 			} else {
 				FastBitArray currentFingerprint = new FastBitArray(MoleculeFunctions.getNormalizedFingerprint(currentMatch.getBestMatchedFragment()));
 				// ToDo: at this stage try to check all fragments not only the best one
@@ -67,11 +65,11 @@ public class AutomatedFingerprintSubstructureAnnotationScore3 extends AbstractSc
 				double matching_prob = peakToFingerprintGroupList.getMatchingProbability(currentFingerprint);
 				// |F|
 				if(matching_prob != 0.0) this.value *= matching_prob;
-				else this.value *= alphaProbability;
+				else this.value *= peakToFingerprintGroupList.getAlphaProb();
 			}
 		}
 		if(peakToFingerprintGroupListCollection.getNumberElements() == 0) this.value = 0.0;
-		this.candidate.setProperty("AutomatedFingerprintSubstructureAnnotationScore_Matches", matches);
+		this.candidate.setProperty("AutomatedFingerprintSubstructureAnnotationScore3_Matches", matches);
  	}
 	
 	@Override

@@ -1,9 +1,13 @@
 package de.ipbhalle.metfraglib.tools;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Vector;
 
 import de.ipbhalle.metfraglib.FastBitArray;
+import de.ipbhalle.metfraglib.additionals.MathTools;
 import de.ipbhalle.metfraglib.database.LocalPSVDatabase;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.list.CandidateList;
@@ -25,6 +29,8 @@ public class CalculateScoreFromResultFile {
 		String paramfile = args[0];
 		String resfile = args[1];
 		String outputfolder = args[2];
+		String probFile = null;
+		if(args.length == 4) probFile = args[3];
 		
 		Settings settings = getSettings(paramfile);
 		settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, resfile);
@@ -54,8 +60,10 @@ public class CalculateScoreFromResultFile {
 		CandidateListWriterCSV writer = new CandidateListWriterCSV();
 		writer.write(candidates, (String)settings.get(VariableNames.SAMPLE_NAME), outputfolder);
 		
-		
-		checkProbabilites(settings);
+		if(probFile != null)
+			checkProbabilites(settings, probFile);
+		else
+			checkProbabilites(settings);
 	}
 	
 
@@ -97,7 +105,6 @@ public class CalculateScoreFromResultFile {
 
 		double alpha = (double)settings.get(VariableNames.PEAK_FINGERPRINT_ANNOTATION_ALPHA_VALUE_NAME);					// alpha
 		double beta = (double)settings.get(VariableNames.PEAK_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME);						// beta
-		System.out.println(alpha + " " + beta);
 		
 		double f_seen = (double)settings.get(VariableNames.PEAK_FINGERPRINT_TUPLE_COUNT_NAME);								// f_s
 		double f_unseen = massToFingerprints.getOverallSize();																// f_u
@@ -110,12 +117,6 @@ public class CalculateScoreFromResultFile {
 		
 		double alphaProbability = alpha / denominatorValue; // P(f,m) F_u
 		double betaProbability = beta / denominatorValue;	// p(f,m) not annotated
-
-		settings.set(VariableNames.PEAK_FINGERPRINT_PROBABILITY_ALPHA_NAME, alphaProbability);
-		settings.set(VariableNames.PEAK_FINGERPRINT_PROBABILITY_BETA_NAME, betaProbability);
-		
-		System.out.println(alphaProbability + " " + betaProbability);
-		
 		
 		for(int i = 0; i < peakToFingerprintGroupListCollection.getNumberElements(); i++) {
 			PeakToFingerprintGroupList groupList = peakToFingerprintGroupListCollection.getElement(i);
@@ -126,7 +127,6 @@ public class CalculateScoreFromResultFile {
 			for(int ii = 0; ii < groupList.getNumberElements(); ii++) {
 				// first calculate P(f,m)
 				groupList.getElement(ii).setJointProbability((groupList.getElement(ii).getProbability() + alpha) / denominatorValue);
-				if(i == 0) System.out.println(groupList.getElement(ii).getJointProbability() + " " + denominatorValue + " " + f_seen + " " + f_unseen); 
 				// sum_f P(f,m) -> for F_s
 				sumFsProbabilities += groupList.getElement(ii).getJointProbability();
 			}
@@ -140,23 +140,13 @@ public class CalculateScoreFromResultFile {
 			for(int ii = 0; ii < groupList.getNumberElements(); ii++) {
 				// second calculate P(f|m)
 				groupList.getElement(ii).setConditionalProbability_sp(groupList.getElement(ii).getJointProbability() / sum_f);
-				if(i == 0) System.out.println(groupList.getElement(ii).getConditionalProbability_sp() + " " + sum_f + " " + f_seen + " " + f_unseen); 
 			}
 			
-			
+			groupList.setAlphaProb(alphaProbability / sum_f);
+			groupList.setBetaProb(betaProbability / sum_f);
 			groupList.setProbabilityToConditionalProbability_sp();
 			groupList.calculateSumProbabilites();
 			
-			double sum_cond_f = groupList.getSumProbabilites() + massToFingerprints.getSize(groupList.getPeakmz()) * (alphaProbability / sum_f) + (alphaProbability / sum_f);
-			
-			System.out.println(groupList.getPeakmz() + ": " + sum_cond_f 
-					+ " |Fs|:" + groupList.getNumberElements() 
-					+ " |Fu|:" + massToFingerprints.getSize(groupList.getPeakmz()) 
-					+ " b:" + alphaProbability 
-					+ " a:" + betaProbability
-					+ " Fs:" + sumFsProbabilities
-					+ " Fu:" + sumFuProbabilities
-					+ " P(m):" + sum_f);
 		}
 		
 		return;
@@ -166,11 +156,9 @@ public class CalculateScoreFromResultFile {
 		//this.value = 0.0;
 		double value = 1.0;
 		PeakToFingerprintGroupListCollection peakToFingerprintGroupListCollection = (PeakToFingerprintGroupListCollection)settings.get(VariableNames.PEAK_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME);
-		double alphaProbability = (double)settings.get(VariableNames.PEAK_FINGERPRINT_PROBABILITY_ALPHA_NAME);
-		double betaProbability = (double)settings.get(VariableNames.PEAK_FINGERPRINT_PROBABILITY_BETA_NAME);
 		
 		int matches = 0;
-		Vector<Match> matchlist = (Vector<Match>)candidate.getProperty("MatchList");
+		Vector<?> matchlist = (Vector<?>)candidate.getProperty("MatchList");
 		// get foreground fingerprint observations (m_f_observed)
 		for(int i = 0; i < peakToFingerprintGroupListCollection.getNumberElements(); i++) {
 			// get f_m_observed
@@ -180,7 +168,7 @@ public class CalculateScoreFromResultFile {
 
 			//(fingerprintToMasses.getSize(currentFingerprint));
 			if(currentMatch == null) {
-				value *= betaProbability;
+				value *= peakToFingerprintGroupList.getBetaProb();
 			} else {
 				FastBitArray currentFingerprint = new FastBitArray(currentMatch.getFingerprint());
 				// ToDo: at this stage try to check all fragments not only the best one
@@ -189,7 +177,7 @@ public class CalculateScoreFromResultFile {
 				double matching_prob = peakToFingerprintGroupList.getMatchingProbability(currentFingerprint);
 				// |F|
 				if(matching_prob != 0.0) value *= matching_prob;
-				else value *= alphaProbability;
+				else value *= peakToFingerprintGroupList.getAlphaProb();
 			}
 		}
 		if(peakToFingerprintGroupListCollection.getNumberElements() == 0) value = 0.0;
@@ -197,37 +185,49 @@ public class CalculateScoreFromResultFile {
 		candidate.setProperty("AutomatedFingerprintSubstructureAnnotationScore3", value);
  	}
 	
-	public static void checkProbabilites(Settings settings) {
+	/**
+	 * check whether probabilities sum to 1
+	 * 
+	 * @param settings
+	 * @throws IOException 
+	 */
+	public static void checkProbabilites(Settings settings, String probFile) throws IOException {
 		PeakToFingerprintGroupListCollection peakToFingerprintGroupListCollection = (PeakToFingerprintGroupListCollection)settings.get(VariableNames.PEAK_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME);
-		double alphaJointProbability = (double)settings.get(VariableNames.PEAK_FINGERPRINT_JOINT_PROBABILITY_ALPHA_NAME);
-		double betaJointProbability = (double)settings.get(VariableNames.PEAK_FINGERPRINT_JOINT_PROBABILITY_BETA_NAME);
-		
+	
+		BufferedWriter bwriter = null;
+		if(!probFile.equals("")) 
+			bwriter = new BufferedWriter(new FileWriter(new File(probFile)));
 		for(int i = 0; i < peakToFingerprintGroupListCollection.getNumberElements(); i++) {
 			double sum = 0.0;
-			
 			
 			// get f_m_observed
 			PeakToFingerprintGroupList peakToFingerprintGroupList = peakToFingerprintGroupListCollection.getElement(i);
 			Double currentMass = peakToFingerprintGroupList.getPeakmz();
 			Vector<FastBitArray> fps = massToFingerprints.getFingerprints(currentMass);
-
-			double sum_f = peakToFingerprintGroupList.getSumProbabilites();
 			
 			for(int k = 0; k < peakToFingerprintGroupList.getNumberElements(); k++) {
+				if(bwriter != null) bwriter.write(peakToFingerprintGroupList.getElement(k).getProbability() + "\n");
 				sum += peakToFingerprintGroupList.getElement(k).getProbability();
 			}
 
-			if(i == 0) System.out.println(fps.size() + " " + alphaProbability);
 			for(int k = 0; k < fps.size(); k++) {
-				sum += alphaProbability;
+				if(bwriter != null) bwriter.write(peakToFingerprintGroupList.getAlphaProb() + "\n");
+				sum += peakToFingerprintGroupList.getAlphaProb();
 			}
 			
-			sum += betaProbability;
+			if(bwriter != null) bwriter.write(peakToFingerprintGroupList.getBetaProb() + "\n");
+			sum += peakToFingerprintGroupList.getBetaProb();
 			
-			System.out.println(currentMass + " " + sum);
+			System.out.println(currentMass + " " + MathTools.round(sum, 15));
 		}
 		
+		if(bwriter != null) bwriter.close();
 	}
+	
+	public static void checkProbabilites(Settings settings) throws IOException {
+		checkProbabilites(settings, "");
+	}
+	
 	
 	public static Settings getSettings(String parameterfile) {
 		
@@ -242,9 +242,9 @@ public class CalculateScoreFromResultFile {
 		return settings;
 	}
 	
-	public static Match getMatchByMass(Vector<Match> matches, Double peakMass) {
+	public static Match getMatchByMass(Vector<?> matches, Double peakMass) {
 		for(int i = 0; i < matches.size(); i++) {
-			Match match = matches.get(i);
+			Match match = (Match)matches.get(i);
 			if(match.getMass().equals(peakMass)) return match;
 		}
 		return null;
