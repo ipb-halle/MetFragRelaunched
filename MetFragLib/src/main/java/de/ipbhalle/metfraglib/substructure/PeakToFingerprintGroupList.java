@@ -16,6 +16,22 @@ public class PeakToFingerprintGroupList extends DefaultList {
 		this.peakmz = peakmz;
 	}
 	
+	public Double getAlphaProb() {
+		return alphaProb;
+	}
+
+	public void setAlphaProb(Double alphaProb) {
+		this.alphaProb = alphaProb;
+	}
+
+	public Double getBetaProb() {
+		return betaProb;
+	}
+
+	public void setBetaProb(Double betaProb) {
+		this.betaProb = betaProb;
+	}
+
 	public void filterByOccurence(int minimumNumberOccurences) {
 		java.util.Vector<Object> filteredList = new java.util.Vector<Object>();
 		for(int i = 0; i < this.getNumberElements(); i++) {
