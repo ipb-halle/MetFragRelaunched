@@ -42,14 +42,16 @@ public class FingerprintToMasses {
 		this.numObservations.get(this.numObservations.size() - 1).add(numObservations);
 	}
 
-	public void addMass(FastBitArray fingerprint, Double mass, Double numObservations, double mzppm, double mzabs) {
+	public void addMass(FastBitArray fingerprint, Double mass, Double numObservations, double mzppm, double mzabs, boolean debug) {
 		for(int i = 0; i < this.fingerprints.size(); i++) {
 			if(this.fingerprints.get(i).equals(fingerprint)) {
+				if(debug) System.out.println("found fingerprint");
 				this.addToMasses(mass, this.fingerprintToMasses.get(i), numObservations, this.numObservations.get(i),
-						mzppm, mzabs);
+						mzppm, mzabs, debug);
 				return;
 			}
 			if(this.fingerprints.get(i).compareTo(fingerprint) > 0) {
+				if(debug) System.out.println("fingerprint not found");
 				this.fingerprints.add(i, fingerprint);
 				this.fingerprintToMasses.add(i, new Vector<Double>());
 				this.fingerprintToMasses.get(i).add(mass);
@@ -58,6 +60,7 @@ public class FingerprintToMasses {
 				return;
 			}
 		}
+		if(debug) System.out.println("fingerprint not found");
 		this.fingerprints.add(fingerprint);
 		this.fingerprintToMasses.add(new Vector<Double>());
 		this.fingerprintToMasses.get(this.fingerprintToMasses.size() - 1).add(mass);
@@ -65,12 +68,16 @@ public class FingerprintToMasses {
 		this.numObservations.get(this.numObservations.size() - 1).add(numObservations);
 	}
 	
+	public void addMass(FastBitArray fingerprint, Double mass, Double numObservations, double mzppm, double mzabs) {
+		this.addMass(fingerprint, mass, numObservations, mzppm, mzabs, false);
+	}
+	
 	public void addMass(String fingerprint, Double mass, Double numObservations) {
 		this.addMass(new FastBitArray(fingerprint), mass, numObservations);
 	}
 
 	protected void addToMasses(Double mass, Vector<Double> masses, Double numObservation, Vector<Double> numObservations, 
-			double mzppm, double mzabs) {
+			double mzppm, double mzabs, boolean debug) {
 		double dev = MathTools.calculateAbsoluteDeviation(mass, mzppm);
 		dev += mzabs;
 		double bestDev = Integer.MAX_VALUE;	
@@ -85,10 +92,19 @@ public class FingerprintToMasses {
 			}
 		}
 		// mass already included
-		if(bestDev <= dev) return;
+		if(bestDev <= dev) {
+			if(debug) System.out.println("found mass matching " + bestDev + " " + dev);
+			return;
+		}
 		
+		if(debug) System.out.println("adding mass matching " + bestDev + " " + dev);
 		masses.add(mass);
 		numObservations.add(numObservation);
+	}
+	
+	protected void addToMasses(Double mass, Vector<Double> masses, Double numObservation, Vector<Double> numObservations, 
+			double mzppm, double mzabs) {
+		this.addToMasses(mass, masses, numObservation, numObservations, mzppm, mzabs, false);
 	}
 	
 	protected void addToMasses(Double mass, Vector<Double> masses, Double numObservation, Vector<Double> numObservations) {

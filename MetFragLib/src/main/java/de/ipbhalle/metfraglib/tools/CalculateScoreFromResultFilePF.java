@@ -92,7 +92,10 @@ public class CalculateScoreFromResultFilePF {
 			 */
 			ICandidate currentCandidate = candidates.getElement(k);
 			String fps = (String)currentCandidate.getProperty("FragmentFingerprintOfExplPeaks");
-			if(fps.equals("NA")) continue;
+			if(fps.equals("NA")) {
+				currentCandidate.setProperty("MatchList", new Vector<Match>());
+				continue;
+			}
 			String[] tmp = fps.split(";");
 			Vector<Match> matchlist = new Vector<Match>();
 			for(int i = 0; i < tmp.length; i++) {
@@ -115,10 +118,6 @@ public class CalculateScoreFromResultFilePF {
 					massToFingerprints.addFingerprint(match.getMass(), currentFingerprint);
 					//fingerprintToMasses.addMass(currentFingerprint, match.getMass(), 0.0, mzppm, mzabs);
 					negativeFingerprints.addMass(currentFingerprint, match.getMass());
-					if(currentFingerprint.toString().equals("000000000000000000000000000000000000010000000000000100000000000000000000000011100000000000100100000100000001001000000010000100000000000000000100000000101011010111101000000000000000000000000000")) {
-						Vector<Double> masses = negativeFingerprints.getMasses(new FastBitArray("000000000000000000000000000000000000010000000000000100000000000000000000000011100000000000100100000100000001001000000010000100000000000000000100000000101011010111101000000000000000000000000000"));
-						System.out.println("here1 " + masses.size() + " " + masses.get(0));
-					}
 				}
 			}
 		}
@@ -134,6 +133,7 @@ public class CalculateScoreFromResultFilePF {
 		}
 		String line = "";
 		try {
+			boolean[] negativeAdded = new boolean[negativeFingerprints.getFingerprintSize()];
 			while((line = breader.readLine()) != null) {
 				line = line.trim();
 				String[] tmp = line.split("\\s+");
@@ -144,16 +144,35 @@ public class CalculateScoreFromResultFilePF {
 						fingerprintToMasses.addMass(currentFingerprint, Double.parseDouble(tmp[k+1]), Double.parseDouble(tmp[k]), mzppm, mzabs);
 					}
 				} 
-				if(currentFingerprint.toString().equals("000000000000000000000000000000000000010000000000000100000000000000000000000011100000000000100100000100000001001000000010000100000000000000000100000000101011010111101000000000000000000000000000"))
-					System.out.println("here");
 				int inNeg = negativeFingerprints.getIndexOfFingerprint(currentFingerprint);
 				if(inNeg != -1) {
+					negativeAdded[inNeg] = true;
 					Vector<Double> masses = negativeFingerprints.getMasses(inNeg);
-					for(int i = 0; i < masses.size(); i++)
-						fingerprintToMasses.addMass(currentFingerprint, masses.get(i), 0.0, mzppm, mzabs);
+					for(int i = 0; i < masses.size(); i++) {
+						boolean debug = false;
+						if(masses.get(i).equals(160.087069230769)) {
+							debug = true;
+							System.out.println("first adding " + masses.size() + " " + masses.get(0));
+						}
+						fingerprintToMasses.addMass(currentFingerprint, masses.get(i), 0.0, mzppm, mzabs, debug);
+					}
 				}
 			}
 			breader.close();
+			for(int i = 0; i < negativeAdded.length; i++) {
+				if(negativeAdded[i]) {
+					FastBitArray currentFingerprint = negativeFingerprints.getFingerprint(i);
+					Vector<Double> masses = negativeFingerprints.getMasses(i);
+					boolean debug = false;
+					if(masses.get(0).equals(160.087069230769)) {
+						debug = true;
+						System.out.println("adding " + masses.size() + " " + masses.get(0));
+					}
+					for(int ii = 0; ii < masses.size(); ii++) {
+						fingerprintToMasses.addMass(currentFingerprint, masses.get(ii), 0.0, mzppm, mzabs, debug);
+					}
+				}
+			}
 		} catch (NumberFormatException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -161,6 +180,8 @@ public class CalculateScoreFromResultFilePF {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		System.out.println(fingerprintToMasses.getMasses(new FastBitArray("000000000000000000000000000000000000010000000000000100000000000000000000000011100000000000100100000100000001001000000010000100000000000000000100000000101011010111101000000000000000000000000000")).size());
 		
 		settings.set(VariableNames.FINGERPRINT_TO_PEAK_GROUP_LIST_COLLECTION_NAME, fingerprintToMasses);
 		
@@ -251,7 +272,7 @@ public class CalculateScoreFromResultFilePF {
 				double matching_prob = peakToFingerprintGroupList.getMatchingProbability(currentFingerprint);
 				// |F|
 				if(candidate.getIdentifier().equals("181502")) {
-					System.out.println(peakToFingerprintGroupList.getPeakmz() + " " + currentFingerprint);
+					System.out.println(peakToFingerprintGroupList.getPeakmz() + " " + currentFingerprint.toStringIDs());
 					System.out.println("prob " + matching_prob);
 				}
 				if(matching_prob != 0.0) value *= matching_prob;
