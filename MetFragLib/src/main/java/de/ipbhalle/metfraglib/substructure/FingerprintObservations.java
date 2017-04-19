@@ -4,13 +4,13 @@ import java.util.Vector;
 
 import de.ipbhalle.metfraglib.FastBitArray;
 
-public class FingeprintObservations {
+public class FingerprintObservations {
 
 	private Vector<FastBitArray> fingerprints;
 	private Vector<Integer> observations;
 	private Double[] sumProbabilities; // sum_m p(f,m) -> f fixed
 	
-	public FingeprintObservations() {
+	public FingerprintObservations() {
 		this.fingerprints = new Vector<FastBitArray>();
 		this.observations = new Vector<Integer>();
 	}
