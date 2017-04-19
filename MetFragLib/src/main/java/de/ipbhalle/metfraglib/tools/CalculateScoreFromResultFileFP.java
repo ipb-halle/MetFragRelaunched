@@ -24,15 +24,20 @@ import de.ipbhalle.metfraglib.writer.CandidateListWriterCSV;
 public class CalculateScoreFromResultFileFP {
 
 	public static MassToFingerprints massToFingerprints;
-	public final static double ALPHA_VALUE = 0.0001;
-	public final static double BETA_VALUE = 0.0001;
+	public static double ALPHA_VALUE = 0.0001;
+	public static double BETA_VALUE = 0.0001;
 	
 	public static void main(String[] args) throws Exception {
 		String paramfile = args[0];
 		String resfile = args[1];
 		String outputfolder = args[2];
+		String alpha = args[3];
+		String beta = args[4];
 		String probFile = null;
-		if(args.length == 4) probFile = args[3];
+		if(args.length == 6) probFile = args[5];
+		
+		ALPHA_VALUE = Double.parseDouble(alpha);
+		BETA_VALUE = Double.parseDouble(beta);
 		
 		Settings settings = getSettings(paramfile);
 		settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, resfile);
@@ -80,7 +85,10 @@ public class CalculateScoreFromResultFileFP {
 			 */
 			ICandidate currentCandidate = candidates.getElement(k);
 			String fps = (String)currentCandidate.getProperty("FragmentFingerprintOfExplPeaks");
-			if(fps.equals("NA")) continue;
+			if(fps.equals("NA")) {
+				currentCandidate.setProperty("MatchList", new Vector<Match>());
+				continue;
+			}
 			String[] tmp = fps.split(";");
 			Vector<Match> matchlist = new Vector<Match>();
 			for(int i = 0; i < tmp.length; i++) {
@@ -220,7 +228,7 @@ public class CalculateScoreFromResultFileFP {
 			if(bwriter != null) bwriter.write(peakToFingerprintGroupList.getBetaProb() + "\n");
 			sum += peakToFingerprintGroupList.getBetaProb();
 			
-			System.out.println(currentMass + " " + MathTools.round(sum, 15));
+		//	System.out.println(currentMass + " " + MathTools.round(sum, 15));
 		}
 		
 		if(bwriter != null) bwriter.close();
