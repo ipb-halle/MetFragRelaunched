@@ -21,9 +21,11 @@ import de.ipbhalle.metfraglib.substructure.PeakToFingerprintGroupList;
 import de.ipbhalle.metfraglib.substructure.PeakToFingerprintGroupListCollection;
 import de.ipbhalle.metfraglib.writer.CandidateListWriterCSV;
 
-public class CalculateScoreFromResultFile {
+public class CalculateScoreFromResultFileFP {
 
 	public static MassToFingerprints massToFingerprints;
+	public final static double ALPHA_VALUE = 0.0001;
+	public final static double BETA_VALUE = 0.0001;
 	
 	public static void main(String[] args) throws Exception {
 		String paramfile = args[0];
@@ -35,8 +37,8 @@ public class CalculateScoreFromResultFile {
 		Settings settings = getSettings(paramfile);
 		settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, resfile);
 		
-		settings.set(VariableNames.PEAK_FINGERPRINT_ANNOTATION_ALPHA_VALUE_NAME, 0.0001);
-		settings.set(VariableNames.PEAK_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME, 0.0001);
+		settings.set(VariableNames.PEAK_FINGERPRINT_ANNOTATION_ALPHA_VALUE_NAME, ALPHA_VALUE);
+		settings.set(VariableNames.PEAK_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME, BETA_VALUE);
 		
 		FilteredTandemMassPeakListReader reader = new FilteredTandemMassPeakListReader(settings);
 		settings.set(VariableNames.PEAK_LIST_NAME, reader.read());
@@ -59,7 +61,7 @@ public class CalculateScoreFromResultFile {
 		
 		CandidateListWriterCSV writer = new CandidateListWriterCSV();
 		writer.write(candidates, (String)settings.get(VariableNames.SAMPLE_NAME), outputfolder);
-		
+
 		if(probFile != null)
 			checkProbabilites(settings, probFile);
 		else
@@ -83,7 +85,7 @@ public class CalculateScoreFromResultFile {
 			Vector<Match> matchlist = new Vector<Match>();
 			for(int i = 0; i < tmp.length; i++) {
 				String[] tmp1 = tmp[i].split(":");
-				Match match = new CalculateScoreFromResultFile().new Match(tmp1[1], Double.parseDouble(tmp1[0]));
+				Match match = new CalculateScoreFromResultFileFP().new Match(tmp1[1], Double.parseDouble(tmp1[0]));
 				matchlist.add(match);
 			}
 			

@@ -91,15 +91,15 @@ public class VariableNames {
 	public static final String LOSS_TO_SMARTS_GROUP_LIST_COLLECTION_NAME		= "lossToSmartGroupListCollection";
 	
 	public static final String FINGERPRINT_PEAK_ANNOTATION_FILE_NAME			= "FingerprintPeakAnnotationFile";
+	public static final String FINGERPRINT_PEAK_ANNOTATION_FILE_CONV_NAME		= "FingerprintPeakAnnotationFileConv";
 	public static final String FINGERPRINT_LOSS_ANNOTATION_FILE_NAME			= "FingerprintLossAnnotationFile";
 	public static final String PEAK_TO_BACKGROUND_FINGERPRINTS_NAME				= "PeakToBackgroundFingerprints";	
 	public static final String LOSS_TO_BACKGROUND_FINGERPRINTS_NAME				= "LossToBackgroundFingerprints";	
-	//
-	public static final String PEAK_TO_BACKGROUND_MASSES_NAME					= "PeakToBackgroundMasses";	
-	public static final String LOSS_TO_BACKGROUND_MASSES_NAME					= "LossToBackgroundMasses";	
 	// calculated beta value as pseudo count for non-annotated peaks
 	public static final String PEAK_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME		= "PeakFingerprintAnnotationBetaValue";	
 	public static final String LOSS_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME		= "LossFingerprintAnnotationBetaValue";	
+	
+	public static final String NUMBER_BACKGROUND_MASSES_NAME					= "NumberBackgroundMasses";
 	
 	// calculated beta value as pseudo count for non-annotated fingerprints
 	public static final String PEAK_FINGERPRINT_ANNOTATION_ALPHA_VALUE_NAME		= "PeakFingerprintAnnotationAlphaValue";	
@@ -108,12 +108,15 @@ public class VariableNames {
 	public static final String PEAK_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME	= "PeakToFingerprintGroupListCollection";
 	public static final String LOSS_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME	= "LossToFingerprintGroupListCollection";
 
+	public static final String FINGERPRINT_TO_PEAK_GROUP_LIST_COLLECTION_NAME	= "FingerprintToPeakGroupListCollection";
+	
+	
 	public static final String PEAK_FINGERPRINT_DENOMINATOR_COUNT_NAME			= "PeakFingerprintDenominatorCount";
 	public static final String PEAK_FINGERPRINT_DENOMINATOR_VALUE_NAME			= "PeakFingerprintDenominatorValue";
 	public static final String PEAK_FINGERPRINT_TUPLE_COUNT_NAME				= "PeakFingerprintTupleCount";
 
-	public static final String PEAK_FINGERPRINT_JOINT_PROBABILITY_ALPHA_NAME			= "PeakFingerprintJointProbabilityAlpha";
-	public static final String PEAK_FINGERPRINT_JOINT_PROBABILITY_BETA_NAME			= "PeakFingerprintJointProbabilityBeta";
+	public static final String PEAK_FINGERPRINT_JOINT_PROBABILITY_ALPHA_NAME	= "PeakFingerprintJointProbabilityAlpha";
+	public static final String PEAK_FINGERPRINT_JOINT_PROBABILITY_BETA_NAME		= "PeakFingerprintJointProbabilityBeta";
 	
 	public static final String METFRAG_PROCESSES_NAME							= "MetFragProcesses";
 	

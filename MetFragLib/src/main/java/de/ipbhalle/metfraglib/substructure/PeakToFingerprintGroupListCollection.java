@@ -10,7 +10,7 @@ public class PeakToFingerprintGroupListCollection extends DefaultList {
 	private double[] peakProbabilities;
 	private Integer maximumAnnotatedID = null;
 	// needed for p_m_given_f
-	FingeprintObservations fingerprintObservations = null;
+	FingerprintObservations fingerprintObservations = null;
 	
 	public PeakToFingerprintGroupListCollection() {
 		super();
@@ -21,7 +21,7 @@ public class PeakToFingerprintGroupListCollection extends DefaultList {
 	}
 	
 	public void calculateFingeprintObservations() {
-		this.fingerprintObservations = new FingeprintObservations();
+		this.fingerprintObservations = new FingerprintObservations();
 		for(int i = 0; i < this.getNumberElements(); i++) {
 			PeakToFingerprintGroupList groupList = this.getElement(i);
 			for(int j = 0; j < groupList.getNumberElements(); j++) {
