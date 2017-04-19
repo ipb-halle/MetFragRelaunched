@@ -1,5 +1,6 @@
 package de.ipbhalle.metfraglib.substructure;
 
+import java.io.IOException;
 import java.util.Vector;
 
 import de.ipbhalle.metfraglib.FastBitArray;
@@ -51,7 +52,11 @@ public class FingerprintToMasses {
 				return;
 			}
 			if(this.fingerprints.get(i).compareTo(fingerprint) > 0) {
-				if(debug) System.out.println("fingerprint not found");
+				if(debug) {
+					System.out.println("fingerprint not found added at " + i);
+					System.out.println(this.fingerprints.get(i));
+					System.out.println(fingerprint);
+				}
 				this.fingerprints.add(i, fingerprint);
 				this.fingerprintToMasses.add(i, new Vector<Double>());
 				this.fingerprintToMasses.get(i).add(mass);
@@ -75,7 +80,7 @@ public class FingerprintToMasses {
 	public void addMass(String fingerprint, Double mass, Double numObservations) {
 		this.addMass(new FastBitArray(fingerprint), mass, numObservations);
 	}
-
+	
 	protected void addToMasses(Double mass, Vector<Double> masses, Double numObservation, Vector<Double> numObservations, 
 			double mzppm, double mzabs, boolean debug) {
 		double dev = MathTools.calculateAbsoluteDeviation(mass, mzppm);
@@ -127,6 +132,14 @@ public class FingerprintToMasses {
 		}
 	}
 	
+	public String toStringObservations(int index) {
+		String string = String.valueOf(this.numObservations.get(index).get(0));
+		for(int i = 1; i < this.numObservations.get(index).size(); i++) {
+			string += " " + this.numObservations.get(index).get(i);
+		}
+		return string;
+	}
+	
 	public void normalizeNumObservations(int index, double value) {
 		for(int i = 0; i < this.numObservations.get(index).size(); i++) {
 			this.numObservations.get(index).set(i, this.numObservations.get(index).get(i) / value);
@@ -160,6 +173,11 @@ public class FingerprintToMasses {
 	
 	public double getAlphaProbabilty(FastBitArray fingerprint) {
 		int index = this.getIndexOfFingerprint(fingerprint);
+		if(index == -1) return 0.0;
+		return this.alphaProbabilities.get(index);
+	}
+
+	public double getAlphaProbabilty(int index) {
 		if(index == -1) return 0.0;
 		return this.alphaProbabilities.get(index);
 	}
@@ -220,12 +238,18 @@ public class FingerprintToMasses {
 		return false;
 	}
 	
-	public int getIndexOfFingerprint(FastBitArray fingerprint) {
+	public int getIndexOfFingerprint(FastBitArray fingerprint, boolean debug) {
 		for(int i = 0; i < this.fingerprints.size(); i++) {
 			if(this.fingerprints.get(i).equals(fingerprint)) return i;
-			if(this.fingerprints.get(i).compareTo(fingerprint) > 0) return -1;
+			if(this.fingerprints.get(i).compareTo(fingerprint) > 0) {
+				return -1;
+			}
 		}
 		return -1;
+	}
+	
+	public int getIndexOfFingerprint(FastBitArray fingerprint) {
+		return this.getIndexOfFingerprint(fingerprint, false);
 	}
 	
 	public boolean contains(FastBitArray fingerprint, Double mass) {
@@ -294,5 +318,22 @@ public class FingerprintToMasses {
 			string += " " + this.numObservations.get(index).get(i) + " " + this.fingerprintToMasses.get(index).get(i);
 		}
 		return string;
+	}
+	
+	public String toStringIDs(int index) {
+		String string = this.fingerprints.get(index).toStringIDs();
+		for(int i = 0; i < this.fingerprintToMasses.get(index).size(); i++) {
+			string += " " + this.numObservations.get(index).get(i) + " " + this.fingerprintToMasses.get(index).get(i);
+		}
+		return string;
+	}
+	
+	public void writeToFile(String filename) throws IOException {
+		java.io.BufferedWriter bwriter = new java.io.BufferedWriter(new java.io.FileWriter(new java.io.File(filename)));
+		for(int i = 0; i < this.fingerprints.size(); i++) {
+			bwriter.write(this.fingerprints.get(i).toStringIDs());
+			bwriter.newLine();
+		}
+		bwriter.close();
 	}
 }

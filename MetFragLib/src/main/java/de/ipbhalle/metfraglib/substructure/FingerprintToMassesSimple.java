@@ -201,4 +201,12 @@ public class FingerprintToMassesSimple {
 		}
 		return string;
 	}
+	
+	public String toStringIDs(int index) {
+		String string = this.fingerprints.get(index).toStringIDs();
+		for(int i = 0; i < this.fingerprintToMasses.get(index).size(); i++) {
+			string += " " + this.fingerprintToMasses.get(index).get(i);
+		}
+		return string;
+	}
 }

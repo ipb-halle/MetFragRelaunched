@@ -353,4 +353,11 @@ public class PeakToFingerprintGroupListCollection extends DefaultList {
 		this.maximumAnnotatedID = maximumAnnotatedID;
 	}
 	
+	public int getOverallSize() {
+		int num = 0;
+		for(int i = 0; i < this.getNumberElements(); i++) {
+			num += this.getElement(i).getNumberElements();
+		}
+		return num;
+	}
 }
