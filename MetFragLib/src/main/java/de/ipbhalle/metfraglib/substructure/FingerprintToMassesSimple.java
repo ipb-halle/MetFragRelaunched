@@ -1,18 +1,19 @@
 package de.ipbhalle.metfraglib.substructure;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.LinkedList;
 
 import de.ipbhalle.metfraglib.FastBitArray;
 import de.ipbhalle.metfraglib.additionals.MathTools;
 
 public class FingerprintToMassesSimple {
 
-	private Vector<Vector<Double>> fingerprintToMasses;
-	private Vector<FastBitArray> fingerprints;
+	private ArrayList<LinkedList<Double>> fingerprintToMasses;
+	private ArrayList<FastBitArray> fingerprints;
 	
 	public FingerprintToMassesSimple() {
-		this.fingerprintToMasses = new Vector<Vector<Double>>();
-		this.fingerprints = new Vector<FastBitArray>();
+		this.fingerprintToMasses = new ArrayList<LinkedList<Double>>();
+		this.fingerprints = new ArrayList<FastBitArray>();
 	}
 	
 	public void addMass(FastBitArray fingerprint, Double mass) {
@@ -23,13 +24,13 @@ public class FingerprintToMassesSimple {
 			}
 			if(this.fingerprints.get(i).compareTo(fingerprint) > 0) {
 				this.fingerprints.add(i, fingerprint);
-				this.fingerprintToMasses.add(i, new Vector<Double>());
+				this.fingerprintToMasses.add(i, new LinkedList<Double>());
 				this.fingerprintToMasses.get(i).add(mass);
 				return;
 			}
 		}
 		this.fingerprints.add(fingerprint);
-		this.fingerprintToMasses.add(new Vector<Double>());
+		this.fingerprintToMasses.add(new LinkedList<Double>());
 		this.fingerprintToMasses.get(this.fingerprintToMasses.size() - 1).add(mass);
 	}
 
@@ -40,12 +41,12 @@ public class FingerprintToMassesSimple {
 			}
 			if(this.fingerprints.get(i).compareTo(fingerprint) > 0) {
 				this.fingerprints.add(i, fingerprint);
-				this.fingerprintToMasses.add(i, new Vector<Double>());
+				this.fingerprintToMasses.add(i, new LinkedList<Double>());
 				return;
 			}
 		}
 		this.fingerprints.add(fingerprint);
-		this.fingerprintToMasses.add(new Vector<Double>());
+		this.fingerprintToMasses.add(new LinkedList<Double>());
 	}
 
 	public void addMass(FastBitArray fingerprint, Double mass, double mzppm, double mzabs) {
@@ -56,13 +57,13 @@ public class FingerprintToMassesSimple {
 			}
 			if(this.fingerprints.get(i).compareTo(fingerprint) > 0) {
 				this.fingerprints.add(i, fingerprint);
-				this.fingerprintToMasses.add(i, new Vector<Double>());
+				this.fingerprintToMasses.add(i, new LinkedList<Double>());
 				this.fingerprintToMasses.get(i).add(mass);
 				return;
 			}
 		}
 		this.fingerprints.add(fingerprint);
-		this.fingerprintToMasses.add(new Vector<Double>());
+		this.fingerprintToMasses.add(new LinkedList<Double>());
 		this.fingerprintToMasses.get(this.fingerprintToMasses.size() - 1).add(mass);
 	}
 	
@@ -70,7 +71,7 @@ public class FingerprintToMassesSimple {
 		this.addMass(new FastBitArray(fingerprint), mass);
 	}
 
-	protected void addToMasses(Double mass, Vector<Double> masses, double mzppm, double mzabs) {
+	protected void addToMasses(Double mass, LinkedList<Double> masses, double mzppm, double mzabs) {
 		double dev = MathTools.calculateAbsoluteDeviation(mass, mzppm);
 		dev += mzabs;
 		double bestDev = Integer.MAX_VALUE;	
@@ -90,26 +91,18 @@ public class FingerprintToMassesSimple {
 		masses.add(mass);
 	}
 	
-	protected void addToMasses(Double mass, Vector<Double> masses) {
-		for(int i = 0; i < masses.size(); i++) {
-			int compareResult = masses.get(i).compareTo(mass);
-			if(compareResult < 0) {
-				masses.add(i, mass);
-				return;
-			}
-			if(compareResult == 0) return;
-		}
-		masses.add(mass);
+	protected void addToMasses(Double mass, LinkedList<Double> masses) {
+		if(!masses.contains(mass)) masses.add(mass);
 	}
 	
-	public Vector<Double> getMasses(FastBitArray fingerprint) {
+	public LinkedList<Double> getMasses(FastBitArray fingerprint) {
 		int index = this.getIndexOfFingerprint(fingerprint);
-		if(index == -1) return new Vector<Double>();
+		if(index == -1) return new LinkedList<Double>();
 		return this.fingerprintToMasses.get(index);
 	}
 
-	public Vector<Double> getMasses(int index) {
-		if(index == -1) return new Vector<Double>();
+	public LinkedList<Double> getMasses(int index) {
+		if(index == -1) return new LinkedList<Double>();
 		return this.fingerprintToMasses.get(index);
 	}
 	
@@ -121,13 +114,8 @@ public class FingerprintToMassesSimple {
 		return false;
 	}
 	
-	public boolean containsMass(Double mass, Vector<Double> masses) {
-		for(int i = 0; i < masses.size(); i++) {
-			int compareResult = masses.get(i).compareTo(mass);
-			if(compareResult < 0) return false;
-			if(compareResult == 0) return true;
-		}
-		return false;
+	public boolean containsMass(Double mass, LinkedList<Double> masses) {
+		return masses.contains(mass);
 	}
 	
 	public int getIndexOfFingerprint(FastBitArray fingerprint) {
@@ -152,7 +140,7 @@ public class FingerprintToMassesSimple {
 	
 	public int getOverallSize() {
 		int size = 0;
-		for(Vector<Double> masses : this.fingerprintToMasses) {
+		for(LinkedList<Double> masses : this.fingerprintToMasses) {
 			size += masses.size();
 		}
 		return size;
@@ -168,7 +156,7 @@ public class FingerprintToMassesSimple {
 	
 	public void print(FastBitArray fingerprint) {
 		int index = this.getIndexOfFingerprint(fingerprint);
-		Vector<Double> masses = this.fingerprintToMasses.get(index);
+		LinkedList<Double> masses = this.fingerprintToMasses.get(index);
 		System.out.println(fingerprint.toStringIDs() + ":");
 		for(int i = 0; i < masses.size(); i++) {
 			System.out.println("-> " + masses.get(i));
@@ -178,7 +166,7 @@ public class FingerprintToMassesSimple {
 	public void print(String fp) {
 		FastBitArray fingerprint = new FastBitArray(fp);
 		int index = this.getIndexOfFingerprint(fingerprint);
-		Vector<Double> masses = this.fingerprintToMasses.get(index);
+		LinkedList<Double> masses = this.fingerprintToMasses.get(index);
 		System.out.println(fingerprint.toStringIDs() + ":");
 		for(int i = 0; i < masses.size(); i++) {
 			System.out.println("-> " + masses.get(i));

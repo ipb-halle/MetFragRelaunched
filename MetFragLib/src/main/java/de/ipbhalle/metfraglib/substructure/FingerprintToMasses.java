@@ -1,24 +1,24 @@
 package de.ipbhalle.metfraglib.substructure;
 
 import java.io.IOException;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import de.ipbhalle.metfraglib.FastBitArray;
 import de.ipbhalle.metfraglib.additionals.MathTools;
 
 public class FingerprintToMasses {
 
-	private Vector<Vector<Double>> fingerprintToMasses;
-	private Vector<Vector<Double>> numObservations;
-	private Vector<FastBitArray> fingerprints;
-	private Vector<Double> sumNumObservations;
-	private Vector<Double> alphaProbabilities;
-	private Vector<Double> betaProbabilities;
+	private ArrayList<ArrayList<Double>> fingerprintToMasses;
+	private ArrayList<ArrayList<Double>> numObservations;
+	private ArrayList<FastBitArray> fingerprints;
+	private ArrayList<Double> sumNumObservations;
+	private ArrayList<Double> alphaProbabilities;
+	private ArrayList<Double> betaProbabilities;
 	
 	public FingerprintToMasses() {
-		this.fingerprintToMasses = new Vector<Vector<Double>>();
-		this.numObservations = new Vector<Vector<Double>>();
-		this.fingerprints = new Vector<FastBitArray>();
+		this.fingerprintToMasses = new ArrayList<ArrayList<Double>>();
+		this.numObservations = new ArrayList<ArrayList<Double>>();
+		this.fingerprints = new ArrayList<FastBitArray>();
 	}
 	
 	public void addMass(FastBitArray fingerprint, Double mass, Double numObservations) {
@@ -29,17 +29,17 @@ public class FingerprintToMasses {
 			}
 			if(this.fingerprints.get(i).compareTo(fingerprint) > 0) {
 				this.fingerprints.add(i, fingerprint);
-				this.fingerprintToMasses.add(i, new Vector<Double>());
+				this.fingerprintToMasses.add(i, new ArrayList<Double>());
 				this.fingerprintToMasses.get(i).add(mass);
-				this.numObservations.add(i, new Vector<Double>());
+				this.numObservations.add(i, new ArrayList<Double>());
 				this.numObservations.get(i).add(numObservations);
 				return;
 			}
 		}
 		this.fingerprints.add(fingerprint);
-		this.fingerprintToMasses.add(new Vector<Double>());
+		this.fingerprintToMasses.add(new ArrayList<Double>());
 		this.fingerprintToMasses.get(this.fingerprintToMasses.size() - 1).add(mass);
-		this.numObservations.add(new Vector<Double>());
+		this.numObservations.add(new ArrayList<Double>());
 		this.numObservations.get(this.numObservations.size() - 1).add(numObservations);
 	}
 
@@ -58,18 +58,18 @@ public class FingerprintToMasses {
 					System.out.println(fingerprint);
 				}
 				this.fingerprints.add(i, fingerprint);
-				this.fingerprintToMasses.add(i, new Vector<Double>());
+				this.fingerprintToMasses.add(i, new ArrayList<Double>());
 				this.fingerprintToMasses.get(i).add(mass);
-				this.numObservations.add(i, new Vector<Double>());
+				this.numObservations.add(i, new ArrayList<Double>());
 				this.numObservations.get(i).add(numObservations);
 				return;
 			}
 		}
 		if(debug) System.out.println("fingerprint not found");
 		this.fingerprints.add(fingerprint);
-		this.fingerprintToMasses.add(new Vector<Double>());
+		this.fingerprintToMasses.add(new ArrayList<Double>());
 		this.fingerprintToMasses.get(this.fingerprintToMasses.size() - 1).add(mass);
-		this.numObservations.add(new Vector<Double>());
+		this.numObservations.add(new ArrayList<Double>());
 		this.numObservations.get(this.numObservations.size() - 1).add(numObservations);
 	}
 	
@@ -81,7 +81,28 @@ public class FingerprintToMasses {
 		this.addMass(new FastBitArray(fingerprint), mass, numObservations);
 	}
 	
-	protected void addToMasses(Double mass, Vector<Double> masses, Double numObservation, Vector<Double> numObservations, 
+	public void correctMasses(int index, double mass, double mzppm, double mzabs) {
+		ArrayList<Double> masses = this.fingerprintToMasses.get(index);
+		double dev = MathTools.calculateAbsoluteDeviation(mass, mzppm);
+		dev += mzabs;
+		
+		int bestIndex = 0;
+		double bestDev = Integer.MAX_VALUE;
+		for(int i = 0; i < masses.size(); i++) {
+			double currentMass = masses.get(i);
+			if(currentMass - dev <= mass && mass <= currentMass + dev) {
+				double currentDev = Math.abs(currentMass - mass);
+				if(currentDev < bestDev) {
+					bestDev = currentDev;
+					bestIndex = i;
+				}
+			}
+		}
+		
+		if(bestDev <= dev) masses.set(bestIndex, mass);
+	}
+	
+	protected void addToMasses(Double mass, ArrayList<Double> masses, Double numObservation, ArrayList<Double> numObservations, 
 			double mzppm, double mzabs, boolean debug) {
 		double dev = MathTools.calculateAbsoluteDeviation(mass, mzppm);
 		dev += mzabs;
@@ -107,12 +128,12 @@ public class FingerprintToMasses {
 		numObservations.add(numObservation);
 	}
 	
-	protected void addToMasses(Double mass, Vector<Double> masses, Double numObservation, Vector<Double> numObservations, 
+	protected void addToMasses(Double mass, ArrayList<Double> masses, Double numObservation, ArrayList<Double> numObservations, 
 			double mzppm, double mzabs) {
 		this.addToMasses(mass, masses, numObservation, numObservations, mzppm, mzabs, false);
 	}
 	
-	protected void addToMasses(Double mass, Vector<Double> masses, Double numObservation, Vector<Double> numObservations) {
+	protected void addToMasses(Double mass, ArrayList<Double> masses, Double numObservation, ArrayList<Double> numObservations) {
 		for(int i = 0; i < masses.size(); i++) {
 			int compareResult = masses.get(i).compareTo(mass);
 			if(compareResult < 0) {
@@ -146,15 +167,16 @@ public class FingerprintToMasses {
 		}
 	}
 	
-	public void calculateSumNumObservations() {
-		this.sumNumObservations = new Vector<Double>();
-		for(int index = 0; index < this.getFingerprintSize(); index++) {
-			double sum = 0;
-			for(int i = 0; i < this.numObservations.get(index).size(); i++) {
-				sum += this.numObservations.get(index).get(i);
-			}	
-			this.sumNumObservations.add(sum);
-		}
+	public void clearSumNumObservations() {
+		this.sumNumObservations = new ArrayList<Double>();
+	}
+	
+	public void calculateSumNumObservations(int index, double toAdd) {
+		double sum = 0;
+		for(int i = 0; i < this.numObservations.get(index).size(); i++) {
+			sum += this.numObservations.get(index).get(i);
+		}	
+		this.sumNumObservations.add(sum + toAdd);
 	}
 	
 	public double getSumNumObservations(int index) {
@@ -162,12 +184,12 @@ public class FingerprintToMasses {
 	}
 
 	public void addBetaProbability(double betaProbability) {
-		if(this.betaProbabilities == null) this.betaProbabilities = new Vector<Double>();
+		if(this.betaProbabilities == null) this.betaProbabilities = new ArrayList<Double>();
 		this.betaProbabilities.add(betaProbability);
 	}
 
 	public void addAlphaProbability(double alphaProbability) {
-		if(this.alphaProbabilities == null) this.alphaProbabilities = new Vector<Double>();
+		if(this.alphaProbabilities == null) this.alphaProbabilities = new ArrayList<Double>();
 		this.alphaProbabilities.add(alphaProbability);
 	}
 	
@@ -199,25 +221,25 @@ public class FingerprintToMasses {
 		return this.sumNumObservations.get(index);
 	}
 	
-	public Vector<Double> getMasses(FastBitArray fingerprint) {
+	public ArrayList<Double> getMasses(FastBitArray fingerprint) {
 		int index = this.getIndexOfFingerprint(fingerprint);
-		if(index == -1) return new Vector<Double>();
+		if(index == -1) return new ArrayList<Double>();
 		return this.fingerprintToMasses.get(index);
 	}
 
-	public Vector<Double> getNumObservations(FastBitArray fingerprint) {
+	public ArrayList<Double> getNumObservations(FastBitArray fingerprint) {
 		int index = this.getIndexOfFingerprint(fingerprint);
-		if(index == -1) return new Vector<Double>();
+		if(index == -1) return new ArrayList<Double>();
 		return this.numObservations.get(index);
 	}
 
-	public Vector<Double> getMasses(int index) {
-		if(index == -1) return new Vector<Double>();
+	public ArrayList<Double> getMasses(int index) {
+		if(index == -1) return new ArrayList<Double>();
 		return this.fingerprintToMasses.get(index);
 	}
 
-	public Vector<Double> getNumObservations(int index) {
-		if(index == -1) return new Vector<Double>();
+	public ArrayList<Double> getNumObservations(int index) {
+		if(index == -1) return new ArrayList<Double>();
 		return this.numObservations.get(index);
 	}
 	
@@ -229,7 +251,7 @@ public class FingerprintToMasses {
 		return false;
 	}
 	
-	public boolean containsMass(Double mass, Vector<Double> masses) {
+	public boolean containsMass(Double mass, ArrayList<Double> masses) {
 		for(int i = 0; i < masses.size(); i++) {
 			int compareResult = masses.get(i).compareTo(mass);
 			if(compareResult < 0) return false;
@@ -266,7 +288,7 @@ public class FingerprintToMasses {
 	
 	public int getOverallSize() {
 		int size = 0;
-		for(Vector<Double> masses : this.fingerprintToMasses) {
+		for(ArrayList<Double> masses : this.fingerprintToMasses) {
 			size += masses.size();
 		}
 		return size;
@@ -283,8 +305,8 @@ public class FingerprintToMasses {
 	public void print(FastBitArray fingerprint) {
 		int index = this.getIndexOfFingerprint(fingerprint);
 		if(index == -1) return;
-		Vector<Double> masses = this.fingerprintToMasses.get(index);
-		Vector<Double> numObservations = this.numObservations.get(index);
+		ArrayList<Double> masses = this.fingerprintToMasses.get(index);
+		ArrayList<Double> numObservations = this.numObservations.get(index);
 		System.out.println(fingerprint.toStringIDs() + ":");
 		for(int i = 0; i < masses.size(); i++) {
 			System.out.println("-> " + masses.get(i) + ":" + numObservations.get(i));
@@ -295,8 +317,8 @@ public class FingerprintToMasses {
 		FastBitArray fingerprint = new FastBitArray(fp);
 		int index = this.getIndexOfFingerprint(fingerprint);
 		if(index == -1) return;
-		Vector<Double> masses = this.fingerprintToMasses.get(index);
-		Vector<Double> numObservations = this.numObservations.get(index);
+		ArrayList<Double> masses = this.fingerprintToMasses.get(index);
+		ArrayList<Double> numObservations = this.numObservations.get(index);
 		System.out.println(fingerprint.toStringIDs() + ":");
 		for(int i = 0; i < masses.size(); i++) {
 			System.out.println("-> " + masses.get(i) + ":" + numObservations.get(i));

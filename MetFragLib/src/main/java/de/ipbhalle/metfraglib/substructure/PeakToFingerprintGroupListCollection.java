@@ -260,7 +260,7 @@ public class PeakToFingerprintGroupListCollection extends DefaultList {
 	
 	public void annotateIds() {
 		//store all smarts groups to annotate them with IDs later
-		java.util.Vector<FingerprintGroup> fingerprintGroups = new java.util.Vector<FingerprintGroup>();
+		java.util.ArrayList<FingerprintGroup> fingerprintGroups = new java.util.ArrayList<FingerprintGroup>();
 		int maxAnnotatedId = -1;
 		for(int i = 0; i < this.list.size(); i++) {
 			PeakToFingerprintGroupList peakToFingerprintGroupList = (PeakToFingerprintGroupList)this.getElement(i);

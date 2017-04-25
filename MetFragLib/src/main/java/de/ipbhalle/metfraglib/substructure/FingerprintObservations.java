@@ -1,18 +1,18 @@
 package de.ipbhalle.metfraglib.substructure;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import de.ipbhalle.metfraglib.FastBitArray;
 
 public class FingerprintObservations {
 
-	private Vector<FastBitArray> fingerprints;
-	private Vector<Integer> observations;
+	private ArrayList<FastBitArray> fingerprints;
+	private ArrayList<Integer> observations;
 	private Double[] sumProbabilities; // sum_m p(f,m) -> f fixed
 	
 	public FingerprintObservations() {
-		this.fingerprints = new Vector<FastBitArray>();
-		this.observations = new Vector<Integer>();
+		this.fingerprints = new ArrayList<FastBitArray>();
+		this.observations = new ArrayList<Integer>();
 	}
 
 	public void calculateSumProbabilities(PeakToFingerprintGroupListCollection collection) {

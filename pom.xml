@@ -11,6 +11,7 @@
     <module>MetFragCommandLine</module>
     <module>MetFragWeb</module>
     <module>MetFragR</module>
+    <module>MetFragTools</module>
   </modules>
   <dependencyManagement>
   	<dependencies>
