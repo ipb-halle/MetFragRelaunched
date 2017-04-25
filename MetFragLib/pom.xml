@@ -225,9 +225,9 @@
 			<version>1.1.0</version>
 		</dependency>
 		<dependency>
-			<groupId>javolution</groupId>
-			<artifactId>javolution</artifactId>
-			<version>5.5.1</version>
+			<groupId>org.javolution</groupId>
+			<artifactId>javolution-core-java</artifactId>
+			<version>6.0.0</version>
 		</dependency>
 	</dependencies>
 

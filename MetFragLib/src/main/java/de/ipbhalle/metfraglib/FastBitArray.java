@@ -15,7 +15,7 @@ public class FastBitArray {
 	 * 
 	 */
 	public FastBitArray() {
-		this.bitArray = new FastBitSet(0);
+		this.bitArray = new FastBitSet();
 		this.size = 0;
 	}
 	
@@ -31,7 +31,7 @@ public class FastBitArray {
 	 * 
 	 */
 	public FastBitArray(FastBitSet bitArray, int size) {
-		FastBitSet copy = new FastBitSet(size);
+		FastBitSet copy = new FastBitSet();
 		copy.or(bitArray);
 		this.bitArray = copy;
 		this.size = (short)size;
@@ -43,7 +43,7 @@ public class FastBitArray {
 	 * @param array
 	 */
 	public FastBitArray(boolean[] array) {
-		this.bitArray = new FastBitSet(array.length);
+		this.bitArray = new FastBitSet();
 		for(int i = 0; i < array.length; i++)
 			this.bitArray.set(i, array[i]);
 		this.size = (short)array.length;
@@ -55,7 +55,7 @@ public class FastBitArray {
 	 * @param nbits
 	 */
 	public FastBitArray(int nbits) {
-		this.bitArray = new FastBitSet(nbits);
+		this.bitArray = new FastBitSet();
 		this.size = (short)nbits;
 	}
 
@@ -66,7 +66,7 @@ public class FastBitArray {
 	 * @param value
 	 */
 	public FastBitArray(int nbits, boolean value) {
-		this.bitArray = new FastBitSet(nbits);
+		this.bitArray = new FastBitSet();
 		if(value) this.bitArray.flip(0, nbits);
 		this.size = (short)nbits;
 	}
@@ -78,7 +78,7 @@ public class FastBitArray {
 	 * @param value
 	 */
 	public FastBitArray(String bitstring) {
-		this.bitArray = new FastBitSet(bitstring.length());
+		this.bitArray = new FastBitSet();
 		for(int i = 0; i < bitstring.length(); i++) {
 			this.bitArray.set(i, bitstring.charAt(i) == '0' ? false : true);
 		}
@@ -200,7 +200,7 @@ public class FastBitArray {
 	 * @return
 	 */
 	public FastBitArray and(FastBitArray ar) {
-		FastBitSet copy = new FastBitSet(ar.getSize());
+		FastBitSet copy = new FastBitSet();
 		copy.or(ar.getArray());
 		copy.and(this.bitArray);
 		return new FastBitArray(copy, this.size);
@@ -236,7 +236,14 @@ public class FastBitArray {
 			if(this.bitArray.get(i) != bitArray.get(i)) return false;
 		return true;
 	}
-
+	
+	public int hashCode() {
+		java.util.BitSet bitset = new java.util.BitSet((int)this.size);
+		for(int i = 0; i < this.getSize(); i++) 
+			if(this.bitArray.get(i)) bitset.set(i);
+		return bitset.hashCode();
+	}
+	
 	/**
 	 * returns true if the current and the given BitArray are of same length and have exactly the same
 	 * bits set to true 

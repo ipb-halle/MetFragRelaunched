@@ -163,14 +163,7 @@ public class PeakToFingerprintGroupList extends DefaultList {
 
 	public boolean containsFingerprint(FastBitArray fingerprint) {
 		for(int i = 0; i < this.getNumberElements(); i++) {
-			try {
-				if(this.getElement(i).getFingerprint().equals(fingerprint)) return true;
-			} catch(Exception e) {
-				System.out.println(fingerprint);
-				System.out.println(this.getElement(i));
-				e.printStackTrace();
-				System.exit(1);
-			}
+			if(this.getElement(i).getFingerprint().equals(fingerprint)) return true;
 		}
 		return false;
 	}

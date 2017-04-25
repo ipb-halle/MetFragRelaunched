@@ -17,6 +17,7 @@ import de.ipbhalle.metfraglib.process.CombinedSingleCandidateMetFragProcess;
 import de.ipbhalle.metfraglib.settings.Settings;
 import de.ipbhalle.metfraglib.substructure.FingerprintGroup;
 import de.ipbhalle.metfraglib.substructure.FingerprintToMasses;
+import de.ipbhalle.metfraglib.substructure.FingerprintToMassesSimpleHashMap;
 import de.ipbhalle.metfraglib.substructure.MassToFingerprints;
 import de.ipbhalle.metfraglib.substructure.PeakToFingerprintGroupList;
 import de.ipbhalle.metfraglib.substructure.PeakToFingerprintGroupListCollection;
@@ -79,20 +80,6 @@ public class AutomatedFingerprintSubstructureAnnotationScoreInitialiser4  implem
 			}
 			breader.close();
 			
-			/*
-			FingerprintToMasses fingerprintToMasses = new FingerprintToMasses();
-			breader = new BufferedReader(new FileReader(new File(filename_conv)));
-			while((line = breader.readLine()) != null) {
-				line = line.trim();
-				String[] tmp = line.split("\\s+");
-				FastBitArray currentFingerprint = new FastBitArray(tmp[0]);
-				for(int k = 1; k < tmp.length; k += 2) {
-					fingerprintToMasses.addMass(currentFingerprint, Double.parseDouble(tmp[k+1]), Double.parseDouble(tmp[k]));
-				}
-			}
-			
-			settings.set(VariableNames.FINGERPRINT_TO_PEAK_GROUP_LIST_COLLECTION_NAME, fingerprintToMasses);
-			*/
 			settings.set(VariableNames.PEAK_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME, peakToFingerprintGroupListCollection);
 		
 			settings.set(VariableNames.NUMBER_BACKGROUND_MASSES_NAME, calculateNumberBackgroundPeaks(0, 1000, mzppm, mzabs, peakList.getNumberElements()));
@@ -113,6 +100,9 @@ public class AutomatedFingerprintSubstructureAnnotationScoreInitialiser4  implem
 		double alpha = (double)settings.get(VariableNames.PEAK_FINGERPRINT_ANNOTATION_ALPHA_VALUE_NAME);					// alpha
 		Double mzppm = (Double)settings.get(VariableNames.RELATIVE_MASS_DEVIATION_NAME);
 		Double mzabs = (Double)settings.get(VariableNames.ABSOLUTE_MASS_DEVIATION_NAME);
+
+		//FingerprintToMassesSimple negativeFingerprints = new FingerprintToMassesSimple();
+		FingerprintToMassesSimpleHashMap negativeFingerprints = new FingerprintToMassesSimpleHashMap();
 		
 		for(CombinedSingleCandidateMetFragProcess scmfp : processes) {
 			/*
@@ -133,14 +123,15 @@ public class AutomatedFingerprintSubstructureAnnotationScoreInitialiser4  implem
 						if (!peakToFingerprintGroupList.containsFingerprint(currentFingerprint)) {
 							// if not add the fingerprint to background by addFingerprint function
 							// addFingerprint checks also whether fingerprint was already added
-							massToFingerprints.addFingerprint(match.getMatchedPeak().getMass(), currentFingerprint);
-							fingerprintToMasses.addMass(currentFingerprint, match.getMatchedPeak().getMass(), 0.0, mzppm, mzabs);
+							negativeFingerprints.addMass(currentFingerprint, match.getMatchedPeak().getMass());
 						}
 					}
 				}
 			}
 		}
 
+		System.out.println("size " + negativeFingerprints.getOverallSize());
+		
 		double beta = (double)settings.get(VariableNames.PEAK_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME);						// beta
 		double f_seen = (double)settings.get(VariableNames.PEAK_FINGERPRINT_TUPLE_COUNT_NAME);								// f_s
 		double f_unseen = massToFingerprints.getOverallSize();																// f_u
@@ -167,7 +158,11 @@ public class AutomatedFingerprintSubstructureAnnotationScoreInitialiser4  implem
 		for(int i = 0; i < fingerprintToMasses.getFingerprintSize(); i++) {
 			fingerprintToMasses.normalizeNumObservations(i, denominatorValue);
 		}
-		fingerprintToMasses.calculateSumNumObservations();
+		fingerprintToMasses.clearSumNumObservations();
+		for(int i = 0; i < fingerprintToMasses.getFingerprintSize(); i++) {
+		//	int index = negativeFingerprints.getIndexOfFingerprint(fingerprintToMasses.getFingerprint(i));
+		//	fingerprintToMasses.calculateSumNumObservations(i, (index == -1 ? 0 : negativeFingerprints.getMasses(index).size()) * alphaProbability);
+		}
 		for(int i = 0; i < fingerprintToMasses.getFingerprintSize(); i++) {
 			fingerprintToMasses.addAlphaProbability(alphaProbability / fingerprintToMasses.getSumNumObservations(i));
 		}
