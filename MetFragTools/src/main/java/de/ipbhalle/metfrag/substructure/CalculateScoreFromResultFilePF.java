@@ -146,16 +146,33 @@ public class CalculateScoreFromResultFilePF {
 		double alphaProbability = alpha / denominatorValue; 	// P(f,m) if f,m in F_u
 		double betaProbability = beta / denominatorValue;		// p(f,m) not annotated
 		
+		//fingerprints of F_s
 		FastBitArray[] fingerprints = fingerprintToMasses.getFingerprints();
+		FastBitArray[] fingerprintsNegative = negativeFingerprints.getFingerprints();
 		
 		fingerprintToMasses.normalizeNumObservations(denominatorValue);
 		
 		for(int i = 0; i < fingerprints.length; i++) {
 			int numUnseenMasses = 0; 
-			if(negativeFingerprints.containsFingerprint(fingerprints[i])) 
+			if(negativeFingerprints.containsFingerprint(fingerprints[i])) {
 				numUnseenMasses = negativeFingerprints.getMasses(fingerprints[i]).size();
+			}
 			fingerprintToMasses.calculateSumNumObservations(fingerprints[i], numUnseenMasses * alphaProbability);
 		}
+		for(int i = 0; i < fingerprintsNegative.length; i++) {
+			if(!fingerprintToMasses.containsFingerprint(fingerprintsNegative[i])) {
+				java.util.LinkedList<Double> masses = negativeFingerprints.getMasses(fingerprintsNegative[i]);
+				java.util.Iterator<?> it = masses.iterator();
+				while(it.hasNext()) {
+					fingerprintToMasses.addMass(fingerprintsNegative[i], (double)it.next(), 0.0);
+				}
+				fingerprintToMasses.calculateSumNumObservations(fingerprintsNegative[i], masses.size() * alphaProbability);
+			}
+		}
+		
+		// renew fingerprint array
+		fingerprints = fingerprintToMasses.getFingerprints();
+		
 		for(int i = 0; i < fingerprints.length; i++) {
 			fingerprintToMasses.setAlphaProbability(fingerprints[i], alphaProbability / fingerprintToMasses.getSumNumObservations(fingerprints[i]));
 		}
@@ -192,6 +209,7 @@ public class CalculateScoreFromResultFilePF {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 		String line = "";
 		try {
 			while((line = breader.readLine()) != null) {
@@ -211,12 +229,11 @@ public class CalculateScoreFromResultFilePF {
 			e.printStackTrace();
 		}
 		
+		
 		for(int j = 0; j < peakList.getNumberElements(); j++) {
 			fingerprintToMasses.correctMasses(((IPeak)peakList.getElement(j)).getMass(), mzppm, mzabs);
 		}
 		
-		System.out.println(fingerprintToMasses.contains(new FastBitArray("000000000000000000000000000000000000000000000000010000000000000000000000000101000000000001001000001100000001010001011010000001000001000000101000000010011010111110010000000000000000000000000000"), 
-				219.1239));
 		return fingerprintToMasses;
 	}
 	
@@ -254,7 +271,8 @@ public class CalculateScoreFromResultFilePF {
 				// |F|
 				if(matching_prob != 0.0) value *= matching_prob;
 				else {
-					value *= fingerprintToMasses.getAlphaProbabilty(currentFingerprint);
+					double alphaProb = fingerprintToMasses.getAlphaProbabilty(currentFingerprint);
+					value *= alphaProb;
 				}
 			}
 		}

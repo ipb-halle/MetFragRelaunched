@@ -237,6 +237,14 @@ public class FastBitArray {
 		return true;
 	}
 	
+	public boolean equals(Object object) {
+		FastBitArray bitArray = (FastBitArray)object;
+		if(this.getSize() != bitArray.getSize()) return false;
+		for(int i = 0; i < this.getSize(); i++) 
+			if(this.bitArray.get(i) != bitArray.get(i)) return false;
+		return true;
+	}
+	
 	public int hashCode() {
 		java.util.BitSet bitset = new java.util.BitSet((int)this.size);
 		for(int i = 0; i < this.getSize(); i++) 
