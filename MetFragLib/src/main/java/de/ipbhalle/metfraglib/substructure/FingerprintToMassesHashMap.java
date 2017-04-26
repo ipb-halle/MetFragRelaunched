@@ -57,12 +57,10 @@ public class FingerprintToMassesHashMap {
 	}
 
 	public void correctMasses(double mass, double mzppm, double mzabs) {
-		System.out.println(mass);
 		Iterator<?> it = this.fingerprintEntries.keySet().iterator();
 		while(it.hasNext()) {
 			FastBitArray bitArray = (FastBitArray)it.next();
-			if(this.fingerprintEntries.get(bitArray).getMassObservations().correctMass(mass, mzppm, mzabs))
-				System.out.println(bitArray.toString());
+			this.fingerprintEntries.get(bitArray).getMassObservations().correctMass(mass, mzppm, mzabs);
 		}
 	}
 	
@@ -186,6 +184,14 @@ public class FingerprintToMassesHashMap {
 			return 0;
 		return this.fingerprintEntries.get(fingerprint).getMassObservations().size();
 	}
+
+	public int getSize(FastBitArray fingerprint, boolean debug) {
+		if(!this.fingerprintEntries.containsKey(fingerprint)) {
+			if(debug) System.out.println("not contained");
+			return 0;
+		}
+		return this.fingerprintEntries.get(fingerprint).getMassObservations().size();
+	}
 	
 	public int getOverallSize() {
 		int size = 0;
@@ -231,6 +237,10 @@ public class FingerprintToMassesHashMap {
 		}
 		return string;
 	}
+
+	public boolean containsFingerprint(FastBitArray fingerprint) {
+		return this.fingerprintEntries.containsKey(fingerprint);
+	}
 	
 	/**
 	 * 
@@ -269,9 +279,10 @@ public class FingerprintToMassesHashMap {
 		public void addMass(Double mass) {
 			this.massObservations.add(new MassObservation(mass, 0.0));
 		}
-
+		
 		public void addMass(Double mass, Double numObserved) {
-			if(!this.massObservations.contains(mass)) this.massObservations.add(new MassObservation(mass, numObserved));
+			if(!this.massObservations.contains(mass)) 
+				this.massObservations.add(new MassObservation(mass, numObserved));
 		}
 
 		public void addMass(Double mass, Double numObserved, double mzppm, double mzabs) {
@@ -325,8 +336,9 @@ public class FingerprintToMassesHashMap {
 		}
 		
 		public void normalizeNumObserved(double value) {
-			for(MassObservation _massObservation : this.massObservations.getLinkedList()) 
+			for(MassObservation _massObservation : this.massObservations.getLinkedList()) {
 				_massObservation.normalizeNumObserved(value);
+			}
 		}
 		
 		public void calculateSumNumObserved(double toAdd) {
@@ -401,7 +413,6 @@ public class FingerprintToMassesHashMap {
 				}	
 			}
 			if(bestIndex != -1) {
-				System.out.println("found " + this.massObservations.get(bestIndex).getMass());
 				this.massObservations.get(bestIndex).setMass(mass);
 				return true;
 			}
