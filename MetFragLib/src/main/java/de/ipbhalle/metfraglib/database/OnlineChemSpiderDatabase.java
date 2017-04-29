@@ -224,7 +224,7 @@ public class OnlineChemSpiderDatabase extends AbstractDatabase {
         	if(!uniqueCsidArray.contains(identifiers.get(i))) uniqueCsidArray.add(identifiers.get(i));
         }
         CandidateList candidateList = new CandidateList();
-
+        if(identifiers.size() == 0) return new CandidateList();
         int[] csids = null;
         String rid = "";
         /*
