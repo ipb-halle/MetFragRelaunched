@@ -97,7 +97,7 @@ public class AutomatedFingerprintSubstructureAnnotationScoreInitialiser4  implem
 		PeakToFingerprintGroupListCollection peakToFingerprintGroupListCollection = (PeakToFingerprintGroupListCollection)settings.get(VariableNames.PEAK_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME);
 		FingerprintToMasses fingerprintToMasses = (FingerprintToMasses)settings.get(VariableNames.FINGERPRINT_TO_PEAK_GROUP_LIST_COLLECTION_NAME);
 
-		double alpha = (double)settings.get(VariableNames.PEAK_FINGERPRINT_ANNOTATION_ALPHA_VALUE_NAME);					// alpha
+		Double alpha = (Double)settings.get(VariableNames.PEAK_FINGERPRINT_ANNOTATION_ALPHA_VALUE_NAME);					// alpha
 		Double mzppm = (Double)settings.get(VariableNames.RELATIVE_MASS_DEVIATION_NAME);
 		Double mzabs = (Double)settings.get(VariableNames.ABSOLUTE_MASS_DEVIATION_NAME);
 
@@ -132,10 +132,10 @@ public class AutomatedFingerprintSubstructureAnnotationScoreInitialiser4  implem
 
 		System.out.println("size " + negativeFingerprints.getOverallSize());
 		
-		double beta = (double)settings.get(VariableNames.PEAK_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME);						// beta
-		double f_seen = (double)settings.get(VariableNames.PEAK_FINGERPRINT_TUPLE_COUNT_NAME);								// f_s
+		Double beta = (Double)settings.get(VariableNames.PEAK_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME);						// beta
+		Double f_seen = (Double)settings.get(VariableNames.PEAK_FINGERPRINT_TUPLE_COUNT_NAME);								// f_s
 		double f_unseen = massToFingerprints.getOverallSize();																// f_u
-		double sumFingerprintFrequencies = (double)settings.get(VariableNames.PEAK_FINGERPRINT_DENOMINATOR_COUNT_NAME);		// \sum_N \sum_Ln 1
+		Double sumFingerprintFrequencies = (Double)settings.get(VariableNames.PEAK_FINGERPRINT_DENOMINATOR_COUNT_NAME);		// \sum_N \sum_Ln 1
 		
 		// set value for denominator of P(f,m)
 		double denominatorValue = sumFingerprintFrequencies + alpha * f_seen + alpha * f_unseen + beta;
@@ -166,7 +166,7 @@ public class AutomatedFingerprintSubstructureAnnotationScoreInitialiser4  implem
 		for(int i = 0; i < fingerprintToMasses.getFingerprintSize(); i++) {
 			fingerprintToMasses.addAlphaProbability(alphaProbability / fingerprintToMasses.getSumNumObservations(i));
 		}
-		fingerprintToMasses.addBetaProbability(betaProbability / (double)settings.get(VariableNames.NUMBER_BACKGROUND_MASSES_NAME));
+		fingerprintToMasses.addBetaProbability(betaProbability / (Double)settings.get(VariableNames.NUMBER_BACKGROUND_MASSES_NAME));
 		for(int i = 0; i < peakToFingerprintGroupListCollection.getNumberElements(); i++) {
 			PeakToFingerprintGroupList groupList = peakToFingerprintGroupListCollection.getElement(i);
 			for(int ii = 0; ii < groupList.getNumberElements(); ii++) {
