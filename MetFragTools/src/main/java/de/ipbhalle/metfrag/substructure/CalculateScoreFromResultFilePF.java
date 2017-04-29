@@ -121,27 +121,20 @@ public class CalculateScoreFromResultFilePF {
 				}
 			}
 		}
-		
+	
+		// read in fingerprint file and add pseudo count alpha to every observation count
+		// at this step we read the absolute frequencies
 		FingerprintToMassesHashMap fingerprintToMasses = readFingerprintToMasses(filenameConv, 
 				(DefaultPeakList)settings.get(VariableNames.PEAK_LIST_NAME), mzppm, mzabs, alpha);
 		
 		double beta = (double)settings.get(VariableNames.PEAK_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME);						// beta
 		
 		double f_seen = (double)settings.get(VariableNames.PEAK_FINGERPRINT_TUPLE_COUNT_NAME);								// f_s
-		double f_unseen = negativeFingerprints.getOverallSize();														// f_u
+		double f_unseen = negativeFingerprints.getOverallSize();															// f_u
 		double sumFingerprintFrequencies = (double)settings.get(VariableNames.PEAK_FINGERPRINT_DENOMINATOR_COUNT_NAME);		// \sum_N \sum_Ln 1
 		
 		double denominatorValue = sumFingerprintFrequencies + alpha * f_seen + alpha * f_unseen + beta;
 		settings.set(VariableNames.PEAK_FINGERPRINT_DENOMINATOR_VALUE_NAME, denominatorValue);
-		
-		for(int i = 0; i < peakToFingerprintGroupListCollection.getNumberElements(); i++) {
-			PeakToFingerprintGroupList groupList = peakToFingerprintGroupListCollection.getElement(i);
-			for(int ii = 0; ii < groupList.getNumberElements(); ii++) {
-				// first calculate P(f,m)
-				groupList.getElement(ii).setJointProbability((groupList.getElement(ii).getNumberObserved() + alpha) / denominatorValue);
-				// sum_f P(f,m) -> for F_s
-			}
-		}
 		
 		double alphaProbability = alpha / denominatorValue; 	// P(f,m) if f,m in F_u
 		double betaProbability = beta / denominatorValue;		// p(f,m) not annotated
@@ -150,8 +143,13 @@ public class CalculateScoreFromResultFilePF {
 		FastBitArray[] fingerprints = fingerprintToMasses.getFingerprints();
 		FastBitArray[] fingerprintsNegative = negativeFingerprints.getFingerprints();
 		
+		// normalize all absolute frequencies
+		// after this stage we have P(f,m)
 		fingerprintToMasses.normalizeNumObservations(denominatorValue);
 		
+		// calculate sum_m P(m,f) for each f
+		// add P(m,f) = alphaProbability in case m wasn't observed for f
+		// but f was observed in training
 		for(int i = 0; i < fingerprints.length; i++) {
 			int numUnseenMasses = 0; 
 			if(negativeFingerprints.containsFingerprint(fingerprints[i])) {
@@ -159,12 +157,14 @@ public class CalculateScoreFromResultFilePF {
 			}
 			fingerprintToMasses.calculateSumNumObservations(fingerprints[i], numUnseenMasses * alphaProbability);
 		}
+		// add fingerprints seen in testing but not in training
 		for(int i = 0; i < fingerprintsNegative.length; i++) {
+			// add fingerprints that were not observed in training 
 			if(!fingerprintToMasses.containsFingerprint(fingerprintsNegative[i])) {
 				java.util.LinkedList<Double> masses = negativeFingerprints.getMasses(fingerprintsNegative[i]);
 				java.util.Iterator<?> it = masses.iterator();
 				while(it.hasNext()) {
-					fingerprintToMasses.addMass(fingerprintsNegative[i], (double)it.next(), 0.0);
+					fingerprintToMasses.addMass(fingerprintsNegative[i], (Double)it.next(), 0.0);
 				}
 				fingerprintToMasses.calculateSumNumObservations(fingerprintsNegative[i], masses.size() * alphaProbability);
 			}
@@ -175,6 +175,8 @@ public class CalculateScoreFromResultFilePF {
 		
 		for(int i = 0; i < fingerprints.length; i++) {
 			fingerprintToMasses.setAlphaProbability(fingerprints[i], alphaProbability / fingerprintToMasses.getSumNumObservations(fingerprints[i]));
+			// if you want to check probabilities then uncomment next line
+			//fingerprintToMasses.normalizeNumObservations(fingerprints[i], fingerprintToMasses.getSumNumObservations(fingerprints[i]));
 		}
 		fingerprintToMasses.setBetaProbability(betaProbability / (double)(int)settings.get(VariableNames.NUMBER_BACKGROUND_MASSES_NAME));
 		
@@ -187,7 +189,9 @@ public class CalculateScoreFromResultFilePF {
 				//	System.err.println("Check " + groupList.getPeakmz() + " " + groupList.getElement(ii).getFingerprint().toStringIDs() + " " + groupList.getElement(ii).getFingerprint().toString());
 				//	System.out.println(fingerprintToMasses.getIndexOfFingerprint(groupList.getElement(ii).getFingerprint()));
 				}
-				groupList.getElement(ii).setConditionalProbability_ps(groupList.getElement(ii).getJointProbability() / sum_m);
+				FastBitArray currentFingerprint = groupList.getElement(ii).getFingerprint();
+				double numObservations = fingerprintToMasses.getNumObservations(currentFingerprint, groupList.getPeakmz());
+				groupList.getElement(ii).setConditionalProbability_ps(numObservations / sum_m);
 			}
 			groupList.setProbabilityToConditionalProbability_ps();
 		}
@@ -294,10 +298,10 @@ public class CalculateScoreFromResultFilePF {
 		FastBitArray[] fingerprints = fingerprintToMasses.getFingerprints();
 		
 		for(int i = 0; i < fingerprints.length; i++) {
+			fingerprintToMasses.calculateSumNumObservations(fingerprints[i], 0.0);
 			double sum = 0.0;
 			
 			// get f_m_observed
-			
 			sum += fingerprintToMasses.getSumNumObservations(fingerprints[i]);
 			
 			if(echo) System.out.println(fingerprints[i].toStringIDs() + " " + MathTools.round(sum, 15));
