@@ -125,7 +125,7 @@ public class GetRankOfCandidateMultipleCSV {
 			for (int k = 0; k < scores.length; k++) {
 				scores[k] = Double.parseDouble((String) candidates.getElement(i).getProperty(scoringPropertyNames[k]));
 				if(transformScores && scoresToTransform.contains(scoringPropertyNames[k])) {
-					scores[k] = 1.0 / (-1.0 * Math.log(scores[k]));
+					if(scores[k] != 0.0) scores[k] = 1.0 / (-1.0 * Math.log(scores[k]));
 				}
 				if (scores[k] > scorenameToMaximum.get(scoringPropertyNames[k]))
 					scorenameToMaximum.put(scoringPropertyNames[k], scores[k]);
