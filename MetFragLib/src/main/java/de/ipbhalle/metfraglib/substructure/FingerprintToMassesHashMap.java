@@ -152,6 +152,13 @@ public class FingerprintToMassesHashMap {
 		return 0.0;
 	}
 
+	public double getNumObservations(FastBitArray fingerprint, Double mass) {
+		if(this.fingerprintEntries.containsKey(fingerprint)) {
+			return this.fingerprintEntries.get(fingerprint).getMassObservations().getNumObserved(mass);
+		}
+		return 0.0;
+	}
+	
 	public void setBetaProbability(double betaProbability) {
 		this.betaProbability = betaProbability;
 	}
@@ -369,6 +376,14 @@ public class FingerprintToMassesHashMap {
 		
 		public void add(MassObservation massObservation) {
 			this.massObservations.add(massObservation);
+		}
+		
+		public double getNumObserved(Double mass) {
+			for(MassObservation _massObservation : this.massObservations) {
+				if(_massObservation.getMass().equals(mass))
+					return _massObservation.getNumObserved();
+			}
+			return 0.0;
 		}
 		
 		public boolean contains(MassObservation massObservation) {

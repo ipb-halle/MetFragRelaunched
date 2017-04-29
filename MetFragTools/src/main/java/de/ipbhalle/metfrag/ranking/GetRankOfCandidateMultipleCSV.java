@@ -21,8 +21,19 @@ public class GetRankOfCandidateMultipleCSV {
 	public static boolean outputSortedList = false;
 	public static java.util.Hashtable<String, String> argsHash;
 	public static java.util.Hashtable<String, GroupedCandidate> groupedCandidates;
-	public static java.util.Hashtable<String, Double> scorenameToMaximum;;
-
+	public static java.util.Hashtable<String, Double> scorenameToMaximum;
+	public static Vector<String> scoresToTransform;
+	public static boolean transformScores = false;
+	
+	static {
+		scoresToTransform = new Vector<String>();
+		scoresToTransform.add("AutomatedFingerprintSubstructureAnnotationScore");
+		scoresToTransform.add("AutomatedFingerprintSubstructureAnnotationScore1");
+		scoresToTransform.add("AutomatedFingerprintSubstructureAnnotationScore2");
+		scoresToTransform.add("AutomatedFingerprintSubstructureAnnotationScore3");
+		scoresToTransform.add("AutomatedFingerprintSubstructureAnnotationScore4");
+	}
+	
 	public static GroupedCandidate correctGroup;
 
 	public static boolean getArgs(String[] args) {
@@ -31,7 +42,7 @@ public class GetRankOfCandidateMultipleCSV {
 			arg = arg.trim();
 			String[] tmp = arg.split("=");
 			if (!tmp[0].equals("csv") && !tmp[0].equals("inchikey1") && !tmp[0].equals("scorenames")
-					&& !tmp[0].equals("weights")) {
+					&& !tmp[0].equals("weights") && !tmp[0].equals("transform")) {
 				System.err.println("property " + tmp[0] + " not known.");
 				return false;
 			}
@@ -41,6 +52,7 @@ public class GetRankOfCandidateMultipleCSV {
 			}
 			argsHash.put(tmp[0], tmp[1]);
 		}
+		
 		if (!argsHash.containsKey("csv")) {
 			System.err.println("no csv defined");
 			return false;
@@ -57,7 +69,10 @@ public class GetRankOfCandidateMultipleCSV {
 			System.err.println("no weights defined");
 			return false;
 		}
-
+		if (!argsHash.containsKey("transform")) {
+			argsHash.put("transform", "false");
+		}
+		
 		return true;
 	}
 
@@ -70,14 +85,15 @@ public class GetRankOfCandidateMultipleCSV {
 		boolean argCorrect = getArgs(args);
 		if (!argCorrect) {
 			System.err.println(
-					"run: progname csv='csv' inchikey1='inchikey1' scorenames='score1[,score2,...]' weights='weightfile'");
+					"run: progname csv='csv' inchikey1='inchikey1' scorenames='score1[,score2,...]' weights='weightfile' [transform=false]");
 			System.exit(1);
 		}
 		String csv = argsHash.get("csv");
 		String inchikey1 = argsHash.get("inchikey1");
 		String scorenames = argsHash.get("scorenames");
 		String weightfile = argsHash.get("weights");
-
+		transformScores = Boolean.parseBoolean(argsHash.get("transform"));
+		
 		groupedCandidates = new java.util.Hashtable<String, GroupedCandidate>();
 		scorenameToMaximum = new java.util.Hashtable<String, Double>();
 
@@ -108,6 +124,9 @@ public class GetRankOfCandidateMultipleCSV {
 			// get score and check for maximum
 			for (int k = 0; k < scores.length; k++) {
 				scores[k] = Double.parseDouble((String) candidates.getElement(i).getProperty(scoringPropertyNames[k]));
+				if(transformScores && scoresToTransform.contains(scoringPropertyNames[k])) {
+					scores[k] = 1.0 / (-1.0 * Math.log(scores[k]));
+				}
 				if (scores[k] > scorenameToMaximum.get(scoringPropertyNames[k]))
 					scorenameToMaximum.put(scoringPropertyNames[k], scores[k]);
 			}
@@ -118,7 +137,8 @@ public class GetRankOfCandidateMultipleCSV {
 			} else {
 				// create new
 				GroupedCandidate gc = new GetRankOfCandidateMultipleCSV().new GroupedCandidate(currentInChIKey1);
-				if (currentInChIKey1.equals(inchikey1)) correctGroup = gc;
+				if (currentInChIKey1.equals(inchikey1)) 
+					correctGroup = gc;
 				gc.add((String) candidates.getElement(i).getProperty(VariableNames.IDENTIFIER_NAME), scores, i);
 				groupedCandidates.put(currentInChIKey1, gc);
 			}
@@ -131,9 +151,10 @@ public class GetRankOfCandidateMultipleCSV {
 		
 		// store maximal scores
 		double[] maximumscores = new double[scoringPropertyNames.length];
-		for (int i = 0; i < scoringPropertyNames.length; i++)
-			maximumscores[i] = scorenameToMaximum.get(scoringPropertyNames[i]);
 
+		for (int i = 0; i < scoringPropertyNames.length; i++) {
+			maximumscores[i] = scorenameToMaximum.get(scoringPropertyNames[i]);
+		}
 		double[][] weights = readWeights(weightfile);
 		
 		for(int w = 0; w < weights.length; w++) {
@@ -182,6 +203,7 @@ public class GetRankOfCandidateMultipleCSV {
 					+ candidates.getElement(indexOfCorrect).getProperty("NoExplPeaks") + " "
 					+ candidates.getElement(indexOfCorrect).getProperty("NumberPeaksUsed") + " " + rrp + " " + bc + " " + wc
 					+ " " + values + " " + maximalValues + " " + weightString);
+		
 		}
 	}
 
