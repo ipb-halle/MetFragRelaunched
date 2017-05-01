@@ -1,18 +1,18 @@
 package de.ipbhalle.metfraglib.substructure;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 
 import de.ipbhalle.metfraglib.FastBitArray;
 
 public class FingerprintObservations {
 
-	private ArrayList<FastBitArray> fingerprints;
-	private ArrayList<Integer> observations;
+	private LinkedList<FastBitArray> fingerprints;
+	private LinkedList<Integer> observations;
 	private Double[] sumProbabilities; // sum_m p(f,m) -> f fixed
 	
 	public FingerprintObservations() {
-		this.fingerprints = new ArrayList<FastBitArray>();
-		this.observations = new ArrayList<Integer>();
+		this.fingerprints = new LinkedList<FastBitArray>();
+		this.observations = new LinkedList<Integer>();
 	}
 
 	public void calculateSumProbabilities(PeakToFingerprintGroupListCollection collection) {
