@@ -116,14 +116,6 @@ public class CalculateScoreFromResultFileThreadPF {
 		return settings;
 	}
 	
-	public static Match getMatchByMass(ArrayList<?> matches, Double peakMass) {
-		for(int i = 0; i < matches.size(); i++) {
-			Match match = (Match)matches.get(i);
-			if(match.getMass().equals(peakMass)) return match;
-		}
-		return null;
-	}
-	
 	public static synchronized void increaseNumberFinished () {
 		numberFinished++;
 		System.out.println("finished " + numberFinished);
@@ -396,6 +388,14 @@ public class CalculateScoreFromResultFileThreadPF {
 			candidate.setProperty("AutomatedFingerprintSubstructureAnnotationScore4_Matches", matches);
 			candidate.setProperty("AutomatedFingerprintSubstructureAnnotationScore4", value);
 	 	}
+		
+		public Match getMatchByMass(ArrayList<?> matches, Double peakMass) {
+			for(int i = 0; i < matches.size(); i++) {
+				Match match = (Match)matches.get(i);
+				if(match.getMass().equals(peakMass)) return match;
+			}
+			return null;
+		}
 		
 		/**
 		 * check whether probabilities sum to 1
