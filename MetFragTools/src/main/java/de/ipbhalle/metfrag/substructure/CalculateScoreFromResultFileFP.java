@@ -4,7 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Vector;
 
 import de.ipbhalle.metfraglib.FastBitArray;
@@ -215,7 +215,7 @@ public class CalculateScoreFromResultFileFP {
 			// get f_m_observed
 			PeakToFingerprintGroupList peakToFingerprintGroupList = peakToFingerprintGroupListCollection.getElement(i);
 			Double currentMass = peakToFingerprintGroupList.getPeakmz();
-			ArrayList<FastBitArray> fps = massToFingerprints.getFingerprints(currentMass);
+			LinkedList<FastBitArray> fps = massToFingerprints.getFingerprints(currentMass);
 			
 			for(int k = 0; k < peakToFingerprintGroupList.getNumberElements(); k++) {
 				if(bwriter != null) bwriter.write(peakToFingerprintGroupList.getElement(k).getProbability() + "\n");
