@@ -181,7 +181,7 @@ public class LocalCSVDatabase extends AbstractDatabase {
 			reader.close();
 			
 			return;
-		}
+		} 
 		throw new Exception();
 	}
 
