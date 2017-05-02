@@ -16,7 +16,7 @@ import de.ipbhalle.metfraglib.peaklistreader.FilteredTandemMassPeakListReader;
 import de.ipbhalle.metfraglib.scoreinitialisation.AutomatedFingerprintSubstructureAnnotationScoreInitialiser3;
 import de.ipbhalle.metfraglib.settings.MetFragGlobalSettings;
 import de.ipbhalle.metfraglib.settings.Settings;
-import de.ipbhalle.metfraglib.substructure.MassToFingerprints;
+import de.ipbhalle.metfraglib.substructure.MassToFingerprintsHashMap;
 import de.ipbhalle.metfraglib.substructure.PeakToFingerprintGroupList;
 import de.ipbhalle.metfraglib.substructure.PeakToFingerprintGroupListCollection;
 import de.ipbhalle.metfraglib.writer.CandidateListWriterCSV;
@@ -199,7 +199,7 @@ public class CalculateScoreFromResultFileThreadFP {
 		 */
 		public void postProcessScoreParameters(Settings settings, CandidateList candidates) {
 			// to determine F_u
-			MassToFingerprints massToFingerprints = new MassToFingerprints();
+			MassToFingerprintsHashMap massToFingerprints = new MassToFingerprintsHashMap();
 			PeakToFingerprintGroupListCollection peakToFingerprintGroupListCollection = (PeakToFingerprintGroupListCollection)settings.get(VariableNames.PEAK_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME);
 
 			for(int k = 0; k < candidates.getNumberElements(); k++) {

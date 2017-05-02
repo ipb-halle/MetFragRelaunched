@@ -29,7 +29,7 @@ import org.apache.commons.csv.CSVRecord;
  */
 public class LocalCSVDatabase extends AbstractDatabase {
 
-	private java.util.Vector<ICandidate> candidates;
+	private java.util.HashMap<String, ICandidate> candidates;
 
 	public LocalCSVDatabase(Settings settings) {
 		super(settings);
@@ -47,8 +47,9 @@ public class LocalCSVDatabase extends AbstractDatabase {
 		if (this.settings.get(VariableNames.DATABASE_RELATIVE_MASS_DEVIATION_NAME) != null)
 			return this.getCandidateIdentifiers((Double) settings.get(VariableNames.PRECURSOR_NEUTRAL_MASS_NAME), (Double) settings.get(VariableNames.DATABASE_RELATIVE_MASS_DEVIATION_NAME));
 		Vector<String> identifiers = new Vector<String>();
-		for (ICandidate candidate : candidates) {
-			identifiers.add(candidate.getIdentifier());
+		java.util.Iterator<String> it = candidates.keySet().iterator();
+		while (it.hasNext()) {
+			identifiers.add(it.next());
 		}
 		return identifiers;
 	}
@@ -101,10 +102,14 @@ public class LocalCSVDatabase extends AbstractDatabase {
 	}
 
 	public ICandidate getCandidateByIdentifier(String identifier) throws DatabaseIdentifierNotFoundException {
-		int index = this.indexOfIdentifier(identifier);
-		if (index == -1)
+		ICandidate candidate = null;
+		try {
+			candidate = this.candidates.get(identifier);
+			if(candidate == null) throw new DatabaseIdentifierNotFoundException(identifier);
+		} catch(Exception e) {
 			throw new DatabaseIdentifierNotFoundException(identifier);
-		return this.candidates.get(index);
+		}
+		return candidate;
 	}
 
 	public CandidateList getCandidateByIdentifier(Vector<String> identifiers) {
@@ -130,7 +135,7 @@ public class LocalCSVDatabase extends AbstractDatabase {
 	 * 
 	 */
 	private void readCandidatesFromFile() throws MultipleHeadersFoundInInputDatabaseException, Exception {
-		this.candidates = new java.util.Vector<ICandidate>();
+		this.candidates = new java.util.HashMap<String, ICandidate>();
 		java.io.File f = new java.io.File((String) this.settings.get(VariableNames.LOCAL_DATABASE_PATH_NAME));
 		java.util.List<String> propertyNames = new java.util.ArrayList<String>();
 		
@@ -173,7 +178,7 @@ public class LocalCSVDatabase extends AbstractDatabase {
 						}
 					}	
 				}
-				this.candidates.add(precursorCandidate);
+				this.candidates.put(precursorCandidate.getIdentifier(), precursorCandidate);
 			
 			}
 			
@@ -183,17 +188,5 @@ public class LocalCSVDatabase extends AbstractDatabase {
 			return;
 		} 
 		throw new Exception();
-	}
-
-	/**
-	 * 
-	 * @param identifier
-	 * @return
-	 */
-	private int indexOfIdentifier(String identifier) {
-		for (int i = 0; i < this.candidates.size(); i++)
-			if (this.candidates.get(i).getIdentifier().equals(identifier))
-				return i;
-		return -1;
 	}
 }
