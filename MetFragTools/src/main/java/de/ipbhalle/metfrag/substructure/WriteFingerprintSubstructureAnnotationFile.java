@@ -6,9 +6,11 @@ import java.io.FileWriter;
 import java.util.Vector;
 
 import de.ipbhalle.metfraglib.FastBitArray;
+import de.ipbhalle.metfraglib.database.LocalCSVDatabase;
 import de.ipbhalle.metfraglib.database.LocalPSVDatabase;
 import de.ipbhalle.metfraglib.exceptions.MultipleHeadersFoundInInputDatabaseException;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
+import de.ipbhalle.metfraglib.interfaces.IDatabase;
 import de.ipbhalle.metfraglib.list.CandidateList;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.settings.Settings;
@@ -27,6 +29,7 @@ public class WriteFingerprintSubstructureAnnotationFile {
 	 * probtype - probability type: 0 - counts; 1 - P ( s | p ); 2 - P ( p | s ); 3 - P ( p , s ) from s; 4 - P ( p , s ) from p; 5 - P ( s | p ) P ( p | s ) P ( p , s )_s P ( p , s )_p
 	 * occurThresh
 	 * output
+	 * csv
 	 * 
 	 */
 	
@@ -55,8 +58,10 @@ public class WriteFingerprintSubstructureAnnotationFile {
 		Integer probabilityType = Integer.parseInt(readParameters.get("probtype"));
 		String output = null;
 		Integer occurThresh = null;
+		Integer csv = new Integer(0);
 		if(readParameters.containsKey("output")) output = readParameters.get("output");
 		if(readParameters.containsKey("occurThresh")) occurThresh = Integer.parseInt(readParameters.get("occurThresh"));
+		if(readParameters.containsKey("csv")) csv = Integer.parseInt(readParameters.get("csv"));
 		
 		Vector<Double> peakMassesSorted = new Vector<Double>();
 		Vector<String> fingerprintsSorted = new Vector<String>();
@@ -64,7 +69,9 @@ public class WriteFingerprintSubstructureAnnotationFile {
 		
 		Settings settings = new Settings();
 		settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, filename);
-		LocalPSVDatabase db = new LocalPSVDatabase(settings);
+		IDatabase db = null;
+		if(csv != 1) db = new LocalPSVDatabase(settings);
+		else db = new LocalCSVDatabase(settings);
 		java.util.Vector<String> ids = db.getCandidateIdentifiers();
 		CandidateList candidateList = db.getCandidateByIdentifier(ids);
 		//SmilesOfExplPeaks
