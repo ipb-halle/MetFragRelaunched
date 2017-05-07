@@ -46,22 +46,22 @@ public class CalculateScoreFromResultFileThreadFP {
 		
 		ArrayList<ProcessThread> threads = new ArrayList<ProcessThread>();
 		
-		for(int i = 0; i < resultFiles.length; i++) {
-			String id = resultFiles[i].getName().split("\\.")[0];
-			int paramFileID = -1;
-			for(int j = 0; j < paramFiles.length; j++) {
-				if(paramFiles[j].getName().startsWith(id)) {
-					paramFileID = j;
+		for(int i = 0; i < paramFiles.length; i++) {
+			String id = paramFiles[i].getName().split("\\.")[0];
+			int resultFileID = -1;
+			for(int j = 0; j < resultFiles.length; j++) {
+				if(resultFiles[j].getName().startsWith(id)) {
+					resultFileID = j;
 					break;
 				}
 			}
-			if(paramFileID == -1) {
+			if(resultFileID == -1) {
 				System.out.println(id + " not found as param.");
 				continue;
 			}
 			
-			Settings settings = getSettings(paramFiles[paramFileID].getAbsolutePath());
-			settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, resultFiles[i].getAbsolutePath());
+			Settings settings = getSettings(paramFiles[i].getAbsolutePath());
+			settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, resultFiles[resultFileID].getAbsolutePath());
 			
 			settings.set(VariableNames.PEAK_FINGERPRINT_ANNOTATION_ALPHA_VALUE_NAME, ALPHA_VALUE);
 			settings.set(VariableNames.PEAK_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME, BETA_VALUE);
