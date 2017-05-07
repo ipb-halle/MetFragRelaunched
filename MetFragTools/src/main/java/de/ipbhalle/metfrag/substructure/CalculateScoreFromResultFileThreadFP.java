@@ -163,6 +163,7 @@ public class CalculateScoreFromResultFileThreadFP {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			
 			CandidateList candidates = db.getCandidateByIdentifier(ids);
 			
 			System.out.println("Read " + candidates.getNumberElements() + " candidates");
