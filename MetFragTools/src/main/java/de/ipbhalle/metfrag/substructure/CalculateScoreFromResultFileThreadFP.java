@@ -56,7 +56,7 @@ public class CalculateScoreFromResultFileThreadFP {
 				}
 			}
 			if(resultFileID == -1) {
-				System.out.println(id + " not found as param.");
+				System.out.println(id + " not found as result.");
 				continue;
 			}
 			
@@ -165,6 +165,10 @@ public class CalculateScoreFromResultFileThreadFP {
 			}
 			
 			CandidateList candidates = db.getCandidateByIdentifier(ids);
+			if(candidates.getNumberElements() == 0) {
+				System.out.println("No candidates found in " + (String)settings.get(VariableNames.LOCAL_DATABASE_PATH_NAME));
+				return;
+			}
 			
 			System.out.println("Read " + candidates.getNumberElements() + " candidates");
 			
