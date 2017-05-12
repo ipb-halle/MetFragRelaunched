@@ -58,10 +58,10 @@ public class WriteFingerprintSubstructureAnnotationFile {
 		Integer probabilityType = Integer.parseInt(readParameters.get("probtype"));
 		String output = null;
 		Integer occurThresh = null;
-		Integer csv = new Integer(0);
+		String csv = "";
 		if(readParameters.containsKey("output")) output = readParameters.get("output");
 		if(readParameters.containsKey("occurThresh")) occurThresh = Integer.parseInt(readParameters.get("occurThresh"));
-		if(readParameters.containsKey("csv")) csv = Integer.parseInt(readParameters.get("csv"));
+		if(readParameters.containsKey("csv")) csv = (String)readParameters.get("csv");
 		
 		Vector<Double> peakMassesSorted = new Vector<Double>();
 		Vector<String> fingerprintsSorted = new Vector<String>();
@@ -70,8 +70,12 @@ public class WriteFingerprintSubstructureAnnotationFile {
 		Settings settings = new Settings();
 		settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, filename);
 		IDatabase db = null;
-		if(csv != 1) db = new LocalPSVDatabase(settings);
-		else db = new LocalCSVDatabase(settings);
+		if(csv == "1") db = new LocalCSVDatabase(settings);
+		else if (csv.equals("auto")) {
+			if(filename.endsWith("psv")) db = new LocalPSVDatabase(settings);
+			else db = new LocalCSVDatabase(settings);
+		}
+		else db = new LocalPSVDatabase(settings);
 		java.util.Vector<String> ids = db.getCandidateIdentifiers();
 		CandidateList candidateList = db.getCandidateByIdentifier(ids);
 		//SmilesOfExplPeaks

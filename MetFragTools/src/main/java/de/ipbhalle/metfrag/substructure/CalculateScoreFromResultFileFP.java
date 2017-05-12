@@ -9,8 +9,10 @@ import java.util.Vector;
 
 import de.ipbhalle.metfraglib.FastBitArray;
 import de.ipbhalle.metfraglib.additionals.MathTools;
+import de.ipbhalle.metfraglib.database.LocalCSVDatabase;
 import de.ipbhalle.metfraglib.database.LocalPSVDatabase;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
+import de.ipbhalle.metfraglib.interfaces.IDatabase;
 import de.ipbhalle.metfraglib.list.CandidateList;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.peaklistreader.FilteredTandemMassPeakListReader;
@@ -49,7 +51,10 @@ public class CalculateScoreFromResultFileFP {
 		FilteredTandemMassPeakListReader reader = new FilteredTandemMassPeakListReader(settings);
 		settings.set(VariableNames.PEAK_LIST_NAME, reader.read());
 		
-		LocalPSVDatabase db = new LocalPSVDatabase(settings);
+		IDatabase db = null;
+		if(resfile.endsWith("psv")) db = new LocalPSVDatabase(settings);
+		else db = new LocalCSVDatabase(settings);
+		
 		Vector<String> ids = db.getCandidateIdentifiers();
 		CandidateList candidates = db.getCandidateByIdentifier(ids);
 		
