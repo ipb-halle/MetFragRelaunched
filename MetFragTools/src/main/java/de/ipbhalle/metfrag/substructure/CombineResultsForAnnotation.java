@@ -40,18 +40,26 @@ public class CombineResultsForAnnotation {
 		for(int i = 0; i < parameterFiles.length; i++) {
 			String id = parameterFiles[i].getName().split("\\.")[0];
 			try {
-				ICandidate candidate = getMatchingCandidate(metfragFiles, id, getInChIKey1(parameterFiles[i]));
+				String inchikey1 = getInChIKey1(parameterFiles[i]);
+				ICandidate candidate = getMatchingCandidate(metfragFiles, id, inchikey1);
+				if(candidate == null) {
+					System.out.println(id + " " + getInChIKey1(parameterFiles[i]) + " not found");
+					continue;
+				}
 				ICandidate newCand = new PrecursorCandidate(candidate.getInChI(), candidate.getIdentifier());
 				newCand.setProperty("FragmentFingerprintOfExplPeaks", candidate.getProperty("FragmentFingerprintOfExplPeaks"));
 				newCand.setProperty("SmilesOfExplPeaks", candidate.getProperty("SmilesOfExplPeaks"));
 				newCand.setProperty("LossFingerprintOfExplPeaks", candidate.getProperty("LossFingerprintOfExplPeaks"));
 				if(id.endsWith("01")) posList.addElement(newCand);
-				else posList.addElement(negList);
+				else negList.addElement(newCand);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
+		
+		System.out.println(posList.getNumberElements() + " pos");
+		System.out.println(negList.getNumberElements() + " neg");
 		
 		CandidateListWriterPSV writer = new CandidateListWriterPSV();
 		try {
@@ -93,10 +101,10 @@ public class CombineResultsForAnnotation {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-				
+
 				for(int ii = 0; ii < candidates.getNumberElements(); ii++) {
-					if(((String)candidates.getElement(i).getProperty(VariableNames.INCHI_KEY_1_NAME)).equals(inchikey1)) {
-						return candidates.getElement(i);
+					if(((String)candidates.getElement(ii).getProperty(VariableNames.INCHI_KEY_1_NAME)).equals(inchikey1)) {
+						return candidates.getElement(ii);
 					}
 				}
 			}
