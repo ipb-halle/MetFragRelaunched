@@ -7,9 +7,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import de.ipbhalle.metfraglib.FastBitArray;
+import de.ipbhalle.metfraglib.database.LocalCSVDatabase;
 import de.ipbhalle.metfraglib.database.LocalPSVDatabase;
 import de.ipbhalle.metfraglib.exceptions.MultipleHeadersFoundInInputDatabaseException;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
+import de.ipbhalle.metfraglib.interfaces.IDatabase;
 import de.ipbhalle.metfraglib.list.CandidateList;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.peaklistreader.FilteredTandemMassPeakListReader;
@@ -152,7 +154,10 @@ public class CalculateScoreFromResultFileThreadFP {
 		 * 
 		 */
 		public void run() {
-			LocalPSVDatabase db = new LocalPSVDatabase(settings);
+			IDatabase db = null;
+			String dbFilename = (String)settings.get(VariableNames.LOCAL_DATABASE_PATH_NAME);
+			if(dbFilename.endsWith("psv")) db = new LocalPSVDatabase(settings);
+			else db = new LocalCSVDatabase(settings);
 			Vector<String> ids = null;
 			try {
 				ids = db.getCandidateIdentifiers();
@@ -164,7 +169,13 @@ public class CalculateScoreFromResultFileThreadFP {
 				e.printStackTrace();
 			}
 			
-			CandidateList candidates = db.getCandidateByIdentifier(ids);
+			CandidateList candidates = null;
+			try {
+				candidates = db.getCandidateByIdentifier(ids);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			if(candidates.getNumberElements() == 0) {
 				System.out.println("No candidates found in " + (String)settings.get(VariableNames.LOCAL_DATABASE_PATH_NAME));
 				return;

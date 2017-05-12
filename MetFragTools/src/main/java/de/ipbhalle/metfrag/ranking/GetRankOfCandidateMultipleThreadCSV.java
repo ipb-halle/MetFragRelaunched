@@ -10,7 +10,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import de.ipbhalle.metfraglib.database.LocalCSVDatabase;
+import de.ipbhalle.metfraglib.database.LocalPSVDatabase;
 import de.ipbhalle.metfraglib.exceptions.MultipleHeadersFoundInInputDatabaseException;
+import de.ipbhalle.metfraglib.interfaces.IDatabase;
 import de.ipbhalle.metfraglib.list.CandidateList;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.settings.MetFragGlobalSettings;
@@ -37,8 +39,6 @@ public class GetRankOfCandidateMultipleThreadCSV {
 		scoresToTransform.add("AutomatedFingerprintSubstructureAnnotationScore3");
 		scoresToTransform.add("AutomatedFingerprintSubstructureAnnotationScore4");
 	}
-	
-	public static GroupedCandidate correctGroup;
 
 	public static synchronized void increaseNumberFinished () {
 		numberFinished++;
@@ -90,6 +90,10 @@ public class GetRankOfCandidateMultipleThreadCSV {
 		if (!argsHash.containsKey("transform")) {
 			argsHash.put("transform", "false");
 		}
+		//csv psv auto
+		if (!argsHash.containsKey("type")) {
+			argsHash.put("type", "csv");
+		}
 		
 		return true;
 	}
@@ -110,6 +114,7 @@ public class GetRankOfCandidateMultipleThreadCSV {
 		String param = argsHash.get("param");
 		String scorenames = argsHash.get("scorenames");
 		String output = argsHash.get("output");
+		String type = argsHash.get("type");
 		int numberThreads = Integer.parseInt(argsHash.get("threads"));
 		
 		transformScores = Boolean.parseBoolean(argsHash.get("transform"));
@@ -125,7 +130,7 @@ public class GetRankOfCandidateMultipleThreadCSV {
 			String id = new File(csvFile).getName().split("\\.")[0];
 			String inchikey1 = csvToInChIKey.get(csvFile);
 			ProcessingThread thread = 
-					new GetRankOfCandidateMultipleThreadCSV().new ProcessingThread(csvFile, inchikey1, output + "/" + id + ".txt");
+					new GetRankOfCandidateMultipleThreadCSV().new ProcessingThread(csvFile, inchikey1, output + "/" + id + ".txt", type);
 			threads.add(thread);
 		}
 		System.out.println("preparation finished");
@@ -286,14 +291,17 @@ public class GetRankOfCandidateMultipleThreadCSV {
 		protected String correctInChIKey1;
 		protected String csv;
 		protected String outputFile;
+		protected GroupedCandidate correctGroup;
+		protected String fileType = "csv";
 		
 		protected java.util.Hashtable<String, GroupedCandidate> groupedCandidates;
 		protected java.util.Hashtable<String, Double> scorenameToMaximum;
 		
-		public ProcessingThread(String csv, String correctInChIKey1, String outputfile) {
+		public ProcessingThread(String csv, String correctInChIKey1, String outputfile, String fileType) {
 			this.correctInChIKey1 = correctInChIKey1;
 			this.csv = csv;
 			this.outputFile = outputfile;
+			this.fileType = fileType;
 		}
 		
 		public String toString() {
@@ -306,8 +314,13 @@ public class GetRankOfCandidateMultipleThreadCSV {
 			
 			MetFragGlobalSettings settings = new MetFragGlobalSettings();
 			settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, this.csv);
-			LocalCSVDatabase db = new LocalCSVDatabase(settings);
-
+			IDatabase db = null;
+			if(csv == "csv") db = new LocalCSVDatabase(settings);
+			else if (csv.equals("auto")) {
+				if(this.csv.endsWith("psv")) db = new LocalPSVDatabase(settings);
+				else db = new LocalCSVDatabase(settings);
+			}
+			else db = new LocalCSVDatabase(settings);
 			Vector<String> identifiers = null;
 			try {
 				identifiers = db.getCandidateIdentifiers();
@@ -318,7 +331,13 @@ public class GetRankOfCandidateMultipleThreadCSV {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			CandidateList candidates = db.getCandidateByIdentifier(identifiers);
+			CandidateList candidates = null;
+			try {
+				candidates = db.getCandidateByIdentifier(identifiers);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 
 			for (String scoreName : scoringPropertyNames)
 				this.scorenameToMaximum.put(scoreName, 0.0);

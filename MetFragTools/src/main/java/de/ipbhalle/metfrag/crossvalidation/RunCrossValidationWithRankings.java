@@ -16,21 +16,22 @@ public class RunCrossValidationWithRankings {
 	//public static String rankings_folder_name = "/home/cruttkie/Dokumente/PhD/MetFrag/substructure_training/ufz_train_eawag_test/rankings";
 	//public static String rankings_folder_name = "/home/cruttkie/Dokumente/PhD/MetFrag/substructure_training/cross_validation/eawag_02_new/rankings_testing_combined";
 	//public static String rankings_folder_name = "/home/cruttkie/svn/eawag/2016hdx/metfrag/rankings_9_5_chemspider/pos";
-	public static String rankings_folder_name = "/home/cruttkie/Dokumente/PhD/MetFrag/substructure_training/casmi_eawag_data/run_2016_12_06/rankings_testing";
+	public static String rankings_folder_name = "/scratch/cruttkie/fingerprint_training/cross_validation/train_ufz_test_eawag/rankings_testing_v3_scored/0005_005";
 	//public static String rankings_folder_name = "/home/chrisr/Dokumente/PhD/Talks/FoSem2016/train_ufz_test_eawag_05_11_2016/rankings";
 	public static int number_folds = 10;
 	public static int number_queries = 1;
-	public static String only_metfrag_filename = "rankings_1001.txt";
+	public static String only_metfrag_filename = "rankings_101.txt";
 	//public static String only_metfrag_filename = "rankings_101.txt";
 	//public static String given_folds_filename = "/home/cruttkie/Dokumente/PhD/MetFrag/substructure_training/cross_validation/eawag_02_new/folds.txt";
 	public static String given_folds_filename = null;
 	//public static String output_file = "/home/cruttkie/Dokumente/PhD/MetFrag/substructure_training/ufz_train_eawag_test/rankings.txt";
 	//public static String output_file = "/home/cruttkie/Dokumente/PhD/MetFrag/substructure_training/cross_validation/eawag_02_new/rankings.txt";
-	public static String output_file = "/home/cruttkie/Dokumente/PhD/MetFrag/substructure_training/casmi_eawag_data/run_2016_12_06/cv_rankings.txt";
+	//public static String output_file = "/home/cruttkie/Dokumente/PhD/MetFrag/substructure_training/casmi_eawag_data/run_2016_12_06/cv_rankings.txt";
+	public static String output_file = "/scratch/cruttkie/fingerprint_training/cross_validation/train_ufz_test_eawag/cv_rankings_testing_v4_scored/0005_005/cv_rankings.txt";
 	//public static String output_file = "/home/cruttkie/svn/eawag/2016hdx/metfrag/rankings_9_5_chemspider/pos_rankings.txt";
 	//public static String output_file = null;
 
-	
+	/*
 	public static String[] forbidden_filenames = {
 		"rankings_1001.txt",
 		"rankings_1002.txt",
@@ -48,13 +49,13 @@ public class RunCrossValidationWithRankings {
 		"rankings_1014.txt",
 		"rankings_1015.txt"
 	};
-	
-	/*
+	*/
+
 	public static String[] forbidden_filenames = {
 		"rankings_101.txt",
-		"rankings_102.txt"
+		"rankings_102.txt",
+		"rankings_103.txt"
 	};
-	*/
 	
 	public static void main(String[] args) {
 		if(args != null && args.length >= 2) {
