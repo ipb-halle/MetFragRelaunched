@@ -300,6 +300,17 @@ public class CalculateScoreFromResultFileThreadFP {
 			
 			return;
 		}
+
+		public String getProbTypeString(Vector<Double> matchProb, Vector<Integer> matchType) {
+			String string = "NA";
+			if(matchProb.size() >= 1) {
+				string += matchType.get(0) + ":" + matchProb.get(0);
+			}
+			for(int i = 1; i < matchProb.size(); i++) {
+				string += ";" + matchType.get(i) + ":" + matchProb.get(i);
+			}
+			return string;
+		}
 		
 		public void singlePostCalculate(Settings settings, ICandidate candidate) {
 			//this.value = 0.0;
@@ -308,6 +319,8 @@ public class CalculateScoreFromResultFileThreadFP {
 			
 			int matches = 0;
 			Vector<?> matchlist = (Vector<?>)candidate.getProperty("MatchList");
+			Vector<Double> matchProb = new Vector<Double>();
+			Vector<Integer> matchType = new Vector<Integer>(); // found - 1; alpha - 2; beta - 3
 			// get foreground fingerprint observations (m_f_observed)
 			for(int i = 0; i < peakToFingerprintGroupListCollection.getNumberElements(); i++) {
 				// get f_m_observed
@@ -317,6 +330,8 @@ public class CalculateScoreFromResultFileThreadFP {
 
 				//(fingerprintToMasses.getSize(currentFingerprint));
 				if(currentMatch == null) {
+					matchProb.add(peakToFingerprintGroupList.getBetaProb());
+					matchType.add(3);
 					value *= peakToFingerprintGroupList.getBetaProb();
 				} else {
 					FastBitArray currentFingerprint = new FastBitArray(currentMatch.getFingerprint());
@@ -325,14 +340,22 @@ public class CalculateScoreFromResultFileThreadFP {
 					// (p(m,f) + alpha) / sum_F(p(m,f)) + |F| * alpha
 					double matching_prob = peakToFingerprintGroupList.getMatchingProbability(currentFingerprint);
 					// |F|
-					if(matching_prob != 0.0) value *= matching_prob;
-					else value *= peakToFingerprintGroupList.getAlphaProb();
+					if(matching_prob != 0.0) {
+						value *= matching_prob;
+						matchProb.add(matching_prob);
+						matchType.add(1);
+					}
+					else {
+						value *= peakToFingerprintGroupList.getAlphaProb();
+						matchProb.add(peakToFingerprintGroupList.getAlphaProb());
+						matchType.add(2);
+					}
 				}
 			}
 			if(peakToFingerprintGroupListCollection.getNumberElements() == 0) value = 0.0;
 			candidate.setProperty("AutomatedFingerprintSubstructureAnnotationScore3_Matches", matches);
 			candidate.setProperty("AutomatedFingerprintSubstructureAnnotationScore3", value);
+			candidate.setProperty("AutomatedFingerprintSubstructureAnnotationScore3_Probtypes", getProbTypeString(matchProb, matchType));
 	 	}
-		
 	}
 }
