@@ -123,7 +123,7 @@ public class CandidateListWriterPSV implements IWriter {
 
 	@Override
 	public boolean write(IList list, String filename, String path) throws Exception {
-		return this.writeFile(new File(path + Constants.OS_SPECIFIC_FILE_SEPARATOR + filename + ".csv"), list);
+		return this.writeFile(new File(path + Constants.OS_SPECIFIC_FILE_SEPARATOR + filename + ".psv"), list);
 	}
 
 	@Override
