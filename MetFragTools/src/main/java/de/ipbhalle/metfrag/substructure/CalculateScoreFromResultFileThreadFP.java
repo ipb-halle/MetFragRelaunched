@@ -271,6 +271,8 @@ public class CalculateScoreFromResultFileThreadFP {
 				PeakToFingerprintGroupList groupList = peakToFingerprintGroupListCollection.getElement(i);
 				
 				// sum_f P(f,m)
+				// calculate sum of MF_s (including the alpha count) and the joint probabilities
+				// at this stage getProbability() returns the absolute counts from the annotation files
 				double sum_f = 0.0;
 				double sumFsProbabilities = 0.0;
 				for(int ii = 0; ii < groupList.getNumberElements(); ii++) {
@@ -280,12 +282,13 @@ public class CalculateScoreFromResultFileThreadFP {
 					sumFsProbabilities += groupList.getElement(ii).getJointProbability();
 				}
 				
+				// calculate the sum of probabilities for un-observed fingerprints for the current mass
 				double sumFuProbabilities = alphaProbability * massToFingerprints.getSize(groupList.getPeakmz());
 				
 				sum_f += sumFsProbabilities;
 				sum_f += sumFuProbabilities;
 				sum_f += betaProbability;
-				
+			
 				for(int ii = 0; ii < groupList.getNumberElements(); ii++) {
 					// second calculate P(f|m)
 					groupList.getElement(ii).setConditionalProbability_sp(groupList.getElement(ii).getJointProbability() / sum_f);
@@ -357,6 +360,7 @@ public class CalculateScoreFromResultFileThreadFP {
 				}
 			}
 			if(peakToFingerprintGroupListCollection.getNumberElements() == 0) value = 0.0;
+			
 			candidate.setProperty("AutomatedFingerprintSubstructureAnnotationScore3_Matches", matches);
 			candidate.setProperty("AutomatedFingerprintSubstructureAnnotationScore3", value);
 			candidate.setProperty("AutomatedFingerprintSubstructureAnnotationScore3_Probtypes", getProbTypeString(matchProb, matchType, matchMasses));
