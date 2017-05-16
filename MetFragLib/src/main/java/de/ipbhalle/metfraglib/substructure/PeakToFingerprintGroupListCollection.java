@@ -20,6 +20,13 @@ public class PeakToFingerprintGroupListCollection extends DefaultList {
 		return this.fingerprintObservations.getSumProbabilities(fingerprint);
 	}
 	
+	public void updatePeakMass(double mzppm, double mzabs) {
+		for(int i = 0; i < this.getNumberElements(); i++) {
+			PeakToFingerprintGroupList groupList = this.getElement(i);
+			groupList.updatePeakMass(mzppm, mzabs);
+		}
+	}
+	
 	public void calculateFingeprintObservations() {
 		this.fingerprintObservations = new FingerprintObservations();
 		for(int i = 0; i < this.getNumberElements(); i++) {
@@ -120,19 +127,22 @@ public class PeakToFingerprintGroupListCollection extends DefaultList {
 	 * @param mzabs
 	 * @return
 	 */
-	public PeakToFingerprintGroupList getElementByPeakInterval(Double mzValue, Double mzppm, Double mzabs) {
+	public PeakToFingerprintGroupList getElementByPeakInterval(Double mzValue, Double mzppm, Double mzabs, boolean debug) {
 	//	System.out.println("-> getElementByPeakInterval " + mzValue);
 		double minDev = Integer.MAX_VALUE;
 		PeakToFingerprintGroupList bestMatch = null;
 		for(int i = 0; i < this.list.size(); i++) {
 			PeakToFingerprintGroupList peakToFingerprintGroupList = (PeakToFingerprintGroupList)this.list.get(i);
 			double dev = MathTools.calculateAbsoluteDeviation(peakToFingerprintGroupList.getPeakmz(), mzppm) + mzabs;
+			if(debug) System.out.println(mzValue + " " + dev);
 			double lowerMassBorder = peakToFingerprintGroupList.getPeakmz();
 			double upperMassBorder = peakToFingerprintGroupList.getPeakmz() + (2.0 * dev);
 	//		System.out.println("-> [" + lowerMassBorder + ", " + upperMassBorder + "]");
-			
+
 			if(mzValue < upperMassBorder && mzValue >= lowerMassBorder) {
 				double currentDev = Math.abs(mzValue - peakToFingerprintGroupList.getPeakmz());
+				if(debug) System.out.println(" found " + peakToFingerprintGroupList.getPeakmz() + " " +
+						lowerMassBorder + " " + upperMassBorder);
 				if(currentDev < minDev) {
 					minDev = currentDev;
 					bestMatch = peakToFingerprintGroupList;
@@ -144,6 +154,10 @@ public class PeakToFingerprintGroupListCollection extends DefaultList {
 		return bestMatch;
 	}
 	
+	public PeakToFingerprintGroupList getElementByPeakInterval(Double mzValue, Double mzppm, Double mzabs) {
+		return this.getElementByPeakInterval(mzValue, mzppm, mzabs, false);
+	}
+		
 	public void print() {
 		for(int i = 0; i < this.list.size(); i++) {
 			PeakToFingerprintGroupList peakToFingerprintGroupList = this.getElement(i);
