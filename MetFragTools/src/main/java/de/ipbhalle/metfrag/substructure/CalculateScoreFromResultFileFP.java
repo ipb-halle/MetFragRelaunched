@@ -176,6 +176,7 @@ public class CalculateScoreFromResultFileFP {
 		
 		int matches = 0;
 		Vector<?> matchlist = (Vector<?>)candidate.getProperty("MatchList");
+		Vector<Double> matchMasses = new Vector<Double>();
 		Vector<Double> matchProb = new Vector<Double>();
 		Vector<Integer> matchType = new Vector<Integer>(); // found - 1; alpha - 2; beta - 3
 		// get foreground fingerprint observations (m_f_observed)
@@ -189,6 +190,7 @@ public class CalculateScoreFromResultFileFP {
 			if(currentMatch == null) {
 				matchProb.add(peakToFingerprintGroupList.getBetaProb());
 				matchType.add(3);
+				matchMasses.add(currentMass);
 				value *= peakToFingerprintGroupList.getBetaProb();
 			} else {
 				FastBitArray currentFingerprint = new FastBitArray(currentMatch.getFingerprint());
@@ -200,11 +202,13 @@ public class CalculateScoreFromResultFileFP {
 				if(matching_prob != 0.0) {
 					value *= matching_prob;
 					matchProb.add(matching_prob);
+					matchMasses.add(currentMass);
 					matchType.add(1);
 				}
 				else {
 					value *= peakToFingerprintGroupList.getAlphaProb();
 					matchProb.add(peakToFingerprintGroupList.getAlphaProb());
+					matchMasses.add(currentMass);
 					matchType.add(2);
 				}
 			}
@@ -212,16 +216,16 @@ public class CalculateScoreFromResultFileFP {
 		if(peakToFingerprintGroupListCollection.getNumberElements() == 0) value = 0.0;
 		candidate.setProperty("AutomatedFingerprintSubstructureAnnotationScore3_Matches", matches);
 		candidate.setProperty("AutomatedFingerprintSubstructureAnnotationScore3", value);
-		candidate.setProperty("AutomatedFingerprintSubstructureAnnotationScore3_Probtypes", getProbTypeString(matchProb, matchType));
+		candidate.setProperty("AutomatedFingerprintSubstructureAnnotationScore3_Probtypes", getProbTypeString(matchProb, matchType, matchMasses));
  	}
-	
-	public static String getProbTypeString(Vector<Double> matchProb, Vector<Integer> matchType) {
+
+	public static String getProbTypeString(Vector<Double> matchProb, Vector<Integer> matchType, Vector<Double> matchMasses) {
 		String string = "NA";
 		if(matchProb.size() >= 1) {
-			string += matchType.get(0) + ":" + matchProb.get(0);
+			string = matchType.get(0) + ":" + matchProb.get(0) + ":" + matchMasses.get(0);
 		}
 		for(int i = 1; i < matchProb.size(); i++) {
-			string += ";" + matchType.get(i) + ":" + matchProb.get(i);
+			string += ";" + matchType.get(i) + ":" + matchProb.get(i) + ":" + matchMasses.get(i);
 		}
 		return string;
 	}
