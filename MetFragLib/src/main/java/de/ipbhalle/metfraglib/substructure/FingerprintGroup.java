@@ -38,7 +38,7 @@ public class FingerprintGroup {
 		this.numberObserved = numberObserved;
 	}
 
-	public void incerementNumberObserved() {
+	public void incrementNumberObserved() {
 		this.numberObserved++;
 	}
 	

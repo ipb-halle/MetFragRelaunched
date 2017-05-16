@@ -95,7 +95,7 @@ public class WriteFingerprintSubstructureAnnotationFile {
 				String[] tmp1 = fingerprintPairs[k].split(":");
 				String[] tmp2 = smilesPairs[k].split(":");
 				Double peak1 = Double.parseDouble(tmp1[0]);
-				Double peak2= Double.parseDouble(tmp2[0]);
+				Double peak2 = Double.parseDouble(tmp2[0]);
 				if(Math.abs(peak1 - peak2) >= 0.00001) {
 					System.out.println(peak1 + " " + peak2 + " " + candidate.getIdentifier());
 					System.err.println("Error peaks don't match");
@@ -119,32 +119,37 @@ public class WriteFingerprintSubstructureAnnotationFile {
 		
 		for(int i = 0; i < peakMassesSorted.size(); i++) {
 			Double currentPeak = peakMassesSorted.get(i);
-			PeakToFingerprintGroupList peakToFingerprintGroupList = peakToFingerprintGroupListCollection.getElementByPeakInterval(currentPeak, mzppm, mzabs);
+			boolean debug = false;
+			if(currentPeak == 116.03675) {
+				debug = true;
+			}
+			PeakToFingerprintGroupList peakToFingerprintGroupList = peakToFingerprintGroupListCollection.getElementByPeakInterval(currentPeak, mzppm, mzabs, debug);
 			if(peakToFingerprintGroupList == null) {
 				peakToFingerprintGroupList = new PeakToFingerprintGroupList(currentPeak);
 				FingerprintGroup obj = new FingerprintGroup(0.0, null, null, null);
 				obj.setFingerprint(fingerprintsSorted.get(i));
 				obj.setSmiles(smilesSorted.get(i));
-				obj.incerementNumberObserved();
+				obj.incrementNumberObserved();
 				peakToFingerprintGroupList.addElement(obj);
 				peakToFingerprintGroupListCollection.addElementSorted(peakToFingerprintGroupList);
 			}
 			else {
 				FingerprintGroup fingerprintGroup = peakToFingerprintGroupList.getElementByFingerprint(new FastBitArray(fingerprintsSorted.get(i)));
 				if(fingerprintGroup != null) {
-					fingerprintGroup.incerementNumberObserved();
+					fingerprintGroup.incrementNumberObserved();
 				}
 				else {
 					fingerprintGroup = new FingerprintGroup(0.0, null, null, null);
 					fingerprintGroup.setFingerprint(fingerprintsSorted.get(i));
 					fingerprintGroup.setSmiles(smilesSorted.get(i));
-					fingerprintGroup.incerementNumberObserved();
+					fingerprintGroup.incrementNumberObserved();
 					peakToFingerprintGroupList.addElement(fingerprintGroup);
 				}
 			}
 		}
 		System.out.println("before filtering " + peakToFingerprintGroupListCollection.getNumberElements());
 		
+		peakToFingerprintGroupListCollection.updatePeakMass(mzppm, mzabs);
 		// test filtering
 		if(occurThresh != null) peakToFingerprintGroupListCollection.filterByOccurence(occurThresh);
 		

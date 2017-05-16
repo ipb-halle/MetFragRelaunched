@@ -99,19 +99,19 @@ public class WriteFingerprintLossAnnotationFile {
 				peakToFingerprintGroupList = new PeakToFingerprintGroupList(currentPeak);
 				FingerprintGroup obj = new FingerprintGroup(0.0, null, null, null);
 				obj.setFingerprint(fingerprintsSorted.get(i));
-				obj.incerementNumberObserved();
+				obj.incrementNumberObserved();
 				peakToFingerprintGroupList.addElement(obj);
 				peakToFingerprintGroupListCollection.addElementSorted(peakToFingerprintGroupList);
 			}
 			else {
 				FingerprintGroup fingerprintGroup = peakToFingerprintGroupList.getElementByFingerprint(new FastBitArray(fingerprintsSorted.get(i)));
 				if(fingerprintGroup != null) {
-					fingerprintGroup.incerementNumberObserved();
+					fingerprintGroup.incrementNumberObserved();
 				}
 				else {
 					fingerprintGroup = new FingerprintGroup(0.0, null, null, null);
 					fingerprintGroup.setFingerprint(fingerprintsSorted.get(i));
-					fingerprintGroup.incerementNumberObserved();
+					fingerprintGroup.incrementNumberObserved();
 					peakToFingerprintGroupList.addElement(fingerprintGroup);
 				}
 			}

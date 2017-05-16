@@ -1,6 +1,7 @@
 package de.ipbhalle.metfraglib.substructure;
 
 import de.ipbhalle.metfraglib.FastBitArray;
+import de.ipbhalle.metfraglib.additionals.MathTools;
 import de.ipbhalle.metfraglib.list.DefaultList;
 
 public class PeakToFingerprintGroupList extends DefaultList {
@@ -250,6 +251,10 @@ public class PeakToFingerprintGroupList extends DefaultList {
 			string += " " + fingerprintGroup.toStringDetail();
 		}
 		return string + "\n";
+	}
+	
+	public void updatePeakMass(double mzppm, double mzabs) {
+		this.peakmz = this.peakmz + MathTools.calculateAbsoluteDeviation(this.peakmz, mzppm) + mzabs;
 	}
 	
 	/**
