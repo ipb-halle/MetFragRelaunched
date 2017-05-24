@@ -13,6 +13,7 @@ import de.ipbhalle.metfraglib.exceptions.MultipleHeadersFoundInInputDatabaseExce
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.interfaces.IDatabase;
 import de.ipbhalle.metfraglib.list.CandidateList;
+import de.ipbhalle.metfraglib.parameter.SettingsChecker;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.peaklistreader.FilteredTandemMassPeakListReader;
 import de.ipbhalle.metfraglib.scoreinitialisation.AutomatedFingerprintSubstructureAnnotationScoreInitialiser3;
@@ -67,6 +68,12 @@ public class CalculateScoreFromResultFileThreadFP {
 			
 			settings.set(VariableNames.PEAK_FINGERPRINT_ANNOTATION_ALPHA_VALUE_NAME, ALPHA_VALUE);
 			settings.set(VariableNames.PEAK_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME, BETA_VALUE);
+			
+			SettingsChecker sc = new SettingsChecker();
+			if(sc.check(settings)) {
+				System.out.println("Error checking settings for " + id);
+				continue;
+			}
 			
 			FilteredTandemMassPeakListReader reader = new FilteredTandemMassPeakListReader(settings);
 			settings.set(VariableNames.PEAK_LIST_NAME, reader.read());

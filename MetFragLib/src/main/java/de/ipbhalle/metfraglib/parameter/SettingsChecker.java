@@ -153,7 +153,7 @@ public class SettingsChecker {
 				}
 			}
 			else {
-					try {
+				try {
 					Double ionMass = (Double)settings.get(VariableNames.PRECURSOR_ION_MASS_NAME);
 					Integer ionMode = (Integer)settings.get(VariableNames.PRECURSOR_ION_MODE_NAME);
 					Boolean isPositive = (Boolean)settings.get(VariableNames.IS_POSITIVE_ION_MODE_NAME);

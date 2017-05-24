@@ -119,11 +119,7 @@ public class WriteFingerprintSubstructureAnnotationFile {
 		
 		for(int i = 0; i < peakMassesSorted.size(); i++) {
 			Double currentPeak = peakMassesSorted.get(i);
-			boolean debug = false;
-			if(currentPeak == 116.03675) {
-				debug = true;
-			}
-			PeakToFingerprintGroupList peakToFingerprintGroupList = peakToFingerprintGroupListCollection.getElementByPeakInterval(currentPeak, mzppm, mzabs, debug);
+			PeakToFingerprintGroupList peakToFingerprintGroupList = peakToFingerprintGroupListCollection.getElementByPeakInterval(currentPeak, mzppm, mzabs);
 			if(peakToFingerprintGroupList == null) {
 				peakToFingerprintGroupList = new PeakToFingerprintGroupList(currentPeak);
 				FingerprintGroup obj = new FingerprintGroup(0.0, null, null, null);
