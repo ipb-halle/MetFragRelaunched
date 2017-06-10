@@ -1,4 +1,4 @@
-package de.ipbhalle.metfrag.misc;
+package de.ipbhalle.metfrag.phenomenal;
 
 import java.io.File;
 import java.util.ArrayList;

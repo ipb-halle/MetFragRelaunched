@@ -136,6 +136,9 @@ public class Constants {
 		ADDUCT_TYPES.add("[M+HCOO]-");		ADDUCT_NAMES.add("+HCOO");		ADDUCT_MASSES.add(Constants.HYDROGEN_MASS + MONOISOTOPIC_MASSES.get(ELEMENTS.indexOf("C")) + MONOISOTOPIC_MASSES.get(ELEMENTS.indexOf("O")) * 2.0);					ADDUCT_NOMINAL_MASSES.add(45);	ADDUCT_CHARGES.add(false);
 		ADDUCT_TYPES.add("[M+CH3COO]-");	ADDUCT_NAMES.add("+CH3COO");	ADDUCT_MASSES.add(Constants.HYDROGEN_MASS * 3.0 + MONOISOTOPIC_MASSES.get(ELEMENTS.indexOf("C")) * 2.0 + MONOISOTOPIC_MASSES.get(ELEMENTS.indexOf("O")) * 2.0);		ADDUCT_NOMINAL_MASSES.add(59);	ADDUCT_CHARGES.add(false);
 		
+		ADDUCT_TYPES.add("[M-2H+Na]-");		ADDUCT_NAMES.add("-2H+Na");		ADDUCT_MASSES.add(MONOISOTOPIC_MASSES.get(ELEMENTS.indexOf("Na")) - 2.0 * Constants.HYDROGEN_MASS);		ADDUCT_NOMINAL_MASSES.add(21);	ADDUCT_CHARGES.add(false);
+		ADDUCT_TYPES.add("[M-2H+K]-");		ADDUCT_NAMES.add("-2H+K");		ADDUCT_MASSES.add(MONOISOTOPIC_MASSES.get(ELEMENTS.indexOf("K")) - 2.0 * Constants.HYDROGEN_MASS);		ADDUCT_NOMINAL_MASSES.add(37);	ADDUCT_CHARGES.add(false);
+		
 		ADDUCT_TYPES.add("[M+ACN+H]+");		ADDUCT_NAMES.add("+ACN+H");		ADDUCT_MASSES.add(42.033823);		ADDUCT_NOMINAL_MASSES.add(42);	ADDUCT_CHARGES.add(true);
 		ADDUCT_TYPES.add("[M+ACN+Na]+");	ADDUCT_NAMES.add("+ACN+Na");	ADDUCT_MASSES.add(64.015765);		ADDUCT_NOMINAL_MASSES.add(64);	ADDUCT_CHARGES.add(true);
 		ADDUCT_TYPES.add("[M+2ACN+H]+");	ADDUCT_NAMES.add("+2ACN+H");	ADDUCT_MASSES.add(83.060370);		ADDUCT_NOMINAL_MASSES.add(83);	ADDUCT_CHARGES.add(true);
@@ -261,6 +264,10 @@ public class Constants {
 		return ADDUCT_MASSES.get(precursorIonTypeIndex) + POSITIVE_IONISATION_MASS_DIFFERENCE.get(POSITIVE_IONISATION.indexOf(positiveIonisation));
 	}
 	
+	public static Double getChargeMassByType(boolean positiveIonisation) {
+		return POSITIVE_IONISATION_MASS_DIFFERENCE.get(POSITIVE_IONISATION.indexOf(positiveIonisation));
+	}
+	
 	public static Double getMonoisotopicMassOfAtom(String atom) {
 		return MONOISOTOPIC_MASSES.get(ELEMENTS.indexOf(atom));
 	}
@@ -269,8 +276,12 @@ public class Constants {
 		return MONOISOTOPIC_MASSES.get(atomIndex);
 	}
 
-	public static String getIonisationTypeByNominalMassDifference(int nominalMassDifference) {
+	public static String getIonisationNameByNominalMassDifference(int nominalMassDifference) {
 		return ADDUCT_NAMES.get(ADDUCT_NOMINAL_MASSES.indexOf(nominalMassDifference));
+	}
+
+	public static String getIonisationTypeByNominalMassDifference(int nominalMassDifference) {
+		return ADDUCT_TYPES.get(ADDUCT_NOMINAL_MASSES.indexOf(nominalMassDifference));
 	}
 	
 	public static boolean getIonisationChargeByNominalMassDifference(int nominalMassDifference) {

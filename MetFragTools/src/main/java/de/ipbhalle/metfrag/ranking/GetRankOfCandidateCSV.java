@@ -56,7 +56,9 @@ public class GetRankOfCandidateCSV {
 		else if(args[args.length - 1].trim().equals("true")) {
 			outputSortedList = true;
 		}
-		else outputSortedList = false;
+		else {
+			outputSortedList = false;
+		}
 
 		MetFragGlobalSettings settings = new MetFragGlobalSettings();
 		settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, resultCSVFilename);
