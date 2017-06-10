@@ -243,7 +243,8 @@ public class SettingsChecker {
 		Object FragmentPeakMatchRelativeMassDeviation = settings.get(VariableNames.RELATIVE_MASS_DEVIATION_NAME);
 		
 		if(PrecursorIonModeString != null) {
-			if(!Constants.checkIonisationType((String)PrecursorIonModeString)) {
+			String PrecursorIonModeStringTmp = (String)PrecursorIonModeString;
+			if(!Constants.checkIonisationType(PrecursorIonModeStringTmp)) {
 				this.logger.error(PrecursorIonModeString + " not known!");
 				checkPositive = false;
 			}

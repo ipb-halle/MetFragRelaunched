@@ -70,7 +70,7 @@ public class CalculateScoreFromResultFileThreadFP {
 			settings.set(VariableNames.PEAK_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME, BETA_VALUE);
 			
 			SettingsChecker sc = new SettingsChecker();
-			if(sc.check(settings)) {
+			if(!sc.check(settings)) {
 				System.out.println("Error checking settings for " + id);
 				continue;
 			}
