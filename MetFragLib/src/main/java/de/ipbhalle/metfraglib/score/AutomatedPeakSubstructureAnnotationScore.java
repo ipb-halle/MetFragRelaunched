@@ -7,11 +7,11 @@ import de.ipbhalle.metfraglib.settings.Settings;
 import de.ipbhalle.metfraglib.substructure.PeakToSmartsGroupList;
 import de.ipbhalle.metfraglib.substructure.PeakToSmartsGroupListCollection;
 
-public class AutomatedSubstructureAnnotationScore extends AbstractScore {
+public class AutomatedPeakSubstructureAnnotationScore extends AbstractScore {
 
 	protected ICandidate candidate;
 	
-	public AutomatedSubstructureAnnotationScore(Settings settings) {
+	public AutomatedPeakSubstructureAnnotationScore(Settings settings) {
 		super(settings);
 		this.optimalValues = new double[1];
 		this.optimalValues[0] = 0.0;

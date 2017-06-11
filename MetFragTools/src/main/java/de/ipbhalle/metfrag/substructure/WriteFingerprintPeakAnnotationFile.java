@@ -15,10 +15,10 @@ import de.ipbhalle.metfraglib.list.CandidateList;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.settings.Settings;
 import de.ipbhalle.metfraglib.substructure.FingerprintGroup;
-import de.ipbhalle.metfraglib.substructure.PeakToFingerprintGroupList;
-import de.ipbhalle.metfraglib.substructure.PeakToFingerprintGroupListCollection;
+import de.ipbhalle.metfraglib.substructure.MassToFingerprintGroupList;
+import de.ipbhalle.metfraglib.substructure.MassToFingerprintGroupListCollection;
 
-public class WriteFingerprintSubstructureAnnotationFile {
+public class WriteFingerprintPeakAnnotationFile {
 
 	/*
 	 * write annotation file
@@ -79,7 +79,7 @@ public class WriteFingerprintSubstructureAnnotationFile {
 		java.util.Vector<String> ids = db.getCandidateIdentifiers();
 		CandidateList candidateList = db.getCandidateByIdentifier(ids);
 		//SmilesOfExplPeaks
-		PeakToFingerprintGroupListCollection peakToFingerprintGroupListCollection = new PeakToFingerprintGroupListCollection();
+		MassToFingerprintGroupListCollection peakToFingerprintGroupListCollection = new MassToFingerprintGroupListCollection();
 		for(int i = 0; i < candidateList.getNumberElements(); i++) {
 			ICandidate candidate = candidateList.getElement(i);
 			String fingerprintsOfExplPeaks = (String)candidate.getProperty("FragmentFingerprintOfExplPeaks");
@@ -119,9 +119,9 @@ public class WriteFingerprintSubstructureAnnotationFile {
 		
 		for(int i = 0; i < peakMassesSorted.size(); i++) {
 			Double currentPeak = peakMassesSorted.get(i);
-			PeakToFingerprintGroupList peakToFingerprintGroupList = peakToFingerprintGroupListCollection.getElementByPeakInterval(currentPeak, mzppm, mzabs);
+			MassToFingerprintGroupList peakToFingerprintGroupList = peakToFingerprintGroupListCollection.getElementByPeakInterval(currentPeak, mzppm, mzabs);
 			if(peakToFingerprintGroupList == null) {
-				peakToFingerprintGroupList = new PeakToFingerprintGroupList(currentPeak);
+				peakToFingerprintGroupList = new MassToFingerprintGroupList(currentPeak);
 				FingerprintGroup obj = new FingerprintGroup(0.0, null, null, null);
 				obj.setFingerprint(fingerprintsSorted.get(i));
 				obj.setSmiles(smilesSorted.get(i));
@@ -253,19 +253,19 @@ public class WriteFingerprintSubstructureAnnotationFile {
 		}
 	}
 	
-	public static int getNumberElements(PeakToFingerprintGroupListCollection peakToFingerprintGroupListCollections) {
+	public static int getNumberElements(MassToFingerprintGroupListCollection peakToFingerprintGroupListCollections) {
 		int count = 0;
 		for(int i = 0; i < peakToFingerprintGroupListCollections.getNumberElements(); i++) {
-			PeakToFingerprintGroupList groupList = peakToFingerprintGroupListCollections.getElement(i);
+			MassToFingerprintGroupList groupList = peakToFingerprintGroupListCollections.getElement(i);
 			count += groupList.getNumberElements();
 		}
 		return count;
 	}
 	
-	public static int getNumberOccurences(PeakToFingerprintGroupListCollection peakToFingerprintGroupListCollections) {
+	public static int getNumberOccurences(MassToFingerprintGroupListCollection peakToFingerprintGroupListCollections) {
 		int count = 0;
 		for(int i = 0; i < peakToFingerprintGroupListCollections.getNumberElements(); i++) {
-			PeakToFingerprintGroupList groupList = peakToFingerprintGroupListCollections.getElement(i);
+			MassToFingerprintGroupList groupList = peakToFingerprintGroupListCollections.getElement(i);
 			for(int j = 0; j < groupList.getNumberElements(); j++) {
 				count += groupList.getElement(j).getNumberObserved();
 			}

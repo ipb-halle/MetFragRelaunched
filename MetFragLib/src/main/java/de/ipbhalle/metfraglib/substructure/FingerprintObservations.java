@@ -15,11 +15,11 @@ public class FingerprintObservations {
 		this.observations = new LinkedList<Integer>();
 	}
 
-	public void calculateSumProbabilities(PeakToFingerprintGroupListCollection collection) {
+	public void calculateSumProbabilities(MassToFingerprintGroupListCollection collection) {
 		if(this.fingerprints.size() == 0) return;
 		this.sumProbabilities = new Double[this.fingerprints.size()];
 		for(int i = 0; i < collection.getNumberElements(); i++) {
-			PeakToFingerprintGroupList groupList = collection.getElement(i);
+			MassToFingerprintGroupList groupList = collection.getElement(i);
 			for(int j = 0; j < groupList.getNumberElements(); j++) {
 				FingerprintGroup group = groupList.getElement(j);
 				int currentIndex = getIndexOfFingerprint(group.getFingerprint());

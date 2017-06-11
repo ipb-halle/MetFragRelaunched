@@ -34,10 +34,9 @@ import de.ipbhalle.metfraglib.database.OnlineForIdentDatabase;
 import de.ipbhalle.metfraglib.database.OnlineKeggDatabase;
 import de.ipbhalle.metfraglib.database.OnlineMetaCycDatabase;
 import de.ipbhalle.metfraglib.database.OnlinePubChemDatabase;
-import de.ipbhalle.metfraglib.score.AutomatedFingerprintSubstructureAnnotationScore;
-import de.ipbhalle.metfraglib.score.AutomatedFingerprintSubstructureAnnotationScore3;
-import de.ipbhalle.metfraglib.score.AutomatedLossAnnotationScore;
-import de.ipbhalle.metfraglib.score.AutomatedSubstructureAnnotationScore;
+import de.ipbhalle.metfraglib.score.AutomatedPeakFingerprintAnnotationScore;
+import de.ipbhalle.metfraglib.score.AutomatedLossSubstructureAnnotationScore;
+import de.ipbhalle.metfraglib.score.AutomatedPeakSubstructureAnnotationScore;
 import de.ipbhalle.metfraglib.score.CandidatePropertyScore;
 import de.ipbhalle.metfraglib.score.CombinedAutomatedAnnotationScore;
 import de.ipbhalle.metfraglib.score.CombinedReferenceScore;
@@ -56,9 +55,8 @@ import de.ipbhalle.metfraglib.score.RetentionTimeScore;
 import de.ipbhalle.metfraglib.score.SmartsSubstructureExclusionScore;
 import de.ipbhalle.metfraglib.score.SmartsSubstructureInclusionScore;
 import de.ipbhalle.metfraglib.score.SuspectListScore;
-import de.ipbhalle.metfraglib.scoreinitialisation.AutomatedFingerprintSubstructureAnnotationScoreInitialiser;
-import de.ipbhalle.metfraglib.scoreinitialisation.AutomatedFingerprintSubstructureAnnotationScoreInitialiser3;
-import de.ipbhalle.metfraglib.scoreinitialisation.AutomatedLossAnnotationScoreInitialiser;
+import de.ipbhalle.metfraglib.scoreinitialisation.AutomatedPeakFingerprintAnnotationScoreInitialiser;
+import de.ipbhalle.metfraglib.scoreinitialisation.AutomatedLossFingerprintAnnotationScoreInitialiser;
 import de.ipbhalle.metfraglib.scoreinitialisation.CombinedAutomatedAnnotationScoreInitialiser;
 import de.ipbhalle.metfraglib.scoreinitialisation.DefaultScoreInitialiser;
 import de.ipbhalle.metfraglib.scoreinitialisation.AutomatedSubstructureAnnotationScoreInitialiser;
@@ -117,10 +115,9 @@ public class ClassNames {
 		scoreNameToClassName.put("OfflineIndividualMoNAScore", OfflineIndividualMoNASpectralSimilarity.class.getName());
 
 		scoreNameToClassName.put("CombinedAutomatedAnnotationScore", CombinedAutomatedAnnotationScore.class.getName());
-		scoreNameToClassName.put("AutomatedSubstructureAnnotationScore", AutomatedSubstructureAnnotationScore.class.getName());
-		scoreNameToClassName.put("AutomatedFingerprintSubstructureAnnotationScore", AutomatedFingerprintSubstructureAnnotationScore.class.getName());
-		scoreNameToClassName.put("AutomatedFingerprintSubstructureAnnotationScore3", AutomatedFingerprintSubstructureAnnotationScore3.class.getName());
-		scoreNameToClassName.put("AutomatedLossAnnotationScore", AutomatedLossAnnotationScore.class.getName());
+		scoreNameToClassName.put("AutomatedSubstructureAnnotationScore", AutomatedPeakSubstructureAnnotationScore.class.getName());
+		scoreNameToClassName.put("AutomatedPeakFingerprintAnnotationScore", AutomatedPeakFingerprintAnnotationScore.class.getName());
+		scoreNameToClassName.put("AutomatedLossAnnotationScore", AutomatedLossSubstructureAnnotationScore.class.getName());
 		scoreNameToClassName.put("IndividualMoNAScore", IndividualMoNASpectralSimilarity.class.getName());
 		scoreNameToClassName.put("OfflineMetFusionScore", OfflineMetFusionSpectralSimilarityScore.class.getName());
 		
@@ -138,10 +135,10 @@ public class ClassNames {
 		scoreNameToScoreInitialiserClassName.put("CombinedReferenceScore", DefaultScoreInitialiser.class.getName());
 
 		scoreNameToScoreInitialiserClassName.put("AutomatedAnnotationScore", CombinedAutomatedAnnotationScoreInitialiser.class.getName());
-		scoreNameToScoreInitialiserClassName.put("AutomatedFingerprintSubstructureAnnotationScore", AutomatedFingerprintSubstructureAnnotationScoreInitialiser.class.getName());
-		scoreNameToScoreInitialiserClassName.put("AutomatedFingerprintSubstructureAnnotationScore3", AutomatedFingerprintSubstructureAnnotationScoreInitialiser3.class.getName());
+		scoreNameToScoreInitialiserClassName.put("AutomatedFingerprintSubstructureAnnotationScore", AutomatedPeakFingerprintAnnotationScoreInitialiser.class.getName());
+		scoreNameToScoreInitialiserClassName.put("AutomatedFingerprintSubstructureAnnotationScore3", AutomatedPeakFingerprintAnnotationScoreInitialiser.class.getName());
 		scoreNameToScoreInitialiserClassName.put("AutomatedSubstructureAnnotationScore", AutomatedSubstructureAnnotationScoreInitialiser.class.getName());
-		scoreNameToScoreInitialiserClassName.put("AutomatedLossAnnotationScore", AutomatedLossAnnotationScoreInitialiser.class.getName());
+		scoreNameToScoreInitialiserClassName.put("AutomatedLossAnnotationScore", AutomatedLossFingerprintAnnotationScoreInitialiser.class.getName());
 		scoreNameToScoreInitialiserClassName.put("IndividualMoNAScore", IndividualMoNASpectralSimilarityInitialiser.class.getName());
 		scoreNameToScoreInitialiserClassName.put("OfflineIndividualMoNAScore", OfflineIndividualMoNASpectralSimilarityInitialiser.class.getName());
 		scoreNameToScoreInitialiserClassName.put("OfflineMetFusionScore", OfflineMetFusionSpectralSimilarityScoreInitialiser.class.getName());
