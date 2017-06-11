@@ -4,7 +4,7 @@ import de.ipbhalle.metfraglib.FastBitArray;
 import de.ipbhalle.metfraglib.additionals.MathTools;
 import de.ipbhalle.metfraglib.list.DefaultList;
 
-public class PeakToFingerprintGroupList extends DefaultList {
+public class MassToFingerprintGroupList extends DefaultList {
 
 	private Double peakmz;
 	private Double sumProbabilities;
@@ -12,7 +12,7 @@ public class PeakToFingerprintGroupList extends DefaultList {
 	private Double betaProb;
 	
 	
-	public PeakToFingerprintGroupList(Double peakmz) {
+	public MassToFingerprintGroupList(Double peakmz) {
 		super();
 		this.peakmz = peakmz;
 	}

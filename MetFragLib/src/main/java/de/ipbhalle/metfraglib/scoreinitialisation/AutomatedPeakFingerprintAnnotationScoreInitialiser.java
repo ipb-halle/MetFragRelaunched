@@ -17,8 +17,8 @@ import de.ipbhalle.metfraglib.process.CombinedSingleCandidateMetFragProcess;
 import de.ipbhalle.metfraglib.settings.Settings;
 import de.ipbhalle.metfraglib.substructure.FingerprintGroup;
 import de.ipbhalle.metfraglib.substructure.MassToFingerprints;
-import de.ipbhalle.metfraglib.substructure.PeakToFingerprintGroupList;
-import de.ipbhalle.metfraglib.substructure.PeakToFingerprintGroupListCollection;
+import de.ipbhalle.metfraglib.substructure.MassToFingerprintGroupList;
+import de.ipbhalle.metfraglib.substructure.MassToFingerprintGroupListCollection;
 
 /**
  * 1 - read absolute frequencies of (f,m) 
@@ -30,12 +30,12 @@ import de.ipbhalle.metfraglib.substructure.PeakToFingerprintGroupListCollection;
  * @author cruttkie
  *
  */
-public class AutomatedFingerprintSubstructureAnnotationScoreInitialiser3  implements IScoreInitialiser {
+public class AutomatedPeakFingerprintAnnotationScoreInitialiser  implements IScoreInitialiser {
 
 	@Override
 	public void initScoreParameters(Settings settings) throws Exception {
 		if(!settings.containsKey(VariableNames.PEAK_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME) || settings.get(VariableNames.PEAK_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME) == null) {
-			PeakToFingerprintGroupListCollection peakToFingerprintGroupListCollection = new PeakToFingerprintGroupListCollection();
+			MassToFingerprintGroupListCollection peakToFingerprintGroupListCollection = new MassToFingerprintGroupListCollection();
 			String filename = (String)settings.get(VariableNames.FINGERPRINT_PEAK_ANNOTATION_FILE_NAME);
 			DefaultPeakList peakList = (DefaultPeakList)settings.get(VariableNames.PEAK_LIST_NAME);
 			Double mzppm = (Double)settings.get(VariableNames.RELATIVE_MASS_DEVIATION_NAME);
@@ -57,7 +57,7 @@ public class AutomatedFingerprintSubstructureAnnotationScoreInitialiser3  implem
 				Double peak = Double.parseDouble(tmp[0]);
 				Double matchedMass = peakList.getBestMatchingMass(peak, mzppm, mzabs);
 				if(matchedMass == null) continue;
-				PeakToFingerprintGroupList peakToFingerprintGroupList = new PeakToFingerprintGroupList(matchedMass);
+				MassToFingerprintGroupList peakToFingerprintGroupList = new MassToFingerprintGroupList(matchedMass);
 				FingerprintGroup fingerprintGroup = null;
 				for(int i = 1; i < tmp.length; i++) {
 					if((i % 2) == 1) {
@@ -87,7 +87,7 @@ public class AutomatedFingerprintSubstructureAnnotationScoreInitialiser3  implem
 		
 		// to determine F_u
 		MassToFingerprints massToFingerprints = new MassToFingerprints();
-		PeakToFingerprintGroupListCollection peakToFingerprintGroupListCollection = (PeakToFingerprintGroupListCollection)settings.get(VariableNames.PEAK_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME);
+		MassToFingerprintGroupListCollection peakToFingerprintGroupListCollection = (MassToFingerprintGroupListCollection)settings.get(VariableNames.PEAK_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME);
 
 		for(CombinedSingleCandidateMetFragProcess scmfp : processes) {
 			/*
@@ -99,7 +99,7 @@ public class AutomatedFingerprintSubstructureAnnotationScoreInitialiser3  implem
 					MatchList matchlist = candidates[i].getMatchList();
 					for(int j = 0; j < matchlist.getNumberElements(); j++) {
 						IMatch match = matchlist.getElement(j);
-						PeakToFingerprintGroupList peakToFingerprintGroupList = peakToFingerprintGroupListCollection.getElementByPeak(match.getMatchedPeak().getMass());
+						MassToFingerprintGroupList peakToFingerprintGroupList = peakToFingerprintGroupListCollection.getElementByPeak(match.getMatchedPeak().getMass());
 						if(peakToFingerprintGroupList == null) continue;
 						IFragment frag = match.getBestMatchedFragment();
 						FastBitArray currentFingerprint = new FastBitArray(MoleculeFunctions.getNormalizedFingerprint(frag));
@@ -129,7 +129,7 @@ public class AutomatedFingerprintSubstructureAnnotationScoreInitialiser3  implem
 		double betaProbability = beta / denominatorValue;	// p(f,m) not annotated
 		
 		for(int i = 0; i < peakToFingerprintGroupListCollection.getNumberElements(); i++) {
-			PeakToFingerprintGroupList groupList = peakToFingerprintGroupListCollection.getElement(i);
+			MassToFingerprintGroupList groupList = peakToFingerprintGroupListCollection.getElement(i);
 
 			double sum_f = 0.0;
 			double sumFsProbabilities = 0.0;

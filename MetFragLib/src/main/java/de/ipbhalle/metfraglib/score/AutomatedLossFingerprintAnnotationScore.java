@@ -7,14 +7,14 @@ import de.ipbhalle.metfraglib.interfaces.IMatch;
 import de.ipbhalle.metfraglib.list.MatchList;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.settings.Settings;
-import de.ipbhalle.metfraglib.substructure.PeakToFingerprintGroupList;
-import de.ipbhalle.metfraglib.substructure.PeakToFingerprintGroupListCollection;
+import de.ipbhalle.metfraglib.substructure.MassToFingerprintGroupList;
+import de.ipbhalle.metfraglib.substructure.MassToFingerprintGroupListCollection;
 
-public class AutomatedFingerprintSubstructureAnnotationScore3 extends AbstractScore {
+public class AutomatedLossFingerprintAnnotationScore extends AbstractScore {
 
 	protected ICandidate candidate;
 	
-	public AutomatedFingerprintSubstructureAnnotationScore3(Settings settings) {
+	public AutomatedLossFingerprintAnnotationScore(Settings settings) {
 		super(settings);
 		this.optimalValues = new double[1];
 		this.optimalValues[0] = 0.0;
@@ -42,7 +42,7 @@ public class AutomatedFingerprintSubstructureAnnotationScore3 extends AbstractSc
 	public void singlePostCalculate() {
 		//this.value = 0.0;
 		this.value = 1.0;
-		PeakToFingerprintGroupListCollection peakToFingerprintGroupListCollection = (PeakToFingerprintGroupListCollection)this.settings.get(VariableNames.PEAK_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME);
+		MassToFingerprintGroupListCollection peakToFingerprintGroupListCollection = (MassToFingerprintGroupListCollection)this.settings.get(VariableNames.LOSS_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME);
 		
 		MatchList matchList = this.candidate.getMatchList();
 	
@@ -50,7 +50,7 @@ public class AutomatedFingerprintSubstructureAnnotationScore3 extends AbstractSc
 		// get foreground fingerprint observations (m_f_observed)
 		for(int i = 0; i < peakToFingerprintGroupListCollection.getNumberElements(); i++) {
 			// get f_m_observed
-			PeakToFingerprintGroupList peakToFingerprintGroupList = peakToFingerprintGroupListCollection.getElement(i);
+			MassToFingerprintGroupList peakToFingerprintGroupList = peakToFingerprintGroupListCollection.getElement(i);
 			Double currentMass = peakToFingerprintGroupList.getPeakmz();
 			IMatch currentMatch = matchList.getMatchByMass(currentMass);
 
@@ -69,7 +69,7 @@ public class AutomatedFingerprintSubstructureAnnotationScore3 extends AbstractSc
 			}
 		}
 		if(peakToFingerprintGroupListCollection.getNumberElements() == 0) this.value = 0.0;
-		this.candidate.setProperty("AutomatedFingerprintSubstructureAnnotationScore3_Matches", matches);
+		this.candidate.setProperty("AutomatedLossFingerprintAnnotationScore_Matches", matches);
  	}
 	
 	@Override

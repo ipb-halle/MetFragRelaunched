@@ -11,17 +11,17 @@ import de.ipbhalle.metfraglib.parameter.Constants;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.peak.TandemMassPeak;
 import de.ipbhalle.metfraglib.settings.Settings;
-import de.ipbhalle.metfraglib.substructure.PeakToSmartsGroupList;
-import de.ipbhalle.metfraglib.substructure.PeakToSmartsGroupListCollection;
-import de.ipbhalle.metfraglib.substructure.SmartsGroup;
+import de.ipbhalle.metfraglib.substructure.FingerprintGroup;
+import de.ipbhalle.metfraglib.substructure.MassToFingerprintGroupList;
+import de.ipbhalle.metfraglib.substructure.MassToFingerprintGroupListCollection;
 
-public class AutomatedLossAnnotationScoreInitialiser implements IScoreInitialiser {
+public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScoreInitialiser {
 
 	@Override
 	public void initScoreParameters(Settings settings) throws Exception {
-		if(!settings.containsKey(VariableNames.LOSS_TO_SMARTS_GROUP_LIST_COLLECTION_NAME) || settings.get(VariableNames.LOSS_TO_SMARTS_GROUP_LIST_COLLECTION_NAME) == null) {
-			PeakToSmartsGroupListCollection peakToSmartGroupListCollection = new PeakToSmartsGroupListCollection();
-			String filename = (String)settings.get(VariableNames.SMARTS_LOSS_ANNOTATION_FILE_NAME);
+		if(!settings.containsKey(VariableNames.LOSS_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME) || settings.get(VariableNames.LOSS_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME) == null) {
+			MassToFingerprintGroupListCollection lossToFingerprintGroupListCollection = new MassToFingerprintGroupListCollection();
+			String filename = (String)settings.get(VariableNames.FINGERPRINT_LOSS_ANNOTATION_FILE_NAME);
 			DefaultPeakList peakList = (DefaultPeakList)settings.get(VariableNames.PEAK_LIST_NAME);
 			Double mzppm = (Double)settings.get(VariableNames.RELATIVE_MASS_DEVIATION_NAME);
 			Double mzabs = (Double)settings.get(VariableNames.ABSOLUTE_MASS_DEVIATION_NAME);
@@ -37,28 +37,36 @@ public class AutomatedLossAnnotationScoreInitialiser implements IScoreInitialise
 				line = line.trim();
 				if(line.length() == 0) continue;
 				if(line.startsWith("#")) continue;
+				if(line.startsWith("SUMMARY")) {
+					String[] tmp = line.split("\\s+");
+					settings.set(VariableNames.LOSS_FINGERPRINT_DENOMINATOR_COUNT_NAME, Double.parseDouble(tmp[2]));
+					settings.set(VariableNames.LOSS_FINGERPRINT_TUPLE_COUNT_NAME, Double.parseDouble(tmp[1]));
+					continue;
+				}
 				String[] tmp = line.split("\\s+");
-				Double peak = Double.parseDouble(tmp[0]);
-				if(!this.containsMass(peak, massDifferences, mzabs, mzppm)) continue;
-				PeakToSmartsGroupList peakToSmartGroupList = new PeakToSmartsGroupList(peak);
-				SmartsGroup smartsGroup = null;
+				Double loss = Double.parseDouble(tmp[0]);
+				if(!this.containsMass(loss, massDifferences, mzabs, mzppm)) continue;
+				MassToFingerprintGroupList lossToFingerprintGroupList = new MassToFingerprintGroupList(loss);
+				FingerprintGroup fingerprintGroup = null;
 				for(int i = 1; i < tmp.length; i++) {
-					if(this.isDoubleValue(tmp[i])) {
-						if(smartsGroup != null) 
-							peakToSmartGroupList.addElement(smartsGroup);
-						smartsGroup = new SmartsGroup(Double.parseDouble(tmp[i]));
+					if((i % 2) == 1) {
+						if(fingerprintGroup != null) 
+							lossToFingerprintGroupList.addElement(fingerprintGroup);
+						double count = Double.parseDouble(tmp[i]);
+						fingerprintGroup = new FingerprintGroup(count);
+						fingerprintGroup.setNumberObserved((int)count);
 					}
 					else {
-						smartsGroup.addElement(tmp[i]);
+						fingerprintGroup.setFingerprint(tmp[i]);
 					}
 					if(i == (tmp.length - 1)) {
-						peakToSmartGroupList.addElement(smartsGroup);
-						peakToSmartGroupListCollection.addElement(peakToSmartGroupList);
+						lossToFingerprintGroupList.addElement(fingerprintGroup);
+						lossToFingerprintGroupListCollection.addElement(lossToFingerprintGroupList);
 					}
 				}
 			}
 			breader.close();
-			settings.set(VariableNames.LOSS_TO_SMARTS_GROUP_LIST_COLLECTION_NAME, peakToSmartGroupListCollection);
+			settings.set(VariableNames.LOSS_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME, lossToFingerprintGroupListCollection);
 		}
 	}
 
@@ -102,14 +110,4 @@ public class AutomatedLossAnnotationScoreInitialiser implements IScoreInitialise
 		return peakDifferences;
 	}
 	
-	private boolean isDoubleValue(String value) {
-		try {
-			Double.parseDouble(value);
-		}
-		catch(Exception e) {
-			return false;
-		}
-		return true;
-	}
-
 }
