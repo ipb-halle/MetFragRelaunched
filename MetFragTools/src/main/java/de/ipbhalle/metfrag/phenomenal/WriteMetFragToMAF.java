@@ -92,13 +92,13 @@ public class WriteMetFragToMAF {
 			}
 			
 			try {
-				String name = files[i].getName().substring(0, files[i].getName().lastIndexOf('.'));
+				String name = getSampleName(paramFile).substring(0, files[i].getName().lastIndexOf('.'));
 				String[] tmp = name.split("_");
 				if(tmp.length == 1) throw new Exception();
-				rt = Double.parseDouble(tmp[0]);
-				mz = Double.parseDouble(tmp[1]);
-				intensity = Double.parseDouble(tmp[2]);
-				if(tmp.length == 4) mzmlfilename = generateFileName(tmp);
+				rt = Double.parseDouble(tmp[1]);
+				mz = Double.parseDouble(tmp[2]);
+				intensity = Double.parseDouble(tmp[3]);
+				if(tmp.length == 5) mzmlfilename = generateFileName(tmp);
 			} catch(Exception e) {
 				e.printStackTrace();
 				System.out.println(files[i].getName() + " has no rt and mz information. Check file name. Skipping...");
@@ -152,9 +152,9 @@ public class WriteMetFragToMAF {
 	}
 
 	public static String generateFileName(String[] strings) {
-		if(strings.length < 4) return "";
-		String name = strings[3];
-		for(int i = 4; i < strings.length; i++) {
+		if(strings.length < 5) return "";
+		String name = strings[4];
+		for(int i = 5; i < strings.length; i++) {
 			name += "_" + strings[i];
 		}
 		return name;
@@ -223,7 +223,30 @@ public class WriteMetFragToMAF {
 		}
 		return null;
 	}
-	
+
+	/**
+	 * 
+	 * @param paramFile
+	 * @return
+	 * @throws Exception
+	 */
+	public static String getSampleName(File paramFile) throws Exception {
+		String sampleName = "";
+		BufferedReader breader = new BufferedReader(new FileReader(paramFile));
+		String line = breader.readLine();
+		if(line == null) {
+			breader.close();
+			throw new Exception("No line in parameter file " + paramFile.getName());
+		}
+		breader.close();
+		String[] tmp = line.split("\\s+");
+		for(String string : tmp) {
+			string = string.trim();
+			if(string.startsWith("SampleName")) sampleName = string.split("=")[1].trim().replaceAll(".*\\/", "");
+		}
+		return sampleName;
+	}
+
 	/**
 	 * 
 	 * @param paramFile
