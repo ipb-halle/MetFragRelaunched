@@ -12,6 +12,7 @@ public class SettingsChecker {
 	
 	public boolean check(Settings settings) {
 
+		if(!checkIonModeSettings(settings)) return false;
 		if(!checkPeakListFileSettings(settings)) return false;
 		if(!checkDatabaseSettings(settings)) return false;
 		if(!checkFragmenterSettings(settings)) return false;
@@ -23,7 +24,8 @@ public class SettingsChecker {
 	}
 
 	public boolean check(Settings settings, boolean checkOutput) {
-		
+
+		if(!checkIonModeSettings(settings)) return false;
 		if(!checkPeakListFileSettings(settings)) return false;
 		if(!checkDatabaseSettings(settings)) return false;
 		if(!checkFragmenterSettings(settings)) return false;
@@ -113,6 +115,50 @@ public class SettingsChecker {
 				}
 			}
 		}
+		return checkPositive;
+	}
+	
+	/**
+	 * 
+	 * @param settings
+	 * @return
+	 */
+	private boolean checkIonModeSettings(Settings settings) {
+
+		boolean checkPositive = true;
+		
+		Object ionMode = settings.get(VariableNames.PRECURSOR_ION_MODE_NAME);
+		Object isPositive = settings.get(VariableNames.IS_POSITIVE_ION_MODE_NAME);
+		Object PrecursorIonModeString = settings.get(VariableNames.PRECURSOR_ION_MODE_STRING_NAME);
+		
+		if(PrecursorIonModeString != null) {
+			String PrecursorIonModeStringTmp = (String)PrecursorIonModeString;
+			if(!Constants.checkIonisationType(PrecursorIonModeStringTmp)) {
+				this.logger.error(PrecursorIonModeString + " not known!");
+				checkPositive = false;
+			}
+			else {
+				int PrecursorIonMode = Constants.getIonisationNominalMassByType((String)PrecursorIonModeString);
+				settings.set(VariableNames.PRECURSOR_ION_MODE_NAME, PrecursorIonMode);
+				boolean IsPositiveIonMode = Constants.getIonisationChargeByType((String)PrecursorIonModeString);
+				settings.set(VariableNames.IS_POSITIVE_ION_MODE_NAME, IsPositiveIonMode);
+				
+			}
+		} else if(ionMode != null) {
+			boolean IsPositiveIonMode = Constants.getIonisationChargeByNominalMassDifference((Integer)ionMode);
+			settings.set(VariableNames.IS_POSITIVE_ION_MODE_NAME, IsPositiveIonMode);
+		}
+		ionMode = settings.get(VariableNames.PRECURSOR_ION_MODE_NAME);
+		isPositive = settings.get(VariableNames.IS_POSITIVE_ION_MODE_NAME);
+		if(ionMode == null) {
+			this.logger.error(VariableNames.PRECURSOR_ION_MODE_NAME + " missing!");
+			checkPositive = false;
+		}
+		if(isPositive == null) {
+			this.logger.error(VariableNames.IS_POSITIVE_ION_MODE_NAME + " missing!");
+			checkPositive = false;
+		}
+		
 		return checkPositive;
 	}
 	
@@ -237,24 +283,10 @@ public class SettingsChecker {
 		boolean checkPositive = true;
 		
 		Object PrecursorIonMode = settings.get(VariableNames.PRECURSOR_ION_MODE_NAME);
-		Object PrecursorIonModeString = settings.get(VariableNames.PRECURSOR_ION_MODE_STRING_NAME);
 		Object IsPositiveIonMode = settings.get(VariableNames.IS_POSITIVE_ION_MODE_NAME);
 		Object FragmentPeakMatchAbsoluteMassDeviation = settings.get(VariableNames.ABSOLUTE_MASS_DEVIATION_NAME);
 		Object FragmentPeakMatchRelativeMassDeviation = settings.get(VariableNames.RELATIVE_MASS_DEVIATION_NAME);
 		
-		if(PrecursorIonModeString != null) {
-			String PrecursorIonModeStringTmp = (String)PrecursorIonModeString;
-			if(!Constants.checkIonisationType(PrecursorIonModeStringTmp)) {
-				this.logger.error(PrecursorIonModeString + " not known!");
-				checkPositive = false;
-			}
-			else {
-				PrecursorIonMode = Constants.getIonisationNominalMassByType((String)PrecursorIonModeString);
-				settings.set(VariableNames.PRECURSOR_ION_MODE_NAME, PrecursorIonMode);
-				IsPositiveIonMode = Constants.getIonisationChargeByType((String)PrecursorIonModeString);
-				settings.set(VariableNames.IS_POSITIVE_ION_MODE_NAME, IsPositiveIonMode);
-			}
-		}
 		if(PrecursorIonMode == null) {
 			this.logger.error(VariableNames.PRECURSOR_ION_MODE_NAME + " is not defined!");
 			checkPositive = false;

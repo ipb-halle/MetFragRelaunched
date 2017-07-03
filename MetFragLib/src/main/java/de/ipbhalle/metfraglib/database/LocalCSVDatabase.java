@@ -38,8 +38,9 @@ public class LocalCSVDatabase extends AbstractDatabase {
 	public java.util.Vector<String> getCandidateIdentifiers() throws MultipleHeadersFoundInInputDatabaseException, Exception {
 		if(this.settings.containsKey(VariableNames.PROCESS_STATUS_OBJECT_NAME) && this.settings.get(VariableNames.PROCESS_STATUS_OBJECT_NAME) != null)
 			((ProcessingStatus)this.settings.get(VariableNames.PROCESS_STATUS_OBJECT_NAME)).setRetrievingStatusString("Retrieving Candidates");
-		if (this.candidates == null)
+		if (this.candidates == null) {
 			this.readCandidatesFromFile();
+		}
 		if (this.settings.get(VariableNames.PRECURSOR_DATABASE_IDS_NAME) != null)
 			return this.getCandidateIdentifiers((String[]) settings.get(VariableNames.PRECURSOR_DATABASE_IDS_NAME));
 		if (this.settings.get(VariableNames.PRECURSOR_MOLECULAR_FORMULA_NAME) != null)
@@ -61,10 +62,13 @@ public class LocalCSVDatabase extends AbstractDatabase {
 		double mzabs = MathTools.calculateAbsoluteDeviation(monoisotopicMass, relativeMassDeviation);
 		double lowerLimit = monoisotopicMass - mzabs;
 		double upperLimit = monoisotopicMass + mzabs;
-		for (int i = 0; i < this.candidates.size(); i++) {
-			double currentMonoisotopicMass = (Double) this.candidates.get(i).getProperty(VariableNames.MONOISOTOPIC_MASS_NAME);
+		
+		java.util.Iterator<String> keyIt = this.candidates.keySet().iterator();
+		while(keyIt.hasNext()) {
+			String currentKey = keyIt.next();
+			double currentMonoisotopicMass = (Double) this.candidates.get(currentKey).getProperty(VariableNames.MONOISOTOPIC_MASS_NAME);
 			if (lowerLimit <= currentMonoisotopicMass && currentMonoisotopicMass <= upperLimit)
-				identifiers.add(this.candidates.get(i).getIdentifier());
+				identifiers.add(this.candidates.get(currentKey).getIdentifier());
 		}
 		return identifiers;
 	}
@@ -77,9 +81,11 @@ public class LocalCSVDatabase extends AbstractDatabase {
 				e.printStackTrace();
 			}
 		Vector<String> identifiers = new Vector<String>();
-		for (int i = 0; i < this.candidates.size(); i++) {
-			if (molecularFormula.equals(this.candidates.get(i).getProperty(VariableNames.MOLECULAR_FORMULA_NAME)))
-				identifiers.add(this.candidates.get(i).getIdentifier());
+		java.util.Iterator<String> keyIt = this.candidates.keySet().iterator();
+		while(keyIt.hasNext()) {
+			String currentKey = keyIt.next();
+			if (molecularFormula.equals(this.candidates.get(currentKey).getProperty(VariableNames.MOLECULAR_FORMULA_NAME)))
+				identifiers.add(this.candidates.get(currentKey).getIdentifier());
 		}
 		return identifiers;
 	}

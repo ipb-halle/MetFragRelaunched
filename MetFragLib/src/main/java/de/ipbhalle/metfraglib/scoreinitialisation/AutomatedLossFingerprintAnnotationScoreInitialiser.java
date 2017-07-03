@@ -29,7 +29,7 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 			Double neutralPrecursorMass = (Double)settings.get(VariableNames.PRECURSOR_NEUTRAL_MASS_NAME);
 			Double adductMass = Constants.getIonisationMassByNominalMassDifference((Integer)settings.get(VariableNames.PRECURSOR_ION_MODE_NAME));
 			
-			java.util.Vector<Double> massDifferences = calculatePeakDifferences(peakList, neutralPrecursorMass, adductMass);
+			java.util.Vector<Double> massDifferences = calculatePeakDifferences(peakList, neutralPrecursorMass, adductMass, mzppm, mzabs);
 			
 			BufferedReader breader = new BufferedReader(new FileReader(new File(filename)));
 			String line = "";
@@ -89,7 +89,16 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 		return false;
 	}
 	
-	private java.util.Vector<Double> calculatePeakDifferences(DefaultPeakList peakList, double neutralPrecursorMass, double adductMass) {
+	/**
+	 * 
+	 * @param peakList
+	 * @param neutralPrecursorMass
+	 * @param adductMass
+	 * @param mzppm
+	 * @param mzabs
+	 * @return
+	 */
+	private java.util.Vector<Double> calculatePeakDifferences(DefaultPeakList peakList, double neutralPrecursorMass, double adductMass, double mzppm, double mzabs) {
 		java.util.Vector<Double> peakDifferences = new java.util.Vector<Double>();
 		
 		double ionmass = neutralPrecursorMass + adductMass;
@@ -106,8 +115,35 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 			}
 			peakDifferences.add(ionmass - currentMass1);
 		}
+
+		java.util.Vector<Double> peakDifferencesSorted = new java.util.Vector<Double>();
+		for(int i = 0; i < peakDifferences.size(); i++) {
+			int index = 0; 
+			double currentPeakDiff = peakDifferences.get(i);
+			while(index < peakDifferencesSorted.size()) {
+				if(peakDifferencesSorted.get(index) > currentPeakDiff) break;
+				else index++;
+			}
+			peakDifferencesSorted.add(index, currentPeakDiff);
+		}
 		
-		return peakDifferences;
+		java.util.Vector<Double> peakDifferencesCombined = new java.util.Vector<Double>();
+		int index = 0;
+		while(index < peakDifferencesSorted.size()) {
+			double currentMass = peakDifferencesSorted.get(index);
+			double maxMassLimit = currentMass + (mzabs + MathTools.calculateAbsoluteDeviation(currentMass, mzppm) * 2.0);
+			double massSum = currentMass;
+			index++;
+			int massesAdded = 1;
+			while(index < peakDifferencesSorted.size() && peakDifferencesSorted.get(index) < maxMassLimit) {
+				massSum += peakDifferencesSorted.get(index);
+				massesAdded++;
+				index++;
+			}
+			peakDifferencesCombined.add(massSum / (double)massesAdded);
+		}
+		
+		return peakDifferencesCombined;
 	}
 	
 }

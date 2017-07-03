@@ -284,7 +284,7 @@ public class CalculateScoreFromResultFilePeakLossFP {
 	 */
 	public static void singlePostCalculatePeak(Settings settings, ICandidate candidate) {
 		//this.value = 0.0;
-		double value = 1.0;
+		double value = 0.0;
 		MassToFingerprintGroupListCollection peakToFingerprintGroupListCollection = (MassToFingerprintGroupListCollection)settings.get(VariableNames.PEAK_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME);
 		
 		int matches = 0;
@@ -304,7 +304,7 @@ public class CalculateScoreFromResultFilePeakLossFP {
 				matchProb.add(peakToFingerprintGroupList.getBetaProb());
 				matchType.add(3);
 				matchMasses.add(currentMass);
-				value *= peakToFingerprintGroupList.getBetaProb();
+				value += Math.log(peakToFingerprintGroupList.getBetaProb());
 			} else {
 				FastBitArray currentFingerprint = new FastBitArray(currentMatch.getFingerprint());
 				// ToDo: at this stage try to check all fragments not only the best one
@@ -313,13 +313,13 @@ public class CalculateScoreFromResultFilePeakLossFP {
 				double matching_prob = peakToFingerprintGroupList.getMatchingProbability(currentFingerprint);
 				// |F|
 				if(matching_prob != 0.0) {
-					value *= matching_prob;
+					value += Math.log(matching_prob);
 					matchProb.add(matching_prob);
 					matchMasses.add(currentMass);
 					matchType.add(1);
 				}
 				else {
-					value *= peakToFingerprintGroupList.getAlphaProb();
+					value += Math.log(peakToFingerprintGroupList.getAlphaProb());
 					matchProb.add(peakToFingerprintGroupList.getAlphaProb());
 					matchMasses.add(currentMass);
 					matchType.add(2);
