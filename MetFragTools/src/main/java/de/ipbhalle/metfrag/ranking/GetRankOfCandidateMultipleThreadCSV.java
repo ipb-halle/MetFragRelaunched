@@ -27,6 +27,7 @@ public class GetRankOfCandidateMultipleThreadCSV {
 	public static java.util.Hashtable<String, String> argsHash;
 	public static Vector<String> scoresToTransform;
 	public static boolean transformScores = false;
+	public static boolean negScores = false;
 	public static double[][] weights;
 	public static String[] scoringPropertyNames;
 	public static int numberFinished = 0;
@@ -38,6 +39,8 @@ public class GetRankOfCandidateMultipleThreadCSV {
 		scoresToTransform.add("AutomatedFingerprintSubstructureAnnotationScore2");
 		scoresToTransform.add("AutomatedFingerprintSubstructureAnnotationScore3");
 		scoresToTransform.add("AutomatedFingerprintSubstructureAnnotationScore4");
+		scoresToTransform.add("AutomatedPeakFingerprintAnnotationScore");
+		scoresToTransform.add("AutomatedLossFingerprintAnnotationScore");
 	}
 
 	public static synchronized void increaseNumberFinished () {
@@ -52,7 +55,7 @@ public class GetRankOfCandidateMultipleThreadCSV {
 			String[] tmp = arg.split("=");
 			if (!tmp[0].equals("csv") && !tmp[0].equals("param") && !tmp[0].equals("scorenames") 
 					&& !tmp[0].equals("threads") && !tmp[0].equals("output")
-					&& !tmp[0].equals("weights") && !tmp[0].equals("transform")) {
+					&& !tmp[0].equals("weights") && !tmp[0].equals("transform") && !tmp[0].equals("negscore")) {
 				System.err.println("property " + tmp[0] + " not known.");
 				return false;
 			}
@@ -90,6 +93,9 @@ public class GetRankOfCandidateMultipleThreadCSV {
 		if (!argsHash.containsKey("transform")) {
 			argsHash.put("transform", "false");
 		}
+		if (!argsHash.containsKey("negscore")) {
+			argsHash.put("negscore", "false");
+		}
 		//csv psv auto
 		if (!argsHash.containsKey("type")) {
 			argsHash.put("type", "csv");
@@ -118,6 +124,7 @@ public class GetRankOfCandidateMultipleThreadCSV {
 		int numberThreads = Integer.parseInt(argsHash.get("threads"));
 		
 		transformScores = Boolean.parseBoolean(argsHash.get("transform"));
+		negScores = Boolean.parseBoolean(argsHash.get("negscore"));
 		scoringPropertyNames = scorenames.split(",");
 		weights = readWeights(argsHash.get("weights"));
 		java.util.HashMap<String, String> csvToInChIKey = parseInChIKeys(csv, param);
@@ -195,6 +202,7 @@ public class GetRankOfCandidateMultipleThreadCSV {
 	 * @return
 	 */
 	public static double getRRP(double bc, double wc, int numCandidates) {
+		if(numCandidates == 1) return 1;
 		return 0.5 * (1.0 - (bc - wc) / (double) ((numCandidates - 1)));
 	}
 
@@ -350,7 +358,12 @@ public class GetRankOfCandidateMultipleThreadCSV {
 				for (int k = 0; k < scores.length; k++) {
 					scores[k] = Double.parseDouble((String) candidates.getElement(i).getProperty(scoringPropertyNames[k]));
 					if(transformScores && scoresToTransform.contains(scoringPropertyNames[k])) {
-						if(scores[k] != 0.0) scores[k] = 1.0 / (-1.0 * Math.log(scores[k]));
+						if(scores[k] != 0.0) scores[k] = 1.0 / (Math.abs(Math.log(scores[k])));
+					} else if(negScores && scoresToTransform.contains(scoringPropertyNames[k])) {
+						if(scores[k] != 0.0) {
+							scores[k] = 1.0 / (Math.abs(scores[k]));
+							candidates.getElement(i).setProperty(scoringPropertyNames[k], scores[k]);
+						}
 					}
 					if (scores[k] > scorenameToMaximum.get(scoringPropertyNames[k]))
 						scorenameToMaximum.put(scoringPropertyNames[k], scores[k]);

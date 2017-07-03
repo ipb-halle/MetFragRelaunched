@@ -129,7 +129,7 @@ public class WriteMetFragToMAF {
 			// write header
 			String header = "database_identifier\tchemical_formula\tsmiles\tinchi\tmetabolite_identification\tmass_to_charge"
 					+ "\tfragmentation\tmodifications\tcharge\tretention_time\ttaxid\tspecies\tdatabase\tdatabase_version"
-					+ "\treliability\turi\tsearch_engine\tsearch_engine_score\tcommentScores\tcommentWeights\tsmallmolecule_abundance_sub"
+					+ "\treliability\turi\tsearch_engine\tsearch_engine_score\tComment[scores]\tComment[weights]\tsmallmolecule_abundance_sub"
 					+ "\tsmallmolecule_abundance_stdev_sub\tsmallmolecule_abundance_std_error_sub";
 			for(String filename : filenameArray) {
 				int index = filename.lastIndexOf('.');

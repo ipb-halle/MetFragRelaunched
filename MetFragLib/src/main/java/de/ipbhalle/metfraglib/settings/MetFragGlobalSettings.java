@@ -181,7 +181,7 @@ public class MetFragGlobalSettings extends Settings {
 			catch(Exception e) {
 				logger.error("Error in parameter file at \"" + line + " \"");
 				parameterFileReader.close();
-				throw new Exception();
+				throw new Exception("Error in parameter file at \"" + line + " \"");
 			}
 			/*
 			 * 

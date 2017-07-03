@@ -27,20 +27,85 @@ import de.ipbhalle.metfraglib.writer.CandidateListWriterCSV;
 
 public class CalculateScoreFromResultFilePeakLossThreadFP {
 
-	public static double ALPHA_VALUE = 0.0001;
-	public static double BETA_VALUE = 0.0001;
-	public static int numberFinished = 0;
+	public static double ALPHA_VALUE_PEAK = 0.0001;
+	public static double BETA_VALUE_PEAK = 0.0001;
+	public static double ALPHA_VALUE_LOSS = 0.0001;
+	public static double BETA_VALUE_LOSS = 0.0001;
 	
-	public static void main(String[] args) throws Exception {
-		String paramfolder = args[0];
-		String resfolder = args[1];
-		String outputfolder = args[2];
-		String alpha = args[3];
-		String beta = args[4];
-		int numberThreads = Integer.parseInt(args[5]);
+	public static int numberFinished = 0;
+	public static java.util.Hashtable<String, String> argsHash;
+
+	public static boolean getArgs(String[] args) {
+		argsHash = new java.util.Hashtable<String, String>();
+		for (String arg : args) {
+			arg = arg.trim();
+			String[] tmp = arg.split("=");
+			if (!tmp[0].equals("parampath") && !tmp[0].equals("resultpath") 
+					&& !tmp[0].equals("threads") && !tmp[0].equals("output")
+					&& !tmp[0].equals("alphaPeak") && !tmp[0].equals("betaPeak") 
+					&& !tmp[0].equals("alphaLoss") && !tmp[0].equals("betaLoss")) {
+				System.err.println("property " + tmp[0] + " not known.");
+				return false;
+			}
+			if (argsHash.containsKey(tmp[0])) {
+				System.err.println("property " + tmp[0] + " already defined.");
+				return false;
+			}
+			argsHash.put(tmp[0], tmp[1]);
+		}
 		
-		ALPHA_VALUE = Double.parseDouble(alpha);
-		BETA_VALUE = Double.parseDouble(beta);
+		if (!argsHash.containsKey("parampath")) {
+			System.err.println("no csv defined");
+			return false;
+		}
+		if (!argsHash.containsKey("resultpath")) {
+			System.err.println("no csv defined");
+			return false;
+		}
+		if (!argsHash.containsKey("threads")) {
+			System.err.println("no csv defined");
+			return false;
+		}
+		if (!argsHash.containsKey("output")) {
+			System.err.println("no csv defined");
+			return false;
+		}
+		if (!argsHash.containsKey("alphaPeak")) {
+			System.err.println("no csv defined");
+			return false;
+		}
+		if (!argsHash.containsKey("betaPeak")) {
+			System.err.println("no csv defined");
+			return false;
+		}
+		if (!argsHash.containsKey("alphaLoss")) {
+			System.err.println("no csv defined");
+			return false;
+		}
+		if (!argsHash.containsKey("betaLoss")) {
+			System.err.println("no csv defined");
+			return false;
+		}
+		return true;
+	}
+
+	public static void main(String[] args) throws Exception {
+		getArgs(args);
+		
+		String paramfolder = (String)argsHash.get("parampath");
+		String resfolder = (String)argsHash.get("resultpath");
+		String outputfolder = (String)argsHash.get("output");
+		String alphaPeak = (String)argsHash.get("alphaPeak");
+		String betaPeak = (String)argsHash.get("betaPeak");
+		String alphaLoss = (String)argsHash.get("alphaLoss");
+		String betaLoss = (String)argsHash.get("betaLoss");
+		int numberThreads = Integer.parseInt(argsHash.get("threads"));
+		
+		ALPHA_VALUE_PEAK = Double.parseDouble(alphaPeak);
+		BETA_VALUE_PEAK = Double.parseDouble(betaPeak);
+
+		ALPHA_VALUE_LOSS = Double.parseDouble(alphaLoss);
+		BETA_VALUE_LOSS = Double.parseDouble(betaLoss);
 		
 		File _resfolder = new File(resfolder);
 		File _paramfolder = new File(paramfolder);
@@ -63,12 +128,15 @@ public class CalculateScoreFromResultFilePeakLossThreadFP {
 				System.out.println(id + " not found as result.");
 				continue;
 			}
-			
+
 			Settings settings = getSettings(paramFiles[i].getAbsolutePath());
 			settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, resultFiles[resultFileID].getAbsolutePath());
 			
-			settings.set(VariableNames.PEAK_FINGERPRINT_ANNOTATION_ALPHA_VALUE_NAME, ALPHA_VALUE);
-			settings.set(VariableNames.PEAK_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME, BETA_VALUE);
+			settings.set(VariableNames.PEAK_FINGERPRINT_ANNOTATION_ALPHA_VALUE_NAME, ALPHA_VALUE_PEAK);
+			settings.set(VariableNames.PEAK_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME, BETA_VALUE_PEAK);
+			
+			settings.set(VariableNames.LOSS_FINGERPRINT_ANNOTATION_ALPHA_VALUE_NAME, ALPHA_VALUE_LOSS);
+			settings.set(VariableNames.LOSS_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME, BETA_VALUE_LOSS);
 			
 			SettingsChecker sc = new SettingsChecker();
 			if(!sc.check(settings)) {
@@ -119,9 +187,15 @@ public class CalculateScoreFromResultFilePeakLossThreadFP {
 	}
 	
 	public static Match getMatchByMass(Vector<?> matches, Double peakMass) {
+		return getMatchByMass(matches, peakMass, false);
+	}
+
+	public static Match getMatchByMass(Vector<?> matches, Double peakMass, boolean debug) {
 		for(int i = 0; i < matches.size(); i++) {
 			Match match = (Match)matches.get(i);
-			if(match.getMass().equals(peakMass)) return match;
+			if(debug) System.out.println(match.getMass());
+			if(match.getMass().equals(peakMass)) 
+				return match;
 		}
 		return null;
 	}
@@ -194,25 +268,26 @@ public class CalculateScoreFromResultFilePeakLossThreadFP {
 			AutomatedPeakFingerprintAnnotationScoreInitialiser initPeak = new AutomatedPeakFingerprintAnnotationScoreInitialiser();
 			AutomatedLossFingerprintAnnotationScoreInitialiser initLoss = new AutomatedLossFingerprintAnnotationScoreInitialiser();
 			try {
-				initPeak.initScoreParameters(settings);
-				initLoss.initScoreParameters(settings);
+				initPeak.initScoreParameters(this.settings);
+				initLoss.initScoreParameters(this.settings);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
-			postProcessScoreParametersPeak(settings, candidates);
-			postProcessScoreParametersLoss(settings, candidates);
+			postProcessScoreParametersPeak(this.settings, candidates);
+			postProcessScoreParametersLoss(this.settings, candidates);
 			
 			for(int i = 0; i < candidates.getNumberElements(); i++) { 
-				singlePostCalculatePeak(settings, candidates.getElement(i));
-				singlePostCalculateLoss(settings, candidates.getElement(i));
-				candidates.getElement(i).removeProperty("MatchList");
+				singlePostCalculatePeak(this.settings, candidates.getElement(i));
+				singlePostCalculateLoss(this.settings, candidates.getElement(i));
+				candidates.getElement(i).removeProperty("PeakMatchList");
+				candidates.getElement(i).removeProperty("LossMatchList");
 			}
 			
 			CandidateListWriterCSV writer = new CandidateListWriterCSV();
 			try {
-				writer.write(candidates, (String)settings.get(VariableNames.SAMPLE_NAME), this.outputFolder);
+				writer.write(candidates, (String)this.settings.get(VariableNames.SAMPLE_NAME), this.outputFolder);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -319,8 +394,11 @@ public class CalculateScoreFromResultFilePeakLossThreadFP {
 		public void postProcessScoreParametersLoss(Settings settings, CandidateList candidates) {
 			// to determine F_u
 			MassToFingerprintsHashMap lossMassToFingerprints = new MassToFingerprintsHashMap();
-			MassToFingerprintGroupListCollection lossToFingerprintGroupListCollection = (MassToFingerprintGroupListCollection)settings.get(VariableNames.PEAK_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME);
-
+			MassToFingerprintGroupListCollection lossToFingerprintGroupListCollection = (MassToFingerprintGroupListCollection)settings.get(VariableNames.LOSS_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME);
+			
+			Double mzppm = (Double)settings.get(VariableNames.RELATIVE_MASS_DEVIATION_NAME);
+			Double mzabs = (Double)settings.get(VariableNames.ABSOLUTE_MASS_DEVIATION_NAME);
+		
 			for(int k = 0; k < candidates.getNumberElements(); k++) {
 				/*
 				 * check whether the single run was successful
@@ -335,7 +413,10 @@ public class CalculateScoreFromResultFilePeakLossThreadFP {
 				Vector<Match> matchlist = new Vector<Match>();
 				for(int i = 0; i < tmp.length; i++) {
 					String[] tmp1 = tmp[i].split(":");
-					Match match = new CalculateScoreFromResultFilePeakLossThreadFP().new Match(tmp1[1], Double.parseDouble(tmp1[0]));
+					double mass = Double.parseDouble(tmp1[0]);
+					MassToFingerprintGroupList matchingLossToFingerprintGroupList = lossToFingerprintGroupListCollection.getElementByPeak(mass, mzppm, mzabs);
+					if(matchingLossToFingerprintGroupList != null) mass = matchingLossToFingerprintGroupList.getPeakmz();
+					Match match = new CalculateScoreFromResultFilePeakLossThreadFP().new Match(tmp1[1], mass);
 					matchlist.add(match);
 				}
 				
@@ -401,9 +482,9 @@ public class CalculateScoreFromResultFilePeakLossThreadFP {
 				groupList.setBetaProb(betaProbability / sum_f);
 				groupList.setProbabilityToConditionalProbability_sp();
 				groupList.calculateSumProbabilites();
-				
+
 			}
-			
+
 			return;
 		}
 		
@@ -420,7 +501,7 @@ public class CalculateScoreFromResultFilePeakLossThreadFP {
 		
 		public void singlePostCalculatePeak(Settings settings, ICandidate candidate) {
 			//this.value = 0.0;
-			double value = 1.0;
+			double value = 0.0;
 			MassToFingerprintGroupListCollection peakToFingerprintGroupListCollection = (MassToFingerprintGroupListCollection)settings.get(VariableNames.PEAK_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME);
 			
 			int matches = 0;
@@ -440,7 +521,7 @@ public class CalculateScoreFromResultFilePeakLossThreadFP {
 					matchProb.add(peakToFingerprintGroupList.getBetaProb());
 					matchType.add(3);
 					matchMasses.add(currentMass);
-					value *= peakToFingerprintGroupList.getBetaProb();
+					value += Math.log(peakToFingerprintGroupList.getBetaProb());
 				} else {
 					FastBitArray currentFingerprint = new FastBitArray(currentMatch.getFingerprint());
 					// ToDo: at this stage try to check all fragments not only the best one
@@ -449,13 +530,13 @@ public class CalculateScoreFromResultFilePeakLossThreadFP {
 					double matching_prob = peakToFingerprintGroupList.getMatchingProbability(currentFingerprint);
 					// |F|
 					if(matching_prob != 0.0) {
-						value *= matching_prob;
+						value += Math.log(matching_prob);
 						matchProb.add(matching_prob);
 						matchType.add(1);
 						matchMasses.add(currentMass);
 					}
 					else {
-						value *= peakToFingerprintGroupList.getAlphaProb();
+						value += Math.log(peakToFingerprintGroupList.getAlphaProb());
 						matchProb.add(peakToFingerprintGroupList.getAlphaProb());
 						matchType.add(2);
 						matchMasses.add(currentMass);
@@ -467,53 +548,54 @@ public class CalculateScoreFromResultFilePeakLossThreadFP {
 			candidate.setProperty("AutomatedPeakFingerprintAnnotationScore_Matches", matches);
 			candidate.setProperty("AutomatedPeakFingerprintAnnotationScore", value);
 			candidate.setProperty("AutomatedPeakFingerprintAnnotationScore_Probtypes", getProbTypeString(matchProb, matchType, matchMasses));
-	 	}
+		}
 		
 
 		public void singlePostCalculateLoss(Settings settings, ICandidate candidate) {
-			//this.value = 0.0;
-			double value = 1.0;
+			double value = 0.0;
 			MassToFingerprintGroupListCollection lossToFingerprintGroupListCollection = (MassToFingerprintGroupListCollection)settings.get(VariableNames.LOSS_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME);
-			
+
 			int matches = 0;
 			Vector<?> matchlist = (Vector<?>)candidate.getProperty("LossMatchList");
 			Vector<Double> matchMasses = new Vector<Double>();
 			Vector<Double> matchProb = new Vector<Double>();
 			Vector<Integer> matchType = new Vector<Integer>(); // found - 1; alpha - 2; beta - 3
 			// get foreground fingerprint observations (m_f_observed)
+			
 			for(int i = 0; i < lossToFingerprintGroupListCollection.getNumberElements(); i++) {
 				// get f_m_observed
-				MassToFingerprintGroupList peakToFingerprintGroupList = lossToFingerprintGroupListCollection.getElement(i);
-				Double currentMass = peakToFingerprintGroupList.getPeakmz();
-				Match currentMatch = getMatchByMass(matchlist, currentMass);
-
-				//(fingerprintToMasses.getSize(currentFingerprint));
+				MassToFingerprintGroupList lossToFingerprintGroupList = lossToFingerprintGroupListCollection.getElement(i);
+				Double currentMass = lossToFingerprintGroupList.getPeakmz();
+				boolean debug = false;
+			//	if(i == 8) debug = true;
+				Match currentMatch = getMatchByMass(matchlist, currentMass, debug);
 				if(currentMatch == null) {
-					matchProb.add(peakToFingerprintGroupList.getBetaProb());
+					matchProb.add(lossToFingerprintGroupList.getBetaProb());
 					matchType.add(3);
 					matchMasses.add(currentMass);
-					value *= peakToFingerprintGroupList.getBetaProb();
+					value += Math.log(lossToFingerprintGroupList.getBetaProb());
 				} else {
 					FastBitArray currentFingerprint = new FastBitArray(currentMatch.getFingerprint());
 					// ToDo: at this stage try to check all fragments not only the best one
 					matches++;
 					// (p(m,f) + alpha) / sum_F(p(m,f)) + |F| * alpha
-					double matching_prob = peakToFingerprintGroupList.getMatchingProbability(currentFingerprint);
+					double matching_prob = lossToFingerprintGroupList.getMatchingProbability(currentFingerprint);
 					// |F|
 					if(matching_prob != 0.0) {
-						value *= matching_prob;
+						value += Math.log(matching_prob);
 						matchProb.add(matching_prob);
 						matchType.add(1);
 						matchMasses.add(currentMass);
 					}
 					else {
-						value *= peakToFingerprintGroupList.getAlphaProb();
-						matchProb.add(peakToFingerprintGroupList.getAlphaProb());
+						value += Math.log(lossToFingerprintGroupList.getAlphaProb());
+						matchProb.add(lossToFingerprintGroupList.getAlphaProb());
 						matchType.add(2);
 						matchMasses.add(currentMass);
 					}
 				}
 			}
+
 			if(lossToFingerprintGroupListCollection.getNumberElements() == 0) value = 0.0;
 			
 			candidate.setProperty("AutomatedLossFingerprintAnnotationScore_Matches", matches);

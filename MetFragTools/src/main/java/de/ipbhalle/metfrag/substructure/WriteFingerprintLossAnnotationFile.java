@@ -65,7 +65,6 @@ public class WriteFingerprintLossAnnotationFile {
 	
 		Vector<Double> peakMassesSorted = new Vector<Double>();
 		Vector<String> fingerprintsSorted = new Vector<String>();
-		Vector<String> smilesSorted = new Vector<String>();
 		
 		Settings settings = new Settings();
 		settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, filename);
@@ -96,7 +95,7 @@ public class WriteFingerprintLossAnnotationFile {
 				String fingerprint = null;
 				try {
 					fingerprint = tmp1[1];
-					addSortedFeature(peak1, fingerprint, peakMassesSorted, fingerprintsSorted, smilesSorted);
+					addSortedFeature(peak1, fingerprint, peakMassesSorted, fingerprintsSorted);
 				}
 				catch(Exception e) {
 					continue;
@@ -262,7 +261,7 @@ public class WriteFingerprintLossAnnotationFile {
 	}
 	
 	
-	public static void addSortedFeature(double mass, String fingerprint, Vector<Double> masses, Vector<String> fingerprints, Vector<String> smiles) {
+	public static void addSortedFeature(double mass, String fingerprint, Vector<Double> masses, Vector<String> fingerprints) {
 		int index = 0;
 		while(index < masses.size() && masses.get(index) < mass) {
 			index++;
