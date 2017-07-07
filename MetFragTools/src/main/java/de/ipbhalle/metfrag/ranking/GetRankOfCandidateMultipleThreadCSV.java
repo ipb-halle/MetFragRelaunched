@@ -54,7 +54,7 @@ public class GetRankOfCandidateMultipleThreadCSV {
 			arg = arg.trim();
 			String[] tmp = arg.split("=");
 			if (!tmp[0].equals("csv") && !tmp[0].equals("param") && !tmp[0].equals("scorenames") 
-					&& !tmp[0].equals("threads") && !tmp[0].equals("output")
+					&& !tmp[0].equals("threads") && !tmp[0].equals("output") && !tmp[0].equals("type")
 					&& !tmp[0].equals("weights") && !tmp[0].equals("transform") && !tmp[0].equals("negscore")) {
 				System.err.println("property " + tmp[0] + " not known.");
 				return false;
@@ -141,7 +141,7 @@ public class GetRankOfCandidateMultipleThreadCSV {
 			threads.add(thread);
 		}
 		System.out.println("preparation finished");
-		
+
 		ExecutorService executer = Executors.newFixedThreadPool(numberThreads);
 		for(ProcessingThread thread : threads) {
 			executer.execute(thread);
@@ -186,11 +186,14 @@ public class GetRankOfCandidateMultipleThreadCSV {
 				if(line.matches("# [A-Z]*")) {
 					csvToInChIKey.put(resultFiles[i].getAbsolutePath(), line.split("\\s+")[1]);
 					break;
+				} else if(line.matches("# InChIKey [A-Z]*-*[A-Z]*-*[A-Z]*")) {
+					csvToInChIKey.put(resultFiles[i].getAbsolutePath(), line.split("\\s+")[2].split("-")[0]);
+					break;
 				}
+					
 			}
 			breader.close();
 		}
-		
 		return csvToInChIKey;
 	}
 	
@@ -323,8 +326,9 @@ public class GetRankOfCandidateMultipleThreadCSV {
 			MetFragGlobalSettings settings = new MetFragGlobalSettings();
 			settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, this.csv);
 			IDatabase db = null;
-			if(csv == "csv") db = new LocalCSVDatabase(settings);
-			else if (csv.equals("auto")) {
+			if(this.fileType.equals("csv")) db = new LocalCSVDatabase(settings);
+			else if(this.fileType.equals("psv")) db = new LocalPSVDatabase(settings);
+			else if (this.fileType.equals("auto")) {
 				if(this.csv.endsWith("psv")) db = new LocalPSVDatabase(settings);
 				else db = new LocalCSVDatabase(settings);
 			}
@@ -335,9 +339,11 @@ public class GetRankOfCandidateMultipleThreadCSV {
 			} catch (MultipleHeadersFoundInInputDatabaseException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
+				System.exit(1);
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
+				System.exit(1);
 			}
 			CandidateList candidates = null;
 			try {
