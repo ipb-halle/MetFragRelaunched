@@ -163,7 +163,12 @@ public class LocalPSVDatabase extends AbstractDatabase {
 				*/
 				//identifier = String.valueOf(++internal_identifier);
 				identifiers.add(identifier);
-				precursorCandidate = new TopDownPrecursorCandidate(tmp[propNameToIndex.get(VariableNames.INCHI_NAME)].trim(), identifier);
+				try {
+					precursorCandidate = new TopDownPrecursorCandidate(tmp[propNameToIndex.get(VariableNames.INCHI_NAME)].trim(), identifier);
+				} catch(Exception e) {
+					System.out.println(line);
+					System.exit(1);
+				}
 				/*
 				 * store all read property fields within the candidate container
 				 */
