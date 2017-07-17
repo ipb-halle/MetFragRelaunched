@@ -23,7 +23,7 @@ public class FilteredStringTandemMassPeakListReader extends AbstractPeakListRead
 		String stringname = (String)this.settings.get(VariableNames.PEAK_LIST_STRING_NAME);
 		String peakDelim1 = "\\n";
 		String peakDelim2 = "\\s+";
-		if(stringname.contains(";")) {
+		if(stringname.contains(";") || stringname.contains("_")) {
 			peakDelim1 = ";";
 			peakDelim2 = "_";
 		}
