@@ -29,7 +29,7 @@ MetFragCommandLine
 
 ##### Basics
 - MetFrag commandline version depends on MetFragLib
-- for a short tutorial visit http://c-ruttkies.github.io/MetFrag/projects/metfrag22cl/
+- for a short tutorial visit http://c-ruttkies.github.io/MetFrag/projects/metfragcl/
 
 ##### Build
 ```bash
