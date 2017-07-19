@@ -31,6 +31,7 @@ public class GetRankOfCandidateMultipleThreadCSV {
 	public static double[][] weights;
 	public static String[] scoringPropertyNames;
 	public static int numberFinished = 0;
+	public static boolean stdout = false;
 	
 	static {
 		scoresToTransform = new Vector<String>();
@@ -45,7 +46,7 @@ public class GetRankOfCandidateMultipleThreadCSV {
 
 	public static synchronized void increaseNumberFinished () {
 		numberFinished++;
-		System.out.println("finished " + numberFinished);
+		if(!stdout) System.out.println("finished " + numberFinished);
 	}
 	
 	public static boolean getArgs(String[] args) {
@@ -55,7 +56,8 @@ public class GetRankOfCandidateMultipleThreadCSV {
 			String[] tmp = arg.split("=");
 			if (!tmp[0].equals("csv") && !tmp[0].equals("param") && !tmp[0].equals("scorenames") 
 					&& !tmp[0].equals("threads") && !tmp[0].equals("output") && !tmp[0].equals("type")
-					&& !tmp[0].equals("weights") && !tmp[0].equals("transform") && !tmp[0].equals("negscore")) {
+					&& !tmp[0].equals("weights") && !tmp[0].equals("transform") && !tmp[0].equals("negscore")
+					&& !tmp[0].equals("stdout")) {
 				System.err.println("property " + tmp[0] + " not known.");
 				return false;
 			}
@@ -100,6 +102,9 @@ public class GetRankOfCandidateMultipleThreadCSV {
 		if (!argsHash.containsKey("type")) {
 			argsHash.put("type", "csv");
 		}
+		if (!argsHash.containsKey("stdout")) {
+			argsHash.put("stdout", "false");
+		}
 		
 		return true;
 	}
@@ -127,6 +132,8 @@ public class GetRankOfCandidateMultipleThreadCSV {
 		negScores = Boolean.parseBoolean(argsHash.get("negscore"));
 		scoringPropertyNames = scorenames.split(",");
 		weights = readWeights(argsHash.get("weights"));
+		stdout = Boolean.parseBoolean(argsHash.get("stdout"));
+		
 		java.util.HashMap<String, String> csvToInChIKey = parseInChIKeys(csv, param);
 		java.util.Iterator<?> it = csvToInChIKey.keySet().iterator();
 		
@@ -140,7 +147,7 @@ public class GetRankOfCandidateMultipleThreadCSV {
 					new GetRankOfCandidateMultipleThreadCSV().new ProcessingThread(csvFile, inchikey1, output + "/" + id + ".txt", type);
 			threads.add(thread);
 		}
-		System.out.println("preparation finished");
+		if(!stdout) System.out.println("preparation finished");
 
 		ExecutorService executer = Executors.newFixedThreadPool(numberThreads);
 		for(ProcessingThread thread : threads) {
@@ -448,17 +455,23 @@ public class GetRankOfCandidateMultipleThreadCSV {
 						+ " " + values + " " + maximalValues + " " + weightString;
 			}
 			
-			java.io.BufferedWriter bwriter = null;
-			try {
-				bwriter = new java.io.BufferedWriter(new java.io.FileWriter(new java.io.File(this.outputFile)));
-				for(String string : outputString) {
-					bwriter.write(string);
-					bwriter.newLine();
+			if(!stdout) {
+				java.io.BufferedWriter bwriter = null;
+				try {
+					bwriter = new java.io.BufferedWriter(new java.io.FileWriter(new java.io.File(this.outputFile)));
+					for(String string : outputString) {
+						bwriter.write(string);
+						bwriter.newLine();
+					}
+					bwriter.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-				bwriter.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			} else {
+				for(String string : outputString) {
+					System.out.println(string);
+				}
 			}
 			
 			increaseNumberFinished();
