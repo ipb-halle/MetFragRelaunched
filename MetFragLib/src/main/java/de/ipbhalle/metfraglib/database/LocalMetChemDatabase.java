@@ -107,10 +107,13 @@ public class LocalMetChemDatabase extends LocalPostgresDatabase {
 
 		String query = "select n.name, s.substance_id, s." + this.CID_COLUMN_NAME + ", comp.compound_id, comp." + this.INCHI_COLUMN_NAME + ", comp." + this.MASS_COLUMN_NAME + ", comp." + this.FORMULA_COLUMN_NAME  + ", comp." + this.SMILES_COLUMN_NAME + ", comp." + this.INCHIKEY1_COLUMN_NAME + ", comp." + this.INCHIKEY2_COLUMN_NAME + " "
                                 + "from (select c.compound_id, c." + this.INCHI_COLUMN_NAME + ", c." + this.MASS_COLUMN_NAME + ", c." + this.FORMULA_COLUMN_NAME  + ", c." + this.SMILES_COLUMN_NAME + ", c." + this.INCHIKEY1_COLUMN_NAME + ", c." + this.INCHIKEY2_COLUMN_NAME  + " "
-                                +       "from compound c where c." + this.FORMULA_COLUMN_NAME + " = '" + molecularFormula + "') as comp "
+                                +       "from compound c where c." + this.FORMULA_COLUMN_NAME + " = '" + molecularFormula + "'"
+                                +		" or c." + this.FORMULA_COLUMN_NAME + " = '" + molecularFormula + "+'" 
+                                +		" or c." + this.FORMULA_COLUMN_NAME + " = '" + molecularFormula + "-'"
+                                + 		") as comp "
                                 +       "left join substance s on s.compound_id = comp.compound_id "
                                 +       "left join name n on s.substance_id = n.substance_id where s.library_id='" + library_id + "';";
-
+		System.out.println(query);
 		ResultSet rs = this.submitQuery(query);
 		if(rs == null) return new Vector<String>();
 		this.fillCandidateVectors(rs);

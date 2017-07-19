@@ -263,7 +263,7 @@ public class CalculateScoreFromResultFilePeakLossThreadFP {
 				return;
 			}
 			
-			System.out.println("Read " + candidates.getNumberElements() + " candidates");
+			System.out.println(dbFilename.replaceAll(".*/", "") + ": Read " + candidates.getNumberElements() + " candidates");
 			
 			AutomatedPeakFingerprintAnnotationScoreInitialiser initPeak = new AutomatedPeakFingerprintAnnotationScoreInitialiser();
 			AutomatedLossFingerprintAnnotationScoreInitialiser initLoss = new AutomatedLossFingerprintAnnotationScoreInitialiser();
