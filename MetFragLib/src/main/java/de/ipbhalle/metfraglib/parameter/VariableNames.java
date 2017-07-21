@@ -266,6 +266,7 @@ public class VariableNames {
 	 */
 	public static final String INCHI_KEY_1_NAME				=	"InChIKey1";
 	public static final String INCHI_KEY_2_NAME				=	"InChIKey2";
+	public static final String INCHI_KEY_3_NAME				=	"InChIKey3";
 	public static final String INCHI_KEY_NAME					=	"InChIKey";
 	public static final String MOLECULAR_FORMULA_NAME			=	"MolecularFormula";
 	public static final String MONOISOTOPIC_MASS_NAME			=	"MonoisotopicMass";

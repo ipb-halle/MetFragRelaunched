@@ -295,6 +295,10 @@ public class Constants {
 	public static boolean checkIonisationType(String ionModeString) {
 		return ADDUCT_TYPES.contains(ionModeString);
 	}
+
+	public static boolean checkIonisationNominalMass(int nominalMass) {
+		return ADDUCT_NOMINAL_MASSES.contains(nominalMass);
+	}
 	
 	public static int getIonisationNominalMassByType(String ionModeString) {
 		return ADDUCT_NOMINAL_MASSES.get(ADDUCT_TYPES.indexOf(ionModeString));

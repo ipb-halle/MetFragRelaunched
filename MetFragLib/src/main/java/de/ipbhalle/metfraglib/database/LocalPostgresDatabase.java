@@ -171,7 +171,8 @@ public class LocalPostgresDatabase extends AbstractLocalDatabase {
 		try {
 			this.driver = new org.postgresql.Driver();
 			DriverManager.registerDriver (this.driver);
-			this.databaseConnection = DriverManager.getConnection("jdbc:postgresql://" + this.SERVER + ":" + this.PORT + "/" + this.DATABASE_NAME, this.db_user, this.db_password);
+			String jdbcString = "jdbc:postgresql://" + this.SERVER + ":" + this.PORT + "/" + this.DATABASE_NAME;
+			this.databaseConnection = DriverManager.getConnection(jdbcString, this.db_user, this.db_password);
 				this.statement = this.databaseConnection.createStatement();
 			rs = this.statement.executeQuery(query);
 		//    st.close();
