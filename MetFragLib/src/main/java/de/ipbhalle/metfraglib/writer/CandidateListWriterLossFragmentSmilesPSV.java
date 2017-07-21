@@ -6,7 +6,9 @@ import java.io.IOException;
 
 import org.openscience.cdk.interfaces.IAtomContainer;
 
+import de.ipbhalle.metfraglib.additionals.MathTools;
 import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
+import de.ipbhalle.metfraglib.exceptions.AtomTypeNotKnownFromInputListException;
 import de.ipbhalle.metfraglib.exceptions.RelativeIntensityNotDefinedException;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.interfaces.IFragment;
@@ -17,6 +19,7 @@ import de.ipbhalle.metfraglib.list.CandidateList;
 import de.ipbhalle.metfraglib.list.MatchList;
 import de.ipbhalle.metfraglib.list.ScoredCandidateList;
 import de.ipbhalle.metfraglib.list.SortedScoredCandidateList;
+import de.ipbhalle.metfraglib.molecularformula.ByteMolecularFormula;
 import de.ipbhalle.metfraglib.parameter.Constants;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.settings.Settings;
@@ -67,6 +70,8 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 			
 			if(scoredCandidate.getMatchList() != null) 
 			{
+				String[] matchedFormulas = new String[scoredCandidate.getMatchList().getNumberElements()];
+				double[] correctedMasses = new double[scoredCandidate.getMatchList().getNumberElements()];
 				for(int ii = 0; ii < scoredCandidate.getMatchList().getNumberElements(); ii++) 
 				{
 					try {
@@ -77,6 +82,8 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 						continue;
 					}
 					String formula = scoredCandidate.getMatchList().getElement(ii).getModifiedFormulaStringOfBestMatchedFragment();
+					matchedFormulas[ii] = formula;
+					correctedMasses[ii] = MathTools.round(calculateMassOfFormula(formula), 5);
 					
 					sumFormulasOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + formula + ";";
 					// get fragment of explained peak
@@ -88,7 +95,7 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 						continue;
 					}
 					
-					fingerprintOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + fpsm[0] + ";";	
+					fingerprintOfFragmentsExplainedPeaks += correctedMasses[ii] + ":" + fpsm[0] + ";";	
 					smilesOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + fpsm[1] + ";";
 					aromaticSmilesOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + frag.getAromaticSmiles() + ";";
 				}
@@ -113,7 +120,7 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 				scoredCandidate.setProperty("NoExplPeaks", countExplainedPeaks);
 				//add loss information
 				if(settings != null) {
-					String[] lossesInformation = createLossAnnotations(scoredCandidate.getMatchList(), settings);
+					String[] lossesInformation = createLossAnnotations(scoredCandidate.getMatchList(), settings, correctedMasses);
 					scoredCandidate.setProperty("LossSmilesOfExplPeaks", lossesInformation[0]);
 					scoredCandidate.setProperty("LossAromaticSmilesOfExplPeaks", lossesInformation[1]);
 					scoredCandidate.setProperty("LossFingerprintOfExplPeaks", lossesInformation[2]);
@@ -155,7 +162,7 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 	 * @param matchList
 	 * @param settings
 	 */
-	private String[] createLossAnnotations(MatchList matchList, Settings settings) {
+	private String[] createLossAnnotations(MatchList matchList, Settings settings, double[] correctedMasses) {
 		java.util.Vector<String> lossFingerprint = new java.util.Vector<String>();
 		java.util.Vector<String> lossSmiles = new java.util.Vector<String>();
 		java.util.Vector<String> lossSmarts = new java.util.Vector<String>();
@@ -174,11 +181,13 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 		for(int i = 0; i < matchList.getNumberElements(); i++) {
 			IMatch matchI = matchList.getElement(i);
 			IFragment fragmentI = matchI.getBestMatchedFragment();
-			double peakMassI = matchI.getMatchedPeak().getMass();
+		//	double peakMassI = matchI.getMatchedPeak().getMass();
+			double peakMassI = correctedMasses[i];
 			//compare with matches with greater mass than the current one
 			for(int j = i + 1; j < matchList.getNumberElements(); j++) {
 				IMatch matchJ = matchList.getElement(i);
-				double peakMassJ = matchJ.getMatchedPeak().getMass();
+			//	double peakMassJ = matchJ.getMatchedPeak().getMass();
+				double peakMassJ = correctedMasses[j];
 				IFragment fragmentJ = matchJ.getBestMatchedFragment();
 				if(fragmentJ.isRealSubStructure(fragmentI)) {
 					double diff = peakMassJ - peakMassI;
@@ -261,4 +270,50 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 		return this.writeFile(file, list, null);
 	}
 
+	private double calculateMassOfFormula(String formula) {
+		String part1 = formula.replaceAll("\\[([A-Za-z0-9]*).*\\].*", "$1");
+		String charge = formula.substring(formula.length() - 1);
+		java.util.Vector<String> elementsToAdd = new java.util.Vector<String>();
+		java.util.Vector<String> timesToAdd = new java.util.Vector<String>();
+		java.util.Vector<String> signsForAdd = new java.util.Vector<String>();
+		for(int i = 0; i < formula.length() - 1; i++) {
+			if(formula.charAt(i) == '+' || formula.charAt(i) == '-') {
+				signsForAdd.add(formula.charAt(i)+"");
+				boolean numberFinished = false;
+				String number = "";
+				String element = "";
+				for(int k = (i+1); k < formula.length() - 1; k++) {
+					if(!numberFinished && Character.isDigit(formula.charAt(k))) number += formula.charAt(k);
+					else if(!numberFinished && !Character.isDigit(formula.charAt(k))) {
+						if(number.equals("")) number = "1";
+						numberFinished = true;
+					}
+					if(Character.isLowerCase(formula.charAt(k)) && !element.equals("")) element += formula.charAt(k);
+					if(Character.isUpperCase(formula.charAt(k)) && element.equals("")) element += formula.charAt(k);
+					if(Character.isUpperCase(formula.charAt(k)) && !element.equals("")) break;
+					if(Character.isDigit(formula.charAt(k)) && numberFinished) break;
+					if(!Character.isUpperCase(formula.charAt(k)) && !Character.isLowerCase(formula.charAt(k)) && !Character.isDigit(formula.charAt(k))) break;
+				}
+				elementsToAdd.add(element);
+				timesToAdd.add(number);
+			}	
+		}
+		
+		double mass = 0.0;
+		try {
+			boolean isPositive = charge == "-" ? false : true;
+			double chargeMass = Constants.getChargeMassByType(isPositive);
+			ByteMolecularFormula bmf = new ByteMolecularFormula(part1);
+			for(int i = 0; i < elementsToAdd.size(); i++) {
+				byte atomIndex = (byte)Constants.ELEMENTS.indexOf(elementsToAdd.get(i));
+				short amount = Short.parseShort(signsForAdd.get(i) + timesToAdd.get(i));
+				bmf.changeNumberElementsFromByte(atomIndex, amount);
+			}
+			mass = bmf.getMonoisotopicMass() + chargeMass;
+		} catch (AtomTypeNotKnownFromInputListException e) {
+			e.printStackTrace();
+		}
+		return mass;
+	}
+	
 }

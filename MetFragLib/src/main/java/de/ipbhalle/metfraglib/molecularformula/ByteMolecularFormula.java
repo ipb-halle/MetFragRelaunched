@@ -319,6 +319,23 @@ public class ByteMolecularFormula implements IMolecularFormula {
 		}
 		return 0;
 	}
+
+	/**
+	 * change the amount of a specific atom type
+	 * 
+	 * @param atomIndex
+	 * @param amount
+	 */
+	public void changeNumberElementsFromByte(byte atomIndex, int amount) {
+		if(Constants.ELEMENTS.indexOf("H") == atomIndex)
+			this.numberHydrogens = (short)((int)this.numberHydrogens + amount);
+		for (int i = 0; i < this.atomsAsIndeces.length; i++) {
+			if(this.atomsAsIndeces[i] == atomIndex) {
+				this.numberOfAtoms[i] = (short)((int)this.numberOfAtoms[i] + amount);
+				break;
+			}
+		}
+	}
 	
 	public boolean isContainsC() {
 		return containsC;

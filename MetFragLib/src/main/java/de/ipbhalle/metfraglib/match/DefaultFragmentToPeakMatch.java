@@ -74,6 +74,7 @@ public class DefaultFragmentToPeakMatch implements IMatch {
 	}
 	
 	public String getModifiedFormulasStringOfBestMatchedFragment() {
+		System.out.println("here");
 		String formula = "[" + this.bestMatchedFragment.getMolecularFormula().toString();
 		if(this.hydrogenDifferenceOfBestFragment == 1) formula += "+H]";
 		else if(this.hydrogenDifferenceOfBestFragment > 1) formula += "+" + this.hydrogenDifferenceOfBestFragment + "H]";

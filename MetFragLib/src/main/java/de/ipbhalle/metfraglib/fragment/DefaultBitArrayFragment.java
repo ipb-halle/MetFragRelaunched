@@ -267,7 +267,8 @@ public class DefaultBitArrayFragment extends AbstractFragment {
 	
 	public IMolecularFormula getMolecularFormula() {
 		try {
-			return new BitArrayFragmentMolecularFormula((BitArrayPrecursor)this.precursorMolecule, this.atomsFastBitArray);
+			BitArrayFragmentMolecularFormula form = new BitArrayFragmentMolecularFormula((BitArrayPrecursor)this.precursorMolecule, this.atomsFastBitArray);
+			return form;
 		} catch (AtomTypeNotKnownFromInputListException e) {
 			e.printStackTrace();
 		}

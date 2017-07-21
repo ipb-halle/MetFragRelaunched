@@ -114,6 +114,7 @@ public class RunCrossValidationWithRankings {
 		//matrix contains rankings for each file (folds.length)
 		//for each weight combination number_allowed_files
 		int[][] rank_matrix = new int[folds.length][number_allowed_files]; 
+		double[][] avg_rank_matrix = new double[folds.length][number_allowed_files]; 
 		int[][] better_candidates_matrix = new int[folds.length][number_allowed_files]; 
 		int[][] worse_candidates_matrix = new int[folds.length][number_allowed_files]; 
 		int[][] total_candidates_matrix = new int[folds.length][number_allowed_files]; 
@@ -132,6 +133,7 @@ public class RunCrossValidationWithRankings {
 					try {
 						rank_matrix[row_index][file_index] = Integer.parseInt(tmp[2]);
 						better_candidates_matrix[row_index][file_index] = (int)Math.round(Double.parseDouble(tmp[8]));
+						avg_rank_matrix[row_index][file_index] = getAvgRank(rank_matrix[row_index][file_index], better_candidates_matrix[row_index][file_index]);
 						worse_candidates_matrix[row_index][file_index] = (int)Math.round(Double.parseDouble(tmp[9]));
 						total_candidates_matrix[row_index][file_index] = (int)Math.round(Double.parseDouble(tmp[3]));
 					}
@@ -299,6 +301,18 @@ public class RunCrossValidationWithRankings {
 			errors[i] = MathTools.round(Math.pow(meanrrps[i] - added_up_errors[i], 2.0), 6);
 		}
 		return errors;
+	}
+	
+	public static double getAvgRank(int rank, int bc) {
+		//mean((as.numeric(x[1]) - (as.numeric(x[1])-as.numeric(x[2])) + 1):(as.numeric(x[1]))))
+		int start = rank - (rank - bc) + 1;
+		int number_values = 0; 
+		double value = 0.0;
+		for(int i = start; i <= rank; i++) {
+			number_values++;
+			value += i;
+		}
+		return value / (double)number_values;
 	}
 	
 	public static void calculateBestWeight(int[][] rank_matrix, int check_best_rank_positions, int[] valid_indexes, String[] file_names) {

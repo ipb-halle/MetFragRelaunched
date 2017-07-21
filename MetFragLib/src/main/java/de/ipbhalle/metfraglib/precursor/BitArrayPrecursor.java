@@ -21,6 +21,7 @@ public class BitArrayPrecursor extends DefaultPrecursor {
 	protected FastBitArray[] ringBondToBelongingRingBondIndeces;
 	protected FastBitArray aromaticBonds;
 	protected short[] atomAdjacencyList;
+	protected byte[] numberHydrogensConnectedToAtom;
 	
 	public BitArrayPrecursor(IAtomContainer precursorMolecule) {
 		super(precursorMolecule);
@@ -52,17 +53,24 @@ public class BitArrayPrecursor extends DefaultPrecursor {
 		return numDegreeOne;
 	}
 	
+	@Override
+	public int getNumberHydrogensConnectedToAtomIndex(int atomIndex) {
+		return this.numberHydrogensConnectedToAtom[atomIndex];
+	}
+	
 	/**
 	 * 
 	 */
 	protected void initiliseAtomIndexToConnectedAtomIndeces() {
 		this.atomIndexToConnectedAtomIndeces = new java.util.Vector<short[]>();
+		this.numberHydrogensConnectedToAtom = new byte[this.getNonHydrogenAtomCount()];
 		for(int i = 0; i < this.getNonHydrogenAtomCount(); i++) {
 			java.util.List<IAtom> connectedAtoms = this.precursorMolecule.getConnectedAtomsList(this.precursorMolecule.getAtom(i));
 			short[] connectedAtomIndeces = new short[connectedAtoms.size()];
 			for(int k = 0; k < connectedAtoms.size(); k++)
 				connectedAtomIndeces[k] = (short)this.precursorMolecule.getAtomNumber(connectedAtoms.get(k));
 			this.atomIndexToConnectedAtomIndeces.add(i, connectedAtomIndeces);
+			this.numberHydrogensConnectedToAtom[i] = (byte)(int)this.precursorMolecule.getAtom(i).getImplicitHydrogenCount();
 		}
 	}
 	

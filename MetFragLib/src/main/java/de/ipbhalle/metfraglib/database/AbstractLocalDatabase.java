@@ -21,6 +21,7 @@ public abstract class AbstractLocalDatabase extends AbstractDatabase {
 	protected String INCHI_COLUMN_NAME;
 	protected String INCHIKEY1_COLUMN_NAME;
 	protected String INCHIKEY2_COLUMN_NAME;
+	protected String INCHIKEY3_COLUMN_NAME;
 	protected String CID_COLUMN_NAME;
 	protected String SMILES_COLUMN_NAME;
 	protected String COMPOUND_NAME_COLUMN_NAME;
