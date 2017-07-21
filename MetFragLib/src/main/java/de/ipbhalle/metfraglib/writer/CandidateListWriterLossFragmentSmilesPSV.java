@@ -82,9 +82,12 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 						continue;
 					}
 					String formula = scoredCandidate.getMatchList().getElement(ii).getModifiedFormulaStringOfBestMatchedFragment();
-					matchedFormulas[ii] = formula;
-					correctedMasses[ii] = MathTools.round(calculateMassOfFormula(formula), 5);
-					
+					double mass = scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass();
+					if((Boolean)settings.get(VariableNames.CORRECT_MASSES_FOR_FINGERPRINT_ANNOTATION_NAME)) {
+						matchedFormulas[ii] = formula;
+						correctedMasses[ii] = MathTools.round(calculateMassOfFormula(formula), 5);
+						mass = correctedMasses[ii];
+					}
 					sumFormulasOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + formula + ";";
 					// get fragment of explained peak
 					IFragment frag = scoredCandidate.getMatchList().getElement(ii).getBestMatchedFragment();
@@ -95,7 +98,7 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 						continue;
 					}
 					
-					fingerprintOfFragmentsExplainedPeaks += correctedMasses[ii] + ":" + fpsm[0] + ";";	
+					fingerprintOfFragmentsExplainedPeaks += mass + ":" + fpsm[0] + ";";	
 					smilesOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + fpsm[1] + ";";
 					aromaticSmilesOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + frag.getAromaticSmiles() + ";";
 				}
@@ -182,12 +185,16 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 			IMatch matchI = matchList.getElement(i);
 			IFragment fragmentI = matchI.getBestMatchedFragment();
 		//	double peakMassI = matchI.getMatchedPeak().getMass();
-			double peakMassI = correctedMasses[i];
+			double peakMassI = matchI.getMatchedPeak().getMass();
+			if((Boolean)settings.get(VariableNames.CORRECT_MASSES_FOR_FINGERPRINT_ANNOTATION_NAME))
+				peakMassI = correctedMasses[i];
 			//compare with matches with greater mass than the current one
 			for(int j = i + 1; j < matchList.getNumberElements(); j++) {
 				IMatch matchJ = matchList.getElement(i);
 			//	double peakMassJ = matchJ.getMatchedPeak().getMass();
-				double peakMassJ = correctedMasses[j];
+				double peakMassJ = matchJ.getMatchedPeak().getMass();
+				if((Boolean)settings.get(VariableNames.CORRECT_MASSES_FOR_FINGERPRINT_ANNOTATION_NAME))
+					peakMassJ = correctedMasses[j];
 				IFragment fragmentJ = matchJ.getBestMatchedFragment();
 				if(fragmentJ.isRealSubStructure(fragmentI)) {
 					double diff = peakMassJ - peakMassI;

@@ -227,6 +227,11 @@ public class ParameterDataTypes {
 		parameterDatatypes.put(	VariableNames.HD_MINIMUM_ABSOLUTE_PEAK_INTENSITY_NAME,						"Double"	);
 		parameterDatatypes.put(	VariableNames.HD_GROUP_FLAG_FILTER_ENABLED_NAME, 							"Boolean"	);
 		
+		/*
+		 * 
+		 */
+		parameterDatatypes.put(	VariableNames.CORRECT_MASSES_FOR_FINGERPRINT_ANNOTATION_NAME, 		"Boolean"	);
+		
 	}
 	
 	/*
