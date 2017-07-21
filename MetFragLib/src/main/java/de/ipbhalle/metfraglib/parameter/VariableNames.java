@@ -345,7 +345,8 @@ public class VariableNames {
 	public static final String HD_PEAK_INDEX_TO_PEAK_MATCH_NAME				=	"HDPeakIndexToPeakMatch";
 	public static final String HD_NUMBER_EXPLAINED_PEAKS_COLUMN				=	"HDNoExplPeaks";
 	public static final String HD_GROUP_FLAG_FILTER_ENABLED_NAME				=	"HDGroupFlagFilterEnabled";
-	
+
+	public static final String CORRECT_MASSES_FOR_FINGERPRINT_ANNOTATION_NAME		=	"CorrectMassesForFingerprintAnnotation";
 	
 	/*
 	 * proxy settings
