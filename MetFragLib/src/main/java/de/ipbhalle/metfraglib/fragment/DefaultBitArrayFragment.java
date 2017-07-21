@@ -72,7 +72,7 @@ public class DefaultBitArrayFragment extends AbstractFragment {
 		this.bondsFastBitArray = new FastBitArray(precursorMolecule.getNonHydrogenBondCount(), false);
 		this.brokenBondsFastBitArray = new FastBitArray(precursorMolecule.getNonHydrogenBondCount(), false);
 		for(int i = 0; i < this.atomsFastBitArray.getSize(); i++) {
-			short[] atomIndeces = precursorMolecule.getConnectedAtomIndecesOfAtomIndex((byte)i);
+			short[] atomIndeces = precursorMolecule.getConnectedAtomIndecesOfAtomIndex((short)i);
 			if(this.atomsFastBitArray.get(i)) {
 				for(int k = 0; k < atomIndeces.length; k++) {
 					if(this.atomsFastBitArray.get(atomIndeces[k])) 
@@ -473,7 +473,8 @@ public class DefaultBitArrayFragment extends AbstractFragment {
 	public IFragment getDifferenceFragment() {
 		FastBitArray complete = new FastBitArray(this.getAtomsFastBitArray().getSize(), true);
 		FastBitArray diffFastBitArray = complete.getDiff(this.getAtomsFastBitArray());
-		DefaultBitArrayFragment diffFragment = new DefaultBitArrayFragment((BitArrayPrecursor)this.precursorMolecule, diffFastBitArray);
+		DefaultBitArrayFragment diffFragment = 
+				new DefaultBitArrayFragment((BitArrayPrecursor)this.precursorMolecule, diffFastBitArray);
 		if(!diffFragment.isConnected()) return null;
 		return diffFragment;
 	}
