@@ -452,7 +452,7 @@ public class GetRankOfCandidateMultipleThreadCSV {
 						+ correctGroup.getBestIdentifier() + " "
 						+ candidates.getElement(indexOfCorrect).getProperty("NoExplPeaks") + " "
 						+ candidates.getElement(indexOfCorrect).getProperty("NumberPeaksUsed") + " " + rrp + " " + bc + " " + wc
-						+ " " + values + " " + maximalValues + " " + weightString;
+						+ " " + values + " " + maximalValues + " " + weightString + " " + this.getAvgRank(rank, (int)bc);
 			}
 			
 			if(!stdout) {
@@ -476,6 +476,19 @@ public class GetRankOfCandidateMultipleThreadCSV {
 			
 			increaseNumberFinished();
 		}
+		
+		public double getAvgRank(int rank, int bc) {
+			//mean((as.numeric(x[1]) - (as.numeric(x[1])-as.numeric(x[2])) + 1):(as.numeric(x[1]))))
+			int start = rank - (rank - bc) + 1;
+			int number_values = 0; 
+			double value = 0.0;
+			for(int i = start; i <= rank; i++) {
+				number_values++;
+				value += i;
+			}
+			return value / (double)number_values;
+		}
+		
 	}
-	
+
 }

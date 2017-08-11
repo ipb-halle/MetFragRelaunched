@@ -15,23 +15,27 @@ public class RunCrossValidationWithRankings {
 
 	//public static String rankings_folder_name = "/home/cruttkie/Dokumente/PhD/MetFrag/substructure_training/ufz_train_eawag_test/rankings";
 	//public static String rankings_folder_name = "/home/cruttkie/Dokumente/PhD/MetFrag/substructure_training/cross_validation/eawag_02_new/rankings_testing_combined";
-	//public static String rankings_folder_name = "/home/cruttkie/svn/eawag/2016hdx/metfrag/rankings_9_5_chemspider/pos";
-	public static String rankings_folder_name = "/scratch/cruttkie/fingerprint_training/cross_validation/ianvs/rankings/testing_all";
+	public static String rankings_folder_name = "/oldhome/cruttkie/svn/eawag/2016hdx/metfrag/rankings_chemspider/rankings_chemspider_9_1/neg_smiles";
+	//public static String rankings_folder_name = "/scratch/cruttkie/fingerprint_training/cross_validation/ianvs/rankings/testing_all";
 	//public static String rankings_folder_name = "/home/chrisr/Dokumente/PhD/Talks/FoSem2016/train_ufz_test_eawag_05_11_2016/rankings";
 	public static int number_folds = 10;
 	public static int number_queries = 1;
-	public static String only_metfrag_filename = "rankings_2.txt";
+	public static String only_metfrag_filename = "rankings_1000.txt";
 	//public static String only_metfrag_filename = "rankings_101.txt";
 	//public static String given_folds_filename = "/home/cruttkie/Dokumente/PhD/MetFrag/substructure_training/cross_validation/eawag_02_new/folds.txt";
-	public static String given_folds_filename = null;
+	public static String given_folds_filename = "/oldhome/cruttkie/svn/eawag/2016hdx/metfrag/rankings_chemspider/folds_neg_1000.txt";
+	//public static String given_folds_filename = null;
 	//public static String output_file = "/home/cruttkie/Dokumente/PhD/MetFrag/substructure_training/ufz_train_eawag_test/rankings.txt";
 	//public static String output_file = "/home/cruttkie/Dokumente/PhD/MetFrag/substructure_training/cross_validation/eawag_02_new/rankings.txt";
 	//public static String output_file = "/home/cruttkie/Dokumente/PhD/MetFrag/substructure_training/casmi_eawag_data/run_2016_12_06/cv_rankings.txt";
-	public static String output_file = "/scratch/cruttkie/fingerprint_training/cross_validation/ianvs/rankings/testing_all.txt";
-	//public static String output_file = "/home/cruttkie/svn/eawag/2016hdx/metfrag/rankings_9_5_chemspider/pos_rankings.txt";
-	//public static String output_file = null;
+	//public static String output_file = "/scratch/cruttkie/fingerprint_training/cross_validation/ianvs/rankings/testing_all.txt";
+	public static String output_file = "/oldhome/cruttkie/svn/eawag/2016hdx/metfrag/rankings_chemspider/rankings_chemspider_9_1/neg_rankings.txt";
+	//public static String output_file = "/tmp/test.txt";
 
-	/*
+	public static double DOUBLE_DEV = 10^-6;
+	
+	public static boolean use_avg_rank = true;
+	
 	public static String[] forbidden_filenames = {
 		"rankings_1001.txt",
 		"rankings_1002.txt",
@@ -49,11 +53,12 @@ public class RunCrossValidationWithRankings {
 		"rankings_1014.txt",
 		"rankings_1015.txt"
 	};
-	*/
-
+	
+	/*
 	public static String[] forbidden_filenames = {
 		"rankings_2.txt"
 	};
+	*/
 	
 	public static void main(String[] args) {
 		if(args != null && args.length >= 2) {
@@ -105,6 +110,7 @@ public class RunCrossValidationWithRankings {
 		System.out.println(number_allowed_files + " are valid");
 		String[] query_names = getEntryNames(all_filenames[0]);
 		int[] query_testing_rankings = new int[query_names.length];
+		double[] query_testing_avg_rankings = new double[query_names.length];
 		int[] query_testing_better_cands = new int[query_names.length];
 		int[] query_testing_worse_cands = new int[query_names.length];
 		int[] query_testing_total_cands = new int[query_names.length];
@@ -158,6 +164,7 @@ public class RunCrossValidationWithRankings {
 		int check_best_rank_positions = 10;
 		//to check: top1, top3, top5, top10
 		int[][] test_results = new int[number_folds][check_best_rank_positions];
+		int[][] avg_test_results = new int[number_folds][check_best_rank_positions];
 		int[] best_weight_index = new int[number_folds];
 		int[] number_in_fold = new int[number_folds];
 		
@@ -170,47 +177,62 @@ public class RunCrossValidationWithRankings {
 			//over all weights
 			for(int weight_index = 0; weight_index < rank_matrix[0].length; weight_index++) {
 				int[] ranking_numbers = new int[check_best_rank_positions];
-				
+				int[] avg_ranking_numbers = new int[check_best_rank_positions];
 				//check all queries/files/spectra
 				for(int row_index = 0; row_index < rank_matrix.length; row_index++) {
 					//check that current query is not in current fold
-					if(current_fold == folds[row_index]) continue;
-					int current_rank = rank_matrix[row_index][weight_index] - 1;
-					
-					//check whether current rank is greater than ranking check limit
-					if(current_rank >= check_best_rank_positions) continue;
-					ranking_numbers[current_rank]++;
+					if(current_fold != folds[row_index]) {
+						int current_rank = rank_matrix[row_index][weight_index] - 1;
+						int current_avg_rank = (int)Math.ceil(MathTools.round(avg_rank_matrix[row_index][weight_index] - 1.0, 6));
+						//check whether current rank is greater than ranking check limit
+						if(current_rank < check_best_rank_positions) {
+							ranking_numbers[current_rank]++;
+						}
+						if(current_avg_rank < check_best_rank_positions) {
+							avg_ranking_numbers[current_avg_rank]++;
+						}
+					}
 				}
+				
+				int[] reference_rankings_numbers = ranking_numbers;
+				if(use_avg_rank) reference_rankings_numbers = avg_ranking_numbers;
+				
 				//check for best rank
 				for(int i = 0; i < check_best_rank_positions; i++) {
-					if(best_ranking_numbers[i] < ranking_numbers[i]) {
+					if(best_ranking_numbers[i] < reference_rankings_numbers[i]) {
 						//replace values if better
 						for(int j = 0; j < check_best_rank_positions; j++) {
-							best_ranking_numbers[j] = ranking_numbers[j];
+							best_ranking_numbers[j] = reference_rankings_numbers[j];
 							best_weight_index[current_fold] = weight_index;
 						}
 					}
-					else if(best_ranking_numbers[i] > ranking_numbers[i]) break;
+					else if(best_ranking_numbers[i] > reference_rankings_numbers[i]) break;
 				}
 			}
 			//when training is finished testing starts
 			//again go over current queries only checking those in current fold
 			//with best weight combination
 			System.out.print("Testing Fold " + (current_fold + 1) + " ");
+			
 			for(int row_index = 0; row_index < rank_matrix.length; row_index++) {
 				//check that current query is in current fold
 				if(current_fold != folds[row_index]) continue;
 				number_in_fold[current_fold]++;
 				int current_rank = rank_matrix[row_index][best_weight_index[current_fold]] - 1;
+				double current_avg_rank = MathTools.round(avg_rank_matrix[row_index][best_weight_index[current_fold]] - 1, 6);
+				int rounded_current_avg_rank = (int)Math.ceil(current_avg_rank);
 				int current_better_cands = better_candidates_matrix[row_index][best_weight_index[current_fold]] - 1;
 				int current_worse_cands = worse_candidates_matrix[row_index][best_weight_index[current_fold]] - 1;
 				int current_total_cands = total_candidates_matrix[row_index][best_weight_index[current_fold]] - 1;
+				query_testing_avg_rankings[row_index] = MathTools.round(current_avg_rank + 1.0, 6);
 				query_testing_rankings[row_index] = current_rank + 1;
 				query_testing_better_cands[row_index] = current_better_cands + 1;
 				query_testing_worse_cands[row_index] = current_worse_cands + 1;
 				query_testing_total_cands[row_index] = current_total_cands + 1;
-				if(current_rank >= check_best_rank_positions) continue;
-				test_results[current_fold][current_rank]++;
+				if(current_rank < check_best_rank_positions)
+					test_results[current_fold][current_rank]++;
+				if(rounded_current_avg_rank < check_best_rank_positions)
+					avg_test_results[current_fold][rounded_current_avg_rank]++;
 			}
 		}
 		System.out.println();
@@ -219,27 +241,35 @@ public class RunCrossValidationWithRankings {
 		
 		if(output_file != null) {
 			int[][] metfrag_rankings = getRankings(only_metfrag_filename);
-			writeTestingSummary(folds, query_testing_rankings, query_testing_better_cands, 
+			if(!use_avg_rank) writeTestingSummary(folds, query_testing_rankings, query_testing_better_cands, 
+					query_testing_worse_cands, query_testing_total_cands, rrps, query_names, metfrag_rankings);
+			else writeTestingSummary(folds, query_testing_avg_rankings, query_testing_better_cands, 
 					query_testing_worse_cands, query_testing_total_cands, rrps, query_names, metfrag_rankings);
 		}
+		
 		double[] meanrrps = calculateMeanRelativeRankingPositions(rrps, folds);
 		double[] testingErrors = calculateRelativeRankingPositionTestErrors(meanrrps);
 		int[] summed_results = new int[check_best_rank_positions];
-		for(int i = 0; i < test_results.length; i++) {
+		
+		int[][] reference_test_results = test_results;
+		if(use_avg_rank) reference_test_results = avg_test_results;
+		for(int i = 0; i < reference_test_results.length; i++) {
 			System.out.print("Fold\t" + (i + 1) + ":");
-			for(int j = 0; j < test_results[i].length; j++) {
-				System.out.print("\t" + test_results[i][j]);
-				summed_results[j] += test_results[i][j];
+			for(int j = 0; j < reference_test_results[i].length; j++) {
+				System.out.print("\t" + reference_test_results[i][j]);
+				summed_results[j] += reference_test_results[i][j];
 			}
 			System.out.println("\t" + meanrrps[i] + "\t" + testingErrors[i] + "\t\t" + "(" + number_in_fold[i] + ")" + "\t" + all_filenames[valid_indexes[best_weight_index[i]]]);
 		}
 		System.out.println("===================================================================================================");
+		
 		printRankingValues(summed_results, "Sum:\t", "", calculateMeanValue(meanrrps, 4) + "\t" + calculateMeanValue(testingErrors, 5));
 		printCumulativeRankingValues(summed_results, "Sum:\t", "");
 		
 		printCumulativeRankingPercentages(summed_results, "PercSum:", "");
 		
-		calculateBestWeight(rank_matrix, check_best_rank_positions, valid_indexes, all_filenames);
+		if(!use_avg_rank) calculateBestWeight(rank_matrix, check_best_rank_positions, valid_indexes, all_filenames);
+		else calculateBestWeight(avg_rank_matrix, check_best_rank_positions, valid_indexes, all_filenames);
 		
 		printRankingsStatistics(only_metfrag_filename, check_best_rank_positions);
 	}
@@ -330,6 +360,40 @@ public class RunCrossValidationWithRankings {
 				//check whether current rank is greater than ranking check limit
 				if(current_rank >= check_best_rank_positions) continue;
 				ranking_numbers[current_rank]++;
+			}
+			//check for best rank
+			for(int i = 0; i < check_best_rank_positions; i++) {
+				if(best_ranking_numbers[i] < ranking_numbers[i]) {
+					//replace values if better
+					for(int j = 0; j < check_best_rank_positions; j++) {
+						best_ranking_numbers[j] = ranking_numbers[j];
+						best_weight_index = weight_index;
+					}
+				}
+				else if(best_ranking_numbers[i] > ranking_numbers[i]) break;
+			}
+		}
+		System.out.println("===================================================================================================");
+		printRankingValues(best_ranking_numbers, "Complete:", file_names[valid_indexes[best_weight_index]], "");
+		printCumulativeRankingValues(best_ranking_numbers, "Complete:", file_names[valid_indexes[best_weight_index]]);
+	}
+
+	public static void calculateBestWeight(double[][] avg_rank_matrix, int check_best_rank_positions, int[] valid_indexes, String[] file_names) {
+		int[] best_ranking_numbers = new int[check_best_rank_positions];
+		int best_weight_index = 0;
+		
+		for(int weight_index = 0; weight_index < avg_rank_matrix[0].length; weight_index++) {
+			int[] ranking_numbers = new int[check_best_rank_positions];
+			
+			//check all queries/files/spectra
+			for(int row_index = 0; row_index < avg_rank_matrix.length; row_index++) {
+				//check that current query is not in current fold
+				double current_avg_rank = MathTools.round(avg_rank_matrix[row_index][weight_index] - 1, 6);
+				int rounded_current_avg_rank = (int)Math.ceil(current_avg_rank);
+				
+				//check whether current rank is greater than ranking check limit
+				if(rounded_current_avg_rank >= check_best_rank_positions) continue;
+				ranking_numbers[rounded_current_avg_rank]++;
 			}
 			//check for best rank
 			for(int i = 0; i < check_best_rank_positions; i++) {
@@ -462,7 +526,7 @@ public class RunCrossValidationWithRankings {
 		}
 		return rankings_arr;
 	}
-	
+
 	public static void printRankingsStatistics(String filename, int check_best_rank_positions) {
 		int[] ranking_values = new int[check_best_rank_positions];
 		try {
@@ -472,6 +536,7 @@ public class RunCrossValidationWithRankings {
 				if(line.startsWith("#")) continue;
 				String[] tmp = line.split("\\s+");
 				int current_rank = Integer.parseInt(tmp[2]) - 1;
+				if(use_avg_rank) current_rank = (int)Math.ceil(MathTools.round(getAvgRank(current_rank + 1, (int)Math.round(Double.parseDouble(tmp[8]))) - 1.0, 6));
 				if(current_rank >= check_best_rank_positions) continue;
 				ranking_values[current_rank]++;
 			}
@@ -515,7 +580,7 @@ public class RunCrossValidationWithRankings {
 			for(int i = 0; i < query_names.length; i++) {
 				bwriter.write(query_names[i] + " " + folds[i] + " " + rankings_testing[i] + " " + better_cands_testing[i] 
 						+ " " + worse_cands_testing[i] + " " + total_cands_testing[i] + " " + rrps[i]
-						+ " " + rankings_testing_to_add[i][0] + " " + rankings_testing_to_add[i][1]);	
+						+ " " + rankings_testing_to_add[i][0] + " " + rankings_testing_to_add[i][1] + " " + getAvgRank(rankings_testing_to_add[i][0], rankings_testing_to_add[i][1]));	
 				bwriter.newLine();
 			}
 
@@ -525,7 +590,28 @@ public class RunCrossValidationWithRankings {
 		}
 	
 	}
+
+	public static void writeTestingSummary(int[] folds, double[] rankings_testing, int[] better_cands_testing, 
+			int[] worse_cands_testing, int[] total_cands_testing, double[] rrps, String[] query_names, int[][] rankings_testing_to_add) {
+		BufferedWriter bwriter;
+		try {
+			bwriter = new BufferedWriter(new FileWriter(new File(output_file)));
+			bwriter.write("query foldnum rank bc wc tc rrp mfonly bcmfonly");
+			bwriter.newLine();
+			for(int i = 0; i < query_names.length; i++) {
+				bwriter.write(query_names[i] + " " + folds[i] + " " + rankings_testing[i] + " " + better_cands_testing[i] 
+						+ " " + worse_cands_testing[i] + " " + total_cands_testing[i] + " " + rrps[i]
+						+ " " + rankings_testing_to_add[i][0] + " " + rankings_testing_to_add[i][1] + " " + getAvgRank(rankings_testing_to_add[i][0], rankings_testing_to_add[i][1]));	
+				bwriter.newLine();
+			}
+
+			bwriter.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	
+	}
+
 	public static void printRankingValues(int[] ranking_values, String name, String filename, String suffix) {
 		System.out.print(name);
 		for(int i = 0; i < ranking_values.length; i++)
