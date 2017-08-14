@@ -38,8 +38,6 @@ public class FilteredTandemMassPeakListReader extends AbstractPeakListReader {
 					currentMass = Double.parseDouble(tmp[0].trim().replaceAll("^-*", ""));
 					currentIntensity = Double.parseDouble(tmp[1].trim());
 				} catch(Exception e) {
-					System.err.println(filename);
-					System.err.println(line);
 					breader.close();
 					throw new IOException();
 				}
