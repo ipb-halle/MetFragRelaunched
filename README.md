@@ -129,7 +129,7 @@ mvn clean tomcat7:run-war -pl MetFragWeb -DskipTests
 ```
 
 - after the successful build Tomcat web server runs on port 8080<br>
-- MetFragWeb can be accessed via pointing to http://localhost:8080 in the web browser<br>
+- MetFragWeb can be accessed via pointing to http://localhost:8080/index.xhtml in the web browser<br>
 
 ##### Build
 - if you just want to build the war file to transfer it to another Tomcat instance, run:
@@ -147,7 +147,7 @@ mvn package -pl MetFragWeb
 mvn tomcat7:run-war-only -pl MetFragWeb
 ```
 
-- point your browser to http://localhost:8080 to use the running MetFragWeb instance
+- point your browser to http://localhost:8080/index.xhtml to use the running MetFragWeb instance
 
 Additionals
 -----------
