@@ -162,7 +162,16 @@ public class LocalMySQLDatabase extends AbstractLocalDatabase {
 		    SQLWarning warning = rs.getWarnings();
 		    if(warning != null) logger.error("error code: " + warning.getErrorCode());
 		} catch (SQLException e) {
+			
 			e.printStackTrace();
+		}
+		finally {
+			try {
+				this.databaseConnection.close();
+				DriverManager.deregisterDriver(this.driver);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 		return rs;
 	}

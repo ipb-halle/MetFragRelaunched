@@ -183,6 +183,7 @@ public class LocalPostgresDatabase extends AbstractLocalDatabase {
 		}
 		finally {
 			try {
+				this.databaseConnection.close();
 				DriverManager.deregisterDriver(this.driver);
 			} catch (SQLException e) {
 				e.printStackTrace();

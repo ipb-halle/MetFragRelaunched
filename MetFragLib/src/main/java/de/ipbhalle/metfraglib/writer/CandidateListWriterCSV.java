@@ -45,8 +45,10 @@ public class CandidateListWriterCSV implements IWriter {
 		if(list instanceof CandidateList) {
 			candidateList = (CandidateList) list;
 		}
-		if(candidateList == null) return false;
-
+		if(candidateList == null || candidateList.getNumberElements() == 0) {
+			writeDefaultHeader(file);
+			return false;
+		}
 		java.io.Writer writer = new java.io.OutputStreamWriter(new java.io.FileOutputStream(file), Charset.forName("UTF-8"));
 		CSVPrinter csvFilePrinter = new CSVPrinter(writer, CSVFormat.EXCEL);
 		java.util.List<Object> header = new java.util.ArrayList<Object>();
@@ -125,6 +127,23 @@ public class CandidateListWriterCSV implements IWriter {
 			return prop;
 		}
 		return prop;
+	}
+	
+	public void writeDefaultHeader(File file) throws IOException {
+		java.io.Writer writer = new java.io.OutputStreamWriter(new java.io.FileOutputStream(file), Charset.forName("UTF-8"));
+		CSVPrinter csvFilePrinter = new CSVPrinter(writer, CSVFormat.EXCEL);
+		java.util.List<Object> header = new java.util.ArrayList<Object>();
+		String[] defaultHeaderValues = {"Score","MonoisotopicMass","SMILES","InChIKey",
+				"NoExplPeaks","NumberPeaksUsed","InChI",
+				"MaximumTreeDepth","Identifier","ExplPeaks","InChIKey3","InChIKey2",
+				"InChIKey1","CompoundName","FragmenterScore","MolecularFormula","FormulasOfExplPeaks"};
+		for(int i = 0; i < defaultHeaderValues.length; i++) {
+			header.add(defaultHeaderValues[i]);
+		}
+		csvFilePrinter.printRecord(header);
+		writer.flush();
+		writer.close();
+		csvFilePrinter.close();
 	}
 	
 	public void nullify() {

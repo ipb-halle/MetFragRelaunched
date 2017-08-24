@@ -109,7 +109,7 @@ public class OnlineChemSpiderDatabase extends AbstractDatabase {
 			this.logger.error("Error: Could not perform database query. This could be caused by a temporal database timeout. Try again later.");
 			throw new Exception();
 		}
-
+		System.out.println(molecularFormula);
         SearchByFormulaAsync sbfa = new SearchByFormulaAsync();
         sbfa.setFormula(molecularFormula);
         sbfa.setToken(this.chemSpiderToken);

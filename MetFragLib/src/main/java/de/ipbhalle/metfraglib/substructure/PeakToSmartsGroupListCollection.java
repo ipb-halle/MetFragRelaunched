@@ -1,5 +1,6 @@
 package de.ipbhalle.metfraglib.substructure;
 
+import org.openscience.cdk.exception.InvalidSmilesException;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import de.ipbhalle.metfraglib.additionals.MathTools;
@@ -206,9 +207,14 @@ public class PeakToSmartsGroupListCollection extends DefaultList {
 		IAtomContainer[] cons = new  IAtomContainer[number];
 		//use the first smiles from each group to perform similarity calculation
 		//needed to match IDs
-		cons[0] = MoleculeFunctions.parseSmiles(smartsGroups.get(0).getSmiles().get(0));
-		for(int i = 1; i < cons.length; i++) 
-			cons[i] = MoleculeFunctions.parseSmiles(smartsGroups.get(i).getSmiles().get(0));
+		try {
+			cons[0] = MoleculeFunctions.parseSmiles(smartsGroups.get(0).getSmiles().get(0));
+			for(int i = 1; i < cons.length; i++) 
+				cons[i] = MoleculeFunctions.parseSmiles(smartsGroups.get(i).getSmiles().get(0));
+		} catch (InvalidSmilesException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		TanimotoSimilarity sims = new TanimotoSimilarity(cons);
 		System.out.println("calculated similarities");

@@ -25,8 +25,8 @@ public class ConvertMSPtoMetFragRecord {
 	
 	static {
 		parameterConversion = new Hashtable<String, String>();
-		parameterConversion.put("Name:", "# SampleName = ");
-		parameterConversion.put("NAME:", "# SampleName = ");
+		parameterConversion.put("Name:", "# Name = ");
+		parameterConversion.put("NAME:", "# Name = ");
 		parameterConversion.put("InChI:", "# InChI = ");
 		parameterConversion.put("InChIKey:", "# InChIKey = ");
 		parameterConversion.put("ms level:", "# MSLevel = ");
@@ -44,6 +44,8 @@ public class ConvertMSPtoMetFragRecord {
 		parameterConversion.put("Num Peaks:", "# NumPeaks = ");
 		parameterConversion.put("formula:", "# NeutralPrecursorMolecularFormula = ");
 		parameterConversion.put("FORMULA:", "# NeutralPrecursorMolecularFormula = ");
+		parameterConversion.put("LINKS:", "# SampleName = ");
+		parameterConversion.put("MASSBANKACCESSION:", "# SampleName = ");
 		
 		adductTypes = new Hashtable<String, String>();
 		adductTypes.put("[2M-H]-", "-1");
@@ -115,6 +117,7 @@ public class ConvertMSPtoMetFragRecord {
 			String lastSmiles = "";
 			String lastInChIKey = "";
 			String lastFormula = "";
+			String lastSampleName = "";
 			String lastMZ = "";
 			Entry currentEntry = new ConvertMSPtoMetFragRecord().new Entry();
 			while((line = breader.readLine()) != null) {
@@ -124,6 +127,7 @@ public class ConvertMSPtoMetFragRecord {
 				String[] tmp = line.split("\\s+");
 				String paramname = "";
 				String value = "";
+				boolean entryFine = true;
 				boolean assignValue = false;
 				if(numberPeaks <= 0) {
 					for(int i = 0; i < tmp.length; i++) {
@@ -153,6 +157,16 @@ public class ConvertMSPtoMetFragRecord {
 						lastInChIKey = value;
 						currentEntry.inchikey = lastInChIKey;
 					}
+					if(paramname.equals("LINKS:") || paramname.equals("Links:")) {
+						if(currentEntry.sampleName == null) { 
+							lastSampleName = value;
+							currentEntry.sampleName = lastSampleName;
+						}
+					}
+					if(paramname.equals("MASSBANKACCESSION:")) {
+						lastSampleName = value;
+						currentEntry.sampleName = lastSampleName;
+					}
 					//start check param name
 					if(parametersFound.contains(paramname)) continue;
 					if(parameterConversion.containsKey(paramname)) {
@@ -179,11 +193,16 @@ public class ConvertMSPtoMetFragRecord {
 							lines.add(parameterConversion.get(paramname) + value);
 							currentEntry.numpeaks = value;
 							if(lastInChI == null || lastInChI.equals("")) {
-								lastInChI = MoleculeFunctions.getInChIFromSmiles(lastSmiles);
+								try {
+									lastInChI = MoleculeFunctions.getInChIFromSmiles(lastSmiles);
+								} catch(Exception e) {
+									entryFine = false;
+									continue;
+								}
 							}
 							if(numberPeaks == 0) {
 								lines.add("");
-								boolean entryFine = checkInChIFormula(lastInChI, lastFormula, lastInChIKey);
+								entryFine = checkInChIFormula(lastInChI, lastFormula, lastInChIKey);
 								lastInChI = "";
 								lastFormula = "";
 								lastInChIKey = "";
@@ -216,20 +235,7 @@ public class ConvertMSPtoMetFragRecord {
 					if(numberPeaks == 0) {
 						parametersFound = new java.util.Vector<String>();
 						lines.add("");
-						Boolean entryFine = null;
-						try {
-							entryFine = checkInChIFormula(lastInChI, lastFormula, lastInChIKey);
-						}
-						catch(Exception e) {
-							if(lastFormula.equals("")) {
-								System.out.println(lastInChI + " " + currentEntry.sampleName);
-								e.printStackTrace();
-								System.exit(1);
-							}
-							else {
-								entryFine = new Boolean(false);
-							}
-						}
+						
 						lastInChI = "";
 						lastFormula = "";
 						lastInChIKey = "";
@@ -271,8 +277,12 @@ public class ConvertMSPtoMetFragRecord {
 			for(int i = 0; i < entries.size(); i++) {
 				if(entries.get(i).inchi == null) {
 					if(entries.get(i).smiles != null) {
-						entries.get(i).inchi = MoleculeFunctions.getInChIFromSmiles(entries.get(i).smiles);
-						entries.get(i).smiles = null;
+						try {
+							entries.get(i).inchi = MoleculeFunctions.getInChIFromSmiles(entries.get(i).smiles);
+						} catch(Exception e) {
+							System.out.println("Error: " + entries.get(i).sampleName);
+							continue;
+						}
 					}
 				}
 				if(entries.get(i).inchi != null) {
@@ -305,6 +315,7 @@ public class ConvertMSPtoMetFragRecord {
 	
 	class Entry {
 		public String sampleName;
+		public String name;
 		public String inchi;
 		public String inchikey;
 		public String adducttype;

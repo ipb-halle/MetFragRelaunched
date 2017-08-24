@@ -72,7 +72,7 @@ import de.ipbhalle.metfragweb.validator.SmartsValidator;
 @SessionScoped
 public class MetFragWebBean {
 
-	private final String version = "v2.0.3";
+	private final String version = "v2.0.4";
 	/*
 	 * combines all the settings
 	 */
@@ -1738,6 +1738,10 @@ public class MetFragWebBean {
 	public java.util.List<javax.faces.model.SelectItem> getPrecursorModes() {
 		return this.beanSettingsContainer.getAvailableParameters().getPrecursorModes();
 	}
+
+	public java.util.List<javax.faces.model.SelectItem> getTreeDepths() {
+		return this.beanSettingsContainer.getAvailableParameters().getTreeDepths();
+	}
 	
 	public String getRelativeMassDeviation() {
 		if (this.beanSettingsContainer.getRelativeMassDeviation() == null)
@@ -1789,6 +1793,14 @@ public class MetFragWebBean {
 
 	public void setMode(Integer mode) {
 		this.beanSettingsContainer.setMode(mode);
+	}
+
+	public Byte getTreeDepth() {
+		return this.beanSettingsContainer.getTreeDepth();
+	}
+
+	public void setTreeDepth(Byte treeDepth) {
+		this.beanSettingsContainer.setTreeDepth(treeDepth);
 	}
 	
 	public String getPeakList() {

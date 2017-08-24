@@ -6,6 +6,7 @@ import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.aromaticity.Aromaticity;
 import org.openscience.cdk.aromaticity.ElectronDonation;
 import org.openscience.cdk.exception.CDKException;
+import org.openscience.cdk.exception.InvalidSmilesException;
 import org.openscience.cdk.graph.Cycles;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -24,7 +25,7 @@ import de.ipbhalle.metfraglib.writer.CandidateListWriterXLS;
 
 public class CalculateAtomStatistics {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InvalidSmilesException {
 		
 		String filename = args[0];
 		MetFragGlobalSettings settings = new MetFragGlobalSettings();

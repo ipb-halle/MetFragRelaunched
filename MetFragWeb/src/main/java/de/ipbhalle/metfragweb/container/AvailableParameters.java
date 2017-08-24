@@ -17,6 +17,7 @@ public class AvailableParameters {
 	protected java.util.List<SelectItem> precursorModes;
 	protected java.util.List<SelectItem> substructureSmarts;
 	protected java.util.List<SelectItem> substructureInformationSmarts;
+	protected java.util.List<SelectItem> treeDepths;
 	protected Hashtable<String, java.util.List<AvailableScore>> databaseToScores;
 	protected java.util.Vector<String> preservedCompoundScoreProperties;
 	protected java.util.Vector<String> preservedCompoundPartitioningCoefficientProperties;
@@ -24,6 +25,7 @@ public class AvailableParameters {
 	public AvailableParameters() {
 		this.initialiseDatabases();
 		this.initialisePrecusorModes();
+		this.initialiseTreeDepths();
 		this.initialiseSubstructureSmarts();
 		this.initialiseSubstructureInformationSmarts();
 		this.initialisePreservedCompoundProperties();
@@ -137,7 +139,13 @@ public class AvailableParameters {
 		this.preservedCompoundPartitioningCoefficientProperties.add(VariableNames.CHEMSPIDER_REFERENCE_COUNT);
 		this.preservedCompoundPartitioningCoefficientProperties.add(VariableNames.CHEMSPIDER_RSC_COUNT);
 	}
-	
+
+	protected void initialiseTreeDepths() {
+		this.treeDepths = new java.util.ArrayList<SelectItem>();
+		this.treeDepths.add(new SelectItem("1", "1"));
+		this.treeDepths.add(new SelectItem("2", "2"));
+	}
+
 	protected void initialiseSubstructureSmarts() {
 		this.substructureSmarts = new java.util.ArrayList<SelectItem>();
 		this.substructureSmarts.add(new SelectItem("[CX3](=O)[OX2H1]", "Carboxyl"));
@@ -222,6 +230,10 @@ public class AvailableParameters {
 	
 	public java.util.List<SelectItem> getPrecursorModes() {
 		return this.precursorModes;
+	}
+
+	public java.util.List<SelectItem> getTreeDepths() {
+		return this.treeDepths;
 	}
 	
 	public java.util.List<SelectItem> getDatabases() {

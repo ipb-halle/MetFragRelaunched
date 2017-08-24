@@ -34,6 +34,10 @@ public class CandidateListWriterPSV implements IWriter {
 		}
 		if(candidateList == null) return false;
 
+		if(candidateList == null || candidateList.getNumberElements() == 0) {
+			writeDefaultHeader(file);
+			return false;
+		}
 		String[] lines = new String[candidateList.getNumberElements()];
 		String heading = "";
 		for(int i = 0; i < candidateList.getNumberElements(); i++) {
@@ -104,6 +108,27 @@ public class CandidateListWriterPSV implements IWriter {
 		bwriter.close();
 		
 		return true;
+	}
+
+	public void writeDefaultHeader(File file) throws IOException {
+		java.io.BufferedWriter bwriter = new java.io.BufferedWriter(new java.io.FileWriter(file));
+		/*
+		String[] defaultHeaderValues = {"Score","MonoisotopicMass","SMILES","InChIKey",
+				"NoExplPeaks","NumberPeaksUsed","InChI",
+				"MaximumTreeDepth","Identifier","ExplPeaks","InChIKey3","InChIKey2",
+				"InChIKey1","CompoundName","FragmenterScore","MolecularFormula","FormulasOfExplPeaks"};
+		*/
+		String[] defaultHeaderValues = {};
+		String header = "";
+		if(defaultHeaderValues.length > 0) {
+			header = defaultHeaderValues[0];
+			for(int i = 1; i < defaultHeaderValues.length; i++) {
+				header += "," + defaultHeaderValues[i];
+			}
+		}
+		bwriter.write(header);
+		bwriter.newLine();
+		bwriter.close();
 	}
 	
 	private Object checkEmptyProperty(Object prop) {

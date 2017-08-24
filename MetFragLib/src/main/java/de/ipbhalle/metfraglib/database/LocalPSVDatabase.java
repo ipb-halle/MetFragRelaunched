@@ -49,6 +49,7 @@ public class LocalPSVDatabase extends AbstractDatabase {
 		for (ICandidate candidate : candidates) {
 			identifiers.add(candidate.getIdentifier());
 		}
+		System.out.println("getCandidateIdentifiers");
 		return identifiers;
 	}
 
@@ -166,6 +167,7 @@ public class LocalPSVDatabase extends AbstractDatabase {
 				try {
 					precursorCandidate = new TopDownPrecursorCandidate(tmp[propNameToIndex.get(VariableNames.INCHI_NAME)].trim(), identifier);
 				} catch(Exception e) {
+					e.printStackTrace();
 					System.out.println(line);
 					System.exit(1);
 				}

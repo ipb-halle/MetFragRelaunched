@@ -31,6 +31,7 @@ public class BitArrayPrecursor extends DefaultPrecursor {
 	public void preprocessPrecursor() throws AtomTypeNotKnownFromInputListException, Exception {
 		super.preprocessPrecursor();
 		this.initiliseAtomIndexToConnectedAtomIndeces();
+		this.initialiseNumberHydrogens();
 		this.initiliseBondIndexToConnectedAtomIndeces();
 		this.initialiseRingBondsFastBitArray();
 		this.initialiseAtomAdjacencyList();
@@ -63,13 +64,18 @@ public class BitArrayPrecursor extends DefaultPrecursor {
 	 */
 	protected void initiliseAtomIndexToConnectedAtomIndeces() {
 		this.atomIndexToConnectedAtomIndeces = new java.util.Vector<short[]>();
-		this.numberHydrogensConnectedToAtom = new byte[this.getNonHydrogenAtomCount()];
 		for(int i = 0; i < this.getNonHydrogenAtomCount(); i++) {
 			java.util.List<IAtom> connectedAtoms = this.precursorMolecule.getConnectedAtomsList(this.precursorMolecule.getAtom(i));
 			short[] connectedAtomIndeces = new short[connectedAtoms.size()];
 			for(int k = 0; k < connectedAtoms.size(); k++)
 				connectedAtomIndeces[k] = (short)this.precursorMolecule.getAtomNumber(connectedAtoms.get(k));
 			this.atomIndexToConnectedAtomIndeces.add(i, connectedAtomIndeces);
+		}
+	}
+	
+	protected void initialiseNumberHydrogens() {
+		this.numberHydrogensConnectedToAtom = new byte[this.getNonHydrogenAtomCount()];
+		for(int i = 0; i < this.getNonHydrogenAtomCount(); i++) {
 			this.numberHydrogensConnectedToAtom[i] = (byte)(int)this.precursorMolecule.getAtom(i).getImplicitHydrogenCount();
 		}
 	}

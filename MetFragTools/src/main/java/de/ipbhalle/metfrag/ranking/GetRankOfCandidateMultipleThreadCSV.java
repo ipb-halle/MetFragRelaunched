@@ -148,7 +148,8 @@ public class GetRankOfCandidateMultipleThreadCSV {
 			threads.add(thread);
 		}
 		if(!stdout) System.out.println("preparation finished");
-
+		System.out.println(threads.size() + " threads");
+		
 		ExecutorService executer = Executors.newFixedThreadPool(numberThreads);
 		for(ProcessingThread thread : threads) {
 			executer.execute(thread);
@@ -178,7 +179,7 @@ public class GetRankOfCandidateMultipleThreadCSV {
 			String id = resultFiles[i].getName().split("\\.")[0];
 			int paramFileID = -1;
 			for(int j = 0; j < paramFiles.length; j++) {
-				if(paramFiles[j].getName().startsWith(id)) {
+				if(paramFiles[j].getName().matches(id + "\\..*")) {
 					paramFileID = j;
 					break;
 				}
