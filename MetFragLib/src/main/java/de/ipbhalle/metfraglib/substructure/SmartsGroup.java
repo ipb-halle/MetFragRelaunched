@@ -4,6 +4,7 @@ import java.util.Vector;
 
 import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.exception.CDKException;
+import org.openscience.cdk.exception.InvalidSmilesException;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.smiles.smarts.SMARTSQueryTool;
 
@@ -53,11 +54,17 @@ public class SmartsGroup extends DefaultList {
 			String currentSmiles = this.smiles.get(i);
 			if(currentSmiles.equals(smiles)) return 1.0;
 		}
-		IAtomContainer con = MoleculeFunctions.parseSmiles(smiles);
-		for(int i = 0; i < this.list.size(); i++) {
-			String currentSmiles = this.smiles.get(i);
-			double currentSimilarity = TanimotoSimilarity.calculateSimilarity(con, MoleculeFunctions.parseSmiles(currentSmiles));
-			if(currentSimilarity > maxSimilarity) maxSimilarity = currentSimilarity;
+		IAtomContainer con;
+		try {
+			con = MoleculeFunctions.parseSmiles(smiles);
+			for(int i = 0; i < this.list.size(); i++) {
+				String currentSmiles = this.smiles.get(i);
+				double currentSimilarity = TanimotoSimilarity.calculateSimilarity(con, MoleculeFunctions.parseSmiles(currentSmiles));
+				if(currentSimilarity > maxSimilarity) maxSimilarity = currentSimilarity;
+			}
+		} catch (InvalidSmilesException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		return maxSimilarity;
 	}

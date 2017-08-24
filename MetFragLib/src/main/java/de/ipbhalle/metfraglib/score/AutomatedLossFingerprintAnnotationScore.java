@@ -1,5 +1,7 @@
 package de.ipbhalle.metfraglib.score;
 
+import org.openscience.cdk.exception.InvalidSmilesException;
+
 import de.ipbhalle.metfraglib.FastBitArray;
 import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
@@ -58,7 +60,13 @@ public class AutomatedLossFingerprintAnnotationScore extends AbstractScore {
 			if(currentMatch == null) {
 				this.value *= peakToFingerprintGroupList.getBetaProb();
 			} else {
-				FastBitArray currentFingerprint = new FastBitArray(MoleculeFunctions.getNormalizedFingerprint(currentMatch.getBestMatchedFragment()));
+				FastBitArray currentFingerprint = null;
+				try {
+					currentFingerprint = new FastBitArray(MoleculeFunctions.getNormalizedFingerprint(currentMatch.getBestMatchedFragment()));
+				} catch (InvalidSmilesException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				// ToDo: at this stage try to check all fragments not only the best one
 				matches++;
 				// (p(m,f) + alpha) / sum_F(p(m,f)) + |F| * alpha

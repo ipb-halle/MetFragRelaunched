@@ -84,7 +84,7 @@ public class MoleculeFunctions {
 		return new String[] {fpString, smiles};
 	}
 
-	public static String getNormalizedFingerprint(IFragment frag) {
+	public static String getNormalizedFingerprint(IFragment frag) throws InvalidSmilesException {
 		String preSmiles = frag.getSmiles();
 		String inchi1 = MoleculeFunctions.getInChIFromSmiles(preSmiles);
 		IAtomContainer con = null;
@@ -98,19 +98,14 @@ public class MoleculeFunctions {
 		return fpString;
 	}
 	
-	public static String getInChIFromSmiles(String smiles) {
+	public static String getInChIFromSmiles(String smiles) throws InvalidSmilesException {
 		String[] inchiInfo = getInChIInfoFromAtomContainer(parseSmiles(smiles));
 		return inchiInfo[0];
 	}
 	
-	public static IAtomContainer parseSmiles(String smiles) {
+	public static IAtomContainer parseSmiles(String smiles) throws InvalidSmilesException {
 		SmilesParser sp = new SmilesParser(SilentChemObjectBuilder.getInstance());
-		IAtomContainer precursorMolecule = null;
-		try {
-			precursorMolecule = sp.parseSmiles(smiles);
-		} catch (InvalidSmilesException e) {
-			e.printStackTrace();
-		}
+		IAtomContainer precursorMolecule = sp.parseSmiles(smiles);
 		prepareAtomContainer(precursorMolecule, true);
 		return precursorMolecule;
 	}

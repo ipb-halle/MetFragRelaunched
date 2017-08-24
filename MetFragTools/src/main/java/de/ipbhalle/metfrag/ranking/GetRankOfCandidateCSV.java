@@ -94,6 +94,8 @@ public class GetRankOfCandidateCSV {
 		}
 
 		double[] scorePropertyToMaximumValue = new double[scorePropertyToWeight.size()];
+		for(int i = 0; i < scorePropertyToMaximumValue.length; i++) 
+			scorePropertyToMaximumValue[i] = Integer.MIN_VALUE;
 		HashMap<String, Double> inchiKeysToFinalScore = new HashMap<String, Double>();
 		HashMap<String, String> inchiKeysToInChI = new HashMap<String, String>();
 		int found = -1;
@@ -155,10 +157,11 @@ public class GetRankOfCandidateCSV {
 					candidates.getElement(j).setProperty("CombinedReferenceScore", currentValue);
 				}
 				else currentValue = Double.parseDouble((String)candidates.getElement(j).getProperty(scoringPropertyNames.get(l)));
-				if(!scorePropertyNamesForTakeRawValue.contains(scoringPropertyNames.get(l))) 
-					curScore += (currentValue / scorePropertyToMaximumValue[l]) * scorePropertyToWeight.get(scoringPropertyNames.get(l));
-				else if(negativeScore[l]) 
+				if(negativeScore[l]) {
 					curScore += (1.0 / Math.abs(currentValue)) * scorePropertyToWeight.get(scoringPropertyNames.get(l));
+				}
+				else if(!scorePropertyNamesForTakeRawValue.contains(scoringPropertyNames.get(l))) 
+					curScore += (currentValue / scorePropertyToMaximumValue[l]) * scorePropertyToWeight.get(scoringPropertyNames.get(l));
 				else
 					curScore += (currentValue) * scorePropertyToWeight.get(scoringPropertyNames.get(l));
 			}
@@ -235,24 +238,41 @@ public class GetRankOfCandidateCSV {
 						+ " " + rrp + " " + bc + " " + wc+ " " + values + " " + inchikeyMaximalScore + " " + maximalValues);
 			}
 			else {
+				String maximalValues = "Max" + scoringPropertyNames.get(0) + "=" + scorePropertyToMaximumValue[0];
+				for(int i = 1; i < scoringPropertyNames.size(); i++) {
+					maximalValues += " Max" + scoringPropertyNames.get(i) + "=" + scorePropertyToMaximumValue[i];
+				}
 				java.util.Iterator<?> it = inchiKeysToFinalScore.keySet().iterator();
 				java.util.Vector<Double> scores = new java.util.Vector<Double>();
 				java.util.Vector<String> inchikeys = new java.util.Vector<String>();
+				String values = "";
 				while(it.hasNext()) {
 					String currentInChIKey = (String)it.next();
 					double currentScore = inchiKeysToFinalScore.get(currentInChIKey);
 					int currentIndex = addSorted(scores, currentScore);
 					inchikeys.add(currentIndex, currentInChIKey);
+					double curScore = Double.parseDouble((String)candidates.getElement(indexOfCorrect).getProperty(scoringPropertyNames.get(0)));
+					if(negativeScore[0]) {
+						curScore =  1.0 / Math.abs(curScore);
+					}
+					values = scoringPropertyNames.get(0) + "=" + curScore + "";
+					for(int i = 1; i < scoringPropertyNames.size(); i++) {
+						curScore = Double.parseDouble((String)candidates.getElement(indexOfCorrect).getProperty(scoringPropertyNames.get(i)));
+						if(negativeScore[i]) {
+							curScore =  1.0 / Math.abs(curScore);
+						}
+						values += " " + scoringPropertyNames.get(i) + "=" + curScore;
+					}
 				}
 				if(filename.length() == 0) {
 					for(int i = 0; i < scores.size(); i++) {
-						System.out.println(inchiKeysToInChI.get(inchikeys.get(i)) + " " + scores.get(i) + " " + inchikeys.get(i));
+						System.out.println(inchiKeysToInChI.get(inchikeys.get(i)) + " " + scores.get(i) + " " + inchikeys.get(i) + " " + values + " " + maximalValues);
 					}
 				}
 				else {
 					java.io.BufferedWriter bwriter = new java.io.BufferedWriter(new java.io.FileWriter(new java.io.File(filename)));
 					for(int i = 0; i < scores.size(); i++) {
-						bwriter.write(inchiKeysToInChI.get(inchikeys.get(i)) + " " + scores.get(i) + " " + inchikeys.get(i));
+						bwriter.write(inchiKeysToInChI.get(inchikeys.get(i)) + " " + scores.get(i) + " " + inchikeys.get(i) + " " + values + " " + maximalValues);
 						bwriter.newLine();
 					}
 					bwriter.close();

@@ -1,7 +1,7 @@
 package de.ipbhalle.metfraglib.parameter;
 
 import java.lang.reflect.Method;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.apache.log4j.Level;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -17,13 +17,13 @@ import de.ipbhalle.metfraglib.writer.MolecularStructureImageListWriterPNG;
 
 public class Constants {
 
-	public static final Vector<Double> 		MONOISOTOPIC_MASSES 		= 	new Vector<Double>();
-	public static final Vector<String> 		ELEMENTS 					= 	new Vector<String>();
-	public static final Vector<String> 		ADDUCT_NAMES				= 	new Vector<String>();
-	public static final Vector<String> 		ADDUCT_TYPES					= 	new Vector<String>();
-	public static final Vector<Double> 		ADDUCT_MASSES				= 	new Vector<Double>();
-	public static final Vector<Integer> 		ADDUCT_NOMINAL_MASSES		= 	new Vector<Integer>();
-	public static final Vector<Boolean> 		ADDUCT_CHARGES				= 	new Vector<Boolean>();
+	public static final ArrayList<Double> 		MONOISOTOPIC_MASSES 		= 	new ArrayList<Double>();
+	public static final ArrayList<String> 		ELEMENTS 					= 	new ArrayList<String>();
+	public static final ArrayList<String> 		ADDUCT_NAMES				= 	new ArrayList<String>();
+	public static final ArrayList<String> 		ADDUCT_TYPES				= 	new ArrayList<String>();
+	public static final ArrayList<Double> 		ADDUCT_MASSES				= 	new ArrayList<Double>();
+	public static final ArrayList<Integer> 		ADDUCT_NOMINAL_MASSES		= 	new ArrayList<Integer>();
+	public static final ArrayList<Boolean> 		ADDUCT_CHARGES				= 	new ArrayList<Boolean>();
 	
 	public static final Double 				PROTON_MASS 				= 	1.007276;
 	
@@ -103,8 +103,8 @@ public class Constants {
 		ELEMENTS.add("Zr"); 	MONOISOTOPIC_MASSES.add(89.90470); 
 	}
 
-	public static final Vector<Boolean> 	POSITIVE_IONISATION = new Vector<Boolean>();
-	public static final Vector<Double> 	POSITIVE_IONISATION_MASS_DIFFERENCE = new Vector<Double>();
+	public static final ArrayList<Boolean> 	POSITIVE_IONISATION = new ArrayList<Boolean>();
+	public static final ArrayList<Double> 	POSITIVE_IONISATION_MASS_DIFFERENCE = new ArrayList<Double>();
 
 	/*
 	 * some important masses
@@ -310,8 +310,8 @@ public class Constants {
 		return ADDUCT_CHARGES.get(ADDUCT_TYPES.indexOf(ionModeString));
 	}
 
-	public static final Vector<Method> METHODS = new Vector<Method>();
-	public static final Vector<String> METHOD_NAMES = new Vector<String>();
+	public static final ArrayList<Method> METHODS = new ArrayList<Method>();
+	public static final ArrayList<String> METHOD_NAMES = new ArrayList<String>();
 
 	public static final String[] EXCHANGEABLE_DEUTERIUM_POSITIONS = new String[] { "O", "N", "S" };
 	

@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 
+import org.openscience.cdk.exception.InvalidSmilesException;
+
 import de.ipbhalle.metfraglib.FastBitArray;
 import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
@@ -102,7 +104,13 @@ public class AutomatedPeakFingerprintAnnotationScoreInitialiser  implements ISco
 						MassToFingerprintGroupList peakToFingerprintGroupList = peakToFingerprintGroupListCollection.getElementByPeak(match.getMatchedPeak().getMass());
 						if(peakToFingerprintGroupList == null) continue;
 						IFragment frag = match.getBestMatchedFragment();
-						FastBitArray currentFingerprint = new FastBitArray(MoleculeFunctions.getNormalizedFingerprint(frag));
+						FastBitArray currentFingerprint = null;
+						try {
+							currentFingerprint = new FastBitArray(MoleculeFunctions.getNormalizedFingerprint(frag));
+						} catch (InvalidSmilesException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 						//	if(match.getMatchedPeak().getMass() < 60) System.out.println(match.getMatchedPeak().getMass() + " " + currentFingerprint + " " + fragSmiles);
 						// check whether fingerprint was observed for current peak mass in the training data
 						if (!peakToFingerprintGroupList.containsFingerprint(currentFingerprint)) {

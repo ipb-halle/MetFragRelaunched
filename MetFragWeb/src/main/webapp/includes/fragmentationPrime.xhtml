@@ -67,6 +67,16 @@
 								<p:ajax event="valueChange" />
 							</p:selectOneMenu>
 						</h:panelGrid>
+						
+						<h:outputLabel id="treeDepthLabel" value="Tree depth:" />
+						<h:panelGrid columns="2">
+							<p:selectOneMenu id="selectTreeDepth" value="#{metFragWebBean.treeDepth}"
+								immediate="true">
+								<f:selectItems value="#{metFragWebBean.treeDepths}" />
+								<p:ajax event="valueChange" />
+							</p:selectOneMenu>
+						</h:panelGrid>
+						
 					</h:panelGrid>
 				</div>
 				<div class="ui-grid-col-6-user">

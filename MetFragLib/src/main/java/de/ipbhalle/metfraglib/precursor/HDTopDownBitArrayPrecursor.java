@@ -18,6 +18,7 @@ public class HDTopDownBitArrayPrecursor extends TopDownBitArrayPrecursor {
 
 	public HDTopDownBitArrayPrecursor(IAtomContainer precursorMolecule, byte numberOverallDeuteriums) throws AtomTypeNotKnownFromInputListException {
 		super(precursorMolecule);
+		this.initialiseNumberHydrogens();
 		this.numberOverallDeuteriums = numberOverallDeuteriums;
 	}
 	

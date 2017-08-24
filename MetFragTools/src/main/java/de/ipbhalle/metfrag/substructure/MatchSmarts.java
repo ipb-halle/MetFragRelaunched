@@ -22,7 +22,7 @@ public class MatchSmarts {
 		
 		SMARTSQueryTool sqt = new SMARTSQueryTool(smarts, DefaultChemObjectBuilder.getInstance());
 		
-		System.out.println(smarts);
+		System.out.println(smarts + " " + entries.size());
 		for(int i = 0; i < entries.size(); i++) {
 			
 			IAtomContainer con = null;

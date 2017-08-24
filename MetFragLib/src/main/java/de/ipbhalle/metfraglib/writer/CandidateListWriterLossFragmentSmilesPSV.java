@@ -303,12 +303,12 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 				}
 				elementsToAdd.add(element);
 				timesToAdd.add(number);
-			}	
+			}
 		}
 		
 		double mass = 0.0;
 		try {
-			boolean isPositive = charge == "-" ? false : true;
+			boolean isPositive = charge.equals("-") ? false : true;
 			double chargeMass = Constants.getChargeMassByType(isPositive);
 			ByteMolecularFormula bmf = new ByteMolecularFormula(part1);
 			for(int i = 0; i < elementsToAdd.size(); i++) {
@@ -323,4 +323,11 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 		return mass;
 	}
 	
+	public static void main(String[] args) {
+		String formula = "[C10H13N2O4S+H]+H+";
+		CandidateListWriterLossFragmentSmilesPSV clw = new CandidateListWriterLossFragmentSmilesPSV();
+		System.out.println(clw.calculateMassOfFormula(formula));
+		formula = "[C6H6NO2S]-";
+		System.out.println(clw.calculateMassOfFormula(formula));
+	}
 }

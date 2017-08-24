@@ -79,6 +79,7 @@ public class BeanSettingsContainer {
 	protected Integer measuredMassMode = 1;
 	protected Boolean positiveChargeMeasured = true;
 	protected String candidateFilePath = "";
+	protected Byte maximumTreeDepth = 2;
 	//availability of search properties
 	protected boolean isLocalDatabaseDefined = false;
 	protected boolean metChemDatabaseDefined = false;
@@ -1118,6 +1119,14 @@ public class BeanSettingsContainer {
 		else this.setPositiveCharge(Constants.ADDUCT_CHARGES.get(Constants.ADDUCT_NOMINAL_MASSES.indexOf(this.mode)));
 	}
 
+	public Byte getTreeDepth() {
+		return this.maximumTreeDepth;
+	}
+
+	public void setTreeDepth(Byte treeDepth) {
+		this.maximumTreeDepth = treeDepth;
+	}
+
 	public Boolean isPositiveChargeMeasured() {
 		return this.positiveChargeMeasured;
 	}
@@ -1418,6 +1427,7 @@ public class BeanSettingsContainer {
 		if(mode == 1000 || mode == -1000) mode = 0;
 		this.metFragSettings.set(VariableNames.PRECURSOR_ION_MODE_NAME, mode);
 		this.metFragSettings.set(VariableNames.IS_POSITIVE_ION_MODE_NAME, this.isPositiveCharge());
+		this.metFragSettings.set(VariableNames.MAXIMUM_TREE_DEPTH_NAME, this.maximumTreeDepth);
 	}
 
 	public boolean generateSpectrumModelView(Messages errorMessages) {
