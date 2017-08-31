@@ -16,7 +16,7 @@ import de.ipbhalle.metfraglib.fragment.DefaultBitArrayFragment;
 
 public class BitArrayPrecursor extends DefaultPrecursor {
 
-	protected java.util.Vector<short[]> atomIndexToConnectedAtomIndeces;
+	protected java.util.ArrayList<short[]> atomIndexToConnectedAtomIndeces;
 	protected short[][] bondIndexToConnectedAtomIndeces;
 	protected FastBitArray[] ringBondToBelongingRingBondIndeces;
 	protected FastBitArray aromaticBonds;
@@ -63,7 +63,7 @@ public class BitArrayPrecursor extends DefaultPrecursor {
 	 * 
 	 */
 	protected void initiliseAtomIndexToConnectedAtomIndeces() {
-		this.atomIndexToConnectedAtomIndeces = new java.util.Vector<short[]>();
+		this.atomIndexToConnectedAtomIndeces = new java.util.ArrayList<short[]>();
 		for(int i = 0; i < this.getNonHydrogenAtomCount(); i++) {
 			java.util.List<IAtom> connectedAtoms = this.precursorMolecule.getConnectedAtomsList(this.precursorMolecule.getAtom(i));
 			short[] connectedAtomIndeces = new short[connectedAtoms.size()];

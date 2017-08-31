@@ -148,7 +148,6 @@ public class GetRankOfCandidateMultipleThreadCSV {
 			threads.add(thread);
 		}
 		if(!stdout) System.out.println("preparation finished");
-		System.out.println(threads.size() + " threads");
 		
 		ExecutorService executer = Executors.newFixedThreadPool(numberThreads);
 		for(ProcessingThread thread : threads) {

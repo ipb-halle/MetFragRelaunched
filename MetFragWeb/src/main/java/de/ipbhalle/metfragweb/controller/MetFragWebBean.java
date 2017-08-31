@@ -21,14 +21,16 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.mail.EmailAttachment;
 import org.apache.commons.mail.MultiPartEmail;
+import org.primefaces.component.organigram.OrganigramHelper;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.CloseEvent;
 import org.primefaces.event.ItemSelectEvent;
-import org.primefaces.event.NodeCollapseEvent;
-import org.primefaces.event.NodeExpandEvent;
 import org.primefaces.event.SlideEndEvent;
+import org.primefaces.event.organigram.OrganigramNodeCollapseEvent;
+import org.primefaces.event.organigram.OrganigramNodeExpandEvent;
+import org.primefaces.event.organigram.OrganigramNodeSelectEvent;
+import org.primefaces.model.OrganigramNode;
 import org.primefaces.model.StreamedContent;
-import org.primefaces.model.TreeNode;
 import org.primefaces.model.chart.AxisType;
 import org.primefaces.model.chart.LineChartModel;
 import org.primefaces.model.chart.LineChartSeries;
@@ -72,17 +74,18 @@ import de.ipbhalle.metfragweb.validator.SmartsValidator;
 @SessionScoped
 public class MetFragWebBean {
 
-	private final String version = "v2.0.4";
+	private final String version = "v2.0.5";
 	/*
 	 * combines all the settings
 	 */
 	protected BeanSettingsContainer beanSettingsContainer;
 	
-	protected boolean compoundClusteringEnabled = false;
+	protected boolean compoundClusteringEnabled = true;
 	protected Thread clusterCompoundsThread;
 	protected ClusterCompoundsThreadRunner clusterCompoundsThreadRunner;
-	protected TreeNode[] selectedClusterNodes;
-	protected TreeNode selectedContextMenuClusterNode;
+	private OrganigramNode selectedNode;   
+//	protected TreeNode[] selectedClusterNodes;
+//	protected TreeNode selectedContextMenuClusterNode;
 	protected Boolean clusterCompoundsThreadStarted;
 	
 	protected Messages errorMessages;
@@ -519,7 +522,7 @@ public class MetFragWebBean {
 			massIsGiven = true;
 			try {
 				double value = Double.parseDouble(this.beanSettingsContainer.getNeutralMonoisotopicMass());
-				if (value <= 0.0 || value >= 1000)
+				if (value <= 0.0 || value > 1250)
 					throw new Exception();
 				else
 					this.errorMessages.removeKey("inputNeutralMonoisotopicMassError");
@@ -667,7 +670,7 @@ public class MetFragWebBean {
 					if(this.beanSettingsContainer.getRetrievedCandidateList().getNumberElements() != 1) 
 						FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Candidate retrieval finished", "Got " + this.beanSettingsContainer.getRetrievedCandidateList().getNumberElements() + " candidates"));
 					else 
-						FacesContext.getCurrentInstance().addMessage("databaseGrowl", new FacesMessage("Candidate retrieval<br>finished", "Got " + this.beanSettingsContainer.getRetrievedCandidateList().getNumberElements() + " candidate"));
+						FacesContext.getCurrentInstance().addMessage("databaseGrowl", new FacesMessage("Candidate retrieval finished", "Got " + this.beanSettingsContainer.getRetrievedCandidateList().getNumberElements() + " candidate"));
 					System.out.println(this.beanSettingsContainer.getRetrievedCandidateList().getNumberElements() + " compound(s)");
 					if(this.beanSettingsContainer.getRetrievedCandidateList().getNumberElements() == 0) 
 						RequestContext.getCurrentInstance().execute("PF('mainAccordion').unselect(1)");
@@ -806,6 +809,14 @@ public class MetFragWebBean {
 		}
 	}
 	
+    public String getElementInclusionFilterType() {
+        return this.beanSettingsContainer.getElementInclusionFilterType();
+    }
+ 
+    public void setElementInclusionFilterType(String elementInclusionFilterType) {
+        this.beanSettingsContainer.setElementInclusionFilterType(elementInclusionFilterType);
+    }
+	
 	public boolean isElementInclusionFilterEnabled() {
 		return this.beanSettingsContainer.isFilterEnabled("includedFilterElements");
 	}
@@ -814,14 +825,6 @@ public class MetFragWebBean {
 		this.beanSettingsContainer.setFilterEnabled(elementInclusionFilterEnabled, "includedFilterElements");
 	}
 		
-	public boolean isElementInclusionExclusiveFilterEnabled() {
-		return this.beanSettingsContainer.isElementInclusionExclusiveFilterEnabled();
-	}
-
-	public void setElementInclusionExclusiveFilterEnabled(boolean elementInclusionExclusiveFilterEnabled) {
-		this.beanSettingsContainer.setElementInclusionExclusiveFilterEnabled(elementInclusionExclusiveFilterEnabled);
-	}
-	
 	//element exclusion filter
 	public boolean isElementExclusionFilterEnabled() {
 		return this.beanSettingsContainer.isFilterEnabled("excludedFilterElements");
@@ -2037,6 +2040,7 @@ public class MetFragWebBean {
 		this.processCompoundsThreadRunner = new ProcessCompoundsThreadRunner(this.beanSettingsContainer, 
 			this.infoMessages, this.errorMessages, this.getSessionId(), this.getRootSessionFolder());
 		this.thread = new Thread(this.processCompoundsThreadRunner);
+		this.selectedNode = null;
 		/*
 		 * start the metfrag processing
 		 */
@@ -2086,8 +2090,13 @@ public class MetFragWebBean {
 			this.infoMessages.removeKey("processingProcessedCandidatesInfo");
 
 			this.threadExecutionStarted = false;
-			
-			
+			if(this.clusterCompoundsThread != null)
+				try {
+					this.clusterCompoundsThread.join();
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
+			if(this.clusterCompoundsThreadRunner != null) this.clusterCompoundsThreadRunner.reset();
 			//stop the thread
 			RequestContext.getCurrentInstance().update("mainForm:mainAccordion");
 			//set the message
@@ -2168,10 +2177,10 @@ public class MetFragWebBean {
 				//set processing infos
 				String detailedMessage = this.infoMessages.getMessage("processingProcessedCandidatesInfo"); 
 				if(this.infoMessages.containsKey("processingErrorCandidatesInfo")) {
-					detailedMessage += "<br>" + this.infoMessages.getMessage("processingErrorCandidatesInfo");
+					detailedMessage += " " + this.infoMessages.getMessage("processingErrorCandidatesInfo");
 				}
 				if(this.infoMessages.containsKey("processingFilteredCandidatesInfo"))
-					detailedMessage += "<br>" + this.infoMessages.getMessage("processingFilteredCandidatesInfo");
+					detailedMessage += " " + this.infoMessages.getMessage("processingFilteredCandidatesInfo");
 				//set the global message
 				FacesContext.getCurrentInstance().addMessage("fragmenterGrowl", new FacesMessage("Processing finished", detailedMessage) );
 				//reset the header of the processing dialog
@@ -2241,14 +2250,14 @@ public class MetFragWebBean {
 		return this.compoundClusteringEnabled;
 	}
 	
-	public TreeNode getCompoundsClusterRoot() {
+	public OrganigramNode getCompoundsClusterRoot() {
 		return this.clusterCompoundsThreadRunner.getTreeRoot();
 	}
-	
-	public TreeNode[] getSelectedClusterNodes() {
+	/*
+	public OrganigramNode[] getSelectedClusterNodes() {
         return this.selectedClusterNodes;
     }
- 
+ 	
     public void setSelectedClusterNodes(TreeNode[] selectedClusterNodes) {
         this.selectedClusterNodes = selectedClusterNodes;
     }
@@ -2270,41 +2279,63 @@ public class MetFragWebBean {
         	}
         }
     }
-
-    public void collapseSelectedClusterCompounds(TreeNode[] nodes) {
-        if(nodes != null && nodes.length > 0) {
-        	java.util.LinkedList<TreeNode> toCollapse = new java.util.LinkedList<TreeNode>();
-        	for(int i = 0; i < nodes.length; i++) {
-        		toCollapse.push(nodes[i]);
+	 */
+    public void expandSelectedClusterCompounds() {
+    	if(this.selectedNode != null) {
+    		OrganigramNode currentSelection = OrganigramHelper.findTreeNode(this.clusterCompoundsThreadRunner.getTreeRoot(), this.selectedNode);
+            java.util.Stack<OrganigramNode> stackList = new java.util.Stack<OrganigramNode>();
+    		stackList.push(currentSelection);
+    		while(!stackList.isEmpty()) {
+    			OrganigramNode current = stackList.pop();
+    			current.setExpanded(true);
+    			if(current.getChildCount() == 0) continue;
+     			for(OrganigramNode child : current.getChildren()) {
+    				stackList.push(child);
+    			}
     		}
-        	while(!toCollapse.isEmpty()) {
-        		TreeNode current = toCollapse.poll();
-        		if(!current.isLeaf()) current.setExpanded(false);
-        		if(current.getChildCount() == 0) continue;
-        		java.util.List<TreeNode> children = current.getChildren();
-        		for(TreeNode child : children) {
-        			toCollapse.add(child);
-        		}
-        	}
-        }
+    	//	RequestContext.getCurrentInstance().update("mainForm:mainAccordion:compoundClusterTree");
+    	}
     }
     
-    public void displaySelectedClusterCompounds(TreeNode[] nodes) {
-        if(nodes != null && nodes.length > 0) {
-        	
+    public void collapseSelectedClusterCompounds() {
+    	if(this.selectedNode != null) {
+    		OrganigramNode currentSelection = OrganigramHelper.findTreeNode(this.clusterCompoundsThreadRunner.getTreeRoot(), this.selectedNode);
+            java.util.Stack<OrganigramNode> stackList = new java.util.Stack<OrganigramNode>();
+    		stackList.push(currentSelection);
+    		while(!stackList.isEmpty()) {
+    			OrganigramNode current = stackList.pop();
+    			current.setExpanded(false);
+    			if(current.getChildCount() == 0) continue;
+     			for(OrganigramNode child : current.getChildren()) {
+    				stackList.push(child);
+    			}
+    		}
+    	//	RequestContext.getCurrentInstance().update("mainForm:mainAccordion:compoundClusterTree");
+    	}
+    }
+    
+    public void displaySelectedClusterCompounds() {
+    	if(this.selectedNode != null) {
+    		OrganigramNode currentSelection = OrganigramHelper.findTreeNode(this.clusterCompoundsThreadRunner.getTreeRoot(), this.selectedNode);
+           
         	this.filteredMetFragResultsContainer = new MetFragResultsContainer();
 
     		this.filteredMetFragResultsContainer.setNumberPeaksUsed(this.metFragResultsContainer.getNumberPeaksUsed());
     		this.filteredMetFragResultsContainer.setCompoundNameAvailable(this.metFragResultsContainer.isCompoundNameAvailable());
     		this.filteredMetFragResultsContainer.setSimScoreAvailable(this.metFragResultsContainer.isSimScoreAvailable());
 
-    		for(int i = 0; i < nodes.length; i++) {
-    			INode currentNode = (INode)nodes[i].getData();
-    			if(currentNode.hasResult()) {
-    				this.filteredMetFragResultsContainer.addMetFragResultScoreSorted(currentNode.getResult());
+    		java.util.Stack<OrganigramNode> stackList = new java.util.Stack<OrganigramNode>();
+    		stackList.push(currentSelection);
+    		while(!stackList.isEmpty()) {
+    			OrganigramNode current = stackList.pop();
+    			if(current == null) continue;
+    			if(((INode)current.getData()).hasResult())
+    				this.filteredMetFragResultsContainer.addMetFragResultScoreSorted(((INode)current.getData()).getResult());
+    			if(current.getChildCount() == 0) continue;
+     			for(OrganigramNode child : current.getChildren()) {
+    				stackList.push(child);
     			}
     		}
-    		
     		this.generateScoreDistributionModelView();
     		
     		//RequestContext.getCurrentInstance().update("mainForm:mainAccordion:MetFragResultsTable");
@@ -2313,20 +2344,32 @@ public class MetFragWebBean {
     		//RequestContext.getCurrentInstance().update("mainForm:mainAccordion:statisticsPanel");
     		//RequestContext.getCurrentInstance().update("mainForm:mainAccordion:statistics");
     		if(!this.isScoreDistributionModelAvailable()) RequestContext.getCurrentInstance().execute("PF('mainAccordion').unselect(3)");
-    		RequestContext.getCurrentInstance().update("mainForm:mainAccordion");
-   
-        }
+    		this.infoMessages.removeKey("filterCompoundsInfo");
+    		this.explainedPeaksFilter = new Integer[0];
+    		FacesContext.getCurrentInstance().addMessage("resultsClusterGrowl", new FacesMessage("Filtered Candidates", "Filtered " + this.filteredMetFragResultsContainer.getMetFragResults().size() + " candidates remained in result table") );
+    		//RequestContext.getCurrentInstance().update("mainForm:mainAccordion:resultTable");
+    		//RequestContext.getCurrentInstance().update("mainForm:mainAccordion:scoreDistributionPlot");
+    	}
     }
     
-    public void nodeExpand(NodeExpandEvent event) {
-        event.getTreeNode().setExpanded(true);      
+    public void nodeSelectListener(OrganigramNodeSelectEvent event) {}
+    
+    public OrganigramNode getSelectedNode() {
+        return this.selectedNode;
+    }
+ 
+    public void setSelectedNode(OrganigramNode selectedNode) {
+        this.selectedNode = selectedNode;
+    }
+    
+    public void nodeExpand(OrganigramNodeExpandEvent event) {
+        event.getOrganigramNode().setExpanded(true); 
     }
 
-    public void nodeCollapse(NodeCollapseEvent event) {
-        event.getTreeNode().setExpanded(false);     
+    public void nodeCollapse(OrganigramNodeCollapseEvent event) {
+        event.getOrganigramNode().setExpanded(false);     
     }
-    
-    
+
 	/*
 	 * results statistics 
 	 */
@@ -2367,7 +2410,7 @@ public class MetFragWebBean {
 		int pos = candidateIndex % 10;
 		RequestContext.getCurrentInstance().execute(
 			"var jobs = 0;" +
-			"var span = $('#mainForm').children('div').eq(0).children('div').eq(4).children('span').eq(0);" +
+			"var span = $('#mainForm').children('div').eq(0).children('div').eq(9).children('span').eq(0);" +
 			"var container = span.children('div').eq(0).children('div').eq(0).children('div').eq(0).children('div').eq(0).children('div').eq(2);" +
 			"var scrollTo;" +
 			"function f2() {"
@@ -2819,7 +2862,10 @@ public class MetFragWebBean {
 		//RequestContext.getCurrentInstance().update("mainForm:mainAccordion:statisticsPanel");
 		//RequestContext.getCurrentInstance().update("mainForm:mainAccordion:statistics");
 		if(!this.isScoreDistributionModelAvailable()) RequestContext.getCurrentInstance().execute("PF('mainAccordion').unselect(3)");
-		RequestContext.getCurrentInstance().update("mainForm:mainAccordion");
+		RequestContext.getCurrentInstance().update("mainForm:mainAccordion:MetFragResultsTable");
+		RequestContext.getCurrentInstance().update("mainForm:mainAccordion:peakFilterPanel");
+		RequestContext.getCurrentInstance().update("mainForm:mainAccordion:scoreDistributionPlot");
+		//RequestContext.getCurrentInstance().update("mainForm:mainAccordion");
 	}
 	
 	//results download

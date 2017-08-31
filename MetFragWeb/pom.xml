@@ -106,8 +106,8 @@
 		<dependency>
 			<groupId>org.primefaces</groupId>
 			<artifactId>primefaces</artifactId>
-			<!-- <version>6.0</version> -->
-			<version>5.3</version>
+			<version>6.1</version>
+			<!-- <version>5.3</version> -->
 		</dependency>
 		
 		<dependency>
@@ -154,6 +154,13 @@
 			<id>jvnet-nexus-releases</id>
 			<name>jvnet-nexus-releases</name>
 			<url>https://maven.java.net/content/repositories/releases/</url>
+		</repository>
+		<repository>
+			<id>centralmaven</id>
+			<url>http://mvnrepository.com</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
 		</repository>
 	</repositories>
 

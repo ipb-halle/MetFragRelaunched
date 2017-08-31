@@ -5,6 +5,7 @@ import de.ipbhalle.metfraglib.candidatefilter.PostProcessingCandidateInChIKeyFil
 import de.ipbhalle.metfraglib.candidatefilter.PreProcessingCandidateElementExclusionFilter;
 import de.ipbhalle.metfraglib.candidatefilter.PreProcessingCandidateElementInclusionExclusiveFilter;
 import de.ipbhalle.metfraglib.candidatefilter.PreProcessingCandidateElementInclusionFilter;
+import de.ipbhalle.metfraglib.candidatefilter.PreProcessingCandidateElementInclusionOptionalFilter;
 import de.ipbhalle.metfraglib.candidatefilter.PreProcessingCandidateIsotopeFilter;
 import de.ipbhalle.metfraglib.candidatefilter.PreProcessingCandidateMaximalElementFilter;
 import de.ipbhalle.metfraglib.candidatefilter.PreProcessingCandidateMinimalElementFilter;
@@ -205,6 +206,7 @@ public class ClassNames {
 		preProcessingCandidateFilterNameToClassName.put("IsotopeFilter", PreProcessingCandidateIsotopeFilter.class.getName());
 		preProcessingCandidateFilterNameToClassName.put("ElementExclusionFilter", PreProcessingCandidateElementExclusionFilter.class.getName());
 		preProcessingCandidateFilterNameToClassName.put("ElementInclusionExclusiveFilter", PreProcessingCandidateElementInclusionExclusiveFilter.class.getName());
+		preProcessingCandidateFilterNameToClassName.put("ElementInclusionOptionalFilter", PreProcessingCandidateElementInclusionOptionalFilter.class.getName());
 		preProcessingCandidateFilterNameToClassName.put("ElementInclusionFilter", PreProcessingCandidateElementInclusionFilter.class.getName());
 		preProcessingCandidateFilterNameToClassName.put("SmartsSubstructureExclusionFilter", PreProcessingCandidateSmartsExclusionFilter.class.getName());
 		preProcessingCandidateFilterNameToClassName.put("SmartsSubstructureInclusionFilter", PreProcessingCandidateSmartsInclusionFilter.class.getName());

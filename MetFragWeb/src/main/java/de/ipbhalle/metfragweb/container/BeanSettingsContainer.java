@@ -105,8 +105,8 @@ public class BeanSettingsContainer {
 	protected String additionalSmartsFilterInclusion = "";
 	protected String[] smartsFilterExclusion = new String[] {"[cR1]1[cR1][cR1][cR1][cR1][cR1]1"};
 	protected String additionalSmartsFilterExclusion = "";
-	protected boolean elementInclusionExclusiveFilterEnabled;
 	protected boolean elementInclusionFilterValid = true;
+	protected String elementInclusionFilterType = "default";
 	
 	protected String substructureInformationFilterExpression = "( not c1ccccc1 and not C1CCCCC1 ) or [CX3](=O)[OX2H1]";
 	protected String selectedInformationSmarts = "";
@@ -320,6 +320,7 @@ public class BeanSettingsContainer {
 
 	public boolean readUploadedSettings(java.io.File[] contentFiles, Messages infoMessages, Messages errorMessages, 
 			AvailableParameters avalableParameters, String rootDir) {
+		System.out.println("readUploadedSettings");
 		errorMessages.removeKey("uploadParametersError");
 		if(contentFiles == null) {
 			errorMessages.setMessage("uploadParametersError", "Error: Uploading file failed");
@@ -741,11 +742,6 @@ public class BeanSettingsContainer {
 		this.additionalSmartsFilterExclusion = additionalSmartsFilterExclusion;
 	}
 	
-	public void setElementInclusionExclusiveFilterEnabled(
-			boolean elementInclusionExclusiveFilterEnabled) {
-		this.elementInclusionExclusiveFilterEnabled = elementInclusionExclusiveFilterEnabled;
-	}
-		
 	public void setSubstructureInformationFilterExpression(String substructureInformationFilterExpression) {
 		this.substructureInformationFilterExpression = substructureInformationFilterExpression;
 	}
@@ -903,10 +899,6 @@ public class BeanSettingsContainer {
 		return "";
 	}
 
-	public boolean isElementInclusionExclusiveFilterEnabled() {
-		return this.elementInclusionExclusiveFilterEnabled;
-	}
-	
 	public String getFilterName(String filterName) {
 		return this.filterNamesMap.get(filterName);
 	}
@@ -918,7 +910,15 @@ public class BeanSettingsContainer {
 	public void setElementInclusionFilterValid(boolean elementInclusionFilterValid) {
 		this.elementInclusionFilterValid = elementInclusionFilterValid;
 	}
-	
+
+	public String getElementInclusionFilterType() {
+		return this.elementInclusionFilterType;
+	}
+
+	public void setElementInclusionFilterType(String elementInclusionFilterType) {
+		this.elementInclusionFilterType = elementInclusionFilterType;
+	}
+
 	public boolean isForIdentSuspectListFilterEnabled() {
 		return forIdentSuspectListFilterEnabled;
 	}
@@ -1230,13 +1230,12 @@ public class BeanSettingsContainer {
 		//isotope filter
 		if(this.filterEnabledMap.get("isotopeFilter") && this.filterValidMap.get("isotopeFilter")) 
 			compoundPreFilters.add("IsotopeFilter");
-		//element inclusion score
-		if(this.elementInclusionExclusiveFilterEnabled && this.filterEnabledMap.get("includedFilterElements") && this.filterValidMap.get("includedFilterElements")) {
-			compoundPreFilters.add("ElementInclusionExclusiveFilter");
-			this.metFragSettings.set(VariableNames.PRE_CANDIDATE_FILTER_INCLUDED_ELEMENTS_NAME, ParameterDataTypes.getParameter(this.includedElements, VariableNames.PRE_CANDIDATE_FILTER_INCLUDED_ELEMENTS_NAME));
-		} 	
-		else if(this.filterEnabledMap.get("includedFilterElements") && this.filterValidMap.get("includedFilterElements")) {
-			compoundPreFilters.add("ElementInclusionFilter");
+		//element inclusion filter
+		if(this.filterEnabledMap.get("includedFilterElements") && this.filterValidMap.get("includedFilterElements")) {
+			if(this.elementInclusionFilterType == null || this.elementInclusionFilterType.equals("")) compoundPreFilters.add("ElementInclusionFilter");
+			else if(this.elementInclusionFilterType.equals("optional")) compoundPreFilters.add("ElementInclusionOptionalFilter");
+			else if(this.elementInclusionFilterType.equals("exclusive")) compoundPreFilters.add("ElementInclusionExclusiveFilter");
+			else compoundPreFilters.add("ElementInclusionFilter");
 			this.metFragSettings.set(VariableNames.PRE_CANDIDATE_FILTER_INCLUDED_ELEMENTS_NAME, ParameterDataTypes.getParameter(this.includedElements, VariableNames.PRE_CANDIDATE_FILTER_INCLUDED_ELEMENTS_NAME));
 		} else this.metFragSettings.remove(VariableNames.PRE_CANDIDATE_FILTER_INCLUDED_ELEMENTS_NAME);
 		
@@ -1893,8 +1892,8 @@ public class BeanSettingsContainer {
 		bwriter.write(VariableNames.PRE_CANDIDATE_FILTER_MAXIMUM_ELEMENTS_NAME + " = " + this.includedMaximumElements); bwriter.newLine();
 		bwriter.write(VariableNames.PRE_CANDIDATE_FILTER_SMARTS_INCLUSION_LIST_NAME + " = " + this.smartsFilterInclusion); bwriter.newLine();
 		bwriter.write(VariableNames.PRE_CANDIDATE_FILTER_SMARTS_EXCLUSION_LIST_NAME + " = " + this.smartsFilterExclusion); bwriter.newLine();
-		bwriter.write("elementInclusionExclusiveFilterEnabled" + " = " + this.elementInclusionExclusiveFilterEnabled); bwriter.newLine();
-		bwriter.write("elementInclusionFilterValid" + " = " + this.elementInclusionExclusiveFilterEnabled); bwriter.newLine();
+		bwriter.write("elementInclusionFilterType" + " = " + this.elementInclusionFilterType); bwriter.newLine();
+		bwriter.write("elementInclusionFilterValid" + " = " + this.elementInclusionFilterValid); bwriter.newLine();
 		
 		bwriter.write("#### SCORES ####");
 		bwriter.newLine();

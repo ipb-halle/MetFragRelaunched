@@ -80,7 +80,10 @@ public class AvailableParameters {
 	
 	public boolean isValidPrecusorMode(int mode) {
 		for(int i = 0; i < this.precursorModes.size(); i++) {
-			if((Integer)this.precursorModes.get(i).getValue() == mode) return true;
+			SelectItemGroup g = (SelectItemGroup)this.precursorModes.get(i);
+			for(int k = 0; k < g.getSelectItems().length; k++) {
+				if((Integer)g.getSelectItems()[k].getValue() == mode) return true;
+			}
 		}
 		return false;
 	}
