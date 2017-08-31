@@ -13,6 +13,7 @@ import de.ipbhalle.metfraglib.FastBitArray;
 import de.ipbhalle.metfraglib.additionals.Bond;
 import de.ipbhalle.metfraglib.exceptions.AtomTypeNotKnownFromInputListException;
 import de.ipbhalle.metfraglib.fragment.DefaultBitArrayFragment;
+import de.ipbhalle.metfraglib.parameter.Constants;
 
 public class BitArrayPrecursor extends DefaultPrecursor {
 
@@ -22,6 +23,7 @@ public class BitArrayPrecursor extends DefaultPrecursor {
 	protected FastBitArray aromaticBonds;
 	protected short[] atomAdjacencyList;
 	protected byte[] numberHydrogensConnectedToAtom;
+	protected double[] massesOfAtoms;
 	
 	public BitArrayPrecursor(IAtomContainer precursorMolecule) {
 		super(precursorMolecule);
@@ -35,6 +37,7 @@ public class BitArrayPrecursor extends DefaultPrecursor {
 		this.initiliseBondIndexToConnectedAtomIndeces();
 		this.initialiseRingBondsFastBitArray();
 		this.initialiseAtomAdjacencyList();
+		this.initialiseAtomMasses();
 	}
 	
 	public double getMeanNodeDegree() {
@@ -78,6 +81,17 @@ public class BitArrayPrecursor extends DefaultPrecursor {
 		for(int i = 0; i < this.getNonHydrogenAtomCount(); i++) {
 			this.numberHydrogensConnectedToAtom[i] = (byte)(int)this.precursorMolecule.getAtom(i).getImplicitHydrogenCount();
 		}
+	}
+
+	protected void initialiseAtomMasses() {
+		this.massesOfAtoms = new double[this.getNonHydrogenAtomCount()];
+		for(int i = 0; i < this.getNonHydrogenAtomCount(); i++) {
+			this.massesOfAtoms[i] = Constants.MONOISOTOPIC_MASSES.get(Constants.ELEMENTS.indexOf(this.precursorMolecule.getAtom(i).getSymbol()));
+		}
+	}
+	
+	public double getMassOfAtom(int index) {
+		return this.massesOfAtoms[index] + this.getNumberHydrogensConnectedToAtomIndex(index) * Constants.MONOISOTOPIC_MASSES.get(Constants.H_INDEX);
 	}
 	
 	/**

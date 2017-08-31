@@ -31,6 +31,7 @@ import de.ipbhalle.metfraglib.precursor.BitArrayPrecursor;
 public class DefaultBitArrayFragment extends AbstractFragment {
 
 	protected IMolecularFormula molecularFormula;
+	protected short numberHydrogens;
 
 	/**
 	 * atoms represented as FastBitArray object 
@@ -92,6 +93,26 @@ public class DefaultBitArrayFragment extends AbstractFragment {
 		this.treeDepth = 0;
 	}
 
+	protected void initialiseNumberHydrogens() {
+		this.numberHydrogens = 0;
+		for(int i = 0; i < this.atomsFastBitArray.getSize(); i++) {
+			if(this.atomsFastBitArray.get(i)) {
+				this.numberHydrogens += this.precursorMolecule.getNumberHydrogensConnectedToAtomIndex(i);
+			}
+		}
+	}
+	
+	public double getMonoisotopicMass() {
+		//return this.molecularFormula.getMonoisotopicMass();
+		double mass = 0.0;
+		for(int i = 0; i < this.atomsFastBitArray.getSize(); i++) {
+			if(this.atomsFastBitArray.get(i)) {
+				mass += this.precursorMolecule.getMassOfAtom(i);
+			}
+		}
+		return mass;
+	}
+	
 	public void initialiseMolecularFormula() throws AtomTypeNotKnownFromInputListException {
 		this.molecularFormula = new BitArrayFragmentMolecularFormula((BitArrayPrecursor)this.precursorMolecule, this.atomsFastBitArray);
 	}
@@ -109,7 +130,7 @@ public class DefaultBitArrayFragment extends AbstractFragment {
 		byte numberComparisons = 2;
 		boolean matched = false;
 		
-		short numberHydrogens = this.molecularFormula.getNumberHydrogens();
+		short numberHydrogens = this.getNumberHydrogens();
 		
 		for(int i = 0; i < ionisationTypeMassCorrection.length; i++) {
 			int substractHydrogenFromCharge = 0;
@@ -258,11 +279,11 @@ public class DefaultBitArrayFragment extends AbstractFragment {
 	}
 	
 	public void setNumberHydrogens(int numberHydrogens) {
-		this.molecularFormula.setNumberHydrogens((short)numberHydrogens);
+		this.numberHydrogens = (short)numberHydrogens;
 	}
 	
-	public int getNumberHydrogens() {
-		return this.molecularFormula.getNumberHydrogens();
+	public short getNumberHydrogens() {
+		return this.numberHydrogens;
 	}
 	
 	public IMolecularFormula getMolecularFormula() {
@@ -353,10 +374,6 @@ public class DefaultBitArrayFragment extends AbstractFragment {
 	//	MoleculeFunctions.prepareAtomContainer(fragmentStructure);
 		
 		return fragmentStructure;
-	}
-
-	public double getMonoisotopicMass() {
-		return this.getMolecularFormula().getMonoisotopicMass();
 	}
 
 	public int getNonHydrogenAtomCount() {

@@ -33,11 +33,7 @@ public class TopDownBitArrayFragment extends de.ipbhalle.metfraglib.fragment.Abs
 		clone.setID(this.ID);
 		clone.setTreeDepth(this.treeDepth);
 		if(clone.hasMatched) clone.setHasMatched();
-		try {
-			clone.initialiseMolecularFormula();
-		} catch (AtomTypeNotKnownFromInputListException e) {
-			e.printStackTrace();
-		}
+		clone.setNumberHydrogens(this.getNumberHydrogens());
 		return clone;
 	}
 	
@@ -59,12 +55,8 @@ public class TopDownBitArrayFragment extends de.ipbhalle.metfraglib.fragment.Abs
 			int numberHydrogens) throws AtomTypeNotKnownFromInputListException
 	{
 		super(precursor, atomsFastBitArray, bondsFastBitArray, brokenBondsFastBitArray);
-		this.initialiseMolecularFormula();
+	//	this.initialiseMolecularFormula();
 		this.setNumberHydrogens(numberHydrogens);
-	}
-	
-	public double getMonoisotopicMass() {
-		return this.molecularFormula.getMonoisotopicMass();
 	}
 
 	public boolean equals(Object topDownFastBitArrayFragment) {
@@ -105,11 +97,6 @@ public class TopDownBitArrayFragment extends de.ipbhalle.metfraglib.fragment.Abs
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
 		}
-		try {
-			firstNewGeneratedFragment.initialiseMolecularFormula();
-		} catch (AtomTypeNotKnownFromInputListException e1) {
-			e1.printStackTrace();
-		}
 		
 		/*
 		 * only one fragment is generated when a ring bond was broken
@@ -141,12 +128,6 @@ public class TopDownBitArrayFragment extends de.ipbhalle.metfraglib.fragment.Abs
 		} catch (AtomTypeNotKnownFromInputListException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-		}
-		
-		try {
-			secondNewGeneratedFragment.initialiseMolecularFormula();
-		} catch (AtomTypeNotKnownFromInputListException e) {
-			e.printStackTrace();
 		}
 		
 		firstNewGeneratedFragment.setTreeDepth((byte)(this.getTreeDepth() + 1));

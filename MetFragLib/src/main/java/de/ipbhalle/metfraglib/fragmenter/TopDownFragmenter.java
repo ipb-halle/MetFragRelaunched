@@ -1,6 +1,6 @@
 package de.ipbhalle.metfraglib.fragmenter;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import de.ipbhalle.metfraglib.FastBitArray;
 import de.ipbhalle.metfraglib.fragment.AbstractTopDownBitArrayFragment;
@@ -151,11 +151,11 @@ public class TopDownFragmenter extends AbstractTopDownFragmenter {
 	 * generates all fragments of the given precursor fragment to reach the new tree depth
 	 */
 	@Override
-	public Vector<AbstractTopDownBitArrayFragment> getFragmentsOfNextTreeDepth(AbstractTopDownBitArrayFragment precursorFragment) {
+	public ArrayList<AbstractTopDownBitArrayFragment> getFragmentsOfNextTreeDepth(AbstractTopDownBitArrayFragment precursorFragment) {
 		FastBitArray ringBonds = new FastBitArray(precursorFragment.getBondsFastBitArray().getSize(), false);
 		java.util.Queue<AbstractTopDownBitArrayFragment> ringBondCuttedFragments = new java.util.LinkedList<AbstractTopDownBitArrayFragment>();
 		java.util.Queue<Short> lastCuttedBondOfRing = new java.util.LinkedList<Short>();
-		Vector<AbstractTopDownBitArrayFragment> fragmentsOfNextTreeDepth = new Vector<AbstractTopDownBitArrayFragment>();
+		ArrayList<AbstractTopDownBitArrayFragment> fragmentsOfNextTreeDepth = new ArrayList<AbstractTopDownBitArrayFragment>();
 		/*
 		 * generate fragments of skipped bonds
 		 */
@@ -233,7 +233,7 @@ public class TopDownFragmenter extends AbstractTopDownFragmenter {
 	 * @param lastCuttedRingBond
 	 * @return
 	 */
-	protected Vector<AbstractTopDownBitArrayFragment> createRingBondCleavedFragments(Vector<AbstractTopDownBitArrayFragment> newGeneratedTopDownFragments, AbstractTopDownBitArrayFragment precursorFragment, java.util.Queue<AbstractTopDownBitArrayFragment> toProcess, FastBitArray ringBondFastBitArray, java.util.Queue<Short> lastCuttedRingBond) {
+	protected ArrayList<AbstractTopDownBitArrayFragment> createRingBondCleavedFragments(ArrayList<AbstractTopDownBitArrayFragment> newGeneratedTopDownFragments, AbstractTopDownBitArrayFragment precursorFragment, java.util.Queue<AbstractTopDownBitArrayFragment> toProcess, FastBitArray ringBondFastBitArray, java.util.Queue<Short> lastCuttedRingBond) {
 		/*
 		 * process all fragments that have been cutted in a ring without generating 
 		 * a new one
@@ -301,7 +301,7 @@ public class TopDownFragmenter extends AbstractTopDownFragmenter {
 	/*
 	 * generate fragments by removing bonds that were skipped due to ring bond cleavage
 	 */
-	protected void generateFragmentsOfSkippedBonds(Vector<AbstractTopDownBitArrayFragment> newGeneratedTopDownFragments, AbstractTopDownBitArrayFragment precursorFragment) {
+	protected void generateFragmentsOfSkippedBonds(ArrayList<AbstractTopDownBitArrayFragment> newGeneratedTopDownFragments, AbstractTopDownBitArrayFragment precursorFragment) {
 		short lastSkippedBonds = precursorFragment.getLastSkippedBond();
 		if(lastSkippedBonds == -1 || precursorFragment.getNonHydrogenBondCount() <= lastSkippedBonds) return;
 		
