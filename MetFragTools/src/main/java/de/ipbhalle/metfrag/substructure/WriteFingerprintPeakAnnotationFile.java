@@ -3,6 +3,7 @@ package de.ipbhalle.metfrag.substructure;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.util.Hashtable;
 import java.util.Vector;
 
 import de.ipbhalle.metfraglib.FastBitArray;
@@ -78,7 +79,6 @@ public class WriteFingerprintPeakAnnotationFile {
 		java.util.Vector<String> ids = db.getCandidateIdentifiers();
 		CandidateList candidateList = db.getCandidateByIdentifier(ids);
 		//SmilesOfExplPeaks
-		MassToFingerprintGroupListCollection peakToFingerprintGroupListCollection = new MassToFingerprintGroupListCollection();
 		for(int i = 0; i < candidateList.getNumberElements(); i++) {
 			ICandidate candidate = candidateList.getElement(i);
 			String fingerprintsOfExplPeaks = (String)candidate.getProperty("FragmentFingerprintOfExplPeaks");
@@ -101,21 +101,29 @@ public class WriteFingerprintPeakAnnotationFile {
 			}
 		}
 		
+		MassToFingerprintGroupListCollection peakToFingerprintGroupListCollection = new MassToFingerprintGroupListCollection();
 		//print(peakMassesSorted, fingerprintsSorted);
 		System.out.println(peakMassesSorted.size() + " peak fingerprint pairs");
-		
+
+		Integer id = 0;
+		Hashtable<Integer, Vector<Double>> grouplistid_to_masses = new Hashtable<Integer, Vector<Double>>();
 		for(int i = 0; i < peakMassesSorted.size(); i++) {
 			Double currentPeak = peakMassesSorted.get(i);
 			MassToFingerprintGroupList peakToFingerprintGroupList = peakToFingerprintGroupListCollection.getElementByPeakInterval(currentPeak, mzppm, mzabs);
 			if(peakToFingerprintGroupList == null) {
 				peakToFingerprintGroupList = new MassToFingerprintGroupList(currentPeak);
+				peakToFingerprintGroupList.setId(id);
 				FingerprintGroup obj = new FingerprintGroup(0.0, null, null, null);
 				obj.setFingerprint(fingerprintsSorted.get(i));
 				obj.incrementNumberObserved();
 				peakToFingerprintGroupList.addElement(obj);
 				peakToFingerprintGroupListCollection.addElementSorted(peakToFingerprintGroupList);
+				addMass(grouplistid_to_masses, id, currentPeak);
+				id++;
 			}
 			else {
+				Integer current_id = peakToFingerprintGroupList.getId();
+				addMass(grouplistid_to_masses, current_id, currentPeak);
 				FingerprintGroup fingerprintGroup = peakToFingerprintGroupList.getElementByFingerprint(new FastBitArray(fingerprintsSorted.get(i)));
 				if(fingerprintGroup != null) {
 					fingerprintGroup.incrementNumberObserved();
@@ -130,7 +138,9 @@ public class WriteFingerprintPeakAnnotationFile {
 		}
 		System.out.println("before filtering " + peakToFingerprintGroupListCollection.getNumberElements());
 		
-		peakToFingerprintGroupListCollection.updatePeakMass(mzppm, mzabs);
+		//peakToFingerprintGroupListCollection.updatePeakMass(mzppm, mzabs);
+		peakToFingerprintGroupListCollection.updatePeakMass(grouplistid_to_masses);
+	
 		// test filtering
 		if(occurThresh != null) peakToFingerprintGroupListCollection.filterByOccurence(occurThresh);
 		
@@ -245,6 +255,16 @@ public class WriteFingerprintPeakAnnotationFile {
 			count += groupList.getNumberElements();
 		}
 		return count;
+	}
+
+	public static void addMass(Hashtable<Integer, Vector<Double>> grouplistid_to_masses, Integer id, double mass) {
+		if(grouplistid_to_masses.containsKey(id) && grouplistid_to_masses.get(id) != null) {
+			grouplistid_to_masses.get(id).add(mass);
+		} else {
+			Vector<Double> new_masses = new Vector<Double>();
+			new_masses.add(mass);
+			grouplistid_to_masses.put(id, new_masses);
+		}
 	}
 	
 	public static int getNumberOccurences(MassToFingerprintGroupListCollection peakToFingerprintGroupListCollections) {

@@ -29,20 +29,21 @@
 				<h:panelGrid columns="1" style="vertical-align:top;" cellspacing="4"
 					cellpadding="4" styleClass="subPanel"
 					rendered="#{metFragWebBean.elementInclusionFilterEnabled}">
-					<h:panelGrid columns="3">
+					<h:panelGrid columns="2">
 						<h:outputLabel value="Element List:" />
 						<p:inputText id="includedFilterElements" required="false"
 							value="#{metFragWebBean.includedFilterElements}">
 							<p:ajax event="blur" update="elementInclusionFilterPanel" />
 						</p:inputText>
-						<h:panelGrid columns="2" style="padding-left:10px">
-							<h:outputText id="exclusive" value="Exclusive" />
-							<p:selectBooleanCheckbox
-								id="elementInclusionExclusiveFilterEnabled"
-								value="#{metFragWebBean.elementInclusionExclusiveFilterEnabled}">
-								<p:ajax />
-							</p:selectBooleanCheckbox>
-						</h:panelGrid>
+					</h:panelGrid>
+					<h:panelGrid columns="2" style="padding-left:10px">
+						<h:outputText id="elementInclusionFilterType" value="Filter Type" />
+						<p:selectOneButton value="#{metFragWebBean.elementInclusionFilterType}">
+            				<f:selectItem itemLabel="Default" itemValue="default" />
+            				<f:selectItem itemLabel="Exclusive" itemValue="exclusive" />
+            				<f:selectItem itemLabel="Optional" itemValue="optional" />
+							<p:ajax/>
+        				</p:selectOneButton>
 					</h:panelGrid>
 					<h:panelGroup style="max-width: -moz-fit-content; padding-top: 5px" id="includedFilterElementsError" layout="block"
 						styleClass="ui-messages ui-widget"

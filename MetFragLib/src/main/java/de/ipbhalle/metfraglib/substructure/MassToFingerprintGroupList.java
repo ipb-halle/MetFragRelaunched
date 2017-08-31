@@ -1,5 +1,8 @@
 package de.ipbhalle.metfraglib.substructure;
 
+import java.util.Hashtable;
+import java.util.Vector;
+
 import de.ipbhalle.metfraglib.FastBitArray;
 import de.ipbhalle.metfraglib.additionals.MathTools;
 import de.ipbhalle.metfraglib.list.DefaultList;
@@ -10,7 +13,7 @@ public class MassToFingerprintGroupList extends DefaultList {
 	private Double sumProbabilities;
 	private Double alphaProb;
 	private Double betaProb;
-	
+	private Integer id;
 	
 	public MassToFingerprintGroupList(Double peakmz) {
 		super();
@@ -33,6 +36,14 @@ public class MassToFingerprintGroupList extends DefaultList {
 		this.betaProb = betaProb;
 	}
 
+	public void setId(Integer id) {
+		this.id = id;
+	}
+	
+	public Integer getId() {
+		return this.id;
+	}
+	
 	public void filterByOccurence(int minimumNumberOccurences) {
 		java.util.Vector<Object> filteredList = new java.util.Vector<Object>();
 		for(int i = 0; i < this.getNumberElements(); i++) {
@@ -255,6 +266,15 @@ public class MassToFingerprintGroupList extends DefaultList {
 	
 	public void updatePeakMass(double mzppm, double mzabs) {
 		this.peakmz = this.peakmz + MathTools.calculateAbsoluteDeviation(this.peakmz, mzppm) + mzabs;
+	}
+
+	public void updatePeakMass(Hashtable<Integer, Vector<Double>> grouplistid_to_masses) {
+		if(this.id == null) return;
+		if(!grouplistid_to_masses.containsKey(this.id) || grouplistid_to_masses.get(this.id) == null) return;
+		Vector<Double> masses = grouplistid_to_masses.get(this.id);
+		this.peakmz = 0.0;
+		for(double mass : masses) this.peakmz += mass;
+		this.peakmz /= masses.size();
 	}
 	
 	/**

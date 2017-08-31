@@ -73,7 +73,7 @@
 							</h:panelGroup>
 						</h:panelGroup>
 					</h:panelGrid>
-					<h:panelGrid columns="1" style="padding-top: 10px; padding-bottom: 10px;">
+					<h:panelGrid columns="1" style="padding-top: 10px; padding-bottom: 10px;" id="peakFilterPanel">
 						<h:outputLabel value="Filter Candidates by explained MS/MS Peaks" />
 						<h:panelGrid columns="3" style="padding-left: 20px; padding-bottom: 10px;">
 							<p:selectCheckboxMenu id="explainedPeaksFilterMenu" value="#{metFragWebBean.explainedPeaksFilter}" 
@@ -134,7 +134,7 @@
 										<h:panelGroup>
 											<h:graphicImage id="magnifierMol_1"
 												name="images/icons/magni3.png" />
-											<p:tooltip id="molImageLarge1" for="magnifierMol_1" style="background-color: white;">
+											<p:tooltip id="molImageLarge1" for="magnifierMol_1" style="background-color: white; background-image: none;">
 												<p:graphicImage alt="images/ajaxloadingbar.gif"
 													value="#{metFragResult.imageAddress}" />
 											</p:tooltip>

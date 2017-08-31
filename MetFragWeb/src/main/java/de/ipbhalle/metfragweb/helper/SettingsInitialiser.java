@@ -64,6 +64,7 @@ public class SettingsInitialiser {
 				String[] tmp = (String[])settings.get(parameterName);
 				for(int i = 0; i < tmp.length; i++) {
 					if(tmp[i].equals(VariableNames.METFRAG_FRAGMENTER_SCORE_NAME)) continue;
+					else if(tmp[i].equals("ElementInclusionOptionalFilter")) beanSettings.setFilterEnabled(true, "includedFilterElements");
 					else if(tmp[i].equals("ElementInclusionExclusiveFilter")) beanSettings.setFilterEnabled(true, "includedFilterElements");
 					else if(tmp[i].equals("ElementInclusionFilter")) beanSettings.setFilterEnabled(true, "includedFilterElements");
 					else if(tmp[i].equals("ElementExclusionFilter")) beanSettings.setFilterEnabled(true, "excludedFilterElements");
@@ -81,16 +82,16 @@ public class SettingsInitialiser {
 				}
 			}
 			else if(parameterName.equals("FilterExcludedElements")) {
-				beanSettings.setExcludedFilterElements((String)settings.get(parameterName));
+				beanSettings.setExcludedFilterElements(convertToString((String[])settings.get(parameterName), ","));
 			}
 			else if(parameterName.equals("FilterIncludedElements")) {
-				beanSettings.setIncludedFilterElements((String)settings.get(parameterName));
+				beanSettings.setIncludedFilterElements(convertToString((String[])settings.get(parameterName), ","));
 			}
 			else if(parameterName.equals("FilterSmartsInclusionList")) {
-				beanSettings.setAdditionalSmartsFilterInclusion((String)settings.get(parameterName));
+				beanSettings.setAdditionalSmartsFilterInclusion(convertToString((String[])settings.get(parameterName), ","));
 			}
 			else if(parameterName.equals("FilterSmartsExclusionList")) {
-				beanSettings.setAdditionalSmartsFilterExclusion((String)settings.get(parameterName));
+				beanSettings.setAdditionalSmartsFilterExclusion(convertToString((String[])settings.get(parameterName), ","));
 			}
 			else if(parameterName.equals("FilterSuspectLists")) {
 				String[] tmp = (String[])settings.get(parameterName);
@@ -215,6 +216,14 @@ public class SettingsInitialiser {
 		
 		System.out.println(infos + " " + checksFine);
 		return checksFine;
+	}
+	
+	protected static String convertToString(String[] array, String delim) {
+		String string = "";
+		if(array.length > 0) string = array[0];
+		for(int i = 0; i < array.length; i++)
+			string += delim + array[1];
+		return string;
 	}
 	
 }

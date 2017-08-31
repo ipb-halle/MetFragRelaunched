@@ -16,7 +16,7 @@ import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.precursor.AbstractTopDownBitArrayPrecursor;
 
 import java.io.IOException;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.openscience.cdk.fingerprint.IBitFingerprint;
 
@@ -484,7 +484,7 @@ public class TopDownFragmenterAssignerScorer extends AbstractFragmenterAssignerS
 	protected boolean wasAlreadyGenerated(AbstractTopDownBitArrayFragment currentFragment) {
 		AbstractTopDownBitArrayFragment precursorOfFragment = currentFragment.getPrecursorFragment();
 		if(precursorOfFragment == null) return false;
-			java.util.Vector<AbstractTopDownBitArrayFragment> children = precursorOfFragment.getChildren();
+			java.util.ArrayList<AbstractTopDownBitArrayFragment> children = precursorOfFragment.getChildren();
 		
 		for(int i = 0; i < children.size(); i++) {
 			if(children.get(i).getID() < currentFragment.getID() && children.get(i).getAtomsFastBitArray().equals(currentFragment.getAtomsFastBitArray())) 
@@ -530,7 +530,7 @@ public class TopDownFragmenterAssignerScorer extends AbstractFragmenterAssignerS
 		this.bitArrayToFragment = null;
 	}
 	
-	protected void addFingerPrintsToVector(java.util.Vector<AbstractTopDownBitArrayFragment> fragments, Vector<String> fingerprints, Vector<IBitFingerprint> fps) {
+	protected void addFingerPrintsToVector(ArrayList<AbstractTopDownBitArrayFragment> fragments, ArrayList<String> fingerprints, ArrayList<IBitFingerprint> fps) {
 		for(int i = 0; i < fragments.size(); i++) {
 			int index = 0;
 			IBitFingerprint fp = TanimotoSimilarity.calculateFingerPrint(fragments.get(i).getStructureAsIAtomContainer());
@@ -548,7 +548,7 @@ public class TopDownFragmenterAssignerScorer extends AbstractFragmenterAssignerS
 		}
 	}
 	
-	protected void writeFingerPrintsToFile(Vector<String> fps, String filename) {
+	protected void writeFingerPrintsToFile(ArrayList<String> fps, String filename) {
 		try {
 			java.io.BufferedWriter bwriter = new java.io.BufferedWriter(new java.io.FileWriter(new java.io.File(filename)));
 			for(int i = 0; i < fps.size(); i++) {

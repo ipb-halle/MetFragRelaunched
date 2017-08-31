@@ -26,6 +26,13 @@ public class MassToFingerprintGroupListCollection extends DefaultList {
 			groupList.updatePeakMass(mzppm, mzabs);
 		}
 	}
+
+	public void updatePeakMass(java.util.Hashtable<Integer, java.util.Vector<Double>> grouplistid_to_masses) {
+		for(int i = 0; i < this.getNumberElements(); i++) {
+			MassToFingerprintGroupList groupList = this.getElement(i);
+			groupList.updatePeakMass(grouplistid_to_masses);
+		}
+	}
 	
 	public void calculateFingeprintObservations() {
 		this.fingerprintObservations = new FingerprintObservations();
