@@ -35,7 +35,7 @@ public abstract class AbstractTopDownFragmenter implements IFragmenter {
 		return this.scoredCandidate.getPrecursorMolecule();
 	}
 
-	public abstract java.util.Vector<AbstractTopDownBitArrayFragment> getFragmentsOfNextTreeDepth(AbstractTopDownBitArrayFragment precursorFragment);
+	public abstract java.util.ArrayList<AbstractTopDownBitArrayFragment> getFragmentsOfNextTreeDepth(AbstractTopDownBitArrayFragment precursorFragment);
 	
 	public void nullify() {
 		this.maximumTreeDepth = null;

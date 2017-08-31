@@ -62,6 +62,18 @@ public interface IMolecularStructure {
 	 * 
 	 * @return
 	 */
+	public int getNumberHydrogensConnectedToAtomIndex(int index);
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public double getMassOfAtom(int index);
+	
+	/**
+	 * 
+	 * @return
+	 */
 	public IFragment toFragment();
 	
 	/**

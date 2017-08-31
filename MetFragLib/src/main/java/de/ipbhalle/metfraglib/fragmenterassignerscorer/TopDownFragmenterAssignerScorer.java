@@ -92,7 +92,7 @@ public class TopDownFragmenterAssignerScorer extends AbstractFragmenterAssignerS
 				/*
 				 * generate fragments of next tree depth
 				 */
-				java.util.Vector<AbstractTopDownBitArrayFragment> fragmentsOfCurrentTreeDepth = this.fragmenter.getFragmentsOfNextTreeDepth(wrappedPrecursorFragment.getWrappedFragment());
+				java.util.ArrayList<AbstractTopDownBitArrayFragment> fragmentsOfCurrentTreeDepth = this.fragmenter.getFragmentsOfNextTreeDepth(wrappedPrecursorFragment.getWrappedFragment());
 				
 				/*
 				 * get peak pointer of current precursor fragment

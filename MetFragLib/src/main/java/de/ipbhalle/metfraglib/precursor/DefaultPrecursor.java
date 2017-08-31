@@ -6,6 +6,7 @@ import de.ipbhalle.metfraglib.fragment.DefaultBitArrayFragment;
 import de.ipbhalle.metfraglib.interfaces.IMolecularFormula;
 import de.ipbhalle.metfraglib.interfaces.IMolecularStructure;
 import de.ipbhalle.metfraglib.molecularformula.ByteMolecularFormula;
+import de.ipbhalle.metfraglib.parameter.Constants;
 
 
 public class DefaultPrecursor implements IMolecularStructure {
@@ -35,6 +36,11 @@ public class DefaultPrecursor implements IMolecularStructure {
 		return this.neutralMonoisotopicMass;
 	}
 
+	public double getMassOfAtom(int index) {
+		return Constants.MONOISOTOPIC_MASSES.get(Constants.ELEMENTS.indexOf(this.precursorMolecule.getAtom(index).getSymbol()))
+				+ this.precursorMolecule.getAtom(index).getImplicitHydrogenCount() * Constants.MONOISOTOPIC_MASSES.get(Constants.H_INDEX);
+	}
+	
 	public int getNonHydrogenAtomCount() {
 		return this.precursorMolecule.getAtomCount();
 	}

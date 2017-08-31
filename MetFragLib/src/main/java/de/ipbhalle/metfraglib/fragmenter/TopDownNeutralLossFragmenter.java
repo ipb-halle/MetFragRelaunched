@@ -1,6 +1,6 @@
 package de.ipbhalle.metfraglib.fragmenter;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import de.ipbhalle.metfraglib.FastBitArray;
 import de.ipbhalle.metfraglib.additionals.NeutralLosses;
@@ -196,11 +196,11 @@ public class TopDownNeutralLossFragmenter extends TopDownFragmenter {
 	 * generates all fragments of the given precursor fragment to reach the new tree depth
 	 */
 	@Override
-	public Vector<AbstractTopDownBitArrayFragment> getFragmentsOfNextTreeDepth(AbstractTopDownBitArrayFragment precursorFragment) {
+	public ArrayList<AbstractTopDownBitArrayFragment> getFragmentsOfNextTreeDepth(AbstractTopDownBitArrayFragment precursorFragment) {
 		FastBitArray ringBonds = new FastBitArray(precursorFragment.getBondsFastBitArray().getSize(), false);
 		java.util.Queue<AbstractTopDownBitArrayFragment> ringBondCuttedFragments = new java.util.LinkedList<AbstractTopDownBitArrayFragment>();
 		java.util.Queue<Short> lastCuttedBondOfRing = new java.util.LinkedList<Short>();
-		Vector<AbstractTopDownBitArrayFragment> fragmentsOfNextTreeDepth = new Vector<AbstractTopDownBitArrayFragment>();
+		ArrayList<AbstractTopDownBitArrayFragment> fragmentsOfNextTreeDepth = new ArrayList<AbstractTopDownBitArrayFragment>();
 		/*
 		 * generate fragments of skipped bonds
 		 */
@@ -278,7 +278,7 @@ public class TopDownNeutralLossFragmenter extends TopDownFragmenter {
 	/*
 	 * generate fragments by removing bonds that were skipped due to ring bond cleavage
 	 */
-	protected void generateFragmentsOfSkippedBonds(Vector<AbstractTopDownBitArrayFragment> newGeneratedTopDownFragments, AbstractTopDownBitArrayFragment precursorFragment) {
+	protected void generateFragmentsOfSkippedBonds(ArrayList<AbstractTopDownBitArrayFragment> newGeneratedTopDownFragments, AbstractTopDownBitArrayFragment precursorFragment) {
 		short lastSkippedBonds = precursorFragment.getLastSkippedBond();
 		short lastCuttedBond = (short)(precursorFragment.getMaximalIndexOfRemovedBond());
 		if(lastSkippedBonds == -1) return;
