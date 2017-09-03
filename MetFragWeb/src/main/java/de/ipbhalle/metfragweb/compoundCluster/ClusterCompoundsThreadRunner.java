@@ -1,5 +1,9 @@
 package de.ipbhalle.metfragweb.compoundCluster;
 
+import java.io.Serializable;
+
+import javax.annotation.PostConstruct;
+
 import org.primefaces.model.DefaultOrganigramNode;
 import org.primefaces.model.OrganigramNode;
 
@@ -13,8 +17,15 @@ import de.ipbhalle.metfragweb.container.MetFragResultsContainer;
 import de.ipbhalle.metfragweb.datatype.MetFragResult;
 import de.ipbhalle.metfragweb.helper.ThreadRunner;
 
-public class ClusterCompoundsThreadRunner extends ThreadRunner {
+public class ClusterCompoundsThreadRunner extends ThreadRunner implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2601773430970125516L;
+	/**
+	 * 
+	 */
 	private MetFragResultsContainer filteredMetFragResultsContainer; 
 	private OrganigramNode treeRoot;   
 	private java.util.Vector<OrganigramNode> leaves;
@@ -30,6 +41,7 @@ public class ClusterCompoundsThreadRunner extends ThreadRunner {
 		this.filteredMetFragResultsContainer = filteredMetFragResultsContainer;
 	}
 	
+	@PostConstruct
 	@Override
 	public void run() {
 		
@@ -81,10 +93,10 @@ public class ClusterCompoundsThreadRunner extends ThreadRunner {
 					treeNodeStack.push(tnNext);
 				}
 			}
-
+			this.treeRoot = tnRoot;
+			this.calculateLeafsUnderneath();
 			this.updateScores();
 
-			this.treeRoot = tnRoot;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -97,6 +109,25 @@ public class ClusterCompoundsThreadRunner extends ThreadRunner {
 		node.setDroppable(false);
 		node.setDraggable(false);
 		node.setSelectable(true);
+	}
+	
+	public void calculateLeafsUnderneath() {
+		java.util.LinkedList<OrganigramNode> annotateList = new java.util.LinkedList<OrganigramNode>();
+		for(int i = 0; i < this.leaves.size(); i++) {
+			if(this.leaves.get(i).getParent() == null) continue;
+			annotateList.add(this.leaves.get(i).getParent());
+		}
+		while(!annotateList.isEmpty()) {
+			OrganigramNode current = annotateList.poll();
+			java.util.List<OrganigramNode> children = current.getChildren();
+			int numberLeafsUnderneath = 0;
+			for(int i = 0; i < children.size(); i++) {
+				numberLeafsUnderneath += ((INode)children.get(i).getData()).getLeafsUnderneath();
+			}
+			((INode)current.getData()).setLeafsUnderneath(numberLeafsUnderneath);
+			if(current.getParent() == null) continue;
+			annotateList.add(current.getParent());
+		}
 	}
 	
 	/**

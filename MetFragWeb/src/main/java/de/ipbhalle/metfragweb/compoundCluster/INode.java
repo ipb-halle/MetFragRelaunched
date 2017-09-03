@@ -9,5 +9,7 @@ public interface INode {
 	public boolean hasResult();
 	public MetFragResult getResult();
 	public void resetMaxScore();
+	public int getLeafsUnderneath();
+	public void setLeafsUnderneath(int leafsUnderneath);
 	
 }

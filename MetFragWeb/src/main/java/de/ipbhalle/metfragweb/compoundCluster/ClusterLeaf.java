@@ -24,6 +24,10 @@ public class ClusterLeaf extends ClusterNode {
 		this.metfragResult = metfragResult;
 	}
 
+	public String getImageAddress() {
+		return this.metfragResult.getImageAddress();
+	}
+	
 	public String getName() {
 		return this.metfragResult.getRoot().getIdentifier();
 	}
@@ -35,4 +39,15 @@ public class ClusterLeaf extends ClusterNode {
 	public MetFragResult getResult() {
 		return this.metfragResult;
 	}
+
+	@Override
+	public int getLeafsUnderneath() {
+		return 1;
+	}
+
+	@Override
+	public void setLeafsUnderneath(int leafsUnderneath) {
+		return;
+	}
+
 }

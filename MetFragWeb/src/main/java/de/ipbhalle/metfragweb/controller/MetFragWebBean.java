@@ -29,6 +29,7 @@ import org.primefaces.event.SlideEndEvent;
 import org.primefaces.event.organigram.OrganigramNodeCollapseEvent;
 import org.primefaces.event.organigram.OrganigramNodeExpandEvent;
 import org.primefaces.event.organigram.OrganigramNodeSelectEvent;
+import org.primefaces.model.DefaultOrganigramNode;
 import org.primefaces.model.OrganigramNode;
 import org.primefaces.model.StreamedContent;
 import org.primefaces.model.chart.AxisType;
@@ -83,7 +84,8 @@ public class MetFragWebBean {
 	protected boolean compoundClusteringEnabled = true;
 	protected Thread clusterCompoundsThread;
 	protected ClusterCompoundsThreadRunner clusterCompoundsThreadRunner;
-	private OrganigramNode selectedNode;   
+	private OrganigramNode selectedNode;
+	private boolean clusterImageTooltipRendered = false;
 //	protected TreeNode[] selectedClusterNodes;
 //	protected TreeNode selectedContextMenuClusterNode;
 	protected Boolean clusterCompoundsThreadStarted;
@@ -2189,6 +2191,7 @@ public class MetFragWebBean {
 				//start clustering compounds
 				if(this.compoundClusteringEnabled) {
 					if(this.filteredMetFragResultsContainer.getMetFragResults().size() >= 5) {
+						//this.buildAlternativeRootNode();
 						this.clusterCompoundsThreadRunner = new ClusterCompoundsThreadRunner(this.beanSettingsContainer, 
 								this.infoMessages, this.errorMessages, this.filteredMetFragResultsContainer);
 						this.clusterCompoundsThread = new Thread(this.clusterCompoundsThreadRunner);
@@ -2253,33 +2256,7 @@ public class MetFragWebBean {
 	public OrganigramNode getCompoundsClusterRoot() {
 		return this.clusterCompoundsThreadRunner.getTreeRoot();
 	}
-	/*
-	public OrganigramNode[] getSelectedClusterNodes() {
-        return this.selectedClusterNodes;
-    }
- 	
-    public void setSelectedClusterNodes(TreeNode[] selectedClusterNodes) {
-        this.selectedClusterNodes = selectedClusterNodes;
-    }
-    
-    public void expandSelectedClusterCompounds(TreeNode[] nodes) {
-        if(nodes != null && nodes.length > 0) {
-        	java.util.LinkedList<TreeNode> toExpand = new java.util.LinkedList<TreeNode>();
-        	for(int i = 0; i < nodes.length; i++) {
-        		toExpand.push(nodes[i]);
-    		}
-        	while(!toExpand.isEmpty()) {
-        		TreeNode current = toExpand.poll();
-        		if(!current.isLeaf()) current.setExpanded(true);
-        		if(current.getChildCount() == 0) continue;
-        		java.util.List<TreeNode> children = current.getChildren();
-        		for(TreeNode child : children) {
-        			toExpand.add(child);
-        		}
-        	}
-        }
-    }
-	 */
+
     public void expandSelectedClusterCompounds() {
     	if(this.selectedNode != null) {
     		OrganigramNode currentSelection = OrganigramHelper.findTreeNode(this.clusterCompoundsThreadRunner.getTreeRoot(), this.selectedNode);
@@ -2352,7 +2329,28 @@ public class MetFragWebBean {
     	}
     }
     
-    public void nodeSelectListener(OrganigramNodeSelectEvent event) {}
+    public void nodeSelectListener(OrganigramNodeSelectEvent event) {
+    	
+    }
+    
+    OrganigramNode alternativeRootNode;
+    
+    public OrganigramNode getAlternativeCompoundsClusterRoot() {
+    	return this.alternativeRootNode;
+    }
+    
+    public void buildAlternativeRootNode() {
+    	this.alternativeRootNode = new DefaultOrganigramNode("compoundGroup", new de.ipbhalle.metfragweb.compoundCluster.ClusterNode(1.0), null);
+    	OrganigramNode node = new DefaultOrganigramNode("compoundGroup", new de.ipbhalle.metfragweb.compoundCluster.ClusterNode(1.0), this.alternativeRootNode);
+    	new DefaultOrganigramNode("compoundGroup", new de.ipbhalle.metfragweb.compoundCluster.ClusterNode(1.0), this.alternativeRootNode);
+     	new DefaultOrganigramNode("compoundGroup", new de.ipbhalle.metfragweb.compoundCluster.ClusterNode(1.0), this.alternativeRootNode);
+     	new DefaultOrganigramNode("compoundGroup", new de.ipbhalle.metfragweb.compoundCluster.ClusterNode(1.0), node);
+     	new DefaultOrganigramNode("compoundGroup", new de.ipbhalle.metfragweb.compoundCluster.ClusterNode(1.0), node);
+    }
+    
+    public boolean getClusterImageTooltipRendered() {
+    	return this.clusterImageTooltipRendered;
+    }
     
     public OrganigramNode getSelectedNode() {
         return this.selectedNode;
