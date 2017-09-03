@@ -5,9 +5,11 @@ import de.ipbhalle.metfragweb.datatype.MetFragResult;
 public class ClusterNode implements INode {
 	
 	protected double maxScore;
+	protected int leafsUnderneath;
 	
 	public ClusterNode(double maxScore) {
 		this.maxScore = maxScore;
+		this.leafsUnderneath = 0;
 	}
 
 	public void resetMaxScore() {
@@ -21,7 +23,17 @@ public class ClusterNode implements INode {
 	public void setMaxScore(double maxScore) {
 		this.maxScore = maxScore;
 	}
-	
+
+	@Override
+	public int getLeafsUnderneath() {
+		return this.leafsUnderneath;
+	}
+
+	@Override
+	public void setLeafsUnderneath(int leafsUnderneath) {
+		this.leafsUnderneath = leafsUnderneath;
+	}
+
 	public boolean hasResult() {
 		return false;
 	}
@@ -29,6 +41,7 @@ public class ClusterNode implements INode {
 	public MetFragResult getResult() {
 		return null;
 	}
+
 	
 }
 
