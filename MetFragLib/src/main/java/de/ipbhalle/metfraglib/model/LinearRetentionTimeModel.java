@@ -50,7 +50,7 @@ public class LinearRetentionTimeModel extends AbstractModel {
 			settings.set(VariableNames.USER_LOG_P_VALUE_NAME, (String)this.settings.get(VariableNames.USER_LOG_P_VALUE_NAME));
 
 		LocalPropertyFileDatabase database = new LocalPropertyFileDatabase(settings);
-		java.util.Vector<String> identifiers;
+		java.util.ArrayList<String> identifiers;
 		CandidateList candidateList = null;
 		try {
 			identifiers = database.getCandidateIdentifiers();
@@ -67,9 +67,9 @@ public class LinearRetentionTimeModel extends AbstractModel {
 		} catch (CDKException e1) {
 			e1.printStackTrace();
 		}
-		java.util.Vector<String> inchis = new java.util.Vector<String>();
-		java.util.Vector<Double> rt_values = new java.util.Vector<Double>();
-		java.util.Vector<Double> userLogPs = new java.util.Vector<Double>();
+		java.util.ArrayList<String> inchis = new java.util.ArrayList<String>();
+		java.util.ArrayList<Double> rt_values = new java.util.ArrayList<Double>();
+		java.util.ArrayList<Double> userLogPs = new java.util.ArrayList<Double>();
 		/*
 		 * reading the retention time information for training process
 		 */
@@ -154,7 +154,7 @@ public class LinearRetentionTimeModel extends AbstractModel {
 	 * @param inchis
 	 * @return
 	 */
-	public Double[] calculateXLogpValues(java.util.Vector<String> inchis) {
+	public Double[] calculateXLogpValues(java.util.ArrayList<String> inchis) {
 		Double[] values = new Double[inchis.size()];
 		if(this.xlogp == null) return values;
 		

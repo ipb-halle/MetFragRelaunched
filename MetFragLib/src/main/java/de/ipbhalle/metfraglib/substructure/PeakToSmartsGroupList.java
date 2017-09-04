@@ -13,7 +13,7 @@ public class PeakToSmartsGroupList extends DefaultList {
 	}
 	
 	public void filterByOccurence(int minimumNumberOccurences) {
-		java.util.Vector<Object> filteredList = new java.util.Vector<Object>();
+		java.util.ArrayList<Object> filteredList = new java.util.ArrayList<Object>();
 		for(int i = 0; i < this.getNumberElements(); i++) {
 			SmartsGroup smartsGroup = (SmartsGroup)this.getElement(i);
 			if(smartsGroup.getNumberElements() >= minimumNumberOccurences)

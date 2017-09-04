@@ -19,10 +19,10 @@ public abstract class AbstractDatabase implements IDatabase {
 		logger.setLevel((Level)this.settings.get(VariableNames.LOG_LEVEL_NAME));
 	}
 	
-	public java.util.Vector<String> getCandidateIdentifiers() throws MultipleHeadersFoundInInputDatabaseException, Exception {
+	public java.util.ArrayList<String> getCandidateIdentifiers() throws MultipleHeadersFoundInInputDatabaseException, Exception {
 		if(this.settings.containsKey(VariableNames.PROCESS_STATUS_OBJECT_NAME) && this.settings.get(VariableNames.PROCESS_STATUS_OBJECT_NAME) != null)
 			((ProcessingStatus)this.settings.get(VariableNames.PROCESS_STATUS_OBJECT_NAME)).setRetrievingStatusString("Retrieving Candidates");
-		java.util.Vector<String> identifiers = null;
+		java.util.ArrayList<String> identifiers = null;
 		if(this.settings.get(VariableNames.PRECURSOR_DATABASE_IDS_NAME) != null)
 			identifiers = this.getCandidateIdentifiers((String[])settings.get(VariableNames.PRECURSOR_DATABASE_IDS_NAME));
 		else if(this.settings.get(VariableNames.PRECURSOR_MOLECULAR_FORMULA_NAME) != null) {
@@ -35,15 +35,15 @@ public abstract class AbstractDatabase implements IDatabase {
 		//	statusString = "Fetching " + identifiers.size() + " Candidates";
 			return identifiers;
 		}
-		return new java.util.Vector<String>();
+		return new java.util.ArrayList<String>();
 	}
 
 	//ToDo: check whether identifiers are valid and exist
-	public java.util.Vector<String> getCandidateIdentifiers(String[] identifiers) throws Exception {
-		java.util.Vector<String> identifiersAsVector = new java.util.Vector<String>();
+	public java.util.ArrayList<String> getCandidateIdentifiers(String[] identifiers) throws Exception {
+		java.util.ArrayList<String> identifiersAsArrayList = new java.util.ArrayList<String>();
 		for(String identifier : identifiers)  
-			identifiersAsVector.add(identifier);
-		return identifiersAsVector;
+			identifiersAsArrayList.add(identifier);
+		return identifiersAsArrayList;
 	}
 	
 }

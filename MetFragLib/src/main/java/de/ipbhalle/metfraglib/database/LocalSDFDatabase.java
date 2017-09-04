@@ -1,6 +1,6 @@
 package de.ipbhalle.metfraglib.database;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -20,13 +20,13 @@ import de.ipbhalle.metfraglib.settings.Settings;
 
 public class LocalSDFDatabase extends AbstractDatabase {
 
-	private java.util.Vector<ICandidate> candidates;
+	private java.util.ArrayList<ICandidate> candidates;
 
 	public LocalSDFDatabase(Settings settings) {
 		super(settings);
 	}
 
-	public java.util.Vector<String> getCandidateIdentifiers() throws Exception {
+	public java.util.ArrayList<String> getCandidateIdentifiers() throws Exception {
 		if (this.candidates == null)
 			this.readCandidatesFromFile();
 		if (this.settings.get(VariableNames.PRECURSOR_DATABASE_IDS_NAME) != null)
@@ -35,16 +35,16 @@ public class LocalSDFDatabase extends AbstractDatabase {
 			return this.getCandidateIdentifiers((String) settings.get(VariableNames.PRECURSOR_MOLECULAR_FORMULA_NAME));
 		if (this.settings.get(VariableNames.DATABASE_RELATIVE_MASS_DEVIATION_NAME) != null)
 			return this.getCandidateIdentifiers((Double) settings.get(VariableNames.PRECURSOR_NEUTRAL_MASS_NAME), (Double) settings.get(VariableNames.DATABASE_RELATIVE_MASS_DEVIATION_NAME));
-		Vector<String> identifiers = new Vector<String>();
+		ArrayList<String> identifiers = new ArrayList<String>();
 		for (ICandidate candidate : candidates)
 			identifiers.add(candidate.getIdentifier());
 		return identifiers;
 	}
 
-	public Vector<String> getCandidateIdentifiers(double monoisotopicMass, double relativeMassDeviation) throws Exception {
+	public ArrayList<String> getCandidateIdentifiers(double monoisotopicMass, double relativeMassDeviation) throws Exception {
 		if (this.candidates == null)
 			this.readCandidatesFromFile();
-		Vector<String> identifiers = new Vector<String>();
+		ArrayList<String> identifiers = new ArrayList<String>();
 		double mzabs = MathTools.calculateAbsoluteDeviation(monoisotopicMass, relativeMassDeviation);
 		double lowerLimit = monoisotopicMass - mzabs;
 		double upperLimit = monoisotopicMass + mzabs;
@@ -56,10 +56,10 @@ public class LocalSDFDatabase extends AbstractDatabase {
 		return identifiers;
 	}
 
-	public Vector<String> getCandidateIdentifiers(String molecularFormula) throws Exception {
+	public ArrayList<String> getCandidateIdentifiers(String molecularFormula) throws Exception {
 		if (this.candidates == null)
 			this.readCandidatesFromFile();
-		Vector<String> identifiers = new Vector<String>();
+		ArrayList<String> identifiers = new ArrayList<String>();
 		ByteMolecularFormula queryFormula = new ByteMolecularFormula(molecularFormula);
 		for (int i = 0; i < this.candidates.size(); i++) {
 			ByteMolecularFormula currentFormula = null;
@@ -74,10 +74,10 @@ public class LocalSDFDatabase extends AbstractDatabase {
 		return identifiers;
 	}
 
-	public Vector<String> getCandidateIdentifiers(Vector<String> identifiers) throws Exception {
+	public ArrayList<String> getCandidateIdentifiers(ArrayList<String> identifiers) throws Exception {
 		if (this.candidates == null)
 			this.readCandidatesFromFile();
-		Vector<String> verifiedIdentifiers = new Vector<String>();
+		ArrayList<String> verifiedIdentifiers = new ArrayList<String>();
 		for (int i = 0; i < identifiers.size(); i++) {
 			try {
 				this.getCandidateByIdentifier(identifiers.get(i));
@@ -98,7 +98,7 @@ public class LocalSDFDatabase extends AbstractDatabase {
 		return this.candidates.get(index);
 	}
 
-	public CandidateList getCandidateByIdentifier(Vector<String> identifiers) {
+	public CandidateList getCandidateByIdentifier(ArrayList<String> identifiers) {
 		CandidateList candidateList = new CandidateList();
 		for (int i = 0; i < identifiers.size(); i++) {
 			ICandidate candidate = null;
@@ -120,9 +120,9 @@ public class LocalSDFDatabase extends AbstractDatabase {
 	 * 
 	 */
 	private void readCandidatesFromFile() throws Exception {
-		this.candidates = new java.util.Vector<ICandidate>();
+		this.candidates = new java.util.ArrayList<ICandidate>();
 		java.io.File f = new java.io.File((String) this.settings.get(VariableNames.LOCAL_DATABASE_PATH_NAME));
-		java.util.Vector<String> identifiers = new java.util.Vector<String>();
+		java.util.ArrayList<String> identifiers = new java.util.ArrayList<String>();
 		if (f.isFile()) {
 			IteratingSDFReader reader = new IteratingSDFReader(new java.io.FileReader(f), DefaultChemObjectBuilder.getInstance());
 			int index = 1;

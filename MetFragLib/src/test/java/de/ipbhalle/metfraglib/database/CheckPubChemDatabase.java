@@ -61,7 +61,7 @@ public class CheckPubChemDatabase {
 	public void testRetrievingCandidateList() {
 		this.database = new OnlinePubChemDatabase(this.settings);
 		try {
-			java.util.Vector<String> ids = new java.util.Vector<String>();
+			java.util.ArrayList<String> ids = new java.util.ArrayList<String>();
 			ids.add("50465");
 			assertTrue("No result for identifier search", this.database.getCandidateByIdentifier(ids).getNumberElements() > 0);
 		} catch (MultipleHeadersFoundInInputDatabaseException e) {

@@ -166,10 +166,10 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 	 * @param settings
 	 */
 	private String[] createLossAnnotations(MatchList matchList, Settings settings, double[] correctedMasses) {
-		java.util.Vector<String> lossFingerprint = new java.util.Vector<String>();
-		java.util.Vector<String> lossSmiles = new java.util.Vector<String>();
-		java.util.Vector<String> lossSmarts = new java.util.Vector<String>();
-		java.util.Vector<Double> lossMassDiff = new java.util.Vector<Double>();
+		java.util.ArrayList<String> lossFingerprint = new java.util.ArrayList<String>();
+		java.util.ArrayList<String> lossSmiles = new java.util.ArrayList<String>();
+		java.util.ArrayList<String> lossSmarts = new java.util.ArrayList<String>();
+		java.util.ArrayList<Double> lossMassDiff = new java.util.ArrayList<Double>();
 		
 		//for the precursor ion
 		int ionmode = (Integer)settings.get(VariableNames.PRECURSOR_ION_MODE_NAME);
@@ -280,9 +280,9 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 	private double calculateMassOfFormula(String formula) {
 		String part1 = formula.replaceAll("\\[([A-Za-z0-9]*).*\\].*", "$1");
 		String charge = formula.substring(formula.length() - 1);
-		java.util.Vector<String> elementsToAdd = new java.util.Vector<String>();
-		java.util.Vector<String> timesToAdd = new java.util.Vector<String>();
-		java.util.Vector<String> signsForAdd = new java.util.Vector<String>();
+		java.util.ArrayList<String> elementsToAdd = new java.util.ArrayList<String>();
+		java.util.ArrayList<String> timesToAdd = new java.util.ArrayList<String>();
+		java.util.ArrayList<String> signsForAdd = new java.util.ArrayList<String>();
 		for(int i = 0; i < formula.length() - 1; i++) {
 			if(formula.charAt(i) == '+' || formula.charAt(i) == '-') {
 				signsForAdd.add(formula.charAt(i)+"");

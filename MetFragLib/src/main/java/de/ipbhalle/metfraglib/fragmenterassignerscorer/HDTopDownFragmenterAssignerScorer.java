@@ -171,7 +171,7 @@ public class HDTopDownFragmenterAssignerScorer extends TopDownFragmenterAssigner
 		 * collect score of all scores over all matches
 		 */
 		double[][] singleScores = new double[this.scoreCollection.getNumberScores()][peakIndexToPeakMatch.size()];
-		java.util.Vector<double[][]> singleScoresHD = new java.util.Vector<double[][]>();
+		java.util.ArrayList<double[][]> singleScoresHD = new java.util.ArrayList<double[][]>();
 		for(int d = 0; d < deuteratedCandidateNumber; d++) singleScoresHD.add(new double[this.scoreCollection.getNumberScores()][peakIndexToPeakMatchHD[d].size()]);
 		/*
 		 * collect the sum of all scores over all matches

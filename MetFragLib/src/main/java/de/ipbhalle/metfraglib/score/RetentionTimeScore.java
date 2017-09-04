@@ -126,7 +126,7 @@ public class RetentionTimeScore extends AbstractScore {
 		s.initScoreParameters(settings);
 		
 		de.ipbhalle.metfraglib.database.LocalPropertyFileDatabase database = new de.ipbhalle.metfraglib.database.LocalPropertyFileDatabase(settings);
-		java.util.Vector<String> identifiers;
+		java.util.ArrayList<String> identifiers;
 		de.ipbhalle.metfraglib.list.CandidateList candidateList = null;
 		try {
 			identifiers = database.getCandidateIdentifiers();

@@ -238,7 +238,7 @@ public class SimulateSpectrumHDX {
 	 */
 	public static int[] searchForDeuteriumExchangeablePositions(TopDownBitArrayPrecursor con) {
 		String[] elementsToExchange = Constants.EXCHANGEABLE_DEUTERIUM_POSITIONS;
-		java.util.Vector<Integer> positionsToExchange = new java.util.Vector<Integer>();
+		java.util.ArrayList<Integer> positionsToExchange = new java.util.ArrayList<Integer>();
 		for (int i = 0; i < con.getNonHydrogenAtomCount(); i++) {
 			String symbol = con.getAtomSymbol(i);
 			if (symbol.equals("H"))

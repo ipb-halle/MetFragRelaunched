@@ -1,6 +1,6 @@
 package de.ipbhalle.metfrag.misc;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import de.ipbhalle.metfraglib.database.LocalPSVDatabase;
 import de.ipbhalle.metfraglib.exceptions.MultipleHeadersFoundInInputDatabaseException;
@@ -23,7 +23,7 @@ public class IncludeValuesToResultFile {
 		MetFragGlobalSettings settingsFrom = new MetFragGlobalSettings();
 		settingsFrom.set(VariableNames.LOCAL_DATABASE_PATH_NAME, filenameFrom);
 		LocalPSVDatabase dbFrom = new LocalPSVDatabase(settingsFrom);
-		Vector<String> identifiersFrom = null;
+		ArrayList<String> identifiersFrom = null;
 		try {
 			identifiersFrom = dbFrom.getCandidateIdentifiers();
 		} catch (MultipleHeadersFoundInInputDatabaseException e) {
@@ -38,7 +38,7 @@ public class IncludeValuesToResultFile {
 		MetFragGlobalSettings settingsTo = new MetFragGlobalSettings();
 		settingsTo.set(VariableNames.LOCAL_DATABASE_PATH_NAME, filenameTo);
 		LocalPSVDatabase dbTo = new LocalPSVDatabase(settingsTo);
-		Vector<String> identifiersTo = null;
+		ArrayList<String> identifiersTo = null;
 		try {
 			identifiersTo = dbTo.getCandidateIdentifiers();
 		} catch (MultipleHeadersFoundInInputDatabaseException e) {

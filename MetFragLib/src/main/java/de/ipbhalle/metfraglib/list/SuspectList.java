@@ -75,7 +75,7 @@ public class SuspectList extends DefaultList {
 	protected void initForIdentSuspectList() {
 		ForIdentRestWebService firws = new ForIdentRestWebService();
 		try {
-			java.util.Vector<String> inchikeys = firws.getInChIKeys();
+			java.util.ArrayList<String> inchikeys = firws.getInChIKeys();
 			for(int i = 0; i < inchikeys.size(); i++) {
 				try {
 					int index = 0;

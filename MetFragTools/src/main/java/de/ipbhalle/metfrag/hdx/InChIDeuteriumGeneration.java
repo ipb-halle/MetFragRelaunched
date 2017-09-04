@@ -5,7 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import net.sf.jniinchi.JniInchiInput;
 import net.sf.jniinchi.JniInchiOutput;
@@ -38,9 +38,9 @@ public class InChIDeuteriumGeneration {
 		/*
 		 * read input inchis
 		 */
-		Vector<String> inchis = new Vector<String>();
-		Vector<Integer> numberToAddDeuteriums = new Vector<Integer>();
-		Vector<String> identifiers = new Vector<String>();
+		ArrayList<String> inchis = new ArrayList<String>();
+		ArrayList<Integer> numberToAddDeuteriums = new ArrayList<Integer>();
+		ArrayList<String> identifiers = new ArrayList<String>();
 		BufferedReader breader = new BufferedReader(
 				new FileReader(
 						new File(
@@ -96,9 +96,9 @@ public class InChIDeuteriumGeneration {
 				}
 			}
 			else if(toExchange.length > numberToAddDeuteriums.get(j)) {
-				Vector<JniInchiOutputStructure> deuteratedStrutures = new Vector<JniInchiOutputStructure>();
-				Vector<Integer> numberDeuteriumsVec = new Vector<Integer>();
-				Vector<Integer> numberDeuteriumsEasilyExchangedVec = new Vector<Integer>();
+				ArrayList<JniInchiOutputStructure> deuteratedStrutures = new ArrayList<JniInchiOutputStructure>();
+				ArrayList<Integer> numberDeuteriumsVec = new ArrayList<Integer>();
+				ArrayList<Integer> numberDeuteriumsEasilyExchangedVec = new ArrayList<Integer>();
 				//get all possible combinations of exchanges with given number 
 				//of exchangeable hydrogens
 				int[][] combs = getCombinations(toExchange, numberToAddDeuteriums.get(j));
@@ -200,7 +200,7 @@ public class InChIDeuteriumGeneration {
 				}
 		/*		else {
 					Random rand = new Random(1000);
-					Vector<Integer> vec_indeces = new Vector<Integer>();
+					ArrayList<Integer> vec_indeces = new ArrayList<Integer>();
 					for(int index : indeces) vec_indeces.add(index);
 					while(numberToAddDeuteriums.get(j) != numberDeuteriums && vec_indeces.size() != 0) {
 						int atom_index = rand.nextInt(vec_indeces.size());
@@ -329,7 +329,7 @@ public class InChIDeuteriumGeneration {
 	 */
 	public static int[] searchForDeuteriumExchangeablePositions(
 			String[] elementsToExchange, JniInchiOutputStructure its) {
-		Vector<Integer> positionsToExchange = new Vector<Integer>();
+		ArrayList<Integer> positionsToExchange = new ArrayList<Integer>();
 		for (int i = 0; i < its.getNumAtoms(); i++) {
 			String symbol = its.getAtom(i).getElementType();
 			if (symbol.equals("H"))
@@ -352,7 +352,7 @@ public class InChIDeuteriumGeneration {
 	}
 	
 	public static int[][] getCombinations(int[] toExchange, int numToDraw) {
-		Vector<String> results = new Vector<String>();
+		ArrayList<String> results = new ArrayList<String>();
 		String[] toDrawFrom = new String[toExchange.length];
 		for(int i = 0; i < toDrawFrom.length; i++) toDrawFrom[i] = String.valueOf(toExchange[i]);
 		
@@ -368,7 +368,7 @@ public class InChIDeuteriumGeneration {
 		return combinations;
 	}
 	
-	public static void combinations(String[] arr, int len, int startPosition, String[] result, Vector<String> finalResults){
+	public static void combinations(String[] arr, int len, int startPosition, String[] result, ArrayList<String> finalResults){
         if (len == 0){
          	finalResults.add(Arrays.toString(result));
         	return;

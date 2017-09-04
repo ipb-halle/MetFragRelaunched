@@ -20,11 +20,11 @@ public class ForIdentRestWebService {
 	 * @return
 	 * @throws Exception
 	 */
-	public java.util.Vector<String> getCategories() throws Exception {
+	public java.util.ArrayList<String> getCategories() throws Exception {
 		//https://water.for-ident.org/api/categories
 		String urlname = "https://water.for-ident.org/api/categories";
 		java.io.InputStream stream = HelperFunctions.getInputStreamFromURL(urlname);
-		if(stream == null) return new java.util.Vector<String>();
+		if(stream == null) return new java.util.ArrayList<String>();
 		JSONParser parser = new JSONParser();
 		JSONArray jsonArray = (JSONArray)parser.parse(new java.io.InputStreamReader(stream));
 		stream.close();
@@ -33,7 +33,7 @@ public class ForIdentRestWebService {
 			logger.error("Error: Could not create JSON object for fetching categories.");
 			throw new Exception();
 		}
-		java.util.Vector<String> categories = new java.util.Vector<String>();
+		java.util.ArrayList<String> categories = new java.util.ArrayList<String>();
 		
 		Object[] objs = jsonArray.toArray();
 		for(int k = 0; k < objs.length; k++) {
@@ -48,11 +48,11 @@ public class ForIdentRestWebService {
 	 * @return
 	 * @throws Exception
 	 */
-	public java.util.Vector<String> getInChIKeys() throws Exception {
+	public java.util.ArrayList<String> getInChIKeys() throws Exception {
 		//https://water.for-ident.org/api/substances/inchiKeys
 		String urlname = "https://water.for-ident.org/api/substances/inchiKeys";
 		java.io.InputStream stream = HelperFunctions.getInputStreamFromURL(urlname);
-		if(stream == null) return new java.util.Vector<String>();
+		if(stream == null) return new java.util.ArrayList<String>();
 		JSONParser parser = new JSONParser();
 		JSONObject jsonObject = (JSONObject)parser.parse(new java.io.InputStreamReader(stream));
 		stream.close();
@@ -61,7 +61,7 @@ public class ForIdentRestWebService {
 			logger.error("Error: Could not create JSON object for fetching InChIKeys.");
 			throw new Exception();
 		}
-		java.util.Vector<String> inchikeys = new java.util.Vector<String>();
+		java.util.ArrayList<String> inchikeys = new java.util.ArrayList<String>();
 		Long numberPages = (Long)jsonObject.get("totalPages");
 	
 		for(int i = 0; i < numberPages; i++) {
@@ -86,11 +86,11 @@ public class ForIdentRestWebService {
 	 * @return
 	 * @throws Exception
 	 */
-	public java.util.Vector<String[]> getInChIKeysAndIdentifiers() throws Exception {
+	public java.util.ArrayList<String[]> getInChIKeysAndIdentifiers() throws Exception {
 		//https://water.for-ident.org/api/substances/inchiKeys
 		String urlname = "https://water.for-ident.org/api/substances/inchiKeysAndStoffidentIds";
 		java.io.InputStream stream = HelperFunctions.getInputStreamFromURL(urlname);
-		if(stream == null) return new java.util.Vector<String[]>();
+		if(stream == null) return new java.util.ArrayList<String[]>();
 		JSONParser parser = new JSONParser();
 		JSONObject jsonObject = (JSONObject)parser.parse(new java.io.InputStreamReader(stream));
 		stream.close();
@@ -99,7 +99,7 @@ public class ForIdentRestWebService {
 			logger.error("Error: Could not create JSON object for fetching InChIKeys and identifiers.");
 			throw new Exception();
 		}
-		java.util.Vector<String[]> inchikeysIdentifiers = new java.util.Vector<String[]>();
+		java.util.ArrayList<String[]> inchikeysIdentifiers = new java.util.ArrayList<String[]>();
 		Long numberPages = (Long)jsonObject.get("totalPages");
 	
 		for(int i = 0; i < numberPages; i++) {
@@ -124,11 +124,11 @@ public class ForIdentRestWebService {
 	 * @return
 	 * @throws Exception
 	 */
-	public java.util.Vector<String> getIdentifiers() throws Exception {
+	public java.util.ArrayList<String> getIdentifiers() throws Exception {
 		//https://water.for-ident.org/api/substances/publicIds
 		String urlname = "https://water.for-ident.org/api/substances/stoffidentIds";
 		java.io.InputStream stream = HelperFunctions.getInputStreamFromURL(urlname);
-		if(stream == null) return new java.util.Vector<String>();
+		if(stream == null) return new java.util.ArrayList<String>();
 		JSONParser parser = new JSONParser();
 		JSONObject jsonObject = (JSONObject)parser.parse(new java.io.InputStreamReader(stream));
 		stream.close();
@@ -137,7 +137,7 @@ public class ForIdentRestWebService {
 			logger.error("Error: Could not create JSON object for fetching InChIKeys.");
 			throw new Exception();
 		}
-		java.util.Vector<String> identifiers = new java.util.Vector<String>();
+		java.util.ArrayList<String> identifiers = new java.util.ArrayList<String>();
 		Long numberPages = (Long)jsonObject.get("totalPages");
 	
 		for(int i = 0; i < numberPages; i++) {
@@ -378,7 +378,7 @@ public class ForIdentRestWebService {
 	 * @return
 	 * @throws Exception
 	 */
-	public CandidateList getCandidatesByIdentifier(java.util.Vector<String> identifiers) throws Exception {
+	public CandidateList getCandidatesByIdentifier(java.util.ArrayList<String> identifiers) throws Exception {
 		String[] array = new String[identifiers.size()];
 		for(int i = 0; i < array.length; i++)
 			array[i] = identifiers.get(i);

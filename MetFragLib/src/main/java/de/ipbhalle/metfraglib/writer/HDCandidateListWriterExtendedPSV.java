@@ -85,25 +85,25 @@ public class HDCandidateListWriterExtendedPSV implements IWriter {
 			
 		}
 		
-		java.util.Hashtable<String, java.util.Vector<ICandidate>> hdGroupedCandidates = new java.util.Hashtable<String, java.util.Vector<ICandidate>>();	
+		java.util.Hashtable<String, java.util.ArrayList<ICandidate>> hdGroupedCandidates = new java.util.Hashtable<String, java.util.ArrayList<ICandidate>>();	
 		String[] lines = new String[candidateList.getNumberElements()];
 		String heading = "";
 		
 		for(int i = 0; i < candidateList.getNumberElements(); i++) {
 			ICandidate candidate = candidateList.getElement(i);
 			if(hdGroupedCandidates.containsKey((String)candidate.getProperty(VariableNames.HD_GROUP_FLAG_NAME)))
-				((java.util.Vector<ICandidate>)hdGroupedCandidates.get((String)candidate.getProperty(VariableNames.HD_GROUP_FLAG_NAME))).add(candidate);
+				((java.util.ArrayList<ICandidate>)hdGroupedCandidates.get((String)candidate.getProperty(VariableNames.HD_GROUP_FLAG_NAME))).add(candidate);
 			else {
-				java.util.Vector<ICandidate> vec = new java.util.Vector<ICandidate>();
+				java.util.ArrayList<ICandidate> vec = new java.util.ArrayList<ICandidate>();
 				vec.add(candidate);
 				hdGroupedCandidates.put((String)candidate.getProperty(VariableNames.HD_GROUP_FLAG_NAME), vec);
 			}
 		}
-		java.util.Vector<String> propertyNames = new java.util.Vector<String>();
+		java.util.ArrayList<String> propertyNames = new java.util.ArrayList<String>();
 		java.util.Iterator<?> it = (java.util.Iterator<?>)hdGroupedCandidates.keys();
 		while(it.hasNext()) {
 			String currentGroup = (String)it.next();
-			java.util.Vector<ICandidate> vec = hdGroupedCandidates.get(currentGroup);
+			java.util.ArrayList<ICandidate> vec = hdGroupedCandidates.get(currentGroup);
 			int originalCandidate = -1;
 			int maxPropertySize = 0;
 			//find original candidate properties

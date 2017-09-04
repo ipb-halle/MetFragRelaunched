@@ -29,7 +29,7 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 			Double neutralPrecursorMass = (Double)settings.get(VariableNames.PRECURSOR_NEUTRAL_MASS_NAME);
 			Double adductMass = Constants.getIonisationMassByNominalMassDifference((Integer)settings.get(VariableNames.PRECURSOR_ION_MODE_NAME));
 			
-			java.util.Vector<Double> massDifferences = calculatePeakDifferences(peakList, neutralPrecursorMass, adductMass, mzppm, mzabs);
+			java.util.ArrayList<Double> massDifferences = calculatePeakDifferences(peakList, neutralPrecursorMass, adductMass, mzppm, mzabs);
 			
 			BufferedReader breader = new BufferedReader(new FileReader(new File(filename)));
 			String line = "";
@@ -74,13 +74,13 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 		return;
 	}
 	
-	private boolean containsMass(double mass, java.util.Vector<Double> massVector, double mzabs, double mzppm) {
+	private boolean containsMass(double mass, java.util.ArrayList<Double> massArrayList, double mzabs, double mzppm) {
 		double dev = MathTools.calculateAbsoluteDeviation(mass, mzppm);
 		dev += mzabs;
 		
-		for(int i = 0; i < massVector.size(); i++) 
+		for(int i = 0; i < massArrayList.size(); i++) 
 		{
-			double currentMass = massVector.get(i);
+			double currentMass = massArrayList.get(i);
 			if(currentMass - dev <= mass && mass <= currentMass + dev) {
 				return true;
 			}
@@ -98,8 +98,8 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 	 * @param mzabs
 	 * @return
 	 */
-	private java.util.Vector<Double> calculatePeakDifferences(DefaultPeakList peakList, double neutralPrecursorMass, double adductMass, double mzppm, double mzabs) {
-		java.util.Vector<Double> peakDifferences = new java.util.Vector<Double>();
+	private java.util.ArrayList<Double> calculatePeakDifferences(DefaultPeakList peakList, double neutralPrecursorMass, double adductMass, double mzppm, double mzabs) {
+		java.util.ArrayList<Double> peakDifferences = new java.util.ArrayList<Double>();
 		
 		double ionmass = neutralPrecursorMass + adductMass;
 		
@@ -116,7 +116,7 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 			peakDifferences.add(ionmass - currentMass1);
 		}
 
-		java.util.Vector<Double> peakDifferencesSorted = new java.util.Vector<Double>();
+		java.util.ArrayList<Double> peakDifferencesSorted = new java.util.ArrayList<Double>();
 		for(int i = 0; i < peakDifferences.size(); i++) {
 			int index = 0; 
 			double currentPeakDiff = peakDifferences.get(i);
@@ -127,7 +127,7 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 			peakDifferencesSorted.add(index, currentPeakDiff);
 		}
 		
-		java.util.Vector<Double> peakDifferencesCombined = new java.util.Vector<Double>();
+		java.util.ArrayList<Double> peakDifferencesCombined = new java.util.ArrayList<Double>();
 		int index = 0;
 		while(index < peakDifferencesSorted.size()) {
 			double currentMass = peakDifferencesSorted.get(index);

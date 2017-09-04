@@ -2,7 +2,7 @@ package de.ipbhalle.metfrag.ranking;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.inchi.InChIGenerator;
@@ -18,8 +18,8 @@ import de.ipbhalle.metfraglib.settings.MetFragGlobalSettings;
 
 public class GetRankOfCandidateSDF {
 
-	public static Vector<String> scorePropertyNamesForLog = new Vector<String>(); 
-	public static Vector<String> scorePropertyNamesForTakeRawValue = new Vector<String>(); 
+	public static ArrayList<String> scorePropertyNamesForLog = new ArrayList<String>(); 
+	public static ArrayList<String> scorePropertyNamesForTakeRawValue = new ArrayList<String>(); 
 	public static String delimiter = "\\|";
 	
 	static {
@@ -46,7 +46,7 @@ public class GetRankOfCandidateSDF {
 		settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, resultSDFFilename);
 		LocalSDFDatabase db = new LocalSDFDatabase(settings);
 		
-		Vector<String> identifiers = null;
+		ArrayList<String> identifiers = null;
 		try {
 			identifiers = db.getCandidateIdentifiers();
 		} catch (Exception e1) {
@@ -55,10 +55,10 @@ public class GetRankOfCandidateSDF {
 		}
 		CandidateList candidates = db.getCandidateByIdentifier(identifiers);
 		
-		Vector<String> scoringPropertyNames = new Vector<String>();
+		ArrayList<String> scoringPropertyNames = new ArrayList<String>();
 		HashMap<String, Double> scorePropertyToWeight = new HashMap<String, Double>();
 		
-		Vector<Integer> indexesOfCorrectMolecules = new Vector<Integer>();
+		ArrayList<Integer> indexesOfCorrectMolecules = new ArrayList<Integer>();
 		
 		for(int i = 2; i < args.length; i++) {	
 			String[] tmp = args[i].split("=");

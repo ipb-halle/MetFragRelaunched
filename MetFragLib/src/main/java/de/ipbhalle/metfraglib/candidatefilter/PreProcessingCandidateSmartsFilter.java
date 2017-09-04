@@ -18,7 +18,7 @@ public class PreProcessingCandidateSmartsFilter extends AbstractPreProcessingCan
 	
 	public PreProcessingCandidateSmartsFilter(Settings settings) {
 		super(settings);
-		java.util.Vector<String> smarts_vec = new java.util.Vector<String>();
+		java.util.ArrayList<String> smarts_vec = new java.util.ArrayList<String>();
 		try {
 			this.formula = "";
 			String modified_formula = (String)settings.get(VariableNames.PRE_CANDIDATE_FILTER_SMARTS_FORMULA_NAME);

@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Vector;
+import java.util.ArrayList;
 
 public class ConvertMassBankToMetFragRecord {
 
@@ -24,7 +24,7 @@ public class ConvertMassBankToMetFragRecord {
 			return;
 		}
 		
-		Vector<String> lines = new Vector<String>();
+		ArrayList<String> lines = new ArrayList<String>();
 		
 		lines.add("PeakListString = " + mo.getMzIntValuesToString());
 		lines.add("SampleName = " + mo.getAccession());

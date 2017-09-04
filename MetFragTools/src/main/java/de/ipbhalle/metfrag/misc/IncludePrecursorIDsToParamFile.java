@@ -8,7 +8,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Vector;
 
 import de.ipbhalle.metfraglib.list.CandidateList;
 import de.ipbhalle.metfraglib.parameter.Constants;
@@ -76,7 +75,7 @@ public class IncludePrecursorIDsToParamFile {
 	}
 
 	public static void rewriteParamFile(String filenameIn, String filenameOut, String precursorString) throws IOException {
-		Vector<String> lines = new Vector<String>();
+		ArrayList<String> lines = new ArrayList<String>();
 		BufferedReader breader = new BufferedReader(new FileReader(new File(filenameIn)));
 		String line = "";
 		while((line = breader.readLine()) != null) {

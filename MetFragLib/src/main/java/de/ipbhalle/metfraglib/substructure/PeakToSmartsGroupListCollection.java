@@ -19,7 +19,7 @@ public class PeakToSmartsGroupListCollection extends DefaultList {
 	}
 
 	public void filterByOccurence(int minimumNumberOccurences) {
-		java.util.Vector<Object> filteredList = new java.util.Vector<Object>();
+		java.util.ArrayList<Object> filteredList = new java.util.ArrayList<Object>();
 		for(int i = 0; i < this.getNumberElements(); i++) {
 			this.getElement(i).filterByOccurence(minimumNumberOccurences);
 			if(this.getElement(i).getNumberElements() != 0)
@@ -190,7 +190,7 @@ public class PeakToSmartsGroupListCollection extends DefaultList {
 	
 	public void annotateIds() {
 		//store all smarts groups to annotate them with IDs later
-		java.util.Vector<SmartsGroup> smartsGroups = new java.util.Vector<SmartsGroup>();
+		java.util.ArrayList<SmartsGroup> smartsGroups = new java.util.ArrayList<SmartsGroup>();
 		int maxAnnotatedId = -1;
 		for(int i = 0; i < this.list.size(); i++) {
 			PeakToSmartsGroupList peakToSmartGroupList = (PeakToSmartsGroupList)this.getElement(i);

@@ -1,20 +1,20 @@
 package de.ipbhalle.metfraglib.additionals;
 
-import java.io.IOException;
-
 import net.sf.jniinchi.INCHI_RET;
 
 import org.openscience.cdk.Atom;
 import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.aromaticity.Aromaticity;
 import org.openscience.cdk.aromaticity.ElectronDonation;
-import org.openscience.cdk.config.IsotopeFactory;
-import org.openscience.cdk.config.Isotopes;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.exception.InvalidSmilesException;
 import org.openscience.cdk.fingerprint.BitSetFingerprint;
 import org.openscience.cdk.fingerprint.IBitFingerprint;
+import org.openscience.cdk.fingerprint.MACCSFingerprinter;
 import org.openscience.cdk.graph.Cycles;
+import org.openscience.cdk.inchi.InChIGenerator;
+import org.openscience.cdk.inchi.InChIGeneratorFactory;
+import org.openscience.cdk.inchi.InChIToStructure;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
@@ -34,6 +34,7 @@ import de.ipbhalle.metfraglib.similarity.TanimotoSimilarity;
 
 public class MoleculeFunctions {
 	
+	/*
 	public static de.ipbhalle.metfraglib.inchi.InChIGeneratorFactory inchiFactory;
 	public static IsotopeFactory isotopeFactory;
 	public static SmilesParser sp;
@@ -48,7 +49,7 @@ public class MoleculeFunctions {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
+	}*/
 
 	public static String generateSmiles(IAtomContainer molecule) {
 		SmilesGenerator sg = new SmilesGenerator();
@@ -84,7 +85,7 @@ public class MoleculeFunctions {
 		return new String[] {fpString, smiles};
 	}
 
-	public static String getNormalizedFingerprint(IFragment frag) throws InvalidSmilesException {
+	public static String getNormalizedFingerprint(IFragment frag) throws CDKException {
 		String preSmiles = frag.getSmiles();
 		String inchi1 = MoleculeFunctions.getInChIFromSmiles(preSmiles);
 		IAtomContainer con = null;
@@ -93,12 +94,21 @@ public class MoleculeFunctions {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		String fpString = MoleculeFunctions.fingerPrintToString(TanimotoSimilarity.calculateFingerPrint(con));
+		
+		MACCSFingerprinter fingerprinter = new MACCSFingerprinter();
+		IBitFingerprint f1 = null;
+		try {
+			f1 = fingerprinter.getBitFingerprint(con);
+		} catch (CDKException e) {
+			f1 = null;
+		}
+		
+		String fpString = MoleculeFunctions.fingerPrintToString(f1);
 		
 		return fpString;
 	}
 	
-	public static String getInChIFromSmiles(String smiles) throws InvalidSmilesException {
+	public static String getInChIFromSmiles(String smiles) throws CDKException {
 		String[] inchiInfo = getInChIInfoFromAtomContainer(parseSmiles(smiles));
 		return inchiInfo[0];
 	}
@@ -110,9 +120,9 @@ public class MoleculeFunctions {
 		return precursorMolecule;
 	}
 	
-	public static java.util.Vector<IAtomContainer> parseSmiles(java.util.Vector<String> smiles) {
+	public static java.util.ArrayList<IAtomContainer> parseSmiles(java.util.ArrayList<String> smiles) {
 		SmilesParser sp = new SmilesParser(SilentChemObjectBuilder.getInstance());
-		java.util.Vector<IAtomContainer> precursorMolecule = new java.util.Vector<IAtomContainer>();
+		java.util.ArrayList<IAtomContainer> precursorMolecule = new java.util.ArrayList<IAtomContainer>();
 		try {
 			for(int i = 0; i < smiles.size(); i++) { 
 				IAtomContainer con = sp.parseSmiles(smiles.get(i));
@@ -169,6 +179,7 @@ public class MoleculeFunctions {
 	}
 	
 	public static IAtomContainer getAtomContainerFromSMILES(String smiles) throws Exception {
+		SmilesParser sp = new SmilesParser(SilentChemObjectBuilder.getInstance());
 		IAtomContainer molecule = sp.parseSmiles(smiles);
 		for(int i = 0; i < molecule.getAtomCount(); i++) {
 			if(molecule.getAtom(i).getSymbol().equals("H")) continue;
@@ -198,7 +209,8 @@ public class MoleculeFunctions {
 	 * @throws Exception 
 	 */
 	public static IAtomContainer getAtomContainerFromInChI(String inchi) throws Exception {
-		de.ipbhalle.metfraglib.inchi.InChIToStructure its = inchiFactory.getInChIToStructure(inchi, DefaultChemObjectBuilder.getInstance());
+		InChIGeneratorFactory inchiFactory = InChIGeneratorFactory.getInstance();
+		InChIToStructure its = inchiFactory.getInChIToStructure(inchi, DefaultChemObjectBuilder.getInstance());
 		if(its == null) {
 			throw new Exception("InChI problem: " + inchi);
 		}
@@ -223,9 +235,11 @@ public class MoleculeFunctions {
 	 * 
 	 * @param inchi
 	 * @return
+	 * @throws CDKException 
 	 */
-	public static String[] getInChIInfoFromAtomContainer(IAtomContainer container) {
-		de.ipbhalle.metfraglib.inchi.InChIGenerator inchiGenerator = null;
+	public static String[] getInChIInfoFromAtomContainer(IAtomContainer container) throws CDKException {
+		InChIGeneratorFactory inchiFactory = InChIGeneratorFactory.getInstance();
+		InChIGenerator inchiGenerator = null;
 		try {
 			inchiGenerator = inchiFactory.getInChIGenerator(container);
 		} catch (CDKException e) {
@@ -294,7 +308,7 @@ public class MoleculeFunctions {
 	}
 	
 	public static void removeHydrogens(IAtomContainer molecule) {
-		java.util.Vector<IAtom> hydrogenAtoms = new java.util.Vector<IAtom>();
+		java.util.ArrayList<IAtom> hydrogenAtoms = new java.util.ArrayList<IAtom>();
 		java.util.Iterator<IAtom> atoms = molecule.atoms().iterator();
 		while(atoms.hasNext()) {
 			IAtom currentAtom = atoms.next();
@@ -339,9 +353,9 @@ public class MoleculeFunctions {
 	
 	public static IAtomContainer removeHydrogens(IAtomContainer target, int[] skipPositions) throws CloneNotSupportedException {
 		IAtomContainer molecule = target.clone();
-		java.util.Vector<IAtom> hydrogenAtoms = new java.util.Vector<IAtom>();
+		java.util.ArrayList<IAtom> hydrogenAtoms = new java.util.ArrayList<IAtom>();
 		java.util.Iterator<IAtom> atoms = molecule.atoms().iterator();
-		java.util.Vector<IAtom> atomsToSkip = new java.util.Vector<IAtom>();
+		java.util.ArrayList<IAtom> atomsToSkip = new java.util.ArrayList<IAtom>();
 		for(int i = 0; i < skipPositions.length; i++) {
 			atomsToSkip.add(molecule.getAtom(skipPositions[i]));
 		}

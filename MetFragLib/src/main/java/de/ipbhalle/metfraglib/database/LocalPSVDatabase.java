@@ -3,7 +3,7 @@ package de.ipbhalle.metfraglib.database;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import de.ipbhalle.metfraglib.additionals.MathTools;
 import de.ipbhalle.metfraglib.candidate.TopDownPrecursorCandidate;
@@ -28,13 +28,13 @@ import de.ipbhalle.metfraglib.settings.Settings;
  */
 public class LocalPSVDatabase extends AbstractDatabase {
 
-	private java.util.Vector<ICandidate> candidates;
+	private java.util.ArrayList<ICandidate> candidates;
 
 	public LocalPSVDatabase(Settings settings) {
 		super(settings);
 	}
 
-	public java.util.Vector<String> getCandidateIdentifiers() throws MultipleHeadersFoundInInputDatabaseException, Exception {
+	public java.util.ArrayList<String> getCandidateIdentifiers() throws MultipleHeadersFoundInInputDatabaseException, Exception {
 		if(this.settings.containsKey(VariableNames.PROCESS_STATUS_OBJECT_NAME) && this.settings.get(VariableNames.PROCESS_STATUS_OBJECT_NAME) != null)
 			((ProcessingStatus)this.settings.get(VariableNames.PROCESS_STATUS_OBJECT_NAME)).setRetrievingStatusString("Retrieving Candidates");
 		if (this.candidates == null)
@@ -45,7 +45,7 @@ public class LocalPSVDatabase extends AbstractDatabase {
 			return this.getCandidateIdentifiers((String) settings.get(VariableNames.PRECURSOR_MOLECULAR_FORMULA_NAME));
 		if (this.settings.get(VariableNames.DATABASE_RELATIVE_MASS_DEVIATION_NAME) != null)
 			return this.getCandidateIdentifiers((Double) settings.get(VariableNames.PRECURSOR_NEUTRAL_MASS_NAME), (Double) settings.get(VariableNames.DATABASE_RELATIVE_MASS_DEVIATION_NAME));
-		Vector<String> identifiers = new Vector<String>();
+		ArrayList<String> identifiers = new ArrayList<String>();
 		for (ICandidate candidate : candidates) {
 			identifiers.add(candidate.getIdentifier());
 		}
@@ -53,10 +53,10 @@ public class LocalPSVDatabase extends AbstractDatabase {
 		return identifiers;
 	}
 
-	public Vector<String> getCandidateIdentifiers(double monoisotopicMass, double relativeMassDeviation) throws MultipleHeadersFoundInInputDatabaseException, Exception {
+	public ArrayList<String> getCandidateIdentifiers(double monoisotopicMass, double relativeMassDeviation) throws MultipleHeadersFoundInInputDatabaseException, Exception {
 		if (this.candidates == null)
 			this.readCandidatesFromFile();
-		Vector<String> identifiers = new Vector<String>();
+		ArrayList<String> identifiers = new ArrayList<String>();
 		double mzabs = MathTools.calculateAbsoluteDeviation(monoisotopicMass, relativeMassDeviation);
 		double lowerLimit = monoisotopicMass - mzabs;
 		double upperLimit = monoisotopicMass + mzabs;
@@ -68,14 +68,14 @@ public class LocalPSVDatabase extends AbstractDatabase {
 		return identifiers;
 	}
 
-	public Vector<String> getCandidateIdentifiers(String molecularFormula) throws Exception {
+	public ArrayList<String> getCandidateIdentifiers(String molecularFormula) throws Exception {
 		if (this.candidates == null)
 			try {
 				this.readCandidatesFromFile();
 			} catch (MultipleHeadersFoundInInputDatabaseException e) {
 				e.printStackTrace();
 			}
-		Vector<String> identifiers = new Vector<String>();
+		ArrayList<String> identifiers = new ArrayList<String>();
 		for (int i = 0; i < this.candidates.size(); i++) {
 			if (molecularFormula.equals(this.candidates.get(i).getProperty(VariableNames.MOLECULAR_FORMULA_NAME)))
 				identifiers.add(this.candidates.get(i).getIdentifier());
@@ -83,10 +83,10 @@ public class LocalPSVDatabase extends AbstractDatabase {
 		return identifiers;
 	}
 
-	public Vector<String> getCandidateIdentifiers(Vector<String> identifiers) throws MultipleHeadersFoundInInputDatabaseException, Exception {
+	public ArrayList<String> getCandidateIdentifiers(ArrayList<String> identifiers) throws MultipleHeadersFoundInInputDatabaseException, Exception {
 		if (this.candidates == null)
 			this.readCandidatesFromFile();
-		Vector<String> verifiedIdentifiers = new Vector<String>();
+		ArrayList<String> verifiedIdentifiers = new ArrayList<String>();
 		for (int i = 0; i < identifiers.size(); i++) {
 			try {
 				this.getCandidateByIdentifier(identifiers.get(i));
@@ -107,7 +107,7 @@ public class LocalPSVDatabase extends AbstractDatabase {
 		return this.candidates.get(index);
 	}
 
-	public CandidateList getCandidateByIdentifier(Vector<String> identifiers) {
+	public CandidateList getCandidateByIdentifier(ArrayList<String> identifiers) {
 		CandidateList candidateList = new CandidateList();
 		for (int i = 0; i < identifiers.size(); i++) {
 			ICandidate candidate = null;
@@ -130,7 +130,7 @@ public class LocalPSVDatabase extends AbstractDatabase {
 	 * 
 	 */
 	private void readCandidatesFromFile() throws MultipleHeadersFoundInInputDatabaseException, Exception {
-		this.candidates = new java.util.Vector<ICandidate>();
+		this.candidates = new java.util.ArrayList<ICandidate>();
 		java.io.File f = new java.io.File((String) this.settings.get(VariableNames.LOCAL_DATABASE_PATH_NAME));
 		BufferedReader reader = null;
 		if (f.isFile()) {
@@ -149,7 +149,7 @@ public class LocalPSVDatabase extends AbstractDatabase {
 				}
 				propNameToIndex.put(colNames[i], i);
 			}
-			java.util.Vector<String> identifiers = new java.util.Vector<String>();
+			java.util.ArrayList<String> identifiers = new java.util.ArrayList<String>();
 			String line = "";
 			//int internal_identifier = 0;
 			while ((line = reader.readLine()) != null) {

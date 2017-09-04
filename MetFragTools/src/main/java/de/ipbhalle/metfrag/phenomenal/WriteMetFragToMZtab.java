@@ -3,7 +3,6 @@ package de.ipbhalle.metfrag.phenomenal;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import org.openscience.cdk.inchi.InChIGeneratorFactory;
 import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
@@ -90,7 +89,7 @@ public class WriteMetFragToMZtab {
 				System.out.println(files[i].getName() + " has no rt and mz information. Check file name.");
 			}
 			
-			Vector<String> identifiers = null;
+			ArrayList<String> identifiers = null;
 			try {
 				identifiers = db.getCandidateIdentifiers();
 			} catch (MultipleHeadersFoundInInputDatabaseException e1) {

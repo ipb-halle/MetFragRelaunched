@@ -1,6 +1,6 @@
 package de.ipbhalle.metfraglib.substructure;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import de.ipbhalle.metfraglib.FastBitArray;
 
@@ -106,7 +106,7 @@ public class FingerprintGroup {
 		this.conditionalProbability_sp = conditionalProbability_sp;
 	}
 
-	public boolean fingerprintMatches(Vector<String> _fingerprints) {
+	public boolean fingerprintMatches(ArrayList<String> _fingerprints) {
 		for(int i = 0; i < _fingerprints.size(); i++) {
 			if(_fingerprints.get(i).equals(this.fingerprint)) return true;
 		}

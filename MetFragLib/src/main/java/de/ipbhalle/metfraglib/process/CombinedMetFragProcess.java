@@ -74,7 +74,7 @@ public class CombinedMetFragProcess implements Runnable {
 	 */
 	public boolean retrieveCompounds() throws Exception {
 		this.processes = null;
-		java.util.Vector<String> databaseCandidateIdentifiers = this.database.getCandidateIdentifiers();
+		java.util.ArrayList<String> databaseCandidateIdentifiers = this.database.getCandidateIdentifiers();
 		if(this.globalSettings.containsKey(VariableNames.MAXIMUM_CANDIDATE_LIMIT_TO_STOP_NAME) && this.globalSettings.get(VariableNames.MAXIMUM_CANDIDATE_LIMIT_TO_STOP_NAME) != null) {
 			int limit = (Integer)this.globalSettings.get(VariableNames.MAXIMUM_CANDIDATE_LIMIT_TO_STOP_NAME);
 			if(limit < databaseCandidateIdentifiers.size()) {

@@ -1,6 +1,6 @@
 package de.ipbhalle.metfrag.misc;
 
-import java.util.Vector;
+import java.util.ArrayList;
 import de.ipbhalle.metfraglib.molecularformula.ByteMolecularFormula;
 
 public class GenerateCandidateFileFromInChIs {
@@ -11,7 +11,7 @@ public class GenerateCandidateFileFromInChIs {
 	 */
 	public static void main(String[] args) throws Exception {
 		java.io.BufferedReader breader = new java.io.BufferedReader(new java.io.FileReader(new java.io.File(args[0])));
-		Vector<String> lines = new Vector<String>();
+		ArrayList<String> lines = new ArrayList<String>();
 		String line = "";
 		int id = 1;
 		lines.add("Identifier|MonoisotopicMass|InChI|InChIKey1|InChIKey2|MolecularFormula");

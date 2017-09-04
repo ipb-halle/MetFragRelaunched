@@ -205,7 +205,7 @@ public class TopDownFragmenter extends AbstractTopDownFragmenter {
 			 * add fragment/s to vector after setting the proper precursor
 			 */ 
 			for(int k = 0; k < newGeneratedTopDownFragments.length; k++) {
-				precursorFragment.addChild(newGeneratedTopDownFragments[k]);
+			//	precursorFragment.addChild(newGeneratedTopDownFragments[k]);
 				if(newGeneratedTopDownFragments.length == 2) fragmentsOfNextTreeDepth.add(newGeneratedTopDownFragments[k]);
 				if(precursorFragment.isValidFragment()) {
 					newGeneratedTopDownFragments[k].setPrecursorFragment(precursorFragment);
@@ -272,7 +272,7 @@ public class TopDownFragmenter extends AbstractTopDownFragmenter {
 				// set precursor fragment of generated fragment(s) and the child(ren) of precursor fragments
 				//
 				for(int k = 0; k < newFragments.length; k++) {
-					precursorFragment.addChild(newFragments[k]);
+				//	precursorFragment.addChild(newFragments[k]);
 					if(precursorFragment.isValidFragment()) 
 						newFragments[k].setPrecursorFragment(precursorFragment);
 					else 
@@ -322,7 +322,7 @@ public class TopDownFragmenter extends AbstractTopDownFragmenter {
 		 	}
 			
 			for(int k = 0; k < newFragments.length; k++) {
-				precursorFragment.addChild(newFragments[k]);
+			//	precursorFragment.addChild(newFragments[k]);
 				if(precursorFragment.isValidFragment()) 
 					newFragments[k].setPrecursorFragment(precursorFragment);
 				else 

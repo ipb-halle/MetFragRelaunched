@@ -5,7 +5,7 @@ import de.ipbhalle.metfraglib.interfaces.ICandidate;
 public class CandidateList extends DefaultList {
 	
 	public CandidateList() {
-		this.list = new java.util.Vector<Object>();
+		this.list = new java.util.ArrayList<Object>();
 	}
 
 	public ICandidate getElement(int index) {
@@ -23,7 +23,7 @@ public class CandidateList extends DefaultList {
 	
 	public CandidateList clone() {
 		CandidateList clone = new CandidateList();
-		java.util.Vector<Object> listClone = new java.util.Vector<Object>();
+		java.util.ArrayList<Object> listClone = new java.util.ArrayList<Object>();
 		for(int i = 0; i < this.list.size(); i++) {
 			listClone.add(((ICandidate)this.list.get(i)).clone());
 		}

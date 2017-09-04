@@ -2,7 +2,7 @@ package de.ipbhalle.metfrag.hdx;
 
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import de.ipbhalle.metfraglib.FastBitArray;
 import de.ipbhalle.metfraglib.additionals.MathTools;
@@ -45,8 +45,8 @@ public class CalculateHydrogenDeuteriumScore {
 		IDatabase hydrogenDatabase = new LocalPSVDatabase(hydrogenSettings);
 		IDatabase deuteriumDatabase = new LocalPSVDatabase(deuteriumSettings);
 	
-		Vector<String> hydrogenIdentifiers = null;
-		Vector<String> deuteriumIdentifiers = null;
+		ArrayList<String> hydrogenIdentifiers = null;
+		ArrayList<String> deuteriumIdentifiers = null;
 		try {
 			hydrogenIdentifiers = hydrogenDatabase.getCandidateIdentifiers();
 			deuteriumIdentifiers = deuteriumDatabase.getCandidateIdentifiers();
@@ -91,7 +91,7 @@ public class CalculateHydrogenDeuteriumScore {
 		Iterator<String> deuteriumKeys = hashTableDeuteriumResults.keySet().iterator();
 		Hashtable<String, Double> hd_score_1 = new Hashtable<String, Double>();
 		Hashtable<String, Double> hd_score_2 = new Hashtable<String, Double>();
-		java.util.Vector<String> lines = new java.util.Vector<String>();
+		java.util.ArrayList<String> lines = new java.util.ArrayList<String>();
 		
 		CandidateList mergedCandidateList = new CandidateList();
 
@@ -169,8 +169,8 @@ public class CalculateHydrogenDeuteriumScore {
 			
 			int countEqualPeakPairs = 0;
 			int countDeuteriumEqualPeakPairs = 0;
-			Vector<Integer> hydrogenMassesUsedForEqualPairs = new Vector<Integer>();
-			Vector<Integer> deuteriumMassesUsedForEqualPairs = new Vector<Integer>();
+			ArrayList<Integer> hydrogenMassesUsedForEqualPairs = new ArrayList<Integer>();
+			ArrayList<Integer> deuteriumMassesUsedForEqualPairs = new ArrayList<Integer>();
 			
 			for(int i = 0; i < equalPeakPairs.length; i++) {
 				String[] singleFragmentAtomFastBitArraysHydrogen = fragmentAtomFastBitArraysHydrogen[equalPeakPairs[i][0]].split("/");
@@ -200,8 +200,8 @@ public class CalculateHydrogenDeuteriumScore {
 				}
 			}
 
-			Vector<Integer> hydrogenMassesUsedForDeuteriumEqualPairs = new Vector<Integer>();
-			Vector<Integer> deuteriumMassesUsedForDeuteriumEqualPairs = new Vector<Integer>();
+			ArrayList<Integer> hydrogenMassesUsedForDeuteriumEqualPairs = new ArrayList<Integer>();
+			ArrayList<Integer> deuteriumMassesUsedForDeuteriumEqualPairs = new ArrayList<Integer>();
 			
 			for(int i = 0; i < deuteriumEqualPeakPairs.length; i++) {
 				String[] singleFragmentAtomFastBitArraysHydrogen = fragmentAtomFastBitArraysHydrogen[deuteriumEqualPeakPairs[i][0]].split("/");
@@ -288,8 +288,8 @@ public class CalculateHydrogenDeuteriumScore {
 	 * @return
 	 */
 	public static int[][] getEqualPeakPairs(double[] massesHydrogen, double[] massesDeuterium, double ppm, double abs) {
-		Vector<Integer> equalPeakPairHydrogenIndeces = new Vector<Integer>();
-		Vector<Integer> equalPeakPairDeuteriumIndeces = new Vector<Integer>();
+		ArrayList<Integer> equalPeakPairHydrogenIndeces = new ArrayList<Integer>();
+		ArrayList<Integer> equalPeakPairDeuteriumIndeces = new ArrayList<Integer>();
 		
 		FastBitArray hydrogensAnnotated = new FastBitArray(massesHydrogen.length);
 		FastBitArray deuteriumsAnnotated = new FastBitArray(massesDeuterium.length);
@@ -357,8 +357,8 @@ public class CalculateHydrogenDeuteriumScore {
 	}
 	
 	public static int[][] getEqualPeakPairs2(double[] massesHydrogen, double[] massesDeuterium, double ppm, double abs) {
-		Vector<Integer> equalPeakPairHydrogenIndeces = new Vector<Integer>();
-		Vector<Integer> equalPeakPairDeuteriumIndeces = new Vector<Integer>();
+		ArrayList<Integer> equalPeakPairHydrogenIndeces = new ArrayList<Integer>();
+		ArrayList<Integer> equalPeakPairDeuteriumIndeces = new ArrayList<Integer>();
 		
 		for(int i = 0; i < massesHydrogen.length; i++) {
 		
@@ -395,9 +395,9 @@ public class CalculateHydrogenDeuteriumScore {
 	 * @return
 	 */
 	public static int[][] getDeuteriumEqualPeakPairs(double[] massesHydrogen, double[] massesDeuterium, double ppm, double abs, double maximumNumberDeuteriums) {
-		Vector<Integer> equalPeakPairHydrogenIndeces = new Vector<Integer>();
-		Vector<Integer> equalPeakPairDeuteriumIndeces = new Vector<Integer>();
-		Vector<Integer> numDeuteriumDiffs = new Vector<Integer>();
+		ArrayList<Integer> equalPeakPairHydrogenIndeces = new ArrayList<Integer>();
+		ArrayList<Integer> equalPeakPairDeuteriumIndeces = new ArrayList<Integer>();
+		ArrayList<Integer> numDeuteriumDiffs = new ArrayList<Integer>();
 		
 		FastBitArray hydrogensAnnotated = new FastBitArray(massesHydrogen.length);
 		FastBitArray deuteriumsAnnotated = new FastBitArray(massesDeuterium.length);
@@ -476,9 +476,9 @@ public class CalculateHydrogenDeuteriumScore {
 	}
 	
 	public static int[][] getDeuteriumEqualPeakPairs2(double[] massesHydrogen, double[] massesDeuterium, double ppm, double abs, double maximumNumberDeuteriums) {
-		Vector<Integer> equalPeakPairHydrogenIndeces = new Vector<Integer>();
-		Vector<Integer> equalPeakPairDeuteriumIndeces = new Vector<Integer>();
-		Vector<Integer> numDeuteriumDiffs = new Vector<Integer>();
+		ArrayList<Integer> equalPeakPairHydrogenIndeces = new ArrayList<Integer>();
+		ArrayList<Integer> equalPeakPairDeuteriumIndeces = new ArrayList<Integer>();
+		ArrayList<Integer> numDeuteriumDiffs = new ArrayList<Integer>();
 		
 		for(int i = 0; i < massesHydrogen.length; i++) {
 			double mzabs = MathTools.calculateAbsoluteDeviation(massesHydrogen[i], ppm) + abs;

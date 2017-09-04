@@ -64,7 +64,7 @@ public class AnalyseAnnotatedMetFragSiriusTree {
 	}
 	
 	public boolean detectReplacementRearrangement(MatchList matchList) {
-		java.util.Vector<SiriusNodePeak> leaves = this.peakList.getLeaves();
+		java.util.ArrayList<SiriusNodePeak> leaves = this.peakList.getLeaves();
 		for(int i = 0; i < leaves.size(); i++) {
 			SiriusNodePeak currentNode = leaves.get(i);
 			boolean hasMatch = false;

@@ -8,7 +8,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Vector;
 
 import de.ipbhalle.metfraglib.additionals.MathTools;
 import de.ipbhalle.metfraglib.database.LocalCSVDatabase;
@@ -121,7 +120,7 @@ public class WriteMetFragToMAF {
 		
 		Arrays.sort(filenameArray);
 
-		Vector<String> lines = combinedFeatures.getLines(filenameArray, numberCandidates, scoreNames, scoreWeights);
+		ArrayList<String> lines = combinedFeatures.getLines(filenameArray, numberCandidates, scoreNames, scoreWeights);
 		
 		// write MAF file
 		try {
@@ -423,10 +422,10 @@ public class WriteMetFragToMAF {
 		 * @param weights
 		 * @return
 		 */
-		public Vector<String> getLines(String[] filenameArray, int numberCandidatesPerFeature, String[] scoreNames, double[] weights) {
-			Vector<String> allLines = new Vector<String>();
+		public ArrayList<String> getLines(String[] filenameArray, int numberCandidatesPerFeature, String[] scoreNames, double[] weights) {
+			ArrayList<String> allLines = new ArrayList<String>();
 			for(int i = 0; i < this.combinedFeatures.size(); i++) {
-				Vector<String> currentLines = this.combinedFeatures.get(i).getLines(filenameArray, numberCandidatesPerFeature, scoreNames, weights);
+				ArrayList<String> currentLines = this.combinedFeatures.get(i).getLines(filenameArray, numberCandidatesPerFeature, scoreNames, weights);
 				for(int l = 0; l < currentLines.size(); l++) {
 					allLines.add(currentLines.get(l));
 				}
@@ -438,8 +437,8 @@ public class WriteMetFragToMAF {
 		 * 
 		 * @return
 		 */
-		public Vector<String> getFilenames() {
-			Vector<String> filenames = new Vector<String>();
+		public ArrayList<String> getFilenames() {
+			ArrayList<String> filenames = new ArrayList<String>();
 			for(int i = 0; i < this.combinedFeatures.size(); i++) {
 				String[] _filenames = this.combinedFeatures.get(i).getFileNames();
 				for(int k = 0; k < _filenames.length; k++) {
@@ -607,18 +606,18 @@ public class WriteMetFragToMAF {
 		 * @param weights
 		 * @return
 		 */
-		public Vector<String> getLines(String[] filenameArray, int numberCandidatesPerFeature, String[] scoreNames, double[] weights) {
+		public ArrayList<String> getLines(String[] filenameArray, int numberCandidatesPerFeature, String[] scoreNames, double[] weights) {
 			MetFragGlobalSettings settings = new MetFragGlobalSettings();
 			CandidateList candidates = new CandidateList();
 			HashMap<String, Integer> idToOccurence = new HashMap<String, Integer>();
 			HashMap<String, ICandidate> idToCandidate = new HashMap<String, ICandidate>();
 			
-			Vector<String> lines = new Vector<String>();
+			ArrayList<String> lines = new ArrayList<String>();
 			for(int i = 0; i < this.features.size(); i++) {
 				settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, this.features.get(i).getMf_origin().getAbsolutePath());
 				LocalCSVDatabase db = new LocalCSVDatabase(settings);
 	
-				Vector<String> identifiers = null;
+				ArrayList<String> identifiers = null;
 				try {
 					identifiers = db.getCandidateIdentifiers();
 				} catch (MultipleHeadersFoundInInputDatabaseException e1) {
@@ -664,8 +663,8 @@ public class WriteMetFragToMAF {
 			}
 			
 			// generate output lines for MAF file
-			Vector<ICandidate> sortedCandidates = getSortedCandidates(candidates, scoreNames, weights);
-			Vector<String> addedInChIKeys = new Vector<String>();
+			ArrayList<ICandidate> sortedCandidates = getSortedCandidates(candidates, scoreNames, weights);
+			ArrayList<String> addedInChIKeys = new ArrayList<String>();
 			int index = 0;
 
 			while(index < numberCandidatesPerFeature && index < sortedCandidates.size()) {
@@ -729,9 +728,9 @@ public class WriteMetFragToMAF {
 		 * @param weights
 		 * @return
 		 */
-		private Vector<ICandidate> getSortedCandidates(CandidateList candidates, String[] scores, double[] weights) {
+		private ArrayList<ICandidate> getSortedCandidates(CandidateList candidates, String[] scores, double[] weights) {
 			double[] maxScores = new double[scores.length];
-			Vector<ICandidate> candidatesSorted = new Vector<ICandidate>();
+			ArrayList<ICandidate> candidatesSorted = new ArrayList<ICandidate>();
 			for(int i = 0; i < candidates.getNumberElements(); i++) {
 				for(int j = 0; j < scores.length; j++) {
 					double currentScore = (Double)candidates.getElement(i).getProperty(scores[j]);

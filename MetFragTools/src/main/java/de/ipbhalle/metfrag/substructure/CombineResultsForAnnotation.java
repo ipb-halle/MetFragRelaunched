@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import de.ipbhalle.metfraglib.candidate.PrecursorCandidate;
 import de.ipbhalle.metfraglib.database.LocalCSVDatabase;
@@ -85,7 +85,7 @@ public class CombineResultsForAnnotation {
 				IDatabase db = null;
 				if(metfragFiles[i].getName().endsWith("csv")) db = new LocalCSVDatabase(settings);
 				else db = new LocalPSVDatabase(settings);
-				Vector<String> identifiers = null;
+				ArrayList<String> identifiers = null;
 				try {
 					identifiers = db.getCandidateIdentifiers();
 				} catch (MultipleHeadersFoundInInputDatabaseException e1) {

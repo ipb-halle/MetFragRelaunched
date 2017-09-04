@@ -4,7 +4,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import de.ipbhalle.metfraglib.additionals.MathTools;
 import de.ipbhalle.metfraglib.candidate.TopDownPrecursorCandidate;
@@ -20,13 +20,13 @@ public class LocalPostgresDatabase extends AbstractLocalDatabase {
 		super(settings);
 	}
 
-	public Vector<String> getCandidateIdentifiers(double monoisotopicMass, double relativeMassDeviation) {
+	public ArrayList<String> getCandidateIdentifiers(double monoisotopicMass, double relativeMassDeviation) {
 		double error = MathTools.calculateAbsoluteDeviation(monoisotopicMass, relativeMassDeviation);
 		String query = "SELECT " + this.CID_COLUMN_NAME + " from " 
 				+ this.TABLE_NAME + " where " + this.MASS_COLUMN_NAME 
 				+ " between " + (monoisotopicMass - error)+" and "+(monoisotopicMass + error)+";";
 		ResultSet rs = this.submitQuery(query);
-		Vector<String> cids = new Vector<String>();
+		ArrayList<String> cids = new ArrayList<String>();
 		if(rs == null) return cids;
 		try {
 			while(rs.next()) cids.add(rs.getString(this.CID_COLUMN_NAME));
@@ -38,12 +38,12 @@ public class LocalPostgresDatabase extends AbstractLocalDatabase {
 		return cids;
 	}
 
-	public Vector<String> getCandidateIdentifiers(String molecularFormula) {
+	public ArrayList<String> getCandidateIdentifiers(String molecularFormula) {
 		String query = "SELECT " + this.CID_COLUMN_NAME + " from " + this.TABLE_NAME 
 				+ " where " + this.FORMULA_COLUMN_NAME + " = \'" + molecularFormula + "\';";
 		logger.trace(query);
 		ResultSet rs = this.submitQuery(query);
-		Vector<String> cids = new Vector<String>();
+		ArrayList<String> cids = new ArrayList<String>();
 		if(rs == null) return cids;
 		try {
 			while(rs.next()) cids.add(rs.getString(this.CID_COLUMN_NAME));
@@ -55,15 +55,15 @@ public class LocalPostgresDatabase extends AbstractLocalDatabase {
 		return cids;
 	}
 
-	public Vector<String> getCandidateIdentifiers(Vector<String> identifiers) {
-		if(identifiers.size() == 0) return new Vector<String>();
+	public ArrayList<String> getCandidateIdentifiers(ArrayList<String> identifiers) {
+		if(identifiers.size() == 0) return new ArrayList<String>();
 		String query = "SELECT " + this.CID_COLUMN_NAME + " from " + this.TABLE_NAME 
 				+ " where " + this.CID_COLUMN_NAME + " =\'" + identifiers.get(0) + "\'";
 		for(int i = 1; i < identifiers.size(); i++)
 			query += "or " + this.CID_COLUMN_NAME + " =\'" + identifiers.get(i) + "\'";
 		query += ";";
 		ResultSet rs = this.submitQuery(query);
-		Vector<String> cids = new Vector<String>();
+		ArrayList<String> cids = new ArrayList<String>();
 		if(rs == null) return cids;
 		try {
 			while(rs.next()) cids.add(rs.getString(this.CID_COLUMN_NAME));
@@ -84,13 +84,13 @@ public class LocalPostgresDatabase extends AbstractLocalDatabase {
 				+ this.CID_COLUMN_NAME + " =\'" + identifier + "\';";
 		ResultSet rs = this.submitQuery(query);
 		if(rs == null) return null;
-		Vector<String> inchis = new Vector<String>();
-		Vector<String> inChIKeys1 = new Vector<String>();
-		Vector<String> inChIKeys2 = new Vector<String>();
-		Vector<String> formulas = new Vector<String>();
-		Vector<String> smiles = new Vector<String>();
-		Vector<Double> masses = new Vector<Double>();
-		Vector<String> names = new Vector<String>();
+		ArrayList<String> inchis = new ArrayList<String>();
+		ArrayList<String> inChIKeys1 = new ArrayList<String>();
+		ArrayList<String> inChIKeys2 = new ArrayList<String>();
+		ArrayList<String> formulas = new ArrayList<String>();
+		ArrayList<String> smiles = new ArrayList<String>();
+		ArrayList<Double> masses = new ArrayList<Double>();
+		ArrayList<String> names = new ArrayList<String>();
 		try {
 			while(rs.next()) {
 				inchis.add(rs.getString(this.INCHI_COLUMN_NAME));
@@ -122,7 +122,7 @@ public class LocalPostgresDatabase extends AbstractLocalDatabase {
 	/**
 	 * 
 	 */
-	public CandidateList getCandidateByIdentifier(Vector<String> identifiers) {
+	public CandidateList getCandidateByIdentifier(ArrayList<String> identifiers) {
 		if(identifiers.size() == 0) return new CandidateList();
 	/*	String query = "SELECT " + this.CID_COLUMN_NAME + ", " 
 				+ this.INCHI_COLUMN_NAME + "," + this.INCHIKEY1_COLUMN_NAME + "," 

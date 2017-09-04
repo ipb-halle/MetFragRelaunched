@@ -1,7 +1,7 @@
 package de.ipbhalle.metfraglib.database;
 
 import java.io.FileNotFoundException;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.openscience.cdk.ChemObject;
 import org.openscience.cdk.DefaultChemObjectBuilder;
@@ -23,13 +23,13 @@ import de.ipbhalle.metfraglib.settings.Settings;
 
 public class LocalDeuteratedSDFDatabase extends AbstractDatabase {
 
-	private java.util.Vector<ICandidate> candidates;
+	private java.util.ArrayList<ICandidate> candidates;
 	
 	public LocalDeuteratedSDFDatabase(Settings settings) {
 		super(settings);
 	}
 	
-	public java.util.Vector<String> getCandidateIdentifiers() throws Exception {
+	public java.util.ArrayList<String> getCandidateIdentifiers() throws Exception {
 		if(this.candidates == null) this.readCandidatesFromFile();
 		if(this.settings.get(VariableNames.PRECURSOR_DATABASE_IDS_NAME) != null)
 			return this.getCandidateIdentifiers((String[])settings.get(VariableNames.PRECURSOR_DATABASE_IDS_NAME));
@@ -37,15 +37,15 @@ public class LocalDeuteratedSDFDatabase extends AbstractDatabase {
 			return this.getCandidateIdentifiers((String)settings.get(VariableNames.PRECURSOR_MOLECULAR_FORMULA_NAME));
 		if(this.settings.get(VariableNames.DATABASE_RELATIVE_MASS_DEVIATION_NAME) != null)
 			return this.getCandidateIdentifiers((Double)settings.get(VariableNames.PRECURSOR_NEUTRAL_MASS_NAME), (Double)settings.get(VariableNames.DATABASE_RELATIVE_MASS_DEVIATION_NAME));
-		Vector<String> identifiers = new Vector<String>();
+		ArrayList<String> identifiers = new ArrayList<String>();
 		for(ICandidate candidate : candidates)
 			identifiers.add(candidate.getIdentifier());
 		return identifiers;
 	}
 	
-	public Vector<String> getCandidateIdentifiers(double monoisotopicMass, double relativeMassDeviation) {
+	public ArrayList<String> getCandidateIdentifiers(double monoisotopicMass, double relativeMassDeviation) {
 		if(this.candidates == null) this.readCandidatesFromFile();
-		Vector<String> identifiers = new Vector<String>();
+		ArrayList<String> identifiers = new ArrayList<String>();
 		double mzabs = MathTools.calculateAbsoluteDeviation(monoisotopicMass, relativeMassDeviation);
 		double lowerLimit = monoisotopicMass - mzabs;
 		double upperLimit = monoisotopicMass + mzabs;
@@ -57,9 +57,9 @@ public class LocalDeuteratedSDFDatabase extends AbstractDatabase {
 		return identifiers;
 	}
 
-	public Vector<String> getCandidateIdentifiers(String molecularFormula) {
+	public ArrayList<String> getCandidateIdentifiers(String molecularFormula) {
 		if(this.candidates == null) this.readCandidatesFromFile();
-		Vector<String> identifiers = new Vector<String>();
+		ArrayList<String> identifiers = new ArrayList<String>();
 		org.openscience.cdk.interfaces.IMolecularFormula queryFormula = MolecularFormulaManipulator.getMolecularFormula(molecularFormula, new ChemObject().getBuilder());
 		for(int i = 0; i < this.candidates.size(); i++) {
 			org.openscience.cdk.interfaces.IMolecularFormula currentFormula = null;
@@ -73,9 +73,9 @@ public class LocalDeuteratedSDFDatabase extends AbstractDatabase {
 		return identifiers;
 	}
 
-	public Vector<String> getCandidateIdentifiers(Vector<String> identifiers) {
+	public ArrayList<String> getCandidateIdentifiers(ArrayList<String> identifiers) {
 		if(this.candidates == null) this.readCandidatesFromFile();
-		Vector<String> verifiedIdentifiers = new Vector<String>();
+		ArrayList<String> verifiedIdentifiers = new ArrayList<String>();
 		for(int i = 0; i < identifiers.size(); i++) {
 			try {
 				this.getCandidateByIdentifier(identifiers.get(i));
@@ -96,7 +96,7 @@ public class LocalDeuteratedSDFDatabase extends AbstractDatabase {
 		return this.candidates.get(index);
 	}
 
-	public CandidateList getCandidateByIdentifier(Vector<String> identifiers) {
+	public CandidateList getCandidateByIdentifier(ArrayList<String> identifiers) {
 		CandidateList candidateList = new CandidateList();
 		for(int i = 0; i < identifiers.size(); i++) {
 			ICandidate candidate = null;
@@ -117,7 +117,7 @@ public class LocalDeuteratedSDFDatabase extends AbstractDatabase {
 	 * 
 	 */
 	private void readCandidatesFromFile() {
-		this.candidates = new java.util.Vector<ICandidate>();
+		this.candidates = new java.util.ArrayList<ICandidate>();
 		java.io.File f = new java.io.File((String)this.settings.get(VariableNames.LOCAL_DATABASE_PATH_NAME));
 		if(f.isFile())
 		{

@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 
+import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.exception.InvalidSmilesException;
 
 import de.ipbhalle.metfraglib.FastBitArray;
@@ -108,6 +109,9 @@ public class AutomatedPeakFingerprintAnnotationScoreInitialiser  implements ISco
 						try {
 							currentFingerprint = new FastBitArray(MoleculeFunctions.getNormalizedFingerprint(frag));
 						} catch (InvalidSmilesException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (CDKException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}

@@ -61,7 +61,7 @@ public class CheckKeggDatabase {
 	public void testRetrievingCandidateList() {
 		this.database = new OnlineKeggDatabase(this.settings);
 		try {
-			java.util.Vector<String> ids = new java.util.Vector<String>();
+			java.util.ArrayList<String> ids = new java.util.ArrayList<String>();
 			ids.add("C18858");
 			assertTrue("No result for identifier search", this.database.getCandidateByIdentifier(ids).getNumberElements() > 0);
 		} catch (MultipleHeadersFoundInInputDatabaseException e) {

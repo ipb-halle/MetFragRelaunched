@@ -2,7 +2,7 @@ package de.ipbhalle.metfraglib.database;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -30,13 +30,13 @@ import de.ipbhalle.metfraglib.settings.Settings;
  */
 public class LocalPropertyFileDatabase extends AbstractDatabase {
 
-	private java.util.Vector<ICandidate> candidates;
+	private java.util.ArrayList<ICandidate> candidates;
 
 	public LocalPropertyFileDatabase(Settings settings) {
 		super(settings);
 	}
 
-	public java.util.Vector<String> getCandidateIdentifiers()
+	public java.util.ArrayList<String> getCandidateIdentifiers()
 			throws MultipleHeadersFoundInInputDatabaseException, Exception {
 		if (this.candidates == null)
 			this.readCandidatesFromFile();
@@ -54,19 +54,19 @@ public class LocalPropertyFileDatabase extends AbstractDatabase {
 									.get(VariableNames.PRECURSOR_NEUTRAL_MASS_NAME),
 							(Double) settings
 									.get(VariableNames.DATABASE_RELATIVE_MASS_DEVIATION_NAME));
-		Vector<String> identifiers = new Vector<String>();
+		ArrayList<String> identifiers = new ArrayList<String>();
 		for (ICandidate candidate : candidates) {
 			identifiers.add(candidate.getIdentifier());
 		}
 		return identifiers;
 	}
 
-	public Vector<String> getCandidateIdentifiers(double monoisotopicMass,
+	public ArrayList<String> getCandidateIdentifiers(double monoisotopicMass,
 			double relativeMassDeviation)
 			throws MultipleHeadersFoundInInputDatabaseException, Exception {
 		if (this.candidates == null)
 			this.readCandidatesFromFile();
-		Vector<String> identifiers = new Vector<String>();
+		ArrayList<String> identifiers = new ArrayList<String>();
 		double mzabs = MathTools.calculateAbsoluteDeviation(monoisotopicMass,
 				relativeMassDeviation);
 		double lowerLimit = monoisotopicMass - mzabs;
@@ -81,7 +81,7 @@ public class LocalPropertyFileDatabase extends AbstractDatabase {
 		return identifiers;
 	}
 
-	public Vector<String> getCandidateIdentifiers(String molecularFormula)
+	public ArrayList<String> getCandidateIdentifiers(String molecularFormula)
 			throws Exception {
 		if (this.candidates == null)
 			try {
@@ -89,7 +89,7 @@ public class LocalPropertyFileDatabase extends AbstractDatabase {
 			} catch (MultipleHeadersFoundInInputDatabaseException e) {
 				e.printStackTrace();
 			}
-		Vector<String> identifiers = new Vector<String>();
+		ArrayList<String> identifiers = new ArrayList<String>();
 		for (int i = 0; i < this.candidates.size(); i++) {
 			if (molecularFormula.equals(this.candidates.get(i).getProperty(
 					VariableNames.MOLECULAR_FORMULA_NAME)))
@@ -98,11 +98,11 @@ public class LocalPropertyFileDatabase extends AbstractDatabase {
 		return identifiers;
 	}
 
-	public Vector<String> getCandidateIdentifiers(Vector<String> identifiers)
+	public ArrayList<String> getCandidateIdentifiers(ArrayList<String> identifiers)
 			throws MultipleHeadersFoundInInputDatabaseException, Exception {
 		if (this.candidates == null)
 			this.readCandidatesFromFile();
-		Vector<String> verifiedIdentifiers = new Vector<String>();
+		ArrayList<String> verifiedIdentifiers = new ArrayList<String>();
 		for (int i = 0; i < identifiers.size(); i++) {
 			try {
 				this.getCandidateByIdentifier(identifiers.get(i));
@@ -125,7 +125,7 @@ public class LocalPropertyFileDatabase extends AbstractDatabase {
 		return this.candidates.get(index);
 	}
 
-	public CandidateList getCandidateByIdentifier(Vector<String> identifiers) {
+	public CandidateList getCandidateByIdentifier(ArrayList<String> identifiers) {
 		CandidateList candidateList = new CandidateList();
 		for (int i = 0; i < identifiers.size(); i++) {
 			ICandidate candidate = null;
@@ -145,7 +145,7 @@ public class LocalPropertyFileDatabase extends AbstractDatabase {
 	}
 	
 	private void readCandidatesFromFile() throws MultipleHeadersFoundInInputDatabaseException, Exception {
-		this.candidates = new java.util.Vector<ICandidate>();
+		this.candidates = new java.util.ArrayList<ICandidate>();
 		java.io.File f = new java.io.File((String) this.settings.get(VariableNames.LOCAL_DATABASE_PATH_NAME));
 		java.util.List<String> propertyNames = new java.util.ArrayList<String>();
 		

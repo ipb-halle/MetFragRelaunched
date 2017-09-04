@@ -1,5 +1,6 @@
 package de.ipbhalle.metfraglib.score;
 
+import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.exception.InvalidSmilesException;
 
 import de.ipbhalle.metfraglib.FastBitArray;
@@ -64,6 +65,9 @@ public class AutomatedLossFingerprintAnnotationScore extends AbstractScore {
 				try {
 					currentFingerprint = new FastBitArray(MoleculeFunctions.getNormalizedFingerprint(currentMatch.getBestMatchedFragment()));
 				} catch (InvalidSmilesException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (CDKException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}

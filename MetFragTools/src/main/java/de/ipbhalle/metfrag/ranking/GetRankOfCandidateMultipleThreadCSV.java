@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -19,13 +18,13 @@ import de.ipbhalle.metfraglib.settings.MetFragGlobalSettings;
 
 public class GetRankOfCandidateMultipleThreadCSV {
 
-	public static Vector<String> scorePropertyNamesForLog = new Vector<String>();
-	public static Vector<String> scorePropertyNamesForTakeRawValue = new Vector<String>();
+	public static ArrayList<String> scorePropertyNamesForLog = new ArrayList<String>();
+	public static ArrayList<String> scorePropertyNamesForTakeRawValue = new ArrayList<String>();
 	public static String delimiter = "\\|";
 	public static String[] combinedReferenceScoreValues;
 	public static boolean outputSortedList = false;
 	public static java.util.Hashtable<String, String> argsHash;
-	public static Vector<String> scoresToTransform;
+	public static ArrayList<String> scoresToTransform;
 	public static boolean transformScores = false;
 	public static boolean negScores = false;
 	public static double[][] weights;
@@ -34,7 +33,7 @@ public class GetRankOfCandidateMultipleThreadCSV {
 	public static boolean stdout = false;
 	
 	static {
-		scoresToTransform = new Vector<String>();
+		scoresToTransform = new ArrayList<String>();
 		scoresToTransform.add("AutomatedFingerprintSubstructureAnnotationScore");
 		scoresToTransform.add("AutomatedFingerprintSubstructureAnnotationScore1");
 		scoresToTransform.add("AutomatedFingerprintSubstructureAnnotationScore2");
@@ -216,7 +215,7 @@ public class GetRankOfCandidateMultipleThreadCSV {
 		return 0.5 * (1.0 - (bc - wc) / (double) ((numCandidates - 1)));
 	}
 
-	public static int addSorted(java.util.Vector<Double> scores, double score) {
+	public static int addSorted(java.util.ArrayList<Double> scores, double score) {
 		int index = 0;
 		while (index < scores.size() && score < scores.get(index)) {
 			index++;
@@ -234,7 +233,7 @@ public class GetRankOfCandidateMultipleThreadCSV {
 	 */
 	public static double[][] readWeights(String weightsfile) throws IOException {
 		BufferedReader breader = new BufferedReader(new FileReader(new File(weightsfile)));
-		Vector<double[]> weights = new Vector<double[]>();
+		ArrayList<double[]> weights = new ArrayList<double[]>();
 		String line = "";
 		while((line = breader.readLine()) != null) {
 			line = line.trim();
@@ -262,16 +261,16 @@ public class GetRankOfCandidateMultipleThreadCSV {
 	 */
 	class GroupedCandidate {
 		public String inchikey1;
-		public Vector<String> identifiers;
-		public Vector<Integer> indexes;
-		public Vector<double[]> scores;
+		public ArrayList<String> identifiers;
+		public ArrayList<Integer> indexes;
+		public ArrayList<double[]> scores;
 		public int bestIndex = 0;
 
 		public GroupedCandidate(String inchikey1) {
 			this.inchikey1 = inchikey1;
-			this.identifiers = new Vector<String>();
-			this.indexes = new Vector<Integer>();
-			this.scores = new Vector<double[]>();
+			this.identifiers = new ArrayList<String>();
+			this.indexes = new ArrayList<Integer>();
+			this.scores = new ArrayList<double[]>();
 		}
 
 		public String getBestIdentifier() {
@@ -340,7 +339,7 @@ public class GetRankOfCandidateMultipleThreadCSV {
 				else db = new LocalCSVDatabase(settings);
 			}
 			else db = new LocalCSVDatabase(settings);
-			Vector<String> identifiers = null;
+			ArrayList<String> identifiers = null;
 			try {
 				identifiers = db.getCandidateIdentifiers();
 			} catch (MultipleHeadersFoundInInputDatabaseException e1) {

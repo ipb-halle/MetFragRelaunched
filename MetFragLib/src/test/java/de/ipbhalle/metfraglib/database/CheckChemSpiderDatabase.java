@@ -61,7 +61,7 @@ public class CheckChemSpiderDatabase {
 	public void testRetrievingCandidateList() {
 		this.database = new OnlineChemSpiderDatabase(this.settings);
 		try {
-			java.util.Vector<String> ids = new java.util.Vector<String>();
+			java.util.ArrayList<String> ids = new java.util.ArrayList<String>();
 			ids.add("45757");
 			assertTrue("No result for identifier search", this.database.getCandidateByIdentifier(ids).getNumberElements() > 0);
 		} catch (MultipleHeadersFoundInInputDatabaseException e) {

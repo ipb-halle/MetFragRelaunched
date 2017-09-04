@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openscience.cdk.Atom;
 import org.openscience.cdk.Bond;
+import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -50,7 +51,14 @@ public class CheckMoleculeConversions_Test {
 	@Test
 	public void testInChI() {
 		//inchi
-		String[] inchiInfo = MoleculeFunctions.getInChIInfoFromAtomContainer(this.con);
+		String[] inchiInfo = null;;
+		try {
+			inchiInfo = MoleculeFunctions.getInChIInfoFromAtomContainer(this.con);
+		} catch (CDKException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		assertNotNull(inchiInfo);
 		assertEquals("InChI=1S/C6H14/c1-3-5-6-4-2/h3-6H2,1-2H3", inchiInfo[0]);
 		assertEquals("VLKZOEOYAKHREP-UHFFFAOYSA-N", inchiInfo[1]);
 	}

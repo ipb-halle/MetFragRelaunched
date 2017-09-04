@@ -77,7 +77,7 @@ public class RunCrossValidationWithRankings {
 			try {
 				BufferedReader breader = new BufferedReader(new FileReader(new File(given_folds_filename)));
 				String line = "";
-				java.util.Vector<Integer> given_folds = new java.util.Vector<Integer>();
+				java.util.ArrayList<Integer> given_folds = new java.util.ArrayList<Integer>();
 				while((line = breader.readLine()) != null) {
 					String[] tmp = line.split("\\s+");
 					given_folds.add(Integer.parseInt(tmp[0].trim()));
@@ -438,7 +438,7 @@ public class RunCrossValidationWithRankings {
 	public static String[] getEntryNames(String filename) {
 		File file = new File(rankings_folder_name + "/" + filename);
 		BufferedReader breader;
-		java.util.Vector<String> entries = new java.util.Vector<String>();
+		java.util.ArrayList<String> entries = new java.util.ArrayList<String>();
 		try {
 			breader = new BufferedReader(new FileReader(file));
 			String line = "";
@@ -487,7 +487,7 @@ public class RunCrossValidationWithRankings {
 	
 	public static int[] generateFolds(int number_entries) {
 		int[] folds = new int[number_entries];
-		java.util.Vector<Integer> entry_indexes = new java.util.Vector<Integer>();
+		java.util.ArrayList<Integer> entry_indexes = new java.util.ArrayList<Integer>();
 		for(int i = 0; i < number_entries; i++)
 			entry_indexes.add(i);
 		Random rand = new Random();
@@ -503,8 +503,8 @@ public class RunCrossValidationWithRankings {
 	}
 	
 	public static int[][] getRankings(String filename) {
-		java.util.Vector<Integer> rankings = new java.util.Vector<Integer>();
-		java.util.Vector<Integer> betterCandidates = new java.util.Vector<Integer>();
+		java.util.ArrayList<Integer> rankings = new java.util.ArrayList<Integer>();
+		java.util.ArrayList<Integer> betterCandidates = new java.util.ArrayList<Integer>();
 		try {
 			BufferedReader breader = new BufferedReader(new FileReader(new File(rankings_folder_name + "/" + filename)));
 			String line = "";

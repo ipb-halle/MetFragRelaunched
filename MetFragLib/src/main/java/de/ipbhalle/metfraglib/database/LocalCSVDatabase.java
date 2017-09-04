@@ -3,7 +3,7 @@ package de.ipbhalle.metfraglib.database;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import de.ipbhalle.metfraglib.additionals.MathTools;
 import de.ipbhalle.metfraglib.candidate.TopDownPrecursorCandidate;
@@ -35,7 +35,7 @@ public class LocalCSVDatabase extends AbstractDatabase {
 		super(settings);
 	}
 
-	public java.util.Vector<String> getCandidateIdentifiers() throws MultipleHeadersFoundInInputDatabaseException, Exception {
+	public java.util.ArrayList<String> getCandidateIdentifiers() throws MultipleHeadersFoundInInputDatabaseException, Exception {
 		if(this.settings.containsKey(VariableNames.PROCESS_STATUS_OBJECT_NAME) && this.settings.get(VariableNames.PROCESS_STATUS_OBJECT_NAME) != null)
 			((ProcessingStatus)this.settings.get(VariableNames.PROCESS_STATUS_OBJECT_NAME)).setRetrievingStatusString("Retrieving Candidates");
 		if (this.candidates == null) {
@@ -47,7 +47,7 @@ public class LocalCSVDatabase extends AbstractDatabase {
 			return this.getCandidateIdentifiers((String) settings.get(VariableNames.PRECURSOR_MOLECULAR_FORMULA_NAME));
 		if (this.settings.get(VariableNames.DATABASE_RELATIVE_MASS_DEVIATION_NAME) != null)
 			return this.getCandidateIdentifiers((Double) settings.get(VariableNames.PRECURSOR_NEUTRAL_MASS_NAME), (Double) settings.get(VariableNames.DATABASE_RELATIVE_MASS_DEVIATION_NAME));
-		Vector<String> identifiers = new Vector<String>();
+		ArrayList<String> identifiers = new ArrayList<String>();
 		java.util.Iterator<String> it = candidates.keySet().iterator();
 		while (it.hasNext()) {
 			identifiers.add(it.next());
@@ -55,10 +55,10 @@ public class LocalCSVDatabase extends AbstractDatabase {
 		return identifiers;
 	}
 
-	public Vector<String> getCandidateIdentifiers(double monoisotopicMass, double relativeMassDeviation) throws MultipleHeadersFoundInInputDatabaseException, Exception {
+	public ArrayList<String> getCandidateIdentifiers(double monoisotopicMass, double relativeMassDeviation) throws MultipleHeadersFoundInInputDatabaseException, Exception {
 		if (this.candidates == null)
 			this.readCandidatesFromFile();
-		Vector<String> identifiers = new Vector<String>();
+		ArrayList<String> identifiers = new ArrayList<String>();
 		double mzabs = MathTools.calculateAbsoluteDeviation(monoisotopicMass, relativeMassDeviation);
 		double lowerLimit = monoisotopicMass - mzabs;
 		double upperLimit = monoisotopicMass + mzabs;
@@ -73,14 +73,14 @@ public class LocalCSVDatabase extends AbstractDatabase {
 		return identifiers;
 	}
 
-	public Vector<String> getCandidateIdentifiers(String molecularFormula) throws Exception {
+	public ArrayList<String> getCandidateIdentifiers(String molecularFormula) throws Exception {
 		if (this.candidates == null)
 			try {
 				this.readCandidatesFromFile();
 			} catch (MultipleHeadersFoundInInputDatabaseException e) {
 				e.printStackTrace();
 			}
-		Vector<String> identifiers = new Vector<String>();
+		ArrayList<String> identifiers = new ArrayList<String>();
 		java.util.Iterator<String> keyIt = this.candidates.keySet().iterator();
 		while(keyIt.hasNext()) {
 			String currentKey = keyIt.next();
@@ -90,10 +90,10 @@ public class LocalCSVDatabase extends AbstractDatabase {
 		return identifiers;
 	}
 
-	public Vector<String> getCandidateIdentifiers(Vector<String> identifiers) throws MultipleHeadersFoundInInputDatabaseException, Exception {
+	public ArrayList<String> getCandidateIdentifiers(ArrayList<String> identifiers) throws MultipleHeadersFoundInInputDatabaseException, Exception {
 		if (this.candidates == null)
 			this.readCandidatesFromFile();
-		Vector<String> verifiedIdentifiers = new Vector<String>();
+		ArrayList<String> verifiedIdentifiers = new ArrayList<String>();
 		for (int i = 0; i < identifiers.size(); i++) {
 			try {
 				this.getCandidateByIdentifier(identifiers.get(i));
@@ -118,7 +118,7 @@ public class LocalCSVDatabase extends AbstractDatabase {
 		return candidate;
 	}
 
-	public CandidateList getCandidateByIdentifier(Vector<String> identifiers) {
+	public CandidateList getCandidateByIdentifier(ArrayList<String> identifiers) {
 		CandidateList candidateList = new CandidateList();
 		for (int i = 0; i < identifiers.size(); i++) {
 			ICandidate candidate = null;

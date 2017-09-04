@@ -5,7 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.LinkedList;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import de.ipbhalle.metfraglib.FastBitArray;
 import de.ipbhalle.metfraglib.additionals.MathTools;
@@ -55,7 +55,7 @@ public class CalculateScoreFromResultFileFP {
 		if(resfile.endsWith("psv")) db = new LocalPSVDatabase(settings);
 		else db = new LocalCSVDatabase(settings);
 		
-		Vector<String> ids = db.getCandidateIdentifiers();
+		ArrayList<String> ids = db.getCandidateIdentifiers();
 		CandidateList candidates = db.getCandidateByIdentifier(ids);
 		
 		System.out.println("Read " + candidates.getNumberElements() + " candidates");
@@ -93,11 +93,11 @@ public class CalculateScoreFromResultFileFP {
 			ICandidate currentCandidate = candidates.getElement(k);
 			String fps = (String)currentCandidate.getProperty("FragmentFingerprintOfExplPeaks");
 			if(fps.equals("NA")) {
-				currentCandidate.setProperty("MatchList", new Vector<Match>());
+				currentCandidate.setProperty("MatchList", new ArrayList<Match>());
 				continue;
 			}
 			String[] tmp = fps.split(";");
-			Vector<Match> matchlist = new Vector<Match>();
+			ArrayList<Match> matchlist = new ArrayList<Match>();
 			for(int i = 0; i < tmp.length; i++) {
 				String[] tmp1 = tmp[i].split(":");
 				Match match = new CalculateScoreFromResultFileFP().new Match(tmp1[1], Double.parseDouble(tmp1[0]));
@@ -175,10 +175,10 @@ public class CalculateScoreFromResultFileFP {
 		MassToFingerprintGroupListCollection peakToFingerprintGroupListCollection = (MassToFingerprintGroupListCollection)settings.get(VariableNames.PEAK_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME);
 		
 		int matches = 0;
-		Vector<?> matchlist = (Vector<?>)candidate.getProperty("MatchList");
-		Vector<Double> matchMasses = new Vector<Double>();
-		Vector<Double> matchProb = new Vector<Double>();
-		Vector<Integer> matchType = new Vector<Integer>(); // found - 1; alpha - 2; beta - 3
+		ArrayList<?> matchlist = (ArrayList<?>)candidate.getProperty("MatchList");
+		ArrayList<Double> matchMasses = new ArrayList<Double>();
+		ArrayList<Double> matchProb = new ArrayList<Double>();
+		ArrayList<Integer> matchType = new ArrayList<Integer>(); // found - 1; alpha - 2; beta - 3
 		// get foreground fingerprint observations (m_f_observed)
 		for(int i = 0; i < peakToFingerprintGroupListCollection.getNumberElements(); i++) {
 			// get f_m_observed
@@ -219,7 +219,7 @@ public class CalculateScoreFromResultFileFP {
 		candidate.setProperty("AutomatedFingerprintSubstructureAnnotationScore3_Probtypes", getProbTypeString(matchProb, matchType, matchMasses));
  	}
 
-	public static String getProbTypeString(Vector<Double> matchProb, Vector<Integer> matchType, Vector<Double> matchMasses) {
+	public static String getProbTypeString(ArrayList<Double> matchProb, ArrayList<Integer> matchType, ArrayList<Double> matchMasses) {
 		String string = "NA";
 		if(matchProb.size() >= 1) {
 			string = matchType.get(0) + ":" + matchProb.get(0) + ":" + matchMasses.get(0);
@@ -287,7 +287,7 @@ public class CalculateScoreFromResultFileFP {
 		return settings;
 	}
 	
-	public static Match getMatchByMass(Vector<?> matches, Double peakMass) {
+	public static Match getMatchByMass(ArrayList<?> matches, Double peakMass) {
 		for(int i = 0; i < matches.size(); i++) {
 			Match match = (Match)matches.get(i);
 			if(match.getMass().equals(peakMass)) return match;

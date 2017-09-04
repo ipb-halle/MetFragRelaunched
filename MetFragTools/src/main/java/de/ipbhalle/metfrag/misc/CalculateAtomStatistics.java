@@ -33,7 +33,7 @@ public class CalculateAtomStatistics {
 		
 		LocalPropertyFileDatabase localPropertyFileDatabase = new LocalPropertyFileDatabase(settings);
 		
-		java.util.Vector<String> identifiers = null;
+		java.util.ArrayList<String> identifiers = null;
 		try {
 			identifiers = localPropertyFileDatabase.getCandidateIdentifiers();
 		} catch (MultipleHeadersFoundInInputDatabaseException e) {
@@ -49,7 +49,7 @@ public class CalculateAtomStatistics {
 			Aromaticity arom = new Aromaticity(ElectronDonation.cdk(), Cycles.cdkAromaticSet());
 			try {
 				java.util.Set<IBond> aromaticBonds = arom.findBonds(mol);
-				java.util.Vector<Integer> aromaticsAtomIds = new java.util.Vector<Integer>();
+				java.util.ArrayList<Integer> aromaticsAtomIds = new java.util.ArrayList<Integer>();
 				java.util.Iterator<IBond> it = aromaticBonds.iterator();
 				while(it.hasNext()) {
 					IBond bond = it.next();
@@ -77,7 +77,7 @@ public class CalculateAtomStatistics {
 		
 	}
 	
-	public static void determineCarbonAtomStatistics(IAtomContainer mol, ICandidate candidate, java.util.Vector<Integer> aromaticAtomIndexes) {
+	public static void determineCarbonAtomStatistics(IAtomContainer mol, ICandidate candidate, java.util.ArrayList<Integer> aromaticAtomIndexes) {
 		int numberC = 0;
 		int numberAliphaticCH = 0;
 		int numberAromaticCH = 0;
@@ -96,7 +96,7 @@ public class CalculateAtomStatistics {
 		candidate.setProperty("#aromaticCH", numberAromaticCH);
 	}
 	
-	public static void determineSulfurAtomStatistics(IAtomContainer mol, ICandidate candidate, java.util.Vector<Integer> aromaticAtomIndexes) {
+	public static void determineSulfurAtomStatistics(IAtomContainer mol, ICandidate candidate, java.util.ArrayList<Integer> aromaticAtomIndexes) {
 		int numberS = 0;
 		int numberSH = 0;
 		int numberSOO = 0;
@@ -134,7 +134,7 @@ public class CalculateAtomStatistics {
 		return number;
 	}
 	
-	public static void determineNitrogenAtomStatistics(IAtomContainer mol, ICandidate candidate, java.util.Vector<Integer> aromaticAtomIndexes) {
+	public static void determineNitrogenAtomStatistics(IAtomContainer mol, ICandidate candidate, java.util.ArrayList<Integer> aromaticAtomIndexes) {
 		int numberN = 0;
 		int numberNH = 0;
 		int numberNHH = 0;
@@ -167,7 +167,7 @@ public class CalculateAtomStatistics {
 		candidate.setProperty("#aromaticN", aromaticN);		
 	}
 	
-	public static void determineOxygenAtomStatistics(IAtomContainer mol, ICandidate candidate, java.util.Vector<Integer> aromaticAtomIndexes) throws CDKException {
+	public static void determineOxygenAtomStatistics(IAtomContainer mol, ICandidate candidate, java.util.ArrayList<Integer> aromaticAtomIndexes) throws CDKException {
 		SMARTSQueryTool smartsQuerytools = new SMARTSQueryTool("[CX3](=O)[OX2H1]", DefaultChemObjectBuilder.getInstance());
 		int numberO = 0;
 		int numberOH = 0;

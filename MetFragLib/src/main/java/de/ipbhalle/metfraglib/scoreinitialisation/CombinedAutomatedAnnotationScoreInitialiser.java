@@ -34,7 +34,7 @@ public class CombinedAutomatedAnnotationScoreInitialiser implements IScoreInitia
 			Double neutralPrecursorMass = (Double)settings.get(VariableNames.PRECURSOR_NEUTRAL_MASS_NAME);
 			Double adductMass = Constants.getIonisationMassByNominalMassDifference((Integer)settings.get(VariableNames.PRECURSOR_ION_MODE_NAME));
 			
-			java.util.Vector<Double> massDifferences = calculatePeakDifferences(peakList, neutralPrecursorMass, adductMass);
+			java.util.ArrayList<Double> massDifferences = calculatePeakDifferences(peakList, neutralPrecursorMass, adductMass);
 			
 			BufferedReader breader = new BufferedReader(new FileReader(new File(filename)));
 			String line = "";
@@ -110,13 +110,13 @@ public class CombinedAutomatedAnnotationScoreInitialiser implements IScoreInitia
 		}
 	}
 	
-	private boolean containsMass(double mass, java.util.Vector<Double> massVector, double mzabs, double mzppm) {
+	private boolean containsMass(double mass, java.util.ArrayList<Double> massArrayList, double mzabs, double mzppm) {
 		double dev = MathTools.calculateAbsoluteDeviation(mass, mzppm);
 		dev += mzabs;
 		
-		for(int i = 0; i < massVector.size(); i++) 
+		for(int i = 0; i < massArrayList.size(); i++) 
 		{
-			double currentMass = massVector.get(i);
+			double currentMass = massArrayList.get(i);
 			if(currentMass - dev <= mass && mass <= currentMass + dev) {
 				return true;
 			}
@@ -125,8 +125,8 @@ public class CombinedAutomatedAnnotationScoreInitialiser implements IScoreInitia
 		return false;
 	}
 	
-	private java.util.Vector<Double> calculatePeakDifferences(DefaultPeakList peakList, double neutralPrecursorMass, double adductMass) {
-		java.util.Vector<Double> peakDifferences = new java.util.Vector<Double>();
+	private java.util.ArrayList<Double> calculatePeakDifferences(DefaultPeakList peakList, double neutralPrecursorMass, double adductMass) {
+		java.util.ArrayList<Double> peakDifferences = new java.util.ArrayList<Double>();
 		
 		double ionmass = neutralPrecursorMass + adductMass;
 		

@@ -14,12 +14,12 @@ import de.ipbhalle.metfraglib.settings.Settings;
 public class TopDownNeutralLossFragmenter extends TopDownFragmenter {
 
 	protected BitArrayNeutralLoss[] detectedNeutralLosses;
-	protected java.util.Vector<Short> brokenBondToNeutralLossIndex = new java.util.Vector<Short>();
-	protected java.util.Vector<Integer> neutralLossIndex = new java.util.Vector<Integer>();
+	protected java.util.ArrayList<Short> brokenBondToNeutralLossIndex = new java.util.ArrayList<Short>();
+	protected java.util.ArrayList<Integer> neutralLossIndex = new java.util.ArrayList<Integer>();
 	
 	public TopDownNeutralLossFragmenter(Settings settings) throws Exception {
 		super(settings);
-		this.detectedNeutralLosses = NeutralLosses.getMatchingAtoms((AbstractTopDownBitArrayPrecursor)this.scoredCandidate.getPrecursorMolecule());
+		this.detectedNeutralLosses = new NeutralLosses().getMatchingAtoms((AbstractTopDownBitArrayPrecursor)this.scoredCandidate.getPrecursorMolecule());
 	}
 
 	public void nullify() {
@@ -251,7 +251,7 @@ public class TopDownNeutralLossFragmenter extends TopDownFragmenter {
 			 * add fragment/s to vector after setting the proper precursor
 			 */ 
 			for(int k = 0; k < newGeneratedTopDownFragments.length; k++) {
-				precursorFragment.addChild(newGeneratedTopDownFragments[k]);
+			//	precursorFragment.addChild(newGeneratedTopDownFragments[k]);
 				if(newGeneratedTopDownFragments.length == 2) fragmentsOfNextTreeDepth.add(newGeneratedTopDownFragments[k]);
 				if(precursorFragment.isValidFragment()) {
 					newGeneratedTopDownFragments[k].setPrecursorFragment(precursorFragment);
@@ -307,7 +307,7 @@ public class TopDownNeutralLossFragmenter extends TopDownFragmenter {
 		 	}
 			
 			for(int k = 0; k < newFragments.length; k++) {
-				precursorFragment.addChild(newFragments[k]);
+			//	precursorFragment.addChild(newFragments[k]);
 				if(precursorFragment.isValidFragment()) 
 					newFragments[k].setPrecursorFragment(precursorFragment);
 				else 
