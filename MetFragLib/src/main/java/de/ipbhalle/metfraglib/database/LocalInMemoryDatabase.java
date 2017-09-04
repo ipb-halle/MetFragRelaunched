@@ -1,8 +1,9 @@
 package de.ipbhalle.metfraglib.database;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.openscience.cdk.ChemObject;
+import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 
@@ -17,13 +18,13 @@ import de.ipbhalle.metfraglib.settings.Settings;
 
 public class LocalInMemoryDatabase extends AbstractDatabase {
 
-	private java.util.Vector<TopDownPrecursorCandidate> candidates;
+	private java.util.ArrayList<TopDownPrecursorCandidate> candidates;
 	
 	public LocalInMemoryDatabase(Settings settings) {
 		super(settings);
 	}
 	
-	public java.util.Vector<String> getCandidateIdentifiers() throws Exception {
+	public java.util.ArrayList<String> getCandidateIdentifiers() throws Exception {
 		if(this.candidates == null) this.initialiseCandidatesFromMemory();
 		if(this.settings.get(VariableNames.PRECURSOR_DATABASE_IDS_NAME) != null)
 			return this.getCandidateIdentifiers((String[])settings.get(VariableNames.PRECURSOR_DATABASE_IDS_NAME));
@@ -41,15 +42,15 @@ public class LocalInMemoryDatabase extends AbstractDatabase {
 				e.printStackTrace();
 			}
 		}
-		Vector<String> identifiers = new Vector<String>();
+		ArrayList<String> identifiers = new ArrayList<String>();
 		for(TopDownPrecursorCandidate candidate : candidates)
 			identifiers.add(candidate.getIdentifier());
 		return identifiers;
 	}
 	
-	public Vector<String> getCandidateIdentifiers(double monoisotopicMass, double relativeMassDeviation) {
+	public ArrayList<String> getCandidateIdentifiers(double monoisotopicMass, double relativeMassDeviation) {
 		if(this.candidates == null) this.initialiseCandidatesFromMemory();
-		Vector<String> identifiers = new Vector<String>();
+		ArrayList<String> identifiers = new ArrayList<String>();
 		double mzabs = MathTools.calculateAbsoluteDeviation(monoisotopicMass, relativeMassDeviation);
 		double lowerLimit = monoisotopicMass - mzabs;
 		double upperLimit = monoisotopicMass + mzabs;
@@ -68,9 +69,9 @@ public class LocalInMemoryDatabase extends AbstractDatabase {
 		return identifiers;
 	}
 
-	public Vector<String> getCandidateIdentifiers(String molecularFormula) {
+	public ArrayList<String> getCandidateIdentifiers(String molecularFormula) {
 		if(this.candidates == null) this.initialiseCandidatesFromMemory();
-		Vector<String> identifiers = new Vector<String>();
+		ArrayList<String> identifiers = new ArrayList<String>();
 		org.openscience.cdk.interfaces.IMolecularFormula queryFormula = MolecularFormulaManipulator.getMolecularFormula(molecularFormula, new ChemObject().getBuilder());
 		for(int i = 0; i < this.candidates.size(); i++) {
 			org.openscience.cdk.interfaces.IMolecularFormula currentFormula = null;
@@ -84,9 +85,9 @@ public class LocalInMemoryDatabase extends AbstractDatabase {
 		return identifiers;
 	}
 
-	public Vector<String> getCandidateIdentifiers(Vector<String> identifiers) {
+	public ArrayList<String> getCandidateIdentifiers(ArrayList<String> identifiers) {
 		if(this.candidates == null) this.initialiseCandidatesFromMemory();
-		Vector<String> verifiedIdentifiers = new Vector<String>();
+		ArrayList<String> verifiedIdentifiers = new ArrayList<String>();
 		for(int i = 0; i < identifiers.size(); i++) {
 			try {
 				this.getCandidateByIdentifier(identifiers.get(i));
@@ -107,7 +108,7 @@ public class LocalInMemoryDatabase extends AbstractDatabase {
 		return this.candidates.get(index);
 	}
 
-	public CandidateList getCandidateByIdentifier(Vector<String> identifiers) {
+	public CandidateList getCandidateByIdentifier(ArrayList<String> identifiers) {
 		CandidateList candidateList = new CandidateList();
 		for(int i = 0; i < identifiers.size(); i++) {
 			ICandidate candidate = null;
@@ -126,11 +127,18 @@ public class LocalInMemoryDatabase extends AbstractDatabase {
 	
 	private void initialiseCandidatesFromMemory() {
 		IAtomContainer[] molecules = (IAtomContainer[])this.settings.get(VariableNames.MOLECULES_IN_MEMORY);
-		this.candidates = new Vector<TopDownPrecursorCandidate>();
+		this.candidates = new ArrayList<TopDownPrecursorCandidate>();
 		if(molecules == null) return;
 		for(int i = 0; i < molecules.length; i++) {
 			MoleculeFunctions.prepareAtomContainer(molecules[i], true);
-			String[] inchiInfo = MoleculeFunctions.getInChIInfoFromAtomContainer(molecules[i]);
+			String[] inchiInfo = null;
+			try {
+				inchiInfo = MoleculeFunctions.getInChIInfoFromAtomContainer(molecules[i]);
+			} catch (CDKException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				continue;
+			}
 			TopDownPrecursorCandidate precursorCandidate = new TopDownPrecursorCandidate(inchiInfo[0], (i + 1) + "");
 
 			java.util.Iterator<Object> properties = molecules[i].getProperties().keySet().iterator();

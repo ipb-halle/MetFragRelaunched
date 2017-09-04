@@ -74,7 +74,7 @@ public class FilteredMergedRandomTandemMassPeakListReader extends FilteredTandem
 		 */
 		Double exactMass = (Double) this.settings.get(VariableNames.PRECURSOR_NEUTRAL_MASS_NAME);
 	
-		java.util.Vector<MergedTandemMassPeak> mergedTandemMassPeaks = new java.util.Vector<MergedTandemMassPeak>();
+		java.util.ArrayList<MergedTandemMassPeak> mergedTandemMassPeaks = new java.util.ArrayList<MergedTandemMassPeak>();
 		for(int i = 0; i < peakList.getNumberElements(); i++) {
 			MergedTandemMassPeak newMergedTandemMassPeak = new MergedTandemMassPeak(peakList.getElement(i).getMass(), peakList.getElement(i).getAbsoluteIntensity());
 			newMergedTandemMassPeak.setRelativeIntensity(peakList.getElement(i).getRelativeIntensity());

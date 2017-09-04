@@ -27,7 +27,7 @@ public class MassToFingerprintGroupListCollection extends DefaultList {
 		}
 	}
 
-	public void updatePeakMass(java.util.Hashtable<Integer, java.util.Vector<Double>> grouplistid_to_masses) {
+	public void updatePeakMass(java.util.Hashtable<Integer, java.util.ArrayList<Double>> grouplistid_to_masses) {
 		for(int i = 0; i < this.getNumberElements(); i++) {
 			MassToFingerprintGroupList groupList = this.getElement(i);
 			groupList.updatePeakMass(grouplistid_to_masses);
@@ -46,7 +46,7 @@ public class MassToFingerprintGroupListCollection extends DefaultList {
 	}
 	
 	public void filterByOccurence(int minimumNumberOccurences) {
-		java.util.Vector<Object> filteredList = new java.util.Vector<Object>();
+		java.util.ArrayList<Object> filteredList = new java.util.ArrayList<Object>();
 		for(int i = 0; i < this.getNumberElements(); i++) {
 			this.getElement(i).filterByOccurence(minimumNumberOccurences);
 			if(this.getElement(i).getNumberElements() != 0)

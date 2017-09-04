@@ -4,10 +4,10 @@ import de.ipbhalle.metfraglib.interfaces.IList;
 
 public class DefaultList implements IList {
 
-	protected java.util.Vector<Object> list;
+	protected java.util.ArrayList<Object> list;
 	
 	public DefaultList() {
-		this.list = new java.util.Vector<Object>();
+		this.list = new java.util.ArrayList<Object>();
 	}
 	
 	public void addElement(Object obj) {
@@ -42,7 +42,7 @@ public class DefaultList implements IList {
 		this.list.set(index, object);
 	}
 
-	public void setList(java.util.Vector<Object> list) {
+	public void setList(java.util.ArrayList<Object> list) {
 		this.list = list;
 	}
 	

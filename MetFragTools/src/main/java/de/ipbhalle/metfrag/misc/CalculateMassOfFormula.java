@@ -18,9 +18,9 @@ public class CalculateMassOfFormula {
 	public CalculateMassOfFormula(String formula) {
 		String part1 = formula.replaceAll("\\[([A-Za-z0-9]*).*\\].*", "$1");
 		String charge = formula.substring(formula.length() - 1);
-		java.util.Vector<String> elementsToAdd = new java.util.Vector<String>();
-		java.util.Vector<String> timesToAdd = new java.util.Vector<String>();
-		java.util.Vector<String> signsForAdd = new java.util.Vector<String>();
+		java.util.ArrayList<String> elementsToAdd = new java.util.ArrayList<String>();
+		java.util.ArrayList<String> timesToAdd = new java.util.ArrayList<String>();
+		java.util.ArrayList<String> signsForAdd = new java.util.ArrayList<String>();
 		for(int i = 0; i < formula.length() - 1; i++) {
 			if(formula.charAt(i) == '+' || formula.charAt(i) == '-') {
 				signsForAdd.add(formula.charAt(i)+"");
@@ -79,7 +79,7 @@ public class CalculateMassOfFormula {
 				settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, file.getAbsolutePath());
 				
 				LocalPropertyFileDatabase db = new LocalPropertyFileDatabase(settings);
-				java.util.Vector<String> ids = db.getCandidateIdentifiers();
+				java.util.ArrayList<String> ids = db.getCandidateIdentifiers();
 				CandidateList candidates = db.getCandidateByIdentifier(ids);
 				System.out.println("Read " + candidates.getNumberElements() + " entries.");
 				java.io.BufferedWriter bwriter = null;

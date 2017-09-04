@@ -149,7 +149,7 @@ public class MetFragGlobalSettings extends Settings {
 
 	public static MetFragGlobalSettings readSettings(java.io.File parameterFile, org.apache.log4j.Logger logger) throws Exception {
 		MetFragGlobalSettings settings = new MetFragGlobalSettings();
-		java.util.Vector<String> setParameters = new java.util.Vector<String>();
+		java.util.ArrayList<String> setParameters = new java.util.ArrayList<String>();
 		java.io.BufferedReader parameterFileReader = new java.io.BufferedReader(new java.io.FileReader(parameterFile));
 		String line = "";
 		int lineNumber = 1;
@@ -251,7 +251,7 @@ public class MetFragGlobalSettings extends Settings {
 		}
 	}
 	
-	public void includeSettings(MetFragGlobalSettings settings, boolean overwrite, java.util.Vector<String> excludeKeys) {
+	public void includeSettings(MetFragGlobalSettings settings, boolean overwrite, java.util.ArrayList<String> excludeKeys) {
 		if(settings == null) return;
 		java.util.Set<String> keys = settings.getKeys();
 		java.util.Iterator<String> it = keys.iterator();

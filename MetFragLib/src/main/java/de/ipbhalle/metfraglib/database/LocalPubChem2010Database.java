@@ -1,6 +1,6 @@
 package de.ipbhalle.metfraglib.database;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import de.ipbhalle.metfraglib.exceptions.NoValidDatabaseSearchSettingsDefined;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
@@ -14,13 +14,13 @@ public class LocalPubChem2010Database extends AbstractDatabase {
 		super(settings);
 	}
 
-	public Vector<String> getCandidateIdentifiers(double monoisotopicMass,
+	public ArrayList<String> getCandidateIdentifiers(double monoisotopicMass,
 			double mzabs) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public java.util.Vector<String> getCandidateIdentifiers() throws Exception {
+	public java.util.ArrayList<String> getCandidateIdentifiers() throws Exception {
 		if(settings.get(VariableNames.PRECURSOR_DATABASE_IDS_NAME) != null)
 			return this.getCandidateIdentifiers((String[])settings.get(VariableNames.PRECURSOR_DATABASE_IDS_NAME));
 		if(settings.get(VariableNames.PRECURSOR_MOLECULAR_FORMULA_NAME) != null)
@@ -32,15 +32,15 @@ public class LocalPubChem2010Database extends AbstractDatabase {
 		} catch (NoValidDatabaseSearchSettingsDefined e) {
 			e.printStackTrace();
 		}
-		return new java.util.Vector<String>();
+		return new java.util.ArrayList<String>();
 	}
 	
-	public Vector<String> getCandidateIdentifiers(String molecularFormula) {
+	public ArrayList<String> getCandidateIdentifiers(String molecularFormula) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public Vector<String> getCandidateIdentifiers(Vector<String> identifiers) {
+	public ArrayList<String> getCandidateIdentifiers(ArrayList<String> identifiers) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -51,7 +51,7 @@ public class LocalPubChem2010Database extends AbstractDatabase {
 	}
 
 	public CandidateList getCandidateByIdentifier(
-			Vector<String> identifiers) {
+			ArrayList<String> identifiers) {
 		// TODO Auto-generated method stub
 		return null;
 	}

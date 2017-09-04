@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import de.ipbhalle.metfraglib.collection.SpectralPeakListCollection;
 import de.ipbhalle.metfraglib.list.DefaultPeakList;
@@ -18,8 +18,8 @@ import de.ipbhalle.metfraglib.settings.MetFragGlobalSettings;
 
 public class MatchSpectralLibrary {
 
-	public static Vector<DefaultPeakList> querySpectra;
-	public static Vector<String> querySpectraNames;
+	public static ArrayList<DefaultPeakList> querySpectra;
+	public static ArrayList<String> querySpectraNames;
 	
 	
 	/**
@@ -59,7 +59,7 @@ public class MatchSpectralLibrary {
 			System.exit(2);
 		}
 		
-		Vector<String> data = new Vector<String>();
+		ArrayList<String> data = new ArrayList<String>();
 		
 		for(int i = 0; i < querySpectra.size(); i++) {
 			System.out.println((i + 1) + "/" + querySpectra.size());
@@ -82,8 +82,8 @@ public class MatchSpectralLibrary {
 	}
 
 	public static void readQuerySpectra(String querySpectrumFile) throws Exception {
-		querySpectra = new Vector<DefaultPeakList>();
-		querySpectraNames = new Vector<String>();
+		querySpectra = new ArrayList<DefaultPeakList>();
+		querySpectraNames = new ArrayList<String>();
 		BufferedReader breader = new BufferedReader(new FileReader(new File(querySpectrumFile)));
 		String line = "";
 		String peakString = "";

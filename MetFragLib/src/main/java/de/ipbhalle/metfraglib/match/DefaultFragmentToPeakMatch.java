@@ -30,14 +30,14 @@ public class DefaultFragmentToPeakMatch implements IMatch {
 	protected byte hydrogenDifferenceOfBestFragment;
 	protected Double[] bestAttachedFragmentScores;
 	protected Double[] bestAttachedOptimalValues;
-	protected java.util.Vector<Byte> numberOfHydrogensDifferToPeakMass;
-	protected java.util.Vector<Byte> fragmentAdductTypeIndeces;
+	protected java.util.ArrayList<Byte> numberOfHydrogensDifferToPeakMass;
+	protected java.util.ArrayList<Byte> fragmentAdductTypeIndeces;
 	
 	public DefaultFragmentToPeakMatch(IPeak matchedPeak) {
 		this.matchedPeak = matchedPeak;
 		this.matchedFragmentsList = new FragmentList();
-		this.numberOfHydrogensDifferToPeakMass = new java.util.Vector<Byte>();
-		this.fragmentAdductTypeIndeces = new java.util.Vector<Byte>();
+		this.numberOfHydrogensDifferToPeakMass = new java.util.ArrayList<Byte>();
+		this.fragmentAdductTypeIndeces = new java.util.ArrayList<Byte>();
 	}
 	
 	public String getModifiedFormulaStringOfBestMatchedFragment() {
@@ -152,7 +152,7 @@ public class DefaultFragmentToPeakMatch implements IMatch {
 		return this.matchedFragmentsList;
 	}
 
-	public java.util.Vector<Byte> getFragmentsAdductTypeIndeces() {
+	public java.util.ArrayList<Byte> getFragmentsAdductTypeIndeces() {
 		return this.fragmentAdductTypeIndeces;
 	}
 	

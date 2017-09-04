@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  * rename param names in phenomenal galaxy xml files
@@ -32,9 +32,9 @@ public class RenameParamNames {
 		}
 		BufferedReader breader = new BufferedReader(new FileReader(new File(filename)));
 		
-		Vector<String> variableNames = new Vector<String>();
-		Vector<String> variableNamesTypeDataInput = new Vector<String>();
-		Vector<String> variableNamesTypeDataOutput = new Vector<String>();
+		ArrayList<String> variableNames = new ArrayList<String>();
+		ArrayList<String> variableNamesTypeDataInput = new ArrayList<String>();
+		ArrayList<String> variableNamesTypeDataOutput = new ArrayList<String>();
 		
 		String line = "";
 		while((line = breader.readLine()) != null) {
@@ -102,7 +102,7 @@ public class RenameParamNames {
 	 * @param variableNames
 	 * @throws IOException 
 	 */
-	public static void readVariableNamesFromInput(Vector<String> variableNamesTypeData, BufferedReader breader) throws IOException {
+	public static void readVariableNamesFromInput(ArrayList<String> variableNamesTypeData, BufferedReader breader) throws IOException {
 		String line = "";
 		while((line = breader.readLine()) != null) {
 			fileContent += line + "\n";
@@ -111,7 +111,7 @@ public class RenameParamNames {
 			if(line.startsWith("<param")) {
 				String name = line.split("name=\"")[1].split("\"")[0];
 				String type = line.split("type=\"")[1].split("\"")[0];
-				if(type.equals("data") && !variableNamesTypeData.contains(name)) variableNamesTypeData.addElement(name);
+				if(type.equals("data") && !variableNamesTypeData.contains(name)) variableNamesTypeData.add(name);
 			}
 		}
 	}
@@ -122,7 +122,7 @@ public class RenameParamNames {
 	 * @throws IOException 
 	 */
 	public static void readAndAdaptRequirements(BufferedReader breader, String lastLine) throws IOException {
-		Vector<String> toAdd = new Vector<String>();
+		ArrayList<String> toAdd = new ArrayList<String>();
 		toAdd.add(lastLine);
 		String line = "";
 		int containerLine = -1;
@@ -144,10 +144,10 @@ public class RenameParamNames {
 			index++;
 		}
 		if(toAdd.size() == 3) {
-			toAdd.setElementAt("<!-- " + toAdd.get(0), 0);
-			toAdd.setElementAt(toAdd.get(2) + "-->", 2);
+			toAdd.set(0, "<!-- " + toAdd.get(0));
+			toAdd.set(2, toAdd.get(2) + "-->");
 		} else {
-			toAdd.setElementAt("<!-- " + toAdd.get(containerLine) + "-->", containerLine);
+			toAdd.set(containerLine, "<!-- " + toAdd.get(containerLine) + "-->");
 		}
 		for(int i = 0; i < toAdd.size(); i++) {
 			fileContent += toAdd.get(i) + "\n";
@@ -159,7 +159,7 @@ public class RenameParamNames {
 	 * @param variableNames
 	 * @throws IOException 
 	 */
-	public static void readVariableNamesFromOutput(Vector<String> variableNamesTypeData, BufferedReader breader) throws IOException {
+	public static void readVariableNamesFromOutput(ArrayList<String> variableNamesTypeData, BufferedReader breader) throws IOException {
 		String line = "";
 		while((line = breader.readLine()) != null) {
 			fileContent += line + "\n";
@@ -168,7 +168,7 @@ public class RenameParamNames {
 			if(line.startsWith("<data")) {
 				String name = line.split("name=\"")[1].split("\"")[0];
 			//	String type = line.split("type=\"")[1].split("\"")[0];
-				if(!variableNamesTypeData.contains(name)) variableNamesTypeData.addElement(name);
+				if(!variableNamesTypeData.contains(name)) variableNamesTypeData.add(name);
 			}
 		}
 	}
@@ -178,7 +178,7 @@ public class RenameParamNames {
 	 * @param variableNames
 	 * @throws IOException 
 	 */
-	public static void readVariableNamesFromCommand(Vector<String> variableNames, BufferedReader breader) throws IOException {
+	public static void readVariableNamesFromCommand(ArrayList<String> variableNames, BufferedReader breader) throws IOException {
 		String line = "";
 		while((line = breader.readLine()) != null) {
 			fileContent += line + "\n";
@@ -198,7 +198,7 @@ public class RenameParamNames {
 						paramName += line.charAt(stringindex);
 						stringindex++;
 					}
-					if(!variableNames.contains(paramName)) variableNames.addElement(paramName);
+					if(!variableNames.contains(paramName)) variableNames.add(paramName);
 				}
 				stringindex++;
 			}

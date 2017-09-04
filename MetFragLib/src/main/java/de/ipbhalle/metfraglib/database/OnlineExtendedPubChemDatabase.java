@@ -2,7 +2,7 @@ package de.ipbhalle.metfraglib.database;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -36,11 +36,11 @@ public class OnlineExtendedPubChemDatabase extends OnlinePubChemDatabase {
 		this.cidToNumberOfPubMedReferences = null;
 	}
 	
-	public java.util.Vector<String> getCandidateIdentifiers() throws Exception {
+	public java.util.ArrayList<String> getCandidateIdentifiers() throws Exception {
 		if(this.settings.containsKey(VariableNames.PROCESS_STATUS_OBJECT_NAME) && this.settings.get(VariableNames.PROCESS_STATUS_OBJECT_NAME) != null)
 			((ProcessingStatus)this.settings.get(VariableNames.PROCESS_STATUS_OBJECT_NAME)).setRetrievingStatusString("Retrieving Candidates");
 		logger.info("Fetching candidates from PubChem");
-		Vector<String> cids = new Vector<String>(); 
+		ArrayList<String> cids = new ArrayList<String>(); 
 		if(settings.get(VariableNames.PRECURSOR_DATABASE_IDS_NAME) != null) {
 			cids = this.getCandidateIdentifiers((String[])settings.get(VariableNames.PRECURSOR_DATABASE_IDS_NAME));
 		}
@@ -79,7 +79,7 @@ public class OnlineExtendedPubChemDatabase extends OnlinePubChemDatabase {
 		
 		ICandidate candidate = super.getCandidateByIdentifier(identifier);
 		if(candidate == null) return null;
-		Vector<String> cid = new Vector<String>();
+		ArrayList<String> cid = new ArrayList<String>();
 		cid.add(identifier);
 		
 		ProcessingStatus processingStatus = null;
@@ -101,11 +101,11 @@ public class OnlineExtendedPubChemDatabase extends OnlinePubChemDatabase {
 	 * @throws Exception 
 	 * 
 	 */
-	public CandidateList getCandidateByIdentifier(java.util.Vector<String> identifiers) throws Exception {
+	public CandidateList getCandidateByIdentifier(java.util.ArrayList<String> identifiers) throws Exception {
 		
 		CandidateList candidates = super.getCandidateByIdentifier(identifiers);
 		
-		Vector<String> cids = new Vector<String>();
+		ArrayList<String> cids = new ArrayList<String>();
 		for(int i = 0; i < candidates.getNumberElements(); i++) {
 			cids.add(candidates.getElement(i).getIdentifier());
 		}
@@ -147,7 +147,7 @@ public class OnlineExtendedPubChemDatabase extends OnlinePubChemDatabase {
 	 * @param cidsVec
 	 * @return
 	 */
-	protected void assignNumberOfPubMedReferences(Vector<String> cidsVec) {
+	protected void assignNumberOfPubMedReferences(ArrayList<String> cidsVec) {
 		String idString = "";
 		this.cidToNumberOfPubMedReferences = new java.util.HashMap<String, Double>();
 		if(cidsVec == null || cidsVec.size() == 0)
@@ -214,7 +214,7 @@ public class OnlineExtendedPubChemDatabase extends OnlinePubChemDatabase {
 	 * 
 	 * @param cidsVec
 	 */
-	protected void assignNumberOfPatents(Vector<String> cidsVec) {
+	protected void assignNumberOfPatents(ArrayList<String> cidsVec) {
 		String idString = "";
 		this.cidToNumberOfPatents = new java.util.HashMap<String, Double>();
 		if(cidsVec == null || cidsVec.size() == 0)

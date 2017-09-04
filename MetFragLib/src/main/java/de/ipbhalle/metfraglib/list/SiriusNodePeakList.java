@@ -8,12 +8,12 @@ import de.ipbhalle.metfraglib.peak.SiriusNodePeak;
 public class SiriusNodePeakList extends SortedTandemMassPeakList {
 	
 	protected SiriusNodePeak root;
-	protected java.util.Vector<SiriusNodePeak> leaves;
+	protected java.util.ArrayList<SiriusNodePeak> leaves;
 	
 	public SiriusNodePeakList(double measuredPrecursorMass, String filename) {
 		super(measuredPrecursorMass);
-		this.list = new java.util.Vector<Object>();
-		this.leaves = new java.util.Vector<SiriusNodePeak>();
+		this.list = new java.util.ArrayList<Object>();
+		this.leaves = new java.util.ArrayList<SiriusNodePeak>();
 		this.parseDotFile(filename);
 	}
 	
@@ -110,7 +110,7 @@ public class SiriusNodePeakList extends SortedTandemMassPeakList {
 		this.list.add(index, tandemMassPeak);
 	}
 	
-	public java.util.Vector<SiriusNodePeak> getLeaves() {
+	public java.util.ArrayList<SiriusNodePeak> getLeaves() {
 		return this.leaves;
 	}
 	

@@ -37,11 +37,11 @@ public class BitArrayNeutralLoss {
 	}
 	
 	public double getMassDifference() {
-		return NeutralLosses.getMassDifference(this.neutralLossIndex);
+		return new NeutralLosses().getMassDifference(this.neutralLossIndex);
 	}
 	
 	public byte getHydrogenDifference() {
-		return NeutralLosses.getHydrogenDifference(this.neutralLossIndex);
+		return new NeutralLosses().getHydrogenDifference(this.neutralLossIndex);
 	}
 	
 	public IMolecularStructure getPrecursorMolecule() {

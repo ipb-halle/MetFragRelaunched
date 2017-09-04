@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.HttpURLConnection;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import net.sf.jniinchi.INCHI_RET;
 
@@ -66,14 +66,14 @@ public class OnlinePubChemDatabaseMicha {
 	 * 
 	 * @throws Exception 
 	 */
-	public java.util.Vector<String> getCandidateIdentifiers(double monoisotopicMass, double relativeMassDeviation) throws Exception  {
+	public java.util.ArrayList<String> getCandidateIdentifiers(double monoisotopicMass, double relativeMassDeviation) throws Exception  {
 		double mzabs = this.calculateAbsoluteDeviation(monoisotopicMass, relativeMassDeviation);
 		double minMass = monoisotopicMass - mzabs;
 		double maxMass = monoisotopicMass + mzabs;
 
 		String urlname = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pccompound&term=" + minMass + "[MIMass]:" + maxMass + "[MIMass]&retmode=json&retmax=100000";
 		java.io.InputStream stream = this.getInputStreamFromURL(urlname);
-		if(stream == null) return new Vector<String>();
+		if(stream == null) return new ArrayList<String>();
 		JSONParser parser = new JSONParser();
 		JSONObject jsonObject = (JSONObject)parser.parse(new java.io.InputStreamReader(stream));
 		stream.close();
@@ -81,7 +81,7 @@ public class OnlinePubChemDatabaseMicha {
 		if(jsonObject == null) {
 			throw new Exception();
 		}
-		Vector<String> cids = new Vector<String>();
+		ArrayList<String> cids = new ArrayList<String>();
 		JSONArray jsonArray = (JSONArray)((JSONObject)jsonObject.get("esearchresult")).get("idlist");
 		Object[] objs = jsonArray.toArray();
 		for(int k = 0; k < objs.length; k++) {
@@ -97,13 +97,13 @@ public class OnlinePubChemDatabaseMicha {
 	 * @return
 	 * @throws Exception
 	 */
-	public java.util.Vector<String> getCandidateIdentifiers(String molecularFormula) throws Exception {
+	public java.util.ArrayList<String> getCandidateIdentifiers(String molecularFormula) throws Exception {
 		String urlname = "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/formula/" + molecularFormula + "/TXT";
 		/*
 		 * get stream to retrieve listkey
 		 */
 		java.io.InputStream stream = this.getInputStreamFromURL(urlname);
-		if(stream == null) return new Vector<String>();
+		if(stream == null) return new ArrayList<String>();
 		java.io.BufferedReader breader = new java.io.BufferedReader(new java.io.InputStreamReader(stream));
 		String listKey = "";
 		breader.readLine();
@@ -114,13 +114,13 @@ public class OnlinePubChemDatabaseMicha {
 		}
 	
 		stream.close();
-		if(listKey.length() == 0) return new Vector<String>();
+		if(listKey.length() == 0) return new ArrayList<String>();
 		/*
 		 * build url to get cids
 		 */
 		urlname = "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/listkey/" + listKey + "/cids/TXT";
 		stream = this.getInputStreamFromURL(urlname);
-		java.util.Vector<String> cids = new Vector<String>();
+		java.util.ArrayList<String> cids = new ArrayList<String>();
 		if(stream == null) {
 			return cids;
 		}
@@ -167,7 +167,7 @@ public class OnlinePubChemDatabaseMicha {
 	public IAtomContainer getCandidateByIdentifier(String identifier) throws Exception {
 		
 		//fetch the hits from PubChem
-		Vector<String> ids = this.savingRetrievedHits(new String[] {identifier});
+		ArrayList<String> ids = this.savingRetrievedHits(new String[] {identifier});
 		if(ids == null || ids.size() == 0) return null;
 		if(this.cidToInChIs.get(identifier) == null)
 			return null;
@@ -186,11 +186,11 @@ public class OnlinePubChemDatabaseMicha {
 	 * @throws Exception 
 	 * 
 	 */
-	public Vector<IAtomContainer> getCandidateByIdentifier(java.util.Vector<String> identifiers) throws Exception {
+	public ArrayList<IAtomContainer> getCandidateByIdentifier(java.util.ArrayList<String> identifiers) throws Exception {
 		//fetch the hits from PubChem
-		Vector<String> ids = this.savingRetrievedHits(identifiers);
+		ArrayList<String> ids = this.savingRetrievedHits(identifiers);
 		
-		Vector<IAtomContainer> containers = new Vector<IAtomContainer>();
+		ArrayList<IAtomContainer> containers = new ArrayList<IAtomContainer>();
 		if(ids == null || ids.size() == 0) return containers;
 
 		for(int i = 0; i < ids.size(); i++) {
@@ -206,7 +206,7 @@ public class OnlinePubChemDatabaseMicha {
 			container.setProperty("Identifier", ids.get(i));
 			//set additional properties that you like ....
 			
-			containers.addElement(container);
+			containers.add(container);
 		}
 
 		return containers;
@@ -219,7 +219,7 @@ public class OnlinePubChemDatabaseMicha {
 	 * @param cidsVec
 	 * @return
 	 */
-	protected Vector<String> savingRetrievedHits(String[] cidsVec) throws Exception {
+	protected ArrayList<String> savingRetrievedHits(String[] cidsVec) throws Exception {
 		//first refresh all data containers in case a former search was performed
 		this.cidToInChIs = new java.util.HashMap<String, String>();
 		this.cidToInChIKeys = new java.util.HashMap<String, String>();
@@ -232,9 +232,9 @@ public class OnlinePubChemDatabaseMicha {
 		//start
 		String idString = "";
 		if(cidsVec == null || cidsVec.length == 0)
-			return new Vector<String>(); 
+			return new ArrayList<String>(); 
 
-		java.util.Vector<String> retrievedCandidates = new Vector<String>();
+		java.util.ArrayList<String> retrievedCandidates = new ArrayList<String>();
 		for(int i = 0; i < cidsVec.length; i++) {
 			idString += "," + cidsVec[i];
 			//only fetch 100 at once
@@ -242,7 +242,7 @@ public class OnlinePubChemDatabaseMicha {
 				idString = idString.substring(1, idString.length());
 				String urlname = "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/" + idString + "/property/inchi,XLogP,InChIKey,MolecularFormula,IsotopeAtomCount,IsomericSMILES,MonoisotopicMass/CSV";
 				java.io.InputStream stream = this.getInputStreamFromURL(urlname);
-				if(stream == null) return new Vector<String>();
+				if(stream == null) return new ArrayList<String>();
 				java.io.BufferedReader breader = new java.io.BufferedReader(new java.io.InputStreamReader(stream));
 				try {
 					String line = "";
@@ -282,7 +282,7 @@ public class OnlinePubChemDatabaseMicha {
 	 * @param cidsVec
 	 * @return
 	 */
-	protected Vector<String> savingRetrievedHits(Vector<String> cidsVec) throws Exception {
+	protected ArrayList<String> savingRetrievedHits(ArrayList<String> cidsVec) throws Exception {
 		String[] cids = new String[cidsVec.size()];
 		for(int i = 0; i < cids.length; i++) {
 			cids[i] = cidsVec.get(i);
@@ -309,7 +309,7 @@ public class OnlinePubChemDatabaseMicha {
 	 * 
 	 * @param cidsVec
 	 */
-	protected void assignTitleNames(Vector<String> cidsVec) throws Exception {
+	protected void assignTitleNames(ArrayList<String> cidsVec) throws Exception {
 		String idString = "";
 		this.cidToTitleNames = new java.util.HashMap<String, String>();
 		if(cidsVec == null || cidsVec.size() == 0)
@@ -488,9 +488,9 @@ public class OnlinePubChemDatabaseMicha {
 	public static void main(String[] args) {
 		OnlinePubChemDatabaseMicha opcdm = new OnlinePubChemDatabaseMicha();
 		//stores compound identifiers
-		Vector<String> identifiers = null;
+		ArrayList<String> identifiers = null;
 		//stores compound AtomContainers
-		Vector<IAtomContainer> containers = null;
+		ArrayList<IAtomContainer> containers = null;
 		try {
 			//only needed in case you generate AtomContainers based on InChI
 			opcdm.initInChIFactory();

@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Random;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import de.ipbhalle.metfrag.ranking.GetRankOfCandidateCSV;
 import edu.emory.mathcs.backport.java.util.concurrent.ExecutorService;
@@ -103,7 +103,7 @@ public class CrossValidationMain {
 			}
 		}
 		System.out.println();
-		Vector<int[]> folds = generateFolds(numberFolds, resFiles.length);
+		ArrayList<int[]> folds = generateFolds(numberFolds, resFiles.length);
 		System.out.println("generated " + folds.size() + " folds");
 		
 		double[][] params = new double[numberFolds][8];
@@ -197,7 +197,7 @@ public class CrossValidationMain {
 	 * @param foldIncluded
 	 * @return
 	 */
-	public double[][] testParams(Vector<int[]> folds, FileData[] fileData, int foldIncluded, double[] trainedParams) {
+	public double[][] testParams(ArrayList<int[]> folds, FileData[] fileData, int foldIncluded, double[] trainedParams) {
 		double[][] rankingValues = new double[folds.get(foldIncluded).length][5];
 		for(int i = 0; i < folds.get(foldIncluded).length; i++) {
 			double[] scores = calculateScores(fileData[folds.get(foldIncluded)[i]], trainedParams);
@@ -213,12 +213,12 @@ public class CrossValidationMain {
 	 * @param datasetSize
 	 * @return
 	 */
-	public static Vector<int[]> generateFolds(int numberFolds, int datasetSize) {
+	public static ArrayList<int[]> generateFolds(int numberFolds, int datasetSize) {
 		Random rand = new Random();
-		Vector<Integer> ids = new Vector<Integer>();
+		ArrayList<Integer> ids = new ArrayList<Integer>();
 		for(int i = 0; i < datasetSize; i++) ids.add(i);
 		int numberDataPointsPerFold = (int)Math.floor((double)datasetSize / (double)numberFolds);
-		Vector<int[]> folds = new Vector<int[]>();
+		ArrayList<int[]> folds = new ArrayList<int[]>();
 		
 		for (int i = 0; i < numberFolds; i++) {
 			int[] indeces = null;
@@ -263,7 +263,7 @@ public class CrossValidationMain {
 	 */
 	public double[] calculateScores(FileData fileData, double[] params) {
 		double[] scores = new double[fileData.getNumberEntries()];
-		Vector<MoleculeData> moleculeEntries = fileData.getMoleculeData();
+		ArrayList<MoleculeData> moleculeEntries = fileData.getMoleculeData();
 		for(int i = 0; i < fileData.getNumberEntries(); i++) {
 			MoleculeData moleculeData = moleculeEntries.get(i);
 			scores[i] = calculateScore(fileData.getMeasuredPrecursorMass(), moleculeData.getIntensities(), moleculeData.getMasses(), moleculeData.getEnergies(), params);
@@ -317,7 +317,7 @@ public class CrossValidationMain {
 	 */
 	class FileData {
 		
-		private Vector<MoleculeData> moleculeEntries;
+		private ArrayList<MoleculeData> moleculeEntries;
 		private String correctInchikey;
 		private double measuredPrecursorMass;
 		private String fileName;
@@ -326,7 +326,7 @@ public class CrossValidationMain {
 			this.fileName = file.getName();
 			this.correctInchikey = correctInchikey;
 			this.measuredPrecursorMass = measuredPrecursorMass;
-			this.moleculeEntries = new Vector<MoleculeData>(); 
+			this.moleculeEntries = new ArrayList<MoleculeData>(); 
 			try {
 				BufferedReader breader = new BufferedReader(new FileReader(file));
 				String header = breader.readLine();
@@ -404,7 +404,7 @@ public class CrossValidationMain {
 			return this.correctInchikey;
 		}
 		
-		public Vector<MoleculeData> getMoleculeData() {
+		public ArrayList<MoleculeData> getMoleculeData() {
 			return this.moleculeEntries;
 		}
 	}
@@ -426,7 +426,7 @@ public class CrossValidationMain {
 	 */
 	public class TrainSingleTry implements Runnable {
 
-		private Vector<int[]> folds; 
+		private ArrayList<int[]> folds; 
 		private FileData[] fileData;
 		private int foldExcluded;
 		private int maxIterations;
@@ -570,7 +570,7 @@ public class CrossValidationMain {
 			this.foldExcluded = foldExcluded;
 		}
 		
-		public void setFolds(Vector<int[]> folds) {
+		public void setFolds(ArrayList<int[]> folds) {
 			this.folds = folds;
 		}
 	}

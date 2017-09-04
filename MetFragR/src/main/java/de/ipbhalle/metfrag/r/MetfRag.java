@@ -604,8 +604,9 @@ class MetfRag {
 		
 		MetFragGlobalSettings settings = new MetFragGlobalSettings();
 		MoleculeFunctions.prepareAtomContainer(molecule, true);
-		ICandidate candidate = new TopDownPrecursorCandidate(MoleculeFunctions.getInChIInfoFromAtomContainer(molecule)[0], "1");
+		ICandidate candidate = null;
 		try {
+			candidate = new TopDownPrecursorCandidate(MoleculeFunctions.getInChIInfoFromAtomContainer(molecule)[0], "1");
 			candidate.initialisePrecursorCandidate();
 		} catch (AtomTypeNotKnownFromInputListException e1) {
 			e1.printStackTrace();

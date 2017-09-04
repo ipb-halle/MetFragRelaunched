@@ -59,8 +59,8 @@ public class NewMergedPeakFragmenterScore extends NewFragmenterScore {
 			/*
 			 * get all intensities of random spectra of this peak 
 			 */
-			java.util.Vector<Double> intensities = matchedPeak.getIntensities();
-			java.util.Vector<Integer> spectraIDs = matchedPeak.getSpectraIDs();
+			java.util.ArrayList<Double> intensities = matchedPeak.getIntensities();
+			java.util.ArrayList<Integer> spectraIDs = matchedPeak.getSpectraIDs();
 			
 			double peakScore = Math.pow((matchedPeak.getMass() / this.measuredPrecursorMass) * 10.0, this.ALPHA) 
 					* Math.pow(intensity, this.BETA);

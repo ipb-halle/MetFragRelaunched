@@ -89,7 +89,7 @@ public class ConvertMultipleMonaMSPtoMetFragRecord {
 		String sampleNameFilter = argsHash.get("sampleNameFilter");
 		String outputfolderdata = argsHash.get("outputfolderdata");
 		
-		java.util.Vector<Entry> entries = new java.util.Vector<Entry>();
+		java.util.ArrayList<Entry> entries = new java.util.ArrayList<Entry>();
 		try {
 			BufferedReader breader = new BufferedReader(new FileReader(new File(inputfile)));
 			while(!endOfFile) {
@@ -103,7 +103,7 @@ public class ConvertMultipleMonaMSPtoMetFragRecord {
 			e.printStackTrace();
 		}
 		
-		java.util.Vector<String> additionalParams = new java.util.Vector<String>();
+		java.util.ArrayList<String> additionalParams = new java.util.ArrayList<String>();
 		if(addparamsfile != null) {
 			BufferedReader breader;
 			try {
@@ -143,7 +143,7 @@ public class ConvertMultipleMonaMSPtoMetFragRecord {
 		}
 	}
 
-	public static java.util.Vector<Entry> checkEntries(java.util.Vector<Entry> entries, String addparamsfile) {
+	public static java.util.ArrayList<Entry> checkEntries(java.util.ArrayList<Entry> entries, String addparamsfile) {
 		if(entries.size() == 0) return entries;
 		MetFragGlobalSettings settings;
 		try {
@@ -213,7 +213,7 @@ public class ConvertMultipleMonaMSPtoMetFragRecord {
 				}
 			}
 			// prepare new entry vector
-			java.util.Vector<Entry> newentries = new java.util.Vector<Entry>();
+			java.util.ArrayList<Entry> newentries = new java.util.ArrayList<Entry>();
 			for(int i = 0; i < inchikey_id_missmatches.length; i++) {
 				if(!inchikey_id_missmatches[i])
 					newentries.add(entries.get(i));
@@ -441,7 +441,7 @@ public class ConvertMultipleMonaMSPtoMetFragRecord {
 			return true;
 		}
 		
-		public String toMetFragString(java.util.Vector<String> additionalLines, String outputfolderdata) throws IOException {
+		public String toMetFragString(java.util.ArrayList<String> additionalLines, String outputfolderdata) throws IOException {
 			String lines = "";
 			if(outputfolderdata.equals("")) {
 				lines += "PeakListString = " + this.getMzIntValuesToString() + "\n";

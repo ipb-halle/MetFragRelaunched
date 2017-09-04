@@ -106,7 +106,7 @@ public class ConvertMGFtoMetFragRecord {
 			System.err.println("Cannot read " + mgffilename + ". Check permissions.");
 			System.exit(2);
 		}
-		java.util.Vector<Entry> entries = new java.util.Vector<Entry>();
+		java.util.ArrayList<Entry> entries = new java.util.ArrayList<Entry>();
 		
 		try {
 			BufferedReader breader = new BufferedReader(new FileReader(mgffile));
@@ -289,12 +289,12 @@ public class ConvertMGFtoMetFragRecord {
 		public String masserror;
 		public String fingerprint;
 		public String spectrumid;
-		public java.util.Vector<String> mzs;
-		public java.util.Vector<String> ints;
+		public java.util.ArrayList<String> mzs;
+		public java.util.ArrayList<String> ints;
 		
 		public void addPeak(String mz, String intensity) {
-			if(mzs == null) mzs = new java.util.Vector<String>();
-			if(ints == null) ints = new java.util.Vector<String>();
+			if(mzs == null) mzs = new java.util.ArrayList<String>();
+			if(ints == null) ints = new java.util.ArrayList<String>();
 			mzs.add(mz);
 			ints.add(intensity);
 		}

@@ -3,7 +3,7 @@ package de.ipbhalle.metfrag.substructure;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -18,7 +18,7 @@ public class MatchSmarts {
 	public static void main(String[] args) throws Exception {
 		String filename = args[0];
 		String smarts = args[1];
-		Vector<MoleculeEntry> entries = readMolecules(filename);
+		ArrayList<MoleculeEntry> entries = readMolecules(filename);
 		
 		SMARTSQueryTool sqt = new SMARTSQueryTool(smarts, DefaultChemObjectBuilder.getInstance());
 		
@@ -38,10 +38,10 @@ public class MatchSmarts {
 		}
 	}
 	
-	public static Vector<MoleculeEntry> readMolecules(String filename) throws IOException {
+	public static ArrayList<MoleculeEntry> readMolecules(String filename) throws IOException {
 		BufferedReader breader = new BufferedReader(new FileReader(new File(filename)));
 		String line = "";
-		Vector<MoleculeEntry> entries = new Vector<MoleculeEntry>();
+		ArrayList<MoleculeEntry> entries = new ArrayList<MoleculeEntry>();
 		while((line = breader.readLine()) != null) {
 			String[] tmp = line.split("\\s+");
 			MoleculeEntry entry = new MatchSmarts().new MoleculeEntry(tmp[1], tmp[0]);

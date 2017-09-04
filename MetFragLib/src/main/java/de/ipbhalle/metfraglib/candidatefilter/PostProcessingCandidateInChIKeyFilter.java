@@ -16,7 +16,7 @@ public class PostProcessingCandidateInChIKeyFilter extends AbstractPostProcessin
 		this.numberPostFilteredCandidates = 0;
 		if(candidateList.getNumberElements() == 0) return candidateList;
 		CandidateList filteredCandidateList = new SortedScoredCandidateList();
-		java.util.Vector<String> seenInChIKeys = new java.util.Vector<String>();
+		java.util.ArrayList<String> seenInChIKeys = new java.util.ArrayList<String>();
 		for(int i = 0; i < candidateList.getNumberElements(); i++) {
 			ICandidate currentCandidate = candidateList.getElement(i);
 			String inchiKey1 = (String)currentCandidate.getProperty(VariableNames.INCHI_KEY_1_NAME);

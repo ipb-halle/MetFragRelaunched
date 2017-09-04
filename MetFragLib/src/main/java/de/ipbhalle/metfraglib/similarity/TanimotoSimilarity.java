@@ -217,10 +217,10 @@ public class TanimotoSimilarity {
 		String training = "/home/cruttkie/Dokumente/PhD/MetFrag/substructure_training/ufz_train_eawag_test/ids_training.txt";
 		String testing = "/home/cruttkie/Dokumente/PhD/MetFrag/substructure_training/ufz_train_eawag_test/ids_testing.txt";
 		
-		java.util.Vector<String> ids_training_pos = new java.util.Vector<String>();
-		java.util.Vector<String> ids_training_neg = new java.util.Vector<String>();
-		java.util.Vector<String> ids_testing_pos = new java.util.Vector<String>();
-		java.util.Vector<String> ids_testing_neg = new java.util.Vector<String>();
+		java.util.ArrayList<String> ids_training_pos = new java.util.ArrayList<String>();
+		java.util.ArrayList<String> ids_training_neg = new java.util.ArrayList<String>();
+		java.util.ArrayList<String> ids_testing_pos = new java.util.ArrayList<String>();
+		java.util.ArrayList<String> ids_testing_neg = new java.util.ArrayList<String>();
 		
 		java.util.Hashtable<String, String> names_pos = new java.util.Hashtable<String, String>();
 		java.util.Hashtable<String, String> names_neg = new java.util.Hashtable<String, String>();

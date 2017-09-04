@@ -11,16 +11,16 @@ import de.ipbhalle.metfraglib.parameter.Constants;
 
 public class HDFragmentMassToPeakMatch extends FragmentMassToPeakMatch {
 	
-	protected java.util.Vector<Byte> numberOfDeuteriumsDifferToPeakMass;
-	protected java.util.Vector<Byte> numberOfDeuteriumsOfMatchedFragment;
-	protected java.util.Vector<Byte> numberOfVariableDeuteriumsDifferToPeakMass;
+	protected java.util.ArrayList<Byte> numberOfDeuteriumsDifferToPeakMass;
+	protected java.util.ArrayList<Byte> numberOfDeuteriumsOfMatchedFragment;
+	protected java.util.ArrayList<Byte> numberOfVariableDeuteriumsDifferToPeakMass;
 	
-	public java.util.Vector<Byte> getNumberOfVariableDeuteriumsDifferToPeakMass() {
+	public java.util.ArrayList<Byte> getNumberOfVariableDeuteriumsDifferToPeakMass() {
 		return numberOfVariableDeuteriumsDifferToPeakMass;
 	}
 
 	public void setNumberOfVariableDeuteriumsDifferToPeakMass(
-			java.util.Vector<Byte> numberOfVariableDeuteriumsDifferToPeakMass) {
+			java.util.ArrayList<Byte> numberOfVariableDeuteriumsDifferToPeakMass) {
 		this.numberOfVariableDeuteriumsDifferToPeakMass = numberOfVariableDeuteriumsDifferToPeakMass;
 	}
 
@@ -55,11 +55,11 @@ public class HDFragmentMassToPeakMatch extends FragmentMassToPeakMatch {
 
 	public HDFragmentMassToPeakMatch(IPeak matchedPeak) {
 		super(matchedPeak);
-		this.matchedFragmentMassesToTandemMassPeak = new java.util.Vector<Double>();
-		this.numberOfHydrogensDifferToPeakMass = new java.util.Vector<Byte>();
-		this.numberOfDeuteriumsDifferToPeakMass = new java.util.Vector<Byte>();
-		this.numberOfVariableDeuteriumsDifferToPeakMass = new java.util.Vector<Byte>();
-		this.numberOfDeuteriumsOfMatchedFragment = new java.util.Vector<Byte>();
+		this.matchedFragmentMassesToTandemMassPeak = new java.util.ArrayList<Double>();
+		this.numberOfHydrogensDifferToPeakMass = new java.util.ArrayList<Byte>();
+		this.numberOfDeuteriumsDifferToPeakMass = new java.util.ArrayList<Byte>();
+		this.numberOfVariableDeuteriumsDifferToPeakMass = new java.util.ArrayList<Byte>();
+		this.numberOfDeuteriumsOfMatchedFragment = new java.util.ArrayList<Byte>();
 	}
 	
 	public void shallowNullify() {

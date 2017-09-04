@@ -2,7 +2,7 @@ package de.ipbhalle.metfraglib.database;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -29,7 +29,7 @@ public class LocalExtendedPubChemDatabase extends LocalPubChemDatabase {
 			throws DatabaseIdentifierNotFoundException {
 		ICandidate candidate = super.getCandidateByIdentifier(identifier);
 		
-		Vector<String> cid = new Vector<String>();
+		ArrayList<String> cid = new ArrayList<String>();
 		cid.add(identifier);
 		ProcessingStatus processingStatus = null;
 		if(this.settings.containsKey(VariableNames.PROCESS_STATUS_OBJECT_NAME) && this.settings.get(VariableNames.PROCESS_STATUS_OBJECT_NAME) != null)
@@ -50,10 +50,10 @@ public class LocalExtendedPubChemDatabase extends LocalPubChemDatabase {
 	/**
 	 * 
 	 */
-	public CandidateList getCandidateByIdentifier(Vector<String> identifiers) {
+	public CandidateList getCandidateByIdentifier(ArrayList<String> identifiers) {
 		CandidateList candidateList = super.getCandidateByIdentifier(identifiers);
 
-		Vector<String> cids = new Vector<String>();
+		ArrayList<String> cids = new ArrayList<String>();
 		for(int i = 0; i < candidateList.getNumberElements(); i++) {
 			cids.add(candidateList.getElement(i).getIdentifier());
 		}
@@ -94,7 +94,7 @@ public class LocalExtendedPubChemDatabase extends LocalPubChemDatabase {
 	 * @param cidsVec
 	 * @return
 	 */
-	protected void assignNumberOfPubMedReferences(Vector<String> cidsVec) {
+	protected void assignNumberOfPubMedReferences(ArrayList<String> cidsVec) {
 		String idString = "";
 		this.cidToNumberOfPubMedReferences = new java.util.HashMap<String, Double>();
 		if(cidsVec == null || cidsVec.size() == 0)
@@ -157,7 +157,7 @@ public class LocalExtendedPubChemDatabase extends LocalPubChemDatabase {
 		}
 	}
 
-	protected void assignNumberOfPatents(Vector<String> cidsVec) {
+	protected void assignNumberOfPatents(ArrayList<String> cidsVec) {
 		String idString = "";
 		this.cidToNumberOfPatents = new java.util.HashMap<String, Double>();
 		if(cidsVec == null || cidsVec.size() == 0)

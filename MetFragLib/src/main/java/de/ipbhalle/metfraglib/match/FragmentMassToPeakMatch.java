@@ -8,13 +8,13 @@ import de.ipbhalle.metfraglib.interfaces.IPeak;
 
 public class FragmentMassToPeakMatch extends DefaultFragmentToPeakMatch {
 	
-	protected java.util.Vector<Double> matchedFragmentMassesToTandemMassPeak;
+	protected java.util.ArrayList<Double> matchedFragmentMassesToTandemMassPeak;
 	protected double matchedFragmentMassOfBestFragment;
 	
 	public FragmentMassToPeakMatch(IPeak matchedPeak) {
 		super(matchedPeak);
-		this.matchedFragmentMassesToTandemMassPeak = new java.util.Vector<Double>();
-		this.numberOfHydrogensDifferToPeakMass = new java.util.Vector<Byte>();
+		this.matchedFragmentMassesToTandemMassPeak = new java.util.ArrayList<Double>();
+		this.numberOfHydrogensDifferToPeakMass = new java.util.ArrayList<Byte>();
 	}
 
 	public double getBestMatchFragmentMass() {

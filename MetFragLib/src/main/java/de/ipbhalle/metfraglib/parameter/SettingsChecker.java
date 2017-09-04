@@ -171,7 +171,7 @@ public class SettingsChecker {
 
 		boolean checkPositive = true;
 		
-		java.util.Vector<String> needsLocalDatabaseFile = new java.util.Vector<String>();
+		java.util.ArrayList<String> needsLocalDatabaseFile = new java.util.ArrayList<String>();
 		needsLocalDatabaseFile.add("LocalCSV");
 		needsLocalDatabaseFile.add("LocalPSV");
 		needsLocalDatabaseFile.add("LocalProperty");
@@ -354,7 +354,7 @@ public class SettingsChecker {
 		 * check preprocessing filers
 		 */
 		if(MetFragPreProcessingCandidateFilter != null) {
-			java.util.Vector<String> definedFilters = new java.util.Vector<String>();
+			java.util.ArrayList<String> definedFilters = new java.util.ArrayList<String>();
 			String[] MetFragPreProcessingCandidateFilterValue = (String[])MetFragPreProcessingCandidateFilter;
 			for(int i = 0; i < MetFragPreProcessingCandidateFilterValue.length; i++) {
 				if(definedFilters.contains(MetFragPreProcessingCandidateFilterValue[i])) {
@@ -474,7 +474,7 @@ public class SettingsChecker {
 				this.logger.error("Numbers of " + VariableNames.METFRAG_SCORE_TYPES_NAME + " and " + VariableNames.METFRAG_SCORE_WEIGHTS_NAME + " differ!");
 				checkPositive = false;
 			}
-			java.util.Vector<String> definedScores = new java.util.Vector<String>();
+			java.util.ArrayList<String> definedScores = new java.util.ArrayList<String>();
 			for(int i = 0; i < MetFragScoreTypesValue.length; i++) {
 				if(definedScores.contains(MetFragScoreTypesValue[i])) {
 					this.logger.error(MetFragScoreTypesValue[i] + " in " + VariableNames.METFRAG_SCORE_TYPES_NAME + " is defined more than once!");

@@ -1,7 +1,7 @@
 package de.ipbhalle.metfrag.misc;
 
 import java.io.IOException;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.openscience.cdk.fingerprint.IBitFingerprint;
 
@@ -29,7 +29,7 @@ public class CollectCommuniesAndFragmentPeaks {
 		
 		LocalPSVDatabase db = new LocalPSVDatabase(settings);
 		
-		java.util.Vector<String> ids = null;
+		java.util.ArrayList<String> ids = null;
 		try {
 			ids = db.getCandidateIdentifiers();
 		} catch (MultipleHeadersFoundInInputDatabaseException e1) {
@@ -39,13 +39,13 @@ public class CollectCommuniesAndFragmentPeaks {
 		}
 		CandidateList candidates = db.getCandidateByIdentifier(ids);
 		
-		Vector<Double> masses = new Vector<Double>();
-		Vector<Vector<String>> vector_formulas = new Vector<Vector<String>>();
-		Vector<Vector<String>> vector_smiles = new Vector<Vector<String>>();
-		Vector<Vector<String>> vector_eawagids = new Vector<Vector<String>>();
-		Vector<Vector<Double>> vector_intensities = new Vector<Vector<Double>>();		
-		Vector<Integer> occurences = new Vector<Integer>();
-		Vector<Vector<FingerPrintFragmentCollection>> matchingFragments = new Vector<Vector<FingerPrintFragmentCollection>>();
+		ArrayList<Double> masses = new ArrayList<Double>();
+		ArrayList<ArrayList<String>> vector_formulas = new ArrayList<ArrayList<String>>();
+		ArrayList<ArrayList<String>> vector_smiles = new ArrayList<ArrayList<String>>();
+		ArrayList<ArrayList<String>> vector_eawagids = new ArrayList<ArrayList<String>>();
+		ArrayList<ArrayList<Double>> vector_intensities = new ArrayList<ArrayList<Double>>();		
+		ArrayList<Integer> occurences = new ArrayList<Integer>();
+		ArrayList<ArrayList<FingerPrintFragmentCollection>> matchingFragments = new ArrayList<ArrayList<FingerPrintFragmentCollection>>();
 		
 		for(int i = 0; i < candidates.getNumberElements(); i++) 
 		{
@@ -92,10 +92,10 @@ public class CollectCommuniesAndFragmentPeaks {
 					 */
 					addFragmentsAddPositionInitial(addedIndex, matchingFragments, communityFragments, candidates.getElement(i).getIdentifier());
 					
-					Vector<String> tmp_formulas = new Vector<String>();
-					Vector<String> tmp_smiless = new Vector<String>();
-					Vector<Double> tmp_intensities = new Vector<Double>();
-					Vector<String> tmp_eawagids = new Vector<String>();
+					ArrayList<String> tmp_formulas = new ArrayList<String>();
+					ArrayList<String> tmp_smiless = new ArrayList<String>();
+					ArrayList<Double> tmp_intensities = new ArrayList<Double>();
+					ArrayList<String> tmp_eawagids = new ArrayList<String>();
 					
 					tmp_formulas.add(tmp_formula[1]);
 					tmp_smiless.add(tmp_smiles[1]);
@@ -163,7 +163,7 @@ public class CollectCommuniesAndFragmentPeaks {
 			for(int i = 0; i < matchingFragments.size(); i++) {
 				bwriterComms.write(masses.get(i) + " " + occurences.get(i));
 				bwriterComms.newLine();
-				Vector<FingerPrintFragmentCollection> collections = matchingFragments.get(i);
+				ArrayList<FingerPrintFragmentCollection> collections = matchingFragments.get(i);
 				for(int j = 0; j < collections.size(); j++) {
 					FingerPrintFragmentCollection collection = collections.get(j);
 					bwriterComms.write("\t");
@@ -177,7 +177,7 @@ public class CollectCommuniesAndFragmentPeaks {
 		}
 	}
 	
-	public static int addMassSorted(Vector<Double> masses, double mass, boolean debug) {
+	public static int addMassSorted(ArrayList<Double> masses, double mass, boolean debug) {
 		int index = 0;
 		while(index < masses.size()) 
 		{
@@ -197,15 +197,15 @@ public class CollectCommuniesAndFragmentPeaks {
 	 * @param matchedFragments
 	 * @param communityFragments
 	 */
-	public static void addFragmentsAddPositionInitial(int position, Vector<Vector<FingerPrintFragmentCollection>> matchedFragments, DefaultBitArrayFragment[] communityFragments, String candidateIdentifier) {
+	public static void addFragmentsAddPositionInitial(int position, ArrayList<ArrayList<FingerPrintFragmentCollection>> matchedFragments, DefaultBitArrayFragment[] communityFragments, String candidateIdentifier) {
 		if(communityFragments == null || communityFragments.length == 0) return;
 		CollectCommuniesAndFragmentPeaks.FingerPrintFragment fragment = temp.new FingerPrintFragment(communityFragments[0]);
-		Vector<FingerPrintFragmentCollection> tmpVec = new Vector<FingerPrintFragmentCollection>();
+		ArrayList<FingerPrintFragmentCollection> tmpVec = new ArrayList<FingerPrintFragmentCollection>();
 		FingerPrintFragmentCollection newCollection = temp.new FingerPrintFragmentCollection(fragment, candidateIdentifier);
 		tmpVec.add(newCollection);
 		matchedFragments.add(position, tmpVec);
 		for(int i = 1; i < communityFragments.length; i++) {
-			Vector<FingerPrintFragmentCollection> collections = matchedFragments.get(position);
+			ArrayList<FingerPrintFragmentCollection> collections = matchedFragments.get(position);
 			CollectCommuniesAndFragmentPeaks.FingerPrintFragment newFragment = temp.new FingerPrintFragment(communityFragments[i]);
 			boolean fragmentClassFound = false;
 			for(int j = 0; j < collections.size(); j++) {
@@ -223,9 +223,9 @@ public class CollectCommuniesAndFragmentPeaks {
 		}
 	}
 	
-	public static void addFragmentsAddPosition(int position, Vector<Vector<FingerPrintFragmentCollection>> matchedFragments, DefaultBitArrayFragment[] communityFragments, String candidateIdentifier) {
+	public static void addFragmentsAddPosition(int position, ArrayList<ArrayList<FingerPrintFragmentCollection>> matchedFragments, DefaultBitArrayFragment[] communityFragments, String candidateIdentifier) {
 		for(int i = 0; i < communityFragments.length; i++) {
-			Vector<FingerPrintFragmentCollection> collections = matchedFragments.get(position);
+			ArrayList<FingerPrintFragmentCollection> collections = matchedFragments.get(position);
 			CollectCommuniesAndFragmentPeaks.FingerPrintFragment newFragment = temp.new FingerPrintFragment(communityFragments[i]);
 			boolean fragmentClassFound = false;
 			for(int j = 0; j < collections.size(); j++) {
@@ -244,7 +244,7 @@ public class CollectCommuniesAndFragmentPeaks {
 	}
 	
 	
-	private static void printMasses(Vector<Double> masses) {
+	private static void printMasses(ArrayList<Double> masses) {
 		System.out.print("masses ");
 		for(int i = 0; i < masses.size(); i++) {
 			System.out.print(masses.get(i) + " ");
@@ -253,7 +253,7 @@ public class CollectCommuniesAndFragmentPeaks {
 	}
 	
 	
-	public static int containsDouble(Vector<Double> masses, double value, double mzppm, double mzabs, boolean debug) {
+	public static int containsDouble(ArrayList<Double> masses, double value, double mzppm, double mzabs, boolean debug) {
 		double dev = MathTools.calculateAbsoluteDeviation(value, mzppm);
 		dev += mzabs;
 		if(debug) {
@@ -302,12 +302,12 @@ public class CollectCommuniesAndFragmentPeaks {
 
 	class FingerPrintFragmentCollection 
 	{
-		private Vector<FingerPrintFragment> collectedFragments;
-		private Vector<String> originatingCanidateIdentifier;
+		private ArrayList<FingerPrintFragment> collectedFragments;
+		private ArrayList<String> originatingCanidateIdentifier;
 		
 		public FingerPrintFragmentCollection(FingerPrintFragment fragment, String identifier) {
-			this.collectedFragments = new Vector<FingerPrintFragment>();
-			this.originatingCanidateIdentifier = new Vector<String>();
+			this.collectedFragments = new ArrayList<FingerPrintFragment>();
+			this.originatingCanidateIdentifier = new ArrayList<String>();
 			this.collectedFragments.add(fragment);
 			this.originatingCanidateIdentifier.add(identifier);
 		}

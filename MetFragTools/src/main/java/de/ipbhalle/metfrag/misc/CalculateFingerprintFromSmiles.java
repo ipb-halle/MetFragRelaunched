@@ -17,9 +17,10 @@ public class CalculateFingerprintFromSmiles {
 				"N1=C(N)C=C(C)=O1"
 		};
 		for(String preSmiles : preSmiles_arr) {
-			String inchi1 = MoleculeFunctions.getInChIFromSmiles(preSmiles);
+			String inchi1 = null;
 			IAtomContainer con = null;
 			try {
+				inchi1 = MoleculeFunctions.getInChIFromSmiles(preSmiles);
 				if(!useSmiles) con = MoleculeFunctions.getAtomContainerFromInChI(inchi1);
 				else con = MoleculeFunctions.getAtomContainerFromSMILES(preSmiles);
 			} catch (Exception e) {

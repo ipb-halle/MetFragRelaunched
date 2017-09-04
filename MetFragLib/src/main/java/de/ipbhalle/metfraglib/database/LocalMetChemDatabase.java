@@ -2,7 +2,7 @@ package de.ipbhalle.metfraglib.database;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import de.ipbhalle.metfraglib.additionals.MathTools;
 import de.ipbhalle.metfraglib.candidate.TopDownPrecursorCandidate;
@@ -15,7 +15,7 @@ public class LocalMetChemDatabase extends LocalPostgresDatabase {
 	
 	protected String library;
 	protected CandidateList tempCandidates;
-	protected Vector<String> tempSubstanceIDs = new Vector<String>();
+	protected ArrayList<String> tempSubstanceIDs = new ArrayList<String>();
 	
 	public LocalMetChemDatabase(Settings settings) {
 		super(settings);
@@ -41,9 +41,9 @@ public class LocalMetChemDatabase extends LocalPostgresDatabase {
 		
 	}
 	
-	protected void fillCandidateVectors(ResultSet rs) {
+	protected void fillCandidateArrayLists(ResultSet rs) {
 		this.tempCandidates = new CandidateList();
-		this.tempSubstanceIDs = new Vector<String>();
+		this.tempSubstanceIDs = new ArrayList<String>();
 		try {
 			while(rs.next()) {
 				ICandidate candidate = new TopDownPrecursorCandidate(rs.getString(this.INCHI_COLUMN_NAME), rs.getString(this.CID_COLUMN_NAME));
@@ -83,7 +83,7 @@ public class LocalMetChemDatabase extends LocalPostgresDatabase {
 		}
 	}
 	
-	public Vector<String> getCandidateIdentifiers(double monoisotopicMass, double relativeMassDeviation) {
+	public ArrayList<String> getCandidateIdentifiers(double monoisotopicMass, double relativeMassDeviation) {
 		logger.info("Fetching candidates from MetChem");
 		int library_id = this.getLibraryIdentifier();
 		if(library_id == -1) return null;
@@ -97,12 +97,12 @@ public class LocalMetChemDatabase extends LocalPostgresDatabase {
 				+	"left join name n on s.substance_id = n.substance_id where s.library_id='" + library_id + "';";
 		
 		ResultSet rs = this.submitQuery(query);
-		if(rs == null) return new Vector<String>();
-		this.fillCandidateVectors(rs);
+		if(rs == null) return new ArrayList<String>();
+		this.fillCandidateArrayLists(rs);
 		return this.tempSubstanceIDs;
 	}
 	
-	public Vector<String> getCandidateIdentifiers(String molecularFormula) {
+	public ArrayList<String> getCandidateIdentifiers(String molecularFormula) {
 		logger.info("Fetching candidates from MetChem");
 		int library_id = this.getLibraryIdentifier();
 		if(library_id == -1) return null;
@@ -116,14 +116,14 @@ public class LocalMetChemDatabase extends LocalPostgresDatabase {
                                 +       "left join substance s on s.compound_id = comp.compound_id "
                                 +       "left join name n on s.substance_id = n.substance_id where s.library_id='" + library_id + "';";
 		ResultSet rs = this.submitQuery(query);
-		if(rs == null) return new Vector<String>();
-		this.fillCandidateVectors(rs);
+		if(rs == null) return new ArrayList<String>();
+		this.fillCandidateArrayLists(rs);
 		return this.tempSubstanceIDs;
 	}
 
-	public Vector<String> getCandidateIdentifiers(Vector<String> identifiers) {
+	public ArrayList<String> getCandidateIdentifiers(ArrayList<String> identifiers) {
 		logger.info("Fetching candidates from MetChem");
-		if(identifiers.size() == 0) return new Vector<String>();
+		if(identifiers.size() == 0) return new ArrayList<String>();
 		
 		int library_id = this.getLibraryIdentifier();
 		if(library_id == -1) return null;
@@ -144,15 +144,15 @@ public class LocalMetChemDatabase extends LocalPostgresDatabase {
 				"and s.library_id='" + library_id + "';";
 
 		ResultSet rs = this.submitQuery(query);
-		if(rs == null) return new Vector<String>();
-		this.fillCandidateVectors(rs);
+		if(rs == null) return new ArrayList<String>();
+		this.fillCandidateArrayLists(rs);
 		return this.tempSubstanceIDs;
 	}
 
-	public Vector<String> getCandidateIdentifiers(String[] identifiers) {
+	public ArrayList<String> getCandidateIdentifiers(String[] identifiers) {
 		
-		if(identifiers == null || identifiers.length == 0) return new Vector<String>();
-		Vector<String> ids = new Vector<String>();
+		if(identifiers == null || identifiers.length == 0) return new ArrayList<String>();
+		ArrayList<String> ids = new ArrayList<String>();
 		for(String id : identifiers)
 			ids.add(id);
 		return this.getCandidateIdentifiers(ids);
@@ -196,14 +196,14 @@ public class LocalMetChemDatabase extends LocalPostgresDatabase {
 			System.err.println(query);
 			return null;
 		}
-		this.fillCandidateVectors(rs);
+		this.fillCandidateArrayLists(rs);
 		return this.tempCandidates;
 	}
 	
 	/**
 	 * 
 	 */
-	public CandidateList getCandidateByIdentifier(Vector<String> identifiers) {
+	public CandidateList getCandidateByIdentifier(ArrayList<String> identifiers) {
 		if(identifiers.size() == 0 || this.tempSubstanceIDs == null || this.tempCandidates == null || this.tempCandidates.getNumberElements() == 0) 
 			return new CandidateList();
 		

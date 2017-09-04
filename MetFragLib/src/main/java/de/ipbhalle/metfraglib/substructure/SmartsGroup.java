@@ -1,6 +1,6 @@
 package de.ipbhalle.metfraglib.substructure;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.exception.CDKException;
@@ -21,8 +21,8 @@ public class SmartsGroup extends DefaultList {
 	
 	private Double probability = null;
 	
-	private java.util.Vector<String> smiles;
-	private java.util.Vector<String> fingerprints;
+	private java.util.ArrayList<String> smiles;
+	private java.util.ArrayList<String> fingerprints;
 	private Integer id = null;
 
 	public SmartsGroup(Double probability) {
@@ -39,12 +39,12 @@ public class SmartsGroup extends DefaultList {
 	}
 
 	public void addSmiles(String smiles) {
-		if(this.smiles == null) this.smiles = new java.util.Vector<String>();
+		if(this.smiles == null) this.smiles = new java.util.ArrayList<String>();
 		this.smiles.add(smiles);
 	}
 
 	public void addFingerprint(String fingerprint) {
-		if(this.fingerprints == null) this.fingerprints = new java.util.Vector<String>();
+		if(this.fingerprints == null) this.fingerprints = new java.util.ArrayList<String>();
 		this.fingerprints.add(fingerprint);
 	}
 	
@@ -125,7 +125,7 @@ public class SmartsGroup extends DefaultList {
 		this.list.add(index, obj);
 	}
 	
-	public boolean fingerprintMatches(Vector<String> _fingerprints) {
+	public boolean fingerprintMatches(ArrayList<String> _fingerprints) {
 		for(int i = 0; i < _fingerprints.size(); i++) {
 			for(int j = 0; j < this.fingerprints.size(); j++) {
 				if(_fingerprints.get(i).equals(this.fingerprints.get(j))) return true;
@@ -171,8 +171,8 @@ public class SmartsGroup extends DefaultList {
 	}
 	
 	public void removeDuplicates() {
-		java.util.Vector<Object> newList = new java.util.Vector<Object>();
-		java.util.Vector<String> newSmiles = new java.util.Vector<String>();
+		java.util.ArrayList<Object> newList = new java.util.ArrayList<Object>();
+		java.util.ArrayList<String> newSmiles = new java.util.ArrayList<String>();
 		for(int i = 0; i < this.list.size(); i++) {
 			String current = ((SMARTSQueryTool)this.list.get(i)).getSmarts();
 			if(!newList.contains(current)) {
@@ -180,7 +180,7 @@ public class SmartsGroup extends DefaultList {
 				newSmiles.add(this.smiles.get(i));
 			}
 		}
-		this.list = new java.util.Vector<Object>();
+		this.list = new java.util.ArrayList<Object>();
 		for(int i = 0; i < newList.size(); i++) {
 			SMARTSQueryTool sqt = new SMARTSQueryTool((String)newList.get(i), DefaultChemObjectBuilder.getInstance());
 			this.list.add(sqt);
@@ -204,11 +204,11 @@ public class SmartsGroup extends DefaultList {
 		this.id = id;
 	}
 	
-	public java.util.Vector<String> getSmiles() {
+	public java.util.ArrayList<String> getSmiles() {
 		return this.smiles;
 	}
 	
-	public java.util.Vector<String> getFingerprints() {
+	public java.util.ArrayList<String> getFingerprints() {
 		return this.fingerprints;
 	}
 }

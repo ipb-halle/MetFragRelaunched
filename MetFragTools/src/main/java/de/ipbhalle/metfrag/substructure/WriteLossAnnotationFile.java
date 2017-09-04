@@ -62,7 +62,7 @@ public class WriteLossAnnotationFile {
 		Settings settings = new Settings();
 		settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, filename);
 		LocalPSVDatabase db = new LocalPSVDatabase(settings);
-		java.util.Vector<String> ids = db.getCandidateIdentifiers();
+		java.util.ArrayList<String> ids = db.getCandidateIdentifiers();
 		CandidateList candidateList = db.getCandidateByIdentifier(ids);
 		//SmilesOfExplPeaks
 		PeakToSmartsGroupListCollection peakToSmartGroupListCollection = new PeakToSmartsGroupListCollection();

@@ -481,6 +481,7 @@ public class TopDownFragmenterAssignerScorer extends AbstractFragmenterAssignerS
 	 * @param currentFragment
 	 * @return
 	 */
+	/*
 	protected boolean wasAlreadyGenerated(AbstractTopDownBitArrayFragment currentFragment) {
 		AbstractTopDownBitArrayFragment precursorOfFragment = currentFragment.getPrecursorFragment();
 		if(precursorOfFragment == null) return false;
@@ -493,7 +494,7 @@ public class TopDownFragmenterAssignerScorer extends AbstractFragmenterAssignerS
 			}
 		}
 		return false;
-	}
+	}*/
 
 	protected boolean wasAlreadyGeneratedByHashtable(AbstractTopDownBitArrayFragment currentFragment) {
 		String currentHash = currentFragment.getAtomsFastBitArray().toString();
@@ -530,7 +531,7 @@ public class TopDownFragmenterAssignerScorer extends AbstractFragmenterAssignerS
 		this.bitArrayToFragment = null;
 	}
 	
-	protected void addFingerPrintsToVector(ArrayList<AbstractTopDownBitArrayFragment> fragments, ArrayList<String> fingerprints, ArrayList<IBitFingerprint> fps) {
+	protected void addFingerPrintsToArrayList(ArrayList<AbstractTopDownBitArrayFragment> fragments, ArrayList<String> fingerprints, ArrayList<IBitFingerprint> fps) {
 		for(int i = 0; i < fragments.size(); i++) {
 			int index = 0;
 			IBitFingerprint fp = TanimotoSimilarity.calculateFingerPrint(fragments.get(i).getStructureAsIAtomContainer());

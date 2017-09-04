@@ -41,7 +41,7 @@ public class OfflineMetFusionSpectralSimilarityScore extends AbstractScore {
 			//fingerprint of the current candidate
 			IBitFingerprint f2 = TanimotoSimilarity.calculateFingerPrint(this.candidate.getAtomContainer());
 			//calculate similarity score
-			java.util.Hashtable<String, java.util.Vector<SortedSimilarityTandemMassPeakList>> inchikey1ToPeakList = spectralPeakLists.getInchikey1ToPeakList();
+			java.util.Hashtable<String, java.util.ArrayList<SortedSimilarityTandemMassPeakList>> inchikey1ToPeakList = spectralPeakLists.getInchikey1ToPeakList();
 			java.util.Hashtable<String, Double> inchikey1ToSimScore = spectralPeakLists.getInchikey1ToSimScore();
 			java.util.Enumeration<?> it = inchikey1ToPeakList.keys();
 			while(it.hasMoreElements()) {

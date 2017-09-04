@@ -103,7 +103,7 @@ public class HDTopDownBitArrayPrecursor extends TopDownBitArrayPrecursor {
 	}
 	
 	public int[] searchForDeuteriumExchangeablePositions(String[] elementsToExchange) {
-		java.util.Vector<Integer> positionsToExchange = new java.util.Vector<Integer>();
+		java.util.ArrayList<Integer> positionsToExchange = new java.util.ArrayList<Integer>();
 		for (int i = 0; i < this.getNonHydrogenAtomCount(); i++) {
 			String symbol = this.getAtomSymbol(i);
 			if (symbol.equals("H"))
@@ -126,7 +126,7 @@ public class HDTopDownBitArrayPrecursor extends TopDownBitArrayPrecursor {
 	}
 	
 	public int[][] getExchangeCombinations(int[] toExchange, int numToDraw) {
-		java.util.Vector<String> results = new java.util.Vector<String>();
+		java.util.ArrayList<String> results = new java.util.ArrayList<String>();
 		String[] toDrawFrom = new String[toExchange.length];
 		for(int i = 0; i < toDrawFrom.length; i++) toDrawFrom[i] = String.valueOf(toExchange[i]);
 		
@@ -142,7 +142,7 @@ public class HDTopDownBitArrayPrecursor extends TopDownBitArrayPrecursor {
 		return combinations;
 	}
 	
-	public void combinations(String[] arr, int len, int startPosition, String[] result, java.util.Vector<String> finalResults){
+	public void combinations(String[] arr, int len, int startPosition, String[] result, java.util.ArrayList<String> finalResults){
         if (len == 0){
         	String stringResult = Arrays.toString(result);
          	if(!finalResults.contains(stringResult)) finalResults.add(stringResult);

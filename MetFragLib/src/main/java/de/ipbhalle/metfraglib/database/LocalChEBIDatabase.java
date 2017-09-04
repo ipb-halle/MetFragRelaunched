@@ -2,7 +2,7 @@ package de.ipbhalle.metfraglib.database;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import de.ipbhalle.metfraglib.candidate.TopDownPrecursorCandidate;
 import de.ipbhalle.metfraglib.exceptions.DatabaseIdentifierNotFoundException;
@@ -43,13 +43,13 @@ public class LocalChEBIDatabase extends LocalPostgresDatabase {
 				+ this.CID_COLUMN_NAME + " =\'" + identifier + "\';";;
 		ResultSet rs = this.submitQuery(query);
 		if(rs == null) return null;
-		Vector<String> inchis = new Vector<String>();
-		Vector<String> inChIKeys1 = new Vector<String>();
-		Vector<String> inChIKeys2 = new Vector<String>();
-		Vector<String> formulas = new Vector<String>();
-		Vector<String> names = new Vector<String>();
-		Vector<String> smiles = new Vector<String>();
-		Vector<Double> masses = new Vector<Double>();
+		ArrayList<String> inchis = new ArrayList<String>();
+		ArrayList<String> inChIKeys1 = new ArrayList<String>();
+		ArrayList<String> inChIKeys2 = new ArrayList<String>();
+		ArrayList<String> formulas = new ArrayList<String>();
+		ArrayList<String> names = new ArrayList<String>();
+		ArrayList<String> smiles = new ArrayList<String>();
+		ArrayList<Double> masses = new ArrayList<Double>();
 		try {
 			while(rs.next()) {
 				inchis.add(rs.getString(this.INCHI_COLUMN_NAME));
@@ -80,7 +80,7 @@ public class LocalChEBIDatabase extends LocalPostgresDatabase {
 	/**
 	 * 
 	 */
-	public CandidateList getCandidateByIdentifier(Vector<String> identifiers) {
+	public CandidateList getCandidateByIdentifier(ArrayList<String> identifiers) {
 		if(identifiers.size() == 0) return new CandidateList();
 	/*	String query = "SELECT " + this.CID_COLUMN_NAME + ", " 
 				+ this.INCHI_COLUMN_NAME + "," + this.INCHIKEY1_COLUMN_NAME + "," 

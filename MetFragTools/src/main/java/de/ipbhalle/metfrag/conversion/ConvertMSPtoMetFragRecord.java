@@ -106,13 +106,13 @@ public class ConvertMSPtoMetFragRecord {
 			System.err.println("Cannot read " + mspfilename + ". Check permissions.");
 			System.exit(2);
 		}
-		java.util.Vector<String> lines = new java.util.Vector<String>();
-		java.util.Vector<Entry> entries = new java.util.Vector<Entry>();
+		java.util.ArrayList<String> lines = new java.util.ArrayList<String>();
+		java.util.ArrayList<Entry> entries = new java.util.ArrayList<Entry>();
 		try {
 			BufferedReader breader = new BufferedReader(new FileReader(mspfile));
 			String line = "";
 			int numberPeaks = 0;
-			java.util.Vector<String> parametersFound = new java.util.Vector<String>();
+			java.util.ArrayList<String> parametersFound = new java.util.ArrayList<String>();
 			String lastInChI = "";
 			String lastSmiles = "";
 			String lastInChIKey = "";
@@ -233,7 +233,7 @@ public class ConvertMSPtoMetFragRecord {
 					currentEntry.addPeak(peaks[0], peaks[1]);
 					numberPeaks--;
 					if(numberPeaks == 0) {
-						parametersFound = new java.util.Vector<String>();
+						parametersFound = new java.util.ArrayList<String>();
 						lines.add("");
 						
 						lastInChI = "";
@@ -329,12 +329,12 @@ public class ConvertMSPtoMetFragRecord {
 		public String masserror;
 		public String mslevel;
 		public String fingerprint;
-		public java.util.Vector<String> mzs;
-		public java.util.Vector<String> ints;
+		public java.util.ArrayList<String> mzs;
+		public java.util.ArrayList<String> ints;
 		
 		public void addPeak(String mz, String intensity) {
-			if(mzs == null) mzs = new java.util.Vector<String>();
-			if(ints == null) ints = new java.util.Vector<String>();
+			if(mzs == null) mzs = new java.util.ArrayList<String>();
+			if(ints == null) ints = new java.util.ArrayList<String>();
 			mzs.add(mz);
 			ints.add(intensity);
 		}

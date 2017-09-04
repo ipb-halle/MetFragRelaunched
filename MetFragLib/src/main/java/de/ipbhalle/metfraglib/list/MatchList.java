@@ -12,7 +12,7 @@ import de.ipbhalle.metfraglib.interfaces.IMatch;
 public class MatchList extends DefaultList {
 
 	public MatchList() {
-		this.list = new java.util.Vector<Object>();
+		this.list = new java.util.ArrayList<Object>();
 	}
 	
 	public IMatch getElement(int index) {

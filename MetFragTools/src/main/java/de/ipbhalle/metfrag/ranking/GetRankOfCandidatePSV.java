@@ -3,7 +3,7 @@ package de.ipbhalle.metfrag.ranking;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.inchi.InChIGenerator;
@@ -21,8 +21,8 @@ import de.ipbhalle.metfraglib.settings.MetFragGlobalSettings;
 
 public class GetRankOfCandidatePSV {
 
-	public static Vector<String> scorePropertyNamesForLog = new Vector<String>(); 
-	public static Vector<String> scorePropertyNamesForTakeRawValue = new Vector<String>(); 
+	public static ArrayList<String> scorePropertyNamesForLog = new ArrayList<String>(); 
+	public static ArrayList<String> scorePropertyNamesForTakeRawValue = new ArrayList<String>(); 
 	public static String delimiter = "\\|";
 	public static String[] combinedReferenceScoreValues;
 	public static boolean outputSortedList = false;
@@ -62,7 +62,7 @@ public class GetRankOfCandidatePSV {
 		settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, resultPSVFilename);
 		LocalPSVDatabase db = new LocalPSVDatabase(settings);
 
-		Vector<String> identifiers = null;
+		ArrayList<String> identifiers = null;
 		try {
 			identifiers = db.getCandidateIdentifiers();
 		} catch (MultipleHeadersFoundInInputDatabaseException e1) {
@@ -74,10 +74,10 @@ public class GetRankOfCandidatePSV {
 		}
 		CandidateList candidates = db.getCandidateByIdentifier(identifiers);
 		
-		Vector<String> scoringPropertyNames = new Vector<String>();
+		ArrayList<String> scoringPropertyNames = new ArrayList<String>();
 		HashMap<String, Double> scorePropertyToWeight = new HashMap<String, Double>();
 		
-		Vector<Integer> indexesOfCorrectMolecules = new Vector<Integer>();
+		ArrayList<Integer> indexesOfCorrectMolecules = new ArrayList<Integer>();
 
 		for(int i = 2; i < args.length; i++) {	
 			String[] tmp = args[i].split("=");
@@ -185,7 +185,7 @@ public class GetRankOfCandidatePSV {
 		double wc = 0;
 		double bc = 0;
 		
-		Vector<String> correctInChIKeys = new Vector<String>();
+		ArrayList<String> correctInChIKeys = new ArrayList<String>();
 		for (int i = 0; i < indexesOfCorrectMolecules.size(); i++) {
 			correctInChIKeys.add((String)candidates.getElement(indexesOfCorrectMolecules.get(i)).getProperty(VariableNames.INCHI_KEY_1_NAME));
 		}
@@ -234,8 +234,8 @@ public class GetRankOfCandidatePSV {
 			}
 			else {
 				java.util.Iterator<?> it = inchiKeysToFinalScore.keySet().iterator();
-				java.util.Vector<Double> scores = new java.util.Vector<Double>();
-				java.util.Vector<String> inchikeys = new java.util.Vector<String>();
+				java.util.ArrayList<Double> scores = new java.util.ArrayList<Double>();
+				java.util.ArrayList<String> inchikeys = new java.util.ArrayList<String>();
 				while(it.hasNext()) {
 					String currentInChIKey = (String)it.next();
 					double currentScore = inchiKeysToFinalScore.get(currentInChIKey);
@@ -259,8 +259,8 @@ public class GetRankOfCandidatePSV {
 		}
 		else if(outputSortedList) { 
 			java.util.Iterator<?> it = inchiKeysToFinalScore.keySet().iterator();
-			java.util.Vector<Double> scores = new java.util.Vector<Double>();
-			java.util.Vector<String> inchikeys = new java.util.Vector<String>();
+			java.util.ArrayList<Double> scores = new java.util.ArrayList<Double>();
+			java.util.ArrayList<String> inchikeys = new java.util.ArrayList<String>();
 			while(it.hasNext()) {
 				String currentInChIKey = (String)it.next();
 				double currentScore = inchiKeysToFinalScore.get(currentInChIKey);
@@ -366,7 +366,7 @@ public class GetRankOfCandidatePSV {
 		return gen.getInchiKey().split("-")[0];
 	}
 	
-	public static int addSorted(java.util.Vector<Double> scores, double score) {
+	public static int addSorted(java.util.ArrayList<Double> scores, double score) {
 		int index = 0;
 		while(index < scores.size() && score < scores.get(index)) {
 			index++;

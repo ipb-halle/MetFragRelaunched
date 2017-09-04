@@ -18,7 +18,7 @@ public class GetMeanNodeDegreeOfCandidate {
 	
 		OnlinePubChemDatabase db = new OnlinePubChemDatabase(settings);
 		
-		java.util.Vector<String> identifiers = null;
+		java.util.ArrayList<String> identifiers = null;
 		try {
 			identifiers = db.getCandidateIdentifiers();
 		} catch (Exception e) {

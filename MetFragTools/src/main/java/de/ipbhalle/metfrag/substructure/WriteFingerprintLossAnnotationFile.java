@@ -4,7 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import de.ipbhalle.metfraglib.FastBitArray;
 import de.ipbhalle.metfraglib.database.LocalCSVDatabase;
@@ -64,8 +64,8 @@ public class WriteFingerprintLossAnnotationFile {
 		if(readParameters.containsKey("occurThresh")) occurThresh = Integer.parseInt(readParameters.get("occurThresh"));
 		if(readParameters.containsKey("csv")) csv = (String)readParameters.get("csv");
 		
-		Vector<Double> peakMassesSorted = new Vector<Double>();
-		Vector<String> fingerprintsSorted = new Vector<String>();
+		ArrayList<Double> peakMassesSorted = new ArrayList<Double>();
+		ArrayList<String> fingerprintsSorted = new ArrayList<String>();
 		
 		Settings settings = new Settings();
 		settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, filename);
@@ -81,7 +81,7 @@ public class WriteFingerprintLossAnnotationFile {
 		}
 		else db = new LocalPSVDatabase(settings);
 		
-		java.util.Vector<String> ids = db.getCandidateIdentifiers();
+		java.util.ArrayList<String> ids = db.getCandidateIdentifiers();
 		CandidateList candidateList = db.getCandidateByIdentifier(ids);
 		System.out.println(ids.size());
 		//SmilesOfExplPeaks
@@ -112,7 +112,7 @@ public class WriteFingerprintLossAnnotationFile {
 		System.out.println(peakMassesSorted.size() + " peak fingerprint pairs");
 		
 		Integer id = 0;
-		Hashtable<Integer, Vector<Double>> grouplistid_to_masses = new Hashtable<Integer, Vector<Double>>();
+		Hashtable<Integer, ArrayList<Double>> grouplistid_to_masses = new Hashtable<Integer, ArrayList<Double>>();
 		for(int i = 0; i < peakMassesSorted.size(); i++) {
 			Double currentPeak = peakMassesSorted.get(i);
 			MassToFingerprintGroupList peakToFingerprintGroupList = peakToFingerprintGroupListCollection.getElementByPeakInterval(currentPeak, mzppm, mzabs);
@@ -263,11 +263,11 @@ public class WriteFingerprintLossAnnotationFile {
 		return count;
 	}
 	
-	public static void addMass(Hashtable<Integer, Vector<Double>> grouplistid_to_masses, Integer id, double mass) {
+	public static void addMass(Hashtable<Integer, ArrayList<Double>> grouplistid_to_masses, Integer id, double mass) {
 		if(grouplistid_to_masses.containsKey(id) && grouplistid_to_masses.get(id) != null) {
 			grouplistid_to_masses.get(id).add(mass);
 		} else {
-			Vector<Double> new_masses = new Vector<Double>();
+			ArrayList<Double> new_masses = new ArrayList<Double>();
 			new_masses.add(mass);
 			grouplistid_to_masses.put(id, new_masses);
 		}
@@ -285,7 +285,7 @@ public class WriteFingerprintLossAnnotationFile {
 	}
 	
 	
-	public static void addSortedFeature(double mass, String fingerprint, Vector<Double> masses, Vector<String> fingerprints) {
+	public static void addSortedFeature(double mass, String fingerprint, ArrayList<Double> masses, ArrayList<String> fingerprints) {
 		int index = 0;
 		while(index < masses.size() && masses.get(index) < mass) {
 			index++;
@@ -305,7 +305,7 @@ public class WriteFingerprintLossAnnotationFile {
 		return parameters;
 	}
 	
-	public static void print(Vector<Double> peakMassesSorted, Vector<String> fingerprintsSorted) {
+	public static void print(ArrayList<Double> peakMassesSorted, ArrayList<String> fingerprintsSorted) {
 		for(int i = 0; i < peakMassesSorted.size(); i++) {
 			System.out.println(peakMassesSorted.get(i) + " " + fingerprintsSorted.get(i));
 		}

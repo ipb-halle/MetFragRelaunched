@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -51,10 +51,10 @@ public class OnlinePubChemDatabase extends AbstractDatabase {
 		Logger.getLogger("org.apache.axiom.util.stax.dialect.StAXDialectDetector").setLevel(Level.ERROR);
 	}
 
-	public java.util.Vector<String> getCandidateIdentifiers() throws Exception {
+	public java.util.ArrayList<String> getCandidateIdentifiers() throws Exception {
 		if(this.settings.containsKey(VariableNames.PROCESS_STATUS_OBJECT_NAME) && this.settings.get(VariableNames.PROCESS_STATUS_OBJECT_NAME) != null)
 			((ProcessingStatus)this.settings.get(VariableNames.PROCESS_STATUS_OBJECT_NAME)).setRetrievingStatusString("Retrieving Candidates");
-		java.util.Vector<String> identifiers = null;
+		java.util.ArrayList<String> identifiers = null;
 		logger.info("Fetching candidates from PubChem");
 		if(settings.get(VariableNames.PRECURSOR_DATABASE_IDS_NAME) != null) 
 			identifiers = this.getCandidateIdentifiers((String[])settings.get(VariableNames.PRECURSOR_DATABASE_IDS_NAME));
@@ -66,7 +66,7 @@ public class OnlinePubChemDatabase extends AbstractDatabase {
 		//	statusString = "Fetching " + identifiers.size() + " Candidates";
 			return identifiers;
 		}
-		return new java.util.Vector<String>();
+		return new java.util.ArrayList<String>();
 	}
 
 	/**
@@ -74,14 +74,14 @@ public class OnlinePubChemDatabase extends AbstractDatabase {
 	 * query is performed via eutils API
 	 * @throws Exception 
 	 */
-	public java.util.Vector<String> getCandidateIdentifiers(double monoisotopicMass, double relativeMassDeviation) throws Exception  {
+	public java.util.ArrayList<String> getCandidateIdentifiers(double monoisotopicMass, double relativeMassDeviation) throws Exception  {
 		double mzabs = MathTools.calculateAbsoluteDeviation(monoisotopicMass, relativeMassDeviation);
 		double minMass = monoisotopicMass - mzabs;
 		double maxMass = monoisotopicMass + mzabs;
 
 		String urlname = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pccompound&term=" + minMass + "[MIMass]:" + maxMass + "[MIMass]&retmode=json&retmax=100000";
 		java.io.InputStream stream = HelperFunctions.getInputStreamFromURL(urlname);
-		if(stream == null) return new Vector<String>();
+		if(stream == null) return new ArrayList<String>();
 		JSONParser parser = new JSONParser();
 		JSONObject jsonObject = (JSONObject)parser.parse(new java.io.InputStreamReader(stream));
 		stream.close();
@@ -90,13 +90,13 @@ public class OnlinePubChemDatabase extends AbstractDatabase {
 			logger.error("Error: Could not create JSON object for fetching candidates by mass.");
 			throw new Exception();
 		}
-		Vector<String> cids = new Vector<String>();
+		ArrayList<String> cids = new ArrayList<String>();
 		JSONArray jsonArray = (JSONArray)((JSONObject)jsonObject.get("esearchresult")).get("idlist");
 		Object[] objs = jsonArray.toArray();
 		for(int k = 0; k < objs.length; k++) {
 			cids.add((String)objs[k]);
 		}
-		//Vector<String> retrievedHits = this.savingRetrievedHits(cids);
+		//ArrayList<String> retrievedHits = this.savingRetrievedHits(cids);
 		//if(retrievedHits == null) throw new Exception();
 		//return retrievedHits;
 		return cids;
@@ -106,14 +106,14 @@ public class OnlinePubChemDatabase extends AbstractDatabase {
 	 * get cids based on molecular formula
 	 * query is performed via PUB REST API
 	 */
-	public java.util.Vector<String> getCandidateIdentifiers(String molecularFormula) throws Exception {
+	public java.util.ArrayList<String> getCandidateIdentifiers(String molecularFormula) throws Exception {
 		this.formulaSearch = true;
 		String urlname = "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/formula/" + molecularFormula + "/TXT";
 		/*
 		 * get stream to retrieve listkey
 		 */
 		java.io.InputStream stream = HelperFunctions.getInputStreamFromURL(urlname);
-		if(stream == null) return new Vector<String>();
+		if(stream == null) return new ArrayList<String>();
 		java.io.BufferedReader breader = new java.io.BufferedReader(new java.io.InputStreamReader(stream));
 		String listKey = "";
 		logger.trace(urlname);
@@ -125,14 +125,14 @@ public class OnlinePubChemDatabase extends AbstractDatabase {
 		}
 	
 		stream.close();
-		if(listKey.length() == 0) return new Vector<String>();
+		if(listKey.length() == 0) return new ArrayList<String>();
 		/*
 		 * build url to get cids
 		 */
 		urlname = "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/listkey/" + listKey + "/cids/TXT";
 		logger.trace(urlname);
 		stream = HelperFunctions.getInputStreamFromURL(urlname);
-		java.util.Vector<String> cids = new Vector<String>();
+		java.util.ArrayList<String> cids = new ArrayList<String>();
 		if(stream == null) {
 			return cids;
 		}
@@ -166,7 +166,7 @@ public class OnlinePubChemDatabase extends AbstractDatabase {
 		}
 		stream.close();
 		breader.close();
-		//Vector<String> retrievedHits = savingRetrievedHits(cids);
+		//ArrayList<String> retrievedHits = savingRetrievedHits(cids);
 		//if(retrievedHits == null) throw new Exception();
 		//return retrievedHits;
 		return cids;
@@ -175,9 +175,9 @@ public class OnlinePubChemDatabase extends AbstractDatabase {
 	/**
 	 * 
 	 */
-	public java.util.Vector<String> getCandidateIdentifiers(String[] identifiers) throws Exception 
+	public java.util.ArrayList<String> getCandidateIdentifiers(String[] identifiers) throws Exception 
 	{
-		Vector<String> cids = null;
+		ArrayList<String> cids = null;
 		cids = this.savingRetrievedHits(identifiers);
 		if(cids != null)
 			return cids;
@@ -187,13 +187,13 @@ public class OnlinePubChemDatabase extends AbstractDatabase {
 	/**
 	 * 
 	 */
-	public java.util.Vector<String> getCandidateIdentifiers(Vector<String> identifiers) throws Exception {
+	public java.util.ArrayList<String> getCandidateIdentifiers(ArrayList<String> identifiers) throws Exception {
 		logger.info("Fetching candidates from PubChem");
-		Vector<String> cids = null;
+		ArrayList<String> cids = null;
 		cids = this.savingRetrievedHits(identifiers);
 		if(cids != null)
 			return cids;
-		else return new Vector<String>();
+		else return new ArrayList<String>();
 	}
 
 	/**
@@ -201,7 +201,7 @@ public class OnlinePubChemDatabase extends AbstractDatabase {
 	 * 
 	 */
 	public ICandidate getCandidateByIdentifier(String identifier) throws Exception {
-		Vector<String> ids = this.savingRetrievedHits(new String[] {identifier});
+		ArrayList<String> ids = this.savingRetrievedHits(new String[] {identifier});
 		if(ids == null || ids.size() == 0) return null;
 		if(this.cidToInChIs.get(identifier) == null)
 			return null;
@@ -224,8 +224,8 @@ public class OnlinePubChemDatabase extends AbstractDatabase {
 	 * @throws Exception 
 	 * 
 	 */
-	public CandidateList getCandidateByIdentifier(java.util.Vector<String> identifiers) throws Exception {
-		Vector<String> ids = this.savingRetrievedHits(identifiers);
+	public CandidateList getCandidateByIdentifier(java.util.ArrayList<String> identifiers) throws Exception {
+		ArrayList<String> ids = this.savingRetrievedHits(identifiers);
 		CandidateList candidates = new CandidateList(); 
 		if(ids == null || ids.size() == 0) return candidates;
 
@@ -269,12 +269,12 @@ public class OnlinePubChemDatabase extends AbstractDatabase {
 	 * @param cidsVec
 	 * @return
 	 */
-	private Vector<String> savingRetrievedHits(String[] cidsVec) throws Exception {
+	private ArrayList<String> savingRetrievedHits(String[] cidsVec) throws Exception {
 		String idString = "";
 		if(cidsVec == null || cidsVec.length == 0)
-			return new Vector<String>(); 
+			return new ArrayList<String>(); 
 
-		java.util.Vector<String> retrievedCandidates = new Vector<String>();
+		java.util.ArrayList<String> retrievedCandidates = new ArrayList<String>();
 		for(int i = 0; i < cidsVec.length; i++) {
 			idString += "," + cidsVec[i];
 			if((i % 100 == 0 && i != 0) || (i == cidsVec.length - 1)) {
@@ -282,7 +282,7 @@ public class OnlinePubChemDatabase extends AbstractDatabase {
 				String urlname = "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/" + idString + "/property/inchi,XLogP,InChIKey,MolecularFormula,IsotopeAtomCount,IsomericSMILES,MonoisotopicMass/CSV";
 				logger.trace(urlname);
 				java.io.InputStream stream = HelperFunctions.getInputStreamFromURL(urlname);
-				if(stream == null) return new Vector<String>();
+				if(stream == null) return new ArrayList<String>();
 				java.io.BufferedReader breader = new java.io.BufferedReader(new java.io.InputStreamReader(stream));
 				try {
 					String line = "";
@@ -338,7 +338,7 @@ public class OnlinePubChemDatabase extends AbstractDatabase {
 	 * @param cidsVec
 	 * @return
 	 */
-	private Vector<String> savingRetrievedHits(Vector<String> cidsVec) throws Exception {
+	private ArrayList<String> savingRetrievedHits(ArrayList<String> cidsVec) throws Exception {
 		String[] cids = new String[cidsVec.size()];
 		for(int i = 0; i < cids.length; i++) {
 			cids[i] = cidsVec.get(i);
@@ -361,7 +361,7 @@ public class OnlinePubChemDatabase extends AbstractDatabase {
 	 * 
 	 * @param cidsVec
 	 */
-	protected void assignTitleNames(Vector<String> cidsVec) {
+	protected void assignTitleNames(ArrayList<String> cidsVec) {
 		String idString = "";
 		this.cidToTitleNames = new java.util.HashMap<String, String>();
 		if(cidsVec == null || cidsVec.size() == 0)

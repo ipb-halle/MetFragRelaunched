@@ -1,6 +1,6 @@
 package de.ipbhalle.metfrag.database;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import de.ipbhalle.metfraglib.database.LocalPSVDatabase;
 import de.ipbhalle.metfraglib.database.OnlineExtendedPubChemDatabase;
@@ -24,7 +24,7 @@ public class DownloadEntriesFromPubChem {
 		MetFragGlobalSettings settingsIn = new MetFragGlobalSettings();
 		settingsIn.set(VariableNames.LOCAL_DATABASE_PATH_NAME, filenameIn);
 		LocalPSVDatabase dbIn = new LocalPSVDatabase(settingsIn);
-		Vector<String> identifiers = null;
+		ArrayList<String> identifiers = null;
 		try {
 			identifiers = dbIn.getCandidateIdentifiers();
 		} catch (MultipleHeadersFoundInInputDatabaseException e1) {

@@ -27,7 +27,7 @@ public class CheckPubChemMetaInformationDatabase {
 	public void testIdentifierSearch() {
 		this.database = new OnlineExtendedPubChemDatabase(this.settings);
 		try {
-			java.util.Vector<String> identifiers = this.database.getCandidateIdentifiers(new String[] {"50465"});
+			java.util.ArrayList<String> identifiers = this.database.getCandidateIdentifiers(new String[] {"50465"});
 			CandidateList candidateList = this.database.getCandidateByIdentifier(identifiers);
 			assertTrue("No result for in candidate list", candidateList.getNumberElements() > 0);;
 			assertTrue("Could not fetch references", (Double)candidateList.getElement(0).getProperty(VariableNames.PUBCHEM_NUMBER_PUBMED_REFERENCES_NAME) > 0);

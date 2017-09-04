@@ -156,7 +156,7 @@ public class PrecursorCandidate implements ICandidate {
 	
 	public String[] getPropertyNames() {
 		java.util.Enumeration<?> keys = this.properties.keys();
-		java.util.Vector<String> keys_vector = new java.util.Vector<String>();
+		java.util.ArrayList<String> keys_vector = new java.util.ArrayList<String>();
 		while(keys.hasMoreElements()) {
 			keys_vector.add((String)keys.nextElement());
 		}

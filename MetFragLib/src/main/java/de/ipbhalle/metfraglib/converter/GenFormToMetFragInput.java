@@ -52,8 +52,8 @@ public class GenFormToMetFragInput {
 		try {
 			breader = new BufferedReader(new FileReader(new File(filename)));
 			String line = "";
-			java.util.Vector<Double> mzs = new java.util.Vector<Double>();
-			java.util.Vector<Double> ints = new java.util.Vector<Double>();
+			java.util.ArrayList<Double> mzs = new java.util.ArrayList<Double>();
+			java.util.ArrayList<Double> ints = new java.util.ArrayList<Double>();
 			while((line = breader.readLine()) != null) {
 				line = line.trim();
 				if(line.startsWith("#")) continue;

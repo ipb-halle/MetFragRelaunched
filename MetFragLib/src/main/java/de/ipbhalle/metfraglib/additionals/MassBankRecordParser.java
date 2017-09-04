@@ -68,7 +68,7 @@ public class MassBankRecordParser {
 
 		boolean readPeaks = false;
 
-		java.util.Vector<String> peakLines = new java.util.Vector<String>();
+		java.util.ArrayList<String> peakLines = new java.util.ArrayList<String>();
 		try {
 			BufferedReader in = new BufferedReader(new FileReader(filename));
 			String line = in.readLine();

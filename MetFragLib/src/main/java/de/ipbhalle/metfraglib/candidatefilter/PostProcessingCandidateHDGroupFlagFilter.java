@@ -18,7 +18,7 @@ public class PostProcessingCandidateHDGroupFlagFilter extends AbstractPostProces
 		this.numberPostFilteredCandidates = 0;
 		if(candidateList.getNumberElements() == 0) return candidateList;
 		CandidateList filteredCandidateList = new SortedScoredCandidateList();
-		java.util.Vector<String> seenHDGroupFlags = new java.util.Vector<String>();
+		java.util.ArrayList<String> seenHDGroupFlags = new java.util.ArrayList<String>();
 		java.util.HashMap<String, MatchList> hdGroupFlagToMatchList = new java.util.HashMap<String, MatchList>();
 		java.util.HashMap<String, IMolecularStructure> hdGroupFlagToMolecularStructure = new java.util.HashMap<String, IMolecularStructure>();
 		java.util.HashMap<String, java.util.Hashtable<String, Object>> hdGroupFlagToProperties = new java.util.HashMap<String, java.util.Hashtable<String, Object>>();
