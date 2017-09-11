@@ -49,7 +49,6 @@ public class LocalPSVDatabase extends AbstractDatabase {
 		for (ICandidate candidate : candidates) {
 			identifiers.add(candidate.getIdentifier());
 		}
-		System.out.println("getCandidateIdentifiers");
 		return identifiers;
 	}
 

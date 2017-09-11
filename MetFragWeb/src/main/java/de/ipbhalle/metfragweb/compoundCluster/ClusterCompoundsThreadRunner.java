@@ -2,8 +2,6 @@ package de.ipbhalle.metfragweb.compoundCluster;
 
 import java.io.Serializable;
 
-import javax.annotation.PostConstruct;
-
 import org.primefaces.model.DefaultOrganigramNode;
 import org.primefaces.model.OrganigramNode;
 
@@ -41,7 +39,6 @@ public class ClusterCompoundsThreadRunner extends ThreadRunner implements Serial
 		this.filteredMetFragResultsContainer = filteredMetFragResultsContainer;
 	}
 	
-	@PostConstruct
 	@Override
 	public void run() {
 		
