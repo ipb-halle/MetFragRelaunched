@@ -1539,8 +1539,8 @@ public class BeanSettingsContainer {
 		}
 	}
 
-	public java.util.Vector<String> getExcludeKeys() {
-		java.util.Vector<String> excludeKeys = new java.util.Vector<String>();
+	public java.util.ArrayList<String> getExcludeKeys() {
+		java.util.ArrayList<String> excludeKeys = new java.util.ArrayList<String>();
 		excludeKeys.add(VariableNames.FEEDBACK_EMAIL_HOST);
 		excludeKeys.add(VariableNames.FEEDBACK_EMAIL_PASS);
 		excludeKeys.add(VariableNames.FEEDBACK_EMAIL_USER);

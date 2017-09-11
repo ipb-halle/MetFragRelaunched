@@ -11,10 +11,10 @@ import de.ipbhalle.metfraglib.database.LocalPSVDatabase;
 import de.ipbhalle.metfraglib.exceptions.MultipleHeadersFoundInInputDatabaseException;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.interfaces.IDatabase;
+import de.ipbhalle.metfraglib.interfaces.IPeakListReader;
 import de.ipbhalle.metfraglib.list.CandidateList;
 import de.ipbhalle.metfraglib.parameter.SettingsChecker;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
-import de.ipbhalle.metfraglib.peaklistreader.FilteredTandemMassPeakListReader;
 import de.ipbhalle.metfraglib.scoreinitialisation.AutomatedLossFingerprintAnnotationScoreInitialiser;
 import de.ipbhalle.metfraglib.scoreinitialisation.AutomatedPeakFingerprintAnnotationScoreInitialiser;
 import de.ipbhalle.metfraglib.settings.MetFragGlobalSettings;
@@ -142,9 +142,9 @@ public class CalculateScoreFromResultFilePeakLossThreadFP {
 				System.out.println("Error checking settings for " + id);
 				continue;
 			}
-			
-			FilteredTandemMassPeakListReader reader = new FilteredTandemMassPeakListReader(settings);
-			settings.set(VariableNames.PEAK_LIST_NAME, reader.read());
+			IPeakListReader peakListReader = (IPeakListReader) Class.forName((String)settings.get(VariableNames.METFRAG_PEAK_LIST_READER_NAME)).getConstructor(Settings.class).newInstance(settings);
+
+			settings.set(VariableNames.PEAK_LIST_NAME, peakListReader.read());
 			
 			
 			ProcessThread thread = new CalculateScoreFromResultFilePeakLossThreadFP().new ProcessThread(settings, outputfolder);
@@ -309,10 +309,16 @@ public class CalculateScoreFromResultFilePeakLossThreadFP {
 				 * check whether the single run was successful
 				 */
 				ICandidate currentCandidate = candidates.getElement(k);
-				String fps = (String)currentCandidate.getProperty("FragmentFingerprintOfExplPeaks");
-				if(fps.equals("NA")) {
-					currentCandidate.setProperty("PeakMatchList", new ArrayList<Match>());
-					continue;
+				String fps = "";
+				try {
+					fps = (String)currentCandidate.getProperty("FragmentFingerprintOfExplPeaks");
+					if(fps.equals("NA")) {
+						currentCandidate.setProperty("PeakMatchList", new ArrayList<Match>());
+						continue;
+					}
+				} catch(Exception e) {
+					System.err.println((String)settings.get(VariableNames.LOCAL_DATABASE_PATH_NAME) + ": Error at candidate " + k);
+					
 				}
 				String[] tmp = fps.split(";");
 				ArrayList<Match> matchlist = new ArrayList<Match>();

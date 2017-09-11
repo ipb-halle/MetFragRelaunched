@@ -35,61 +35,61 @@
 			<h:panelGroup rendered="#{metFragWebBean.compoundsClusterReady}">
 
 				<p:growl id="resultsClusterGrowl" showDetail="true" />
-
-				<p:organigram id="compoundClusterTree"
-					widgetVar="compoundClusterTree"
-					value="#{metFragWebBean.compoundsClusterRoot}" var="node"
-					leafNodeConnectorHeight="0" autoScrollToSelection="false"
-					zoom="true" selection="#{metFragWebBean.selectedNode}">
-
-					<p:ajax event="select" process="@this"
-						listener="#{metFragWebBean.nodeSelectListener}" />
-					<p:ajax event="contextmenu" process="@this" />
-					
-					<p:organigramNode>
-						<h:outputText value="#{node.data}" />
-					</p:organigramNode>
-					
-					<p:organigramNode type="compoundGroup" styleClass="compoundGroup">
-						<h:outputText value="#{node.data.maxScore}" />
-						<br/>
-						<h:outputText value="#{node.data.leafsUnderneath}" />
-					</p:organigramNode>
-
-					<p:organigramNode id="compoundNode" type="compound"
-						styleClass="compound">
-						<span id="cluster_compound_#{node.data.name}">#{node.data.name}</span>
-						<div id="tooltip_cluster_compound_node_#{node.data.name}" 
-							class="ui-tooltip ui-widget ui-tooltip-right" 
-							style="background-color: white; background-image: none;">
-							<div class="ui-tooltip-arrow"></div>
-							<div class="ui-tooltip-text ui-shadow ui-corner-all">
-								<img id="img_cluster_compound_node_#{node.data.name}" src="#{node.data.imageAddress}" alt="images/ajaxloadingbar.gif" />
+				<h:form id="compoundClusterTreeForm">
+					<p:organigram id="compoundClusterTree"
+						widgetVar="compoundClusterTree"
+						value="#{metFragWebBean.compoundsClusterRoot}" var="node"
+						leafNodeConnectorHeight="0" autoScrollToSelection="false"
+						zoom="true" selection="#{metFragWebBean.selectedNode}">
+	
+						<p:ajax event="select" process="@this"
+							listener="#{metFragWebBean.nodeSelectListener}" />
+						<p:ajax event="contextmenu" process="@this" />
+						
+						<p:organigramNode>
+							<h:outputText value="#{node.data}" />
+						</p:organigramNode>
+						
+						<p:organigramNode type="compoundGroup" styleClass="compoundGroup">
+							<h:outputText value="#{node.data.maxScore}" />
+							<br/>
+							<h:outputText value="#{node.data.leafsUnderneath}" />
+						</p:organigramNode>
+	
+						<p:organigramNode id="compoundNode" type="compound"
+							styleClass="compound">
+							<span id="cluster_compound_#{node.data.name}">#{node.data.name}</span>
+							<div id="tooltip_cluster_compound_node_#{node.data.name}" 
+								class="ui-tooltip ui-widget ui-tooltip-right" 
+								style="background-color: white; background-image: none;">
+								<div class="ui-tooltip-arrow"></div>
+								<div class="ui-tooltip-text ui-shadow ui-corner-all">
+									<img id="img_cluster_compound_node_#{node.data.name}" src="#{node.data.imageAddress}" alt="images/ajaxloadingbar.gif" />
+								</div>
 							</div>
-						</div>
-						<script type="text/javascript">
-							$(function(){PrimeFaces.cw("Tooltip","widget_mainForm_mainAccordion_compoundClusterTree_#{node.data.name}",{id:"tooltip_cluster_compound_node_#{node.data.name}",showEffect:"fade",hideEffect:"fade",target:"cluster_compound_#{node.data.name}"});});
-						</script>
-					</p:organigramNode>
-				</p:organigram>
-
-				<p:contextMenu for="compoundClusterTree" nodeType="compoundGroup">
-					<p:menuitem value="Filter selected nodes"
-						update="mainForm:mainAccordion:MetFragResultsTable
-      						mainForm:mainAccordion:peakFilterPanel 
-      						mainForm:mainAccordion:scoreDistributionPlot 
-      						mainForm:mainAccordion:resultsClusterGrowl"
-						actionListener="#{metFragWebBean.displaySelectedClusterCompounds}" />
-					<p:menuitem value="Expand complete sub tree" ajax="true"
-						update="compoundClusterTree"
-						actionListener="#{metFragWebBean.expandSelectedClusterCompounds}" />
-					<p:menuitem value="Collapse complete subtree"
-						update="compoundClusterTree"
-						actionListener="#{metFragWebBean.collapseSelectedClusterCompounds}" />
-				</p:contextMenu>
+							<script type="text/javascript">
+								$(function(){PrimeFaces.cw("Tooltip","widget_mainForm_mainAccordion_compoundClusterTree_#{node.data.name}",{id:"tooltip_cluster_compound_node_#{node.data.name}",showEffect:"fade",hideEffect:"fade",target:"cluster_compound_#{node.data.name}"});});
+							</script>
+						</p:organigramNode>
+					</p:organigram>
+					<p:contextMenu for="compoundClusterTree" nodeType="compoundGroup">
+						<p:menuitem value="Filter selected nodes"
+							update="mainForm:mainAccordion:MetFragResultsTable
+	      						mainForm:mainAccordion:peakFilterPanel 
+	      						mainForm:mainAccordion:scoreDistributionPlot 
+	      						mainForm:mainAccordion:resultsClusterGrowl"
+							actionListener="#{metFragWebBean.displaySelectedClusterCompounds}" />
+						<p:menuitem value="Expand complete sub tree" ajax="true"
+							update="compoundClusterTree"
+							actionListener="#{metFragWebBean.expandSelectedClusterCompounds}" />
+						<p:menuitem value="Collapse complete subtree"
+							update="compoundClusterTree"
+							actionListener="#{metFragWebBean.collapseSelectedClusterCompounds}" />
+					</p:contextMenu>
+				</h:form>
 			</h:panelGroup>
 		</h:panelGroup>
-		<p:commandButton value="Update Organigram" update="compoundClusterTree" />
+		<p:commandButton value="Update Organigram" update="mainForm:mainAccordion:compoundClusterTreeForm:compoundClusterTree" />
 	</ui:composition>
 
 </h:body>

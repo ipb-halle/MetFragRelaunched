@@ -75,6 +75,7 @@ import de.ipbhalle.metfraglib.writer.CandidateListWriterExtendedPSV;
 import de.ipbhalle.metfraglib.writer.CandidateListWriterExtendedFragmentsXLS;
 import de.ipbhalle.metfraglib.writer.CandidateListWriterExtendedXLS;
 import de.ipbhalle.metfraglib.writer.CandidateListWriterFragmentSmilesPSV;
+import de.ipbhalle.metfraglib.writer.CandidateListWriterLossFragmentSmilesExtendedPSV;
 import de.ipbhalle.metfraglib.writer.CandidateListWriterSDF;
 import de.ipbhalle.metfraglib.writer.CandidateListWriterXLS;
 import de.ipbhalle.metfraglib.writer.FragmentListWriterSDF;
@@ -195,6 +196,7 @@ public class ClassNames {
 		candidateListWriterNameToClassName.put("ExtendedPSV", CandidateListWriterExtendedPSV.class.getName());
 		candidateListWriterNameToClassName.put("FragmentSmilesPSV", CandidateListWriterFragmentSmilesPSV.class.getName());
 		candidateListWriterNameToClassName.put("LossFragmentSmilesPSV", CandidateListWriterLossFragmentSmilesPSV.class.getName());
+		candidateListWriterNameToClassName.put("LossFragmentSmilesExtendedPSV", CandidateListWriterLossFragmentSmilesExtendedPSV.class.getName());
 		candidateListWriterNameToClassName.put("SDF", CandidateListWriterSDF.class.getName());
 		candidateListWriterNameToClassName.put("XLS", CandidateListWriterXLS.class.getName());
 		candidateListWriterNameToClassName.put("ExtendedXLS", CandidateListWriterExtendedXLS.class.getName());
