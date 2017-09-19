@@ -1,3 +1,6 @@
+[![Build
+Status](https://travis-ci.org/c-ruttkies/MetFragRelaunched.svg?branch=master)](https://travis-ci.org/c-ruttkies/MetFragRelaunched)
+
 MetFrag relaunched
 ==================
 
