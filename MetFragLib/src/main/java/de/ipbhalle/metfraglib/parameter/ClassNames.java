@@ -46,7 +46,6 @@ import de.ipbhalle.metfraglib.score.HDFragmentPairScore;
 import de.ipbhalle.metfraglib.score.HDNewFragmenterScore;
 import de.ipbhalle.metfraglib.score.IndividualMoNASpectralSimilarity;
 import de.ipbhalle.metfraglib.score.MatchSpectrumCosineSimilarityScore;
-import de.ipbhalle.metfraglib.score.NewFragmenterHierarchicalScore;
 import de.ipbhalle.metfraglib.score.NewFragmenterScore;
 import de.ipbhalle.metfraglib.score.NewFragmenterLipidScore;
 import de.ipbhalle.metfraglib.score.NewFragmenterUniqueFormulaScore;
@@ -91,6 +90,7 @@ public class ClassNames {
 	private static final java.util.HashMap<String, String> fragmentListWriterNameToClassName;
 	private static final java.util.HashMap<String, String> preProcessingCandidateFilterNameToClassName;
 	private static final java.util.HashMap<String, String> postProcessingCandidateFilterNameToClassName;
+	private static final java.util.HashMap<String, String> fingerprinterNameToClassName;
 	
 	static {
 		/*
@@ -103,9 +103,18 @@ public class ClassNames {
 		scoreNameToScoreInitialiserClassName = new java.util.HashMap<String, String>();
 		preProcessingCandidateFilterNameToClassName = new java.util.HashMap<String, String>();
 		fragmentListWriterNameToClassName = new java.util.HashMap<String, String>();
+		fingerprinterNameToClassName = new java.util.HashMap<String, String>();
 		
+		fingerprinterNameToClassName.put("MACCSFingerprinter", org.openscience.cdk.fingerprint.MACCSFingerprinter.class.getName());
+		fingerprinterNameToClassName.put("CircularFingerprinter", org.openscience.cdk.fingerprint.CircularFingerprinter.class.getName());
+		fingerprinterNameToClassName.put("LingoFingerprinter", org.openscience.cdk.fingerprint.LingoFingerprinter.class.getName());
+		fingerprinterNameToClassName.put("GraphOnlyFingerprinter", org.openscience.cdk.fingerprint.GraphOnlyFingerprinter.class.getName());
+		fingerprinterNameToClassName.put("ShortestPathFingerprinter", org.openscience.cdk.fingerprint.ShortestPathFingerprinter.class.getName());
+		
+		/*
+		 * score to class
+		 */
 		scoreNameToClassName.put(VariableNames.METFRAG_FRAGMENTER_SCORE_NAME, NewFragmenterScore.class.getName());
-		scoreNameToClassName.put("FragmenterHierarchicalScore", NewFragmenterHierarchicalScore.class.getName());
 		scoreNameToClassName.put("FragmenterLipidScore", NewFragmenterLipidScore.class.getName());
 		scoreNameToClassName.put("FragmenterUniqueFormulaScore", NewFragmenterUniqueFormulaScore.class.getName());
 		scoreNameToClassName.put("SmartsSubstructureInclusionScore", SmartsSubstructureInclusionScore.class.getName());
@@ -258,5 +267,9 @@ public class ClassNames {
 	
 	public static boolean containsScore(String scoreName) {
 		return scoreNameToClassName.containsKey(scoreName);
+	}
+	
+	public static boolean containsFingerprintType(String scoreName) {
+		return fingerprinterNameToClassName.containsKey(scoreName);
 	}
 }

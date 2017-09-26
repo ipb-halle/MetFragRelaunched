@@ -331,6 +331,7 @@ public class UserOutputDataHandler {
 			resource = new org.primefaces.model.DefaultStreamedContent(new java.io.FileInputStream(new java.io.File(filePath)), mimetype, "MetFragWeb_Candidates." + format);
 			errorMessages.removeKey("buttonDownloadResultsError");
 		} catch (Exception e) {
+			e.printStackTrace();
 			errorMessages.setMessage("buttonDownloadResultsError", "Error when downloading candidates.");
 			return resource;
 		}

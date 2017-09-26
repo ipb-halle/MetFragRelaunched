@@ -121,6 +121,7 @@ public class CombinedSingleCandidateMetFragProcess implements Runnable {
 		//this.shallowNullify();
 		//this.scoredPrecursorCandidates[0].nullify();
 		this.fas.shallowNullify();
+		this.scoredPrecursorCandidates[0].resetPrecursorMolecule();
 		this.wasSuccessful = true;
 	}
 	

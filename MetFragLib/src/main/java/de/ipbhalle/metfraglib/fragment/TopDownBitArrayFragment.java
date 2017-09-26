@@ -1,6 +1,7 @@
 package de.ipbhalle.metfraglib.fragment;
 
 import de.ipbhalle.metfraglib.exceptions.AtomTypeNotKnownFromInputListException;
+import de.ipbhalle.metfraglib.interfaces.IMolecularStructure;
 import de.ipbhalle.metfraglib.precursor.BitArrayPrecursor;
 import de.ipbhalle.metfraglib.precursor.TopDownBitArrayPrecursor;
 
@@ -17,11 +18,11 @@ public class TopDownBitArrayFragment extends de.ipbhalle.metfraglib.fragment.Abs
 		super(precursor);
 	}
 
-	public TopDownBitArrayFragment clone() {
+	public TopDownBitArrayFragment clone(IMolecularStructure precursorMolecule) {
 		TopDownBitArrayFragment clone = null;
 		try {
 			clone = new TopDownBitArrayFragment(
-					(TopDownBitArrayPrecursor)this.precursorMolecule, 
+					(TopDownBitArrayPrecursor)precursorMolecule, 
 					this.atomsFastBitArray.clone(), 
 					this.bondsFastBitArray.clone(), 
 					this.brokenBondsFastBitArray.clone(), 
@@ -55,7 +56,6 @@ public class TopDownBitArrayFragment extends de.ipbhalle.metfraglib.fragment.Abs
 			int numberHydrogens) throws AtomTypeNotKnownFromInputListException
 	{
 		super(precursor, atomsFastBitArray, bondsFastBitArray, brokenBondsFastBitArray);
-	//	this.initialiseMolecularFormula();
 		this.setNumberHydrogens(numberHydrogens);
 	}
 
@@ -73,25 +73,25 @@ public class TopDownBitArrayFragment extends de.ipbhalle.metfraglib.fragment.Abs
 	 * @param bondAtoms
 	 * @return
 	 */
-	public AbstractTopDownBitArrayFragment[] traverseMolecule(short bondIndexToRemove, short[] indecesOfBondConnectedAtoms) {
+	public AbstractTopDownBitArrayFragment[] traverseMolecule(IMolecularStructure precursorMolecule, short bondIndexToRemove, short[] indecesOfBondConnectedAtoms) {
 
 		/*
 		 * generate first fragment
 		 */
-		de.ipbhalle.metfraglib.FastBitArray atomArrayOfNewFragment_1 = new de.ipbhalle.metfraglib.FastBitArray(this.precursorMolecule.getNonHydrogenAtomCount());
-		de.ipbhalle.metfraglib.FastBitArray bondArrayOfNewFragment_1 = new de.ipbhalle.metfraglib.FastBitArray(this.precursorMolecule.getNonHydrogenBondCount());
+		de.ipbhalle.metfraglib.FastBitArray atomArrayOfNewFragment_1 = new de.ipbhalle.metfraglib.FastBitArray(precursorMolecule.getNonHydrogenAtomCount());
+		de.ipbhalle.metfraglib.FastBitArray bondArrayOfNewFragment_1 = new de.ipbhalle.metfraglib.FastBitArray(precursorMolecule.getNonHydrogenBondCount());
 		de.ipbhalle.metfraglib.FastBitArray brokenBondArrayOfNewFragment_1 = this.getBrokenBondsFastBitArray().clone();
 		int[] numberHydrogensOfNewFragment = new int[1];
 		
 		/*
 		 * traverse to first direction from atomIndex connected by broken bond
 		 */
-		boolean stillOneFragment = this.traverseSingleDirection(indecesOfBondConnectedAtoms[0], indecesOfBondConnectedAtoms[1], bondIndexToRemove, 
+		boolean stillOneFragment = this.traverseSingleDirection(precursorMolecule, indecesOfBondConnectedAtoms[0], indecesOfBondConnectedAtoms[1], bondIndexToRemove, 
 				atomArrayOfNewFragment_1, bondArrayOfNewFragment_1, brokenBondArrayOfNewFragment_1, numberHydrogensOfNewFragment);
 		
 		TopDownBitArrayFragment firstNewGeneratedFragment = null;
 		try {
-			firstNewGeneratedFragment = new TopDownBitArrayFragment((TopDownBitArrayPrecursor)this.precursorMolecule, atomArrayOfNewFragment_1, bondArrayOfNewFragment_1, 
+			firstNewGeneratedFragment = new TopDownBitArrayFragment((TopDownBitArrayPrecursor)precursorMolecule, atomArrayOfNewFragment_1, bondArrayOfNewFragment_1, 
 				brokenBondArrayOfNewFragment_1, numberHydrogensOfNewFragment[0]);
 		} catch (AtomTypeNotKnownFromInputListException e2) {
 			// TODO Auto-generated catch block
@@ -110,20 +110,20 @@ public class TopDownBitArrayFragment extends de.ipbhalle.metfraglib.fragment.Abs
 		/*
 		 * generate second fragment
 		 */
-		de.ipbhalle.metfraglib.FastBitArray atomArrayOfNewFragment_2 = new de.ipbhalle.metfraglib.FastBitArray(this.precursorMolecule.getNonHydrogenAtomCount());
-		de.ipbhalle.metfraglib.FastBitArray bondArrayOfNewFragment_2 = new de.ipbhalle.metfraglib.FastBitArray(this.precursorMolecule.getNonHydrogenBondCount());
+		de.ipbhalle.metfraglib.FastBitArray atomArrayOfNewFragment_2 = new de.ipbhalle.metfraglib.FastBitArray(precursorMolecule.getNonHydrogenAtomCount());
+		de.ipbhalle.metfraglib.FastBitArray bondArrayOfNewFragment_2 = new de.ipbhalle.metfraglib.FastBitArray(precursorMolecule.getNonHydrogenBondCount());
 		de.ipbhalle.metfraglib.FastBitArray brokenBondArrayOfNewFragment_2 = this.getBrokenBondsFastBitArray().clone();
 		numberHydrogensOfNewFragment[0] = 0;
 
 		/*
 		 * traverse the second direction from atomIndex connected by broken bond
 		 */
-		this.traverseSingleDirection(indecesOfBondConnectedAtoms[1], indecesOfBondConnectedAtoms[0], bondIndexToRemove, 
+		this.traverseSingleDirection(precursorMolecule, indecesOfBondConnectedAtoms[1], indecesOfBondConnectedAtoms[0], bondIndexToRemove, 
 				atomArrayOfNewFragment_2, bondArrayOfNewFragment_2, brokenBondArrayOfNewFragment_2, numberHydrogensOfNewFragment);
 
 		TopDownBitArrayFragment secondNewGeneratedFragment = null;
 		try {
-			secondNewGeneratedFragment = new TopDownBitArrayFragment((TopDownBitArrayPrecursor)this.precursorMolecule, atomArrayOfNewFragment_2, 
+			secondNewGeneratedFragment = new TopDownBitArrayFragment((TopDownBitArrayPrecursor)precursorMolecule, atomArrayOfNewFragment_2, 
 				bondArrayOfNewFragment_2, brokenBondArrayOfNewFragment_2, numberHydrogensOfNewFragment[0]);
 		} catch (AtomTypeNotKnownFromInputListException e1) {
 			// TODO Auto-generated catch block
@@ -131,20 +131,10 @@ public class TopDownBitArrayFragment extends de.ipbhalle.metfraglib.fragment.Abs
 		}
 		
 		firstNewGeneratedFragment.setTreeDepth((byte)(this.getTreeDepth() + 1));
-	//	firstNewGeneratedFragment.setAddedToQueueCounts((byte)1);
 		
 		secondNewGeneratedFragment.setTreeDepth((byte)(this.getTreeDepth() + 1));
-	//	secondNewGeneratedFragment.setAddedToQueueCounts((byte)1);
 
 		TopDownBitArrayFragment[] newFrags = { firstNewGeneratedFragment, secondNewGeneratedFragment };
-		
-		/*
-		newFrags[0].setPrecursorFragment(this);
-		newFrags[1].setPrecursorFragment(this);
-		
-		this.addChild(newFrags[0]);
-		this.addChild(newFrags[1]);
-		*/
 		
 		return newFrags;
 
@@ -162,7 +152,7 @@ public class TopDownBitArrayFragment extends de.ipbhalle.metfraglib.fragment.Abs
 	 * @param numberHydrogensOfNewFragment
 	 * @return
 	 */
-	protected boolean traverseSingleDirection(short startAtomIndex, short endAtomIndex, short bondIndexToRemove, 
+	protected boolean traverseSingleDirection(IMolecularStructure precursorMolecule, short startAtomIndex, short endAtomIndex, short bondIndexToRemove, 
 		de.ipbhalle.metfraglib.FastBitArray atomArrayOfNewFragment, de.ipbhalle.metfraglib.FastBitArray bondArrayOfNewFragment, 
 		de.ipbhalle.metfraglib.FastBitArray brokenBondArrayOfNewFragment, int[] numberHydrogensOfNewFragment) 
 	{
@@ -173,7 +163,7 @@ public class TopDownBitArrayFragment extends de.ipbhalle.metfraglib.fragment.Abs
 		 * if traversed an already visited atom, then no new fragment was
 		 * generated
 		 */
-		de.ipbhalle.metfraglib.FastBitArray visited = new de.ipbhalle.metfraglib.FastBitArray(this.precursorMolecule.getNonHydrogenAtomCount());
+		de.ipbhalle.metfraglib.FastBitArray visited = new de.ipbhalle.metfraglib.FastBitArray(precursorMolecule.getNonHydrogenAtomCount());
 		numberHydrogensOfNewFragment[0] = 0;
 
 		/*
@@ -181,7 +171,7 @@ public class TopDownBitArrayFragment extends de.ipbhalle.metfraglib.fragment.Abs
 		 */
 		java.util.Stack<short[]> toProcessConnectedAtoms = new java.util.Stack<short[]>();
 		java.util.Stack<Short> toProcessAtom = new java.util.Stack<Short>();
-		toProcessConnectedAtoms.push(((BitArrayPrecursor)this.precursorMolecule).getConnectedAtomIndecesOfAtomIndex(startAtomIndex));
+		toProcessConnectedAtoms.push(((BitArrayPrecursor)precursorMolecule).getConnectedAtomIndecesOfAtomIndex(startAtomIndex));
 		toProcessAtom.push(startAtomIndex);
 		visited.set(startAtomIndex);
 		boolean stillOneFragment = false;
@@ -190,7 +180,7 @@ public class TopDownBitArrayFragment extends de.ipbhalle.metfraglib.fragment.Abs
 		 * atom is of the one direction of cutted bond
 		 */
 		atomArrayOfNewFragment.set(startAtomIndex);
-		numberHydrogensOfNewFragment[0] += ((BitArrayPrecursor)this.precursorMolecule).getNumberHydrogensConnectedToAtomIndex(startAtomIndex);
+		numberHydrogensOfNewFragment[0] += ((BitArrayPrecursor)precursorMolecule).getNumberHydrogensConnectedToAtomIndex(startAtomIndex);
 		while (!toProcessConnectedAtoms.isEmpty()) {
 			short[] nextAtoms = toProcessConnectedAtoms.pop();
 			short midAtom = toProcessAtom.pop();
@@ -198,7 +188,7 @@ public class TopDownBitArrayFragment extends de.ipbhalle.metfraglib.fragment.Abs
 				/*
 				 *  did we visit the current atom already?
 				 */
-				short currentBondNumber = (short)(((BitArrayPrecursor)this.precursorMolecule).getBondIndexFromAtomAdjacencyList(nextAtoms[i], midAtom) - 1);
+				short currentBondNumber = (short)(((BitArrayPrecursor)precursorMolecule).getBondIndexFromAtomAdjacencyList(nextAtoms[i], midAtom) - 1);
 				
 				if (!bondFastBitArrayOfCurrentFragment.get(currentBondNumber) || currentBondNumber == bondIndexToRemove) {
 					continue;
@@ -224,9 +214,9 @@ public class TopDownBitArrayFragment extends de.ipbhalle.metfraglib.fragment.Abs
 				/*
 				 * add number of hydrogens of current atom
 				 */
-				numberHydrogensOfNewFragment[0] += ((BitArrayPrecursor)this.precursorMolecule).getNumberHydrogensConnectedToAtomIndex(nextAtoms[i]);
-				bondArrayOfNewFragment.set(((BitArrayPrecursor)this.precursorMolecule).getBondIndexFromAtomAdjacencyList(midAtom, nextAtoms[i]) - 1);
-				toProcessConnectedAtoms.push(((BitArrayPrecursor)this.precursorMolecule).getConnectedAtomIndecesOfAtomIndex(nextAtoms[i]));
+				numberHydrogensOfNewFragment[0] += ((BitArrayPrecursor)precursorMolecule).getNumberHydrogensConnectedToAtomIndex(nextAtoms[i]);
+				bondArrayOfNewFragment.set(((BitArrayPrecursor)precursorMolecule).getBondIndexFromAtomAdjacencyList(midAtom, nextAtoms[i]) - 1);
+				toProcessConnectedAtoms.push(((BitArrayPrecursor)precursorMolecule).getConnectedAtomIndecesOfAtomIndex(nextAtoms[i]));
 				toProcessAtom.push(nextAtoms[i]);
 			}
 

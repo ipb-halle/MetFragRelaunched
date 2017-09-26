@@ -2,7 +2,6 @@ package de.ipbhalle.metfraglib.writer;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 
 import de.ipbhalle.metfraglib.exceptions.RelativeIntensityNotDefinedException;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
@@ -22,7 +21,7 @@ public class HDCandidateListWriterPSV implements IWriter {
 		return this.write(list, filename, path);
 	}
 	
-	public boolean writeFile(File file, IList list, Settings settings) throws IOException {
+	public boolean writeFile(File file, IList list, Settings settings) throws Exception {
 		CandidateList candidateList = null;
 		int numberOfPeaksUsed = 0;
 		if(list instanceof ScoredCandidateList || list instanceof SortedScoredCandidateList) {
@@ -37,6 +36,7 @@ public class HDCandidateListWriterPSV implements IWriter {
 		for(int i = 0; i < candidateList.getNumberElements(); i++) {
 			int countExplainedPeaks = 0;
 			ICandidate scoredCandidate = candidateList.getElement(i);
+			scoredCandidate.initialisePrecursorCandidate();
 			if(scoredCandidate.getMatchList() != null) {
 				MatchList matchList = scoredCandidate.getMatchList();
 				for(int l = 0; l < matchList.getNumberElements(); l++) {
@@ -65,7 +65,7 @@ public class HDCandidateListWriterPSV implements IWriter {
 						continue;
 					}
 
-					String formula = scoredCandidate.getMatchList().getElement(ii).getModifiedFormulaStringOfBestMatchedFragment();
+					String formula = scoredCandidate.getMatchList().getElement(ii).getModifiedFormulaStringOfBestMatchedFragment(scoredCandidate.getPrecursorMolecule());
 					
 					sumFormulasOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + formula + ";";
 				

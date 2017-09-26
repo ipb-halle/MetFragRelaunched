@@ -4,6 +4,7 @@ import de.ipbhalle.metfraglib.exceptions.RelativeIntensityNotDefinedException;
 import de.ipbhalle.metfraglib.fragment.DefaultBitArrayFragment;
 import de.ipbhalle.metfraglib.interfaces.IFragment;
 import de.ipbhalle.metfraglib.interfaces.IMatch;
+import de.ipbhalle.metfraglib.interfaces.IMolecularStructure;
 import de.ipbhalle.metfraglib.interfaces.IPeak;
 import de.ipbhalle.metfraglib.list.FragmentList;
 import de.ipbhalle.metfraglib.parameter.Constants;
@@ -39,9 +40,9 @@ public class DefaultFragmentToPeakMatch implements IMatch {
 		this.numberOfHydrogensDifferToPeakMass = new java.util.ArrayList<Byte>();
 		this.fragmentAdductTypeIndeces = new java.util.ArrayList<Byte>();
 	}
-	
-	public String getModifiedFormulaStringOfBestMatchedFragment() {
-		String formula = "[" + this.bestMatchedFragment.getMolecularFormula().toString();
+
+	public String getModifiedFormulaStringOfBestMatchedFragment(IMolecularStructure precursorMolecule) {
+		String formula = "[" + this.bestMatchedFragment.getMolecularFormula(precursorMolecule).toString();
 		if(this.hydrogenDifferenceOfBestFragment == 1) formula += "+H]";
 		else if(this.hydrogenDifferenceOfBestFragment > 1) formula += "+" + this.hydrogenDifferenceOfBestFragment + "H]";
 		else if(this.hydrogenDifferenceOfBestFragment == -1) formula +=  "-H]";
@@ -56,8 +57,8 @@ public class DefaultFragmentToPeakMatch implements IMatch {
 		return formula;
 	}
 
-	public String getModifiedFormulaHtmlStringOfBestMatchedFragment() {
-		String formula = "[" + this.bestMatchedFragment.getMolecularFormula().toString();
+	public String getModifiedFormulaHtmlStringOfBestMatchedFragment(IMolecularStructure precursorMolecule) {
+		String formula = "[" + this.bestMatchedFragment.getMolecularFormula(precursorMolecule).toString();
 		formula = formula.replaceAll("([0-9]+)", "<sub>$1</sub>");
 		if(this.hydrogenDifferenceOfBestFragment == 1) formula += "+H]";
 		else if(this.hydrogenDifferenceOfBestFragment > 1) formula += "+" + this.hydrogenDifferenceOfBestFragment + "H]";
@@ -73,9 +74,9 @@ public class DefaultFragmentToPeakMatch implements IMatch {
 		return formula;
 	}
 	
-	public String getModifiedFormulasStringOfBestMatchedFragment() {
+	public String getModifiedFormulasStringOfBestMatchedFragment(IMolecularStructure precursorMolecule) {
 		System.out.println("here");
-		String formula = "[" + this.bestMatchedFragment.getMolecularFormula().toString();
+		String formula = "[" + this.bestMatchedFragment.getMolecularFormula(precursorMolecule).toString();
 		if(this.hydrogenDifferenceOfBestFragment == 1) formula += "+H]";
 		else if(this.hydrogenDifferenceOfBestFragment > 1) formula += "+" + this.hydrogenDifferenceOfBestFragment + "H]";
 		else if(this.hydrogenDifferenceOfBestFragment == -1) formula +=  "-H]";
@@ -89,7 +90,7 @@ public class DefaultFragmentToPeakMatch implements IMatch {
 			formula += "-";
 		String formulas = formula;
 		for(int i = 0; i < this.matchedFragmentsList.getNumberElements(); i++) {
-			formula = "[" + this.matchedFragmentsList.getElement(i).getMolecularFormula().toString();
+			formula = "[" + this.matchedFragmentsList.getElement(i).getMolecularFormula(precursorMolecule).toString();
 			if(this.getNumberOfHydrogensDifferToPeakMass(i) == 1) formula += "+H]";
 			else if(this.getNumberOfHydrogensDifferToPeakMass(i) > 1) formula += "+" + this.getNumberOfHydrogensDifferToPeakMass(i) + "H]";
 			else if(this.getNumberOfHydrogensDifferToPeakMass(i) == -1) formula +=  "-H]";
@@ -106,8 +107,8 @@ public class DefaultFragmentToPeakMatch implements IMatch {
 		return formulas;
 	}
 	
-	public String getModifiedFormulaStringOfMatchedFragment(int index) {
-		String formula = "[" + this.matchedFragmentsList.getElement(index).getMolecularFormula().toString();
+	public String getModifiedFormulaStringOfMatchedFragment(IMolecularStructure precursorMolecule, int index) {
+		String formula = "[" + this.matchedFragmentsList.getElement(index).getMolecularFormula(precursorMolecule).toString();
 		if(this.getNumberOfHydrogensDifferToPeakMass(index) == 1) formula += "+H]";
 		else if(this.getNumberOfHydrogensDifferToPeakMass(index) > 1) formula += "+" + this.getNumberOfHydrogensDifferToPeakMass(index) + "H]";
 		else if(this.getNumberOfHydrogensDifferToPeakMass(index) == -1) formula +=  "-H]";

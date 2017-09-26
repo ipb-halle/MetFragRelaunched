@@ -6,28 +6,26 @@ import de.ipbhalle.metfraglib.exceptions.AtomTypeNotKnownFromInputListException;
 
 public interface IFragment {
 	
-	public IMolecularStructure getPrecursorMolecule();
-	
 	/**
 	 * returns structure as IAtomContainer object
 	 * 
 	 * @return
 	 */
-	public IAtomContainer getStructureAsIAtomContainer();
+	public IAtomContainer getStructureAsIAtomContainer(IMolecularStructure precursorMolecule);
 	
 	/**
 	 * get smiles string of the fragment structure
 	 * 
 	 * @return
 	 */
-	public String getSmiles();
+	public String getSmiles(IMolecularStructure precursorMolecule);
 	
 	/**
 	 * get smiles string of the fragment structure
 	 * 
 	 * @return
 	 */
-	public String getAromaticSmiles();
+	public String getAromaticSmiles(IMolecularStructure precursorMolecule);
 	
 	/**
 	 * get neutral monoisotopic mass of precursor
@@ -35,7 +33,7 @@ public interface IFragment {
 	 * @return
 	 * @throws AtomTypeNotKnownFromInputListException 
 	 */
-	public double getMonoisotopicMass();
+	public double getMonoisotopicMass(IMolecularStructure precursorMolecule);
 	
 	/**
 	 * get number non-hydrogen atoms
@@ -56,7 +54,8 @@ public interface IFragment {
 	 * @return
 	 * @throws AtomTypeNotKnownFromInputListException 
 	 */
-	public IMolecularFormula getMolecularFormula();
+//	public IMolecularFormula getMolecularFormula();
+	public IMolecularFormula getMolecularFormula(IMolecularStructure precursorMolecule);
 	
 	public void setID(int id);
 	
@@ -69,7 +68,7 @@ public interface IFragment {
 	 */
 	public byte getTreeDepth();
 	
-	public byte matchToPeak(IPeak peak, int precursorIonType, boolean isPositive, IMatch[] match);
+	public byte matchToPeak(IMolecularStructure precursorMolecule, IPeak peak, int precursorIonType, boolean isPositive, IMatch[] match);
 	
 	/**
 	 * 
@@ -88,19 +87,19 @@ public interface IFragment {
 	 * @return
 	 * @throws AtomTypeNotKnownFromInputListException 
 	 */
-	public byte shareEqualProperties(IFragment molecularStructure) throws AtomTypeNotKnownFromInputListException;
+	public byte shareEqualProperties(IMolecularStructure precursorMolecule, IFragment fragment) throws AtomTypeNotKnownFromInputListException;
 
 	public boolean isRealSubStructure(IFragment molecularStructure);
 	
 	public boolean isSubStructure(IFragment molecularStructure);
 	
-	public IFragment getDifferenceFragment(IFragment molecularStructure);
+	public IFragment getDifferenceFragment(IMolecularStructure precursorMolecule, IFragment molecularStructure);
 
-	public IFragment getDifferenceFragment();
+	public IFragment getDifferenceFragment(IMolecularStructure precursorMolecule);
 	
 	public int[] getUniqueBrokenBondIndeces(IFragment molecularStructure);
 	
-	public boolean isConnected();
+	public boolean isConnected(IMolecularStructure precursorMolecule);
 	
 	public boolean hasMatched();
 	
@@ -116,7 +115,7 @@ public interface IFragment {
 	 * 
 	 * @return
 	 */
-	public IFragment clone();
+	public IFragment clone(IMolecularStructure precursorMolecule);
 	
 	public String getAtomsInfo();
 	public String getBondsInfo();

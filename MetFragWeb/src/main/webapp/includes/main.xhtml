@@ -48,7 +48,9 @@
 						<ui:include src="resultTable.xhtml" />
 					</ui:insert>
 				</p:tab>
-				<p:tab title="Structural Similarity Cluster" id="resultCluster" rendered="#{metFragWebBean.compoundClusteringEnabled and metFragWebBean.resultsAvailable}" >
+				<p:tab title="Structural Similarity Cluster (less than 1000 candidates)" id="resultCluster" 
+					rendered="#{metFragWebBean.compoundClusteringEnabled and metFragWebBean.resultsAvailable}" 
+					disabled="#{metFragWebBean.numberProcessedCompounds >= 1000}">
 					<ui:insert name="resultCluster">
 						<ui:include src="resultCluster.xhtml" />
 					</ui:insert>

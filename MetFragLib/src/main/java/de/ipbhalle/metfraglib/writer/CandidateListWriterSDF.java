@@ -44,9 +44,10 @@ public class CandidateListWriterSDF implements IWriter {
 			return false;
 		for (int i = 0; i < candidateList.getNumberElements(); i++) {
 			ICandidate candidate = candidateList.getElement(i);
+			candidate.initialisePrecursorCandidate();
 			IAtomContainer candidateAtomContainer = null;
 			try {
-				candidateAtomContainer = candidateList.getElement(i).getAtomContainer();
+				candidateAtomContainer = candidate.getAtomContainer();
 			} catch (Exception e1) {
 				System.err.println("Error saving: " + candidateList.getElement(i).getIdentifier());
 				continue;
@@ -86,7 +87,7 @@ public class CandidateListWriterSDF implements IWriter {
 					}
 					String formula = scoredCandidate.getMatchList()
 							.getElement(ii)
-							.getModifiedFormulaStringOfBestMatchedFragment();
+							.getModifiedFormulaStringOfBestMatchedFragment(scoredCandidate.getPrecursorMolecule());
 					sumFormulasOfFragmentsExplainedPeaks += scoredCandidate
 							.getMatchList().getElement(ii).getMatchedPeak()
 							.getMass()

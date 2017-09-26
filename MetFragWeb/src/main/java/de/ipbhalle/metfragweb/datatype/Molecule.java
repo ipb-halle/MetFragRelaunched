@@ -27,7 +27,9 @@ public class Molecule implements Serializable {
 	protected String imageAddress;
 	protected String name;
 	protected String inchi;
-
+	protected String smiles;
+	protected boolean useSmiles = false;
+	
 	protected int numberPeaksExplained;
 	
 	protected String displayFormula;
@@ -48,10 +50,11 @@ public class Molecule implements Serializable {
 	}
 
 	public Molecule(String identifier, double mass, String formula, final List<Weight> weights, 
-			String imageAddress, final ScoreSummary[] scoresSummaries, String inchi) {
+			String imageAddress, final ScoreSummary[] scoresSummaries, String inchi, String smiles, boolean useSmiles) {
 		super();
 		this.additionalValues = new int[] {100, 200, 110};
 		
+		this.useSmiles = useSmiles;
 		this.identifier = identifier;
 		this.mass = mass;
 		this.formula = formula;
@@ -61,6 +64,7 @@ public class Molecule implements Serializable {
 		
 		this.recalculateScore(weights);
 		this.inchi = inchi;
+		this.smiles = smiles;
 		this.imageAddress = imageAddress;
 		
 		this.horizontalBarModel = new HorizontalBarChartModel();
@@ -264,8 +268,9 @@ public class Molecule implements Serializable {
 	 * @return
 	 */
 	public ICandidate getCandidate() {
-		ICandidate candidate = new PrecursorCandidate(this.inchi, this.identifier);
+		ICandidate candidate = new PrecursorCandidate(this.inchi, this.identifier, this.smiles);
 		candidate.setProperty(VariableNames.FINAL_SCORE_COLUMN_NAME, this.finalScore);
+		candidate.setUseSmiles(this.useSmiles);
 		candidate.setProperty(VariableNames.MONOISOTOPIC_MASS_NAME, this.mass);
 		candidate.setProperty(VariableNames.MOLECULAR_FORMULA_NAME, this.formula);
 		candidate.setProperty(VariableNames.NUMBER_EXPLAINED_PEAKS_COLUMN, this.numberPeaksExplained);

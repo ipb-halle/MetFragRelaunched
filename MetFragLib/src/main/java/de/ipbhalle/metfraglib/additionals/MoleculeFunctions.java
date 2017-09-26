@@ -26,11 +26,12 @@ import org.openscience.cdk.tools.CDKHydrogenAdder;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
 import de.ipbhalle.metfraglib.exceptions.ExplicitHydrogenRepresentationException;
+import de.ipbhalle.metfraglib.fingerprint.TanimotoSimilarity;
 import de.ipbhalle.metfraglib.interfaces.IFragment;
+import de.ipbhalle.metfraglib.interfaces.IMolecularStructure;
 import de.ipbhalle.metfraglib.parameter.Constants;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.precursor.HDTopDownBitArrayPrecursor;
-import de.ipbhalle.metfraglib.similarity.TanimotoSimilarity;
 
 public class MoleculeFunctions {
 	
@@ -62,8 +63,8 @@ public class MoleculeFunctions {
 		return smiles;
 	}
 	
-	public static String[] getNormalizedFingerprintSmiles(IFragment frag) throws Exception {
-		String preSmiles = frag.getSmiles();
+	public static String[] getNormalizedFingerprintSmiles(IMolecularStructure precursorMolecule, IFragment frag) throws Exception {
+		String preSmiles = frag.getSmiles(precursorMolecule);
 		String inchi1 = ""; 
 		boolean useSmiles = false;
 		try {
@@ -85,8 +86,8 @@ public class MoleculeFunctions {
 		return new String[] {fpString, smiles};
 	}
 
-	public static String getNormalizedFingerprint(IFragment frag) throws CDKException {
-		String preSmiles = frag.getSmiles();
+	public static String getNormalizedFingerprint(IMolecularStructure precursorMolecule, IFragment frag) throws CDKException {
+		String preSmiles = frag.getSmiles(precursorMolecule);
 		String inchi1 = MoleculeFunctions.getInChIFromSmiles(preSmiles);
 		IAtomContainer con = null;
 		try {
@@ -383,12 +384,12 @@ public class MoleculeFunctions {
 	}
 	
 
-	public static String getFragmentSmilesHD(IFragment fragment, int precursorID) throws CloneNotSupportedException {	
-		return generateSmiles(getStructureAsIAtomContainerHD(fragment, precursorID)).replaceAll("\\[H\\]", "[2H]");
+	public static String getFragmentSmilesHD(IMolecularStructure precursorMolecule, IFragment fragment, int precursorID) throws CloneNotSupportedException {	
+		return generateSmiles(getStructureAsIAtomContainerHD(precursorMolecule, fragment, precursorID)).replaceAll("\\[H\\]", "[2H]");
 	}
 	
-	public static IAtomContainer getStructureAsIAtomContainerHD(IFragment fragment, int precursorIndexHD) throws CloneNotSupportedException {
-		HDTopDownBitArrayPrecursor precursor = (HDTopDownBitArrayPrecursor)fragment.getPrecursorMolecule();
+	public static IAtomContainer getStructureAsIAtomContainerHD(IMolecularStructure precursorMolecule, IFragment fragment, int precursorIndexHD) throws CloneNotSupportedException {
+		HDTopDownBitArrayPrecursor precursor = (HDTopDownBitArrayPrecursor)precursorMolecule;
 		de.ipbhalle.metfraglib.FastBitArray atomsFastBitArray = ((de.ipbhalle.metfraglib.fragment.DefaultBitArrayFragment)fragment).getAtomsFastBitArray();
 		de.ipbhalle.metfraglib.FastBitArray bondsFastBitArray = ((de.ipbhalle.metfraglib.fragment.DefaultBitArrayFragment)fragment).getBondsFastBitArray();
 		

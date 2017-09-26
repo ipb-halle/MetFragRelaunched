@@ -7,7 +7,6 @@ import org.apache.log4j.Level;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
-import de.ipbhalle.metfraglib.assigner.FragmentToTandemMassPeakAssigner;
 import de.ipbhalle.metfraglib.fragmenter.TopDownNeutralLossFragmenter;
 import de.ipbhalle.metfraglib.fragmenterassignerscorer.TopDownFragmenterAssignerScorer;
 import de.ipbhalle.metfraglib.interfaces.IDatabase;
@@ -136,6 +135,7 @@ public class Constants {
 		ADDUCT_TYPES.add("[M+HCOO]-");		ADDUCT_NAMES.add("+HCOO");		ADDUCT_MASSES.add(Constants.HYDROGEN_MASS + MONOISOTOPIC_MASSES.get(ELEMENTS.indexOf("C")) + MONOISOTOPIC_MASSES.get(ELEMENTS.indexOf("O")) * 2.0);					ADDUCT_NOMINAL_MASSES.add(45);	ADDUCT_CHARGES.add(false);
 		ADDUCT_TYPES.add("[M+CH3COO]-");	ADDUCT_NAMES.add("+CH3COO");	ADDUCT_MASSES.add(Constants.HYDROGEN_MASS * 3.0 + MONOISOTOPIC_MASSES.get(ELEMENTS.indexOf("C")) * 2.0 + MONOISOTOPIC_MASSES.get(ELEMENTS.indexOf("O")) * 2.0);		ADDUCT_NOMINAL_MASSES.add(59);	ADDUCT_CHARGES.add(false);
 		
+		ADDUCT_TYPES.add("[M-2H]-");		ADDUCT_NAMES.add("-2H");		ADDUCT_MASSES.add(-2.0 * Constants.HYDROGEN_MASS);	ADDUCT_NOMINAL_MASSES.add(-3);	ADDUCT_CHARGES.add(false);
 		ADDUCT_TYPES.add("[M-2H+Na]-");		ADDUCT_NAMES.add("-2H+Na");		ADDUCT_MASSES.add(MONOISOTOPIC_MASSES.get(ELEMENTS.indexOf("Na")) - 2.0 * Constants.HYDROGEN_MASS);		ADDUCT_NOMINAL_MASSES.add(21);	ADDUCT_CHARGES.add(false);
 		ADDUCT_TYPES.add("[M-2H+K]-");		ADDUCT_NAMES.add("-2H+K");		ADDUCT_MASSES.add(MONOISOTOPIC_MASSES.get(ELEMENTS.indexOf("K")) - 2.0 * Constants.HYDROGEN_MASS);		ADDUCT_NOMINAL_MASSES.add(37);	ADDUCT_CHARGES.add(false);
 		
@@ -180,6 +180,7 @@ public class Constants {
 	public static final Integer				DEFAULT_PRECURSOR_ION_TYPE 									= 	1;
 	public static final Boolean				DEFAULT_PROCESS_CANDIDATES 									= 	true;
 	public static final Boolean				DEFAULT_USE_SMILES	 										= 	false;
+	public static final String				DEFAULT_FINGERPRINT_TYPE	 								= 	org.openscience.cdk.fingerprint.MACCSFingerprinter.class.getName();
 
 	public static final Integer 			DEFAULT_STRUCTURE_IMAGE_WIDTH 								= 	200;
 	public static final Integer 			DEFAULT_STRUCTURE_IMAGE_HEIGHT 								= 	200;
@@ -196,7 +197,6 @@ public class Constants {
 	public static final String[] 			DEFAULT_METFRAG_CANDIDATE_WRITER 							= 	{"XLS"};
 	public static final String 			DEFAULT_METFRAG_DATABASE_TYPE								=	"KEGG";		
 	public static final String 			DEFAULT_METFRAG_FRAGMENTER_TYPE								=	TopDownNeutralLossFragmenter.class.getName();
-	public static final String 			DEFAULT_METFRAG_ASSIGNER_TYPE								=	FragmentToTandemMassPeakAssigner.class.getName();
 	public static final String[] 			DEFAULT_METFRAG_SCORE_TYPES									=	{VariableNames.METFRAG_FRAGMENTER_SCORE_NAME};	
 
 	public static final String			DEFAULT_METFRAG_IMAGE_WRITER								=	MolecularStructureImageListWriterPNG.class.getName();		

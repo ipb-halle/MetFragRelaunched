@@ -5,7 +5,11 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import de.ipbhalle.metfraglib.exceptions.AtomTypeNotKnownFromInputListException;
 
 public interface IMolecularStructure {
-
+	
+	public void resetAtomContainer();
+	
+	public void setAtomContainer(IAtomContainer molecule);
+	
 	/**
 	 * returns structure as IAtomContainer object
 	 * 

@@ -307,12 +307,11 @@ public class FastBitArray {
 	 * returns string with with true positions '1' and false positions '0' 
 	 */
 	public String toString() {
-		String val = "";
+		char[] set = new char[this.getSize()];
 		for(int i = 0; i < this.getSize(); i++) {
-			if(this.bitArray.get(i)) val += "1";
-			else val += "0";
+			set[i] = this.bitArray.get(i) ? '1' : '0';
 		}
-		return val;
+		return String.valueOf(set);
 	}
 	
 	/**

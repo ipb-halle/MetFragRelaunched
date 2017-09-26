@@ -9,13 +9,14 @@ import de.ipbhalle.metfraglib.additionals.MathTools;
 import de.ipbhalle.metfraglib.database.LocalPSVDatabase;
 import de.ipbhalle.metfraglib.exceptions.AtomTypeNotKnownFromInputListException;
 import de.ipbhalle.metfraglib.exceptions.MultipleHeadersFoundInInputDatabaseException;
+import de.ipbhalle.metfraglib.fingerprint.TanimotoSimilarity;
 import de.ipbhalle.metfraglib.fragment.DefaultBitArrayFragment;
+import de.ipbhalle.metfraglib.interfaces.IMolecularStructure;
 import de.ipbhalle.metfraglib.list.CandidateList;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.precursor.BitArrayPrecursor;
 import de.ipbhalle.metfraglib.rsession.CommunityCalculation;
 import de.ipbhalle.metfraglib.settings.MetFragGlobalSettings;
-import de.ipbhalle.metfraglib.similarity.TanimotoSimilarity;
 
 public class CollectCommuniesAndFragmentPeaks {
 
@@ -90,7 +91,7 @@ public class CollectCommuniesAndFragmentPeaks {
 					/*
 					 * add the fragment
 					 */
-					addFragmentsAddPositionInitial(addedIndex, matchingFragments, communityFragments, candidates.getElement(i).getIdentifier());
+					addFragmentsAddPositionInitial(candidates.getElement(i).getPrecursorMolecule(), addedIndex, matchingFragments, communityFragments, candidates.getElement(i).getIdentifier());
 					
 					ArrayList<String> tmp_formulas = new ArrayList<String>();
 					ArrayList<String> tmp_smiless = new ArrayList<String>();
@@ -110,7 +111,7 @@ public class CollectCommuniesAndFragmentPeaks {
 				else {
 					masses.set(index, (masses.get(index) + mass) / 2.0);
 					occurences.set(index, occurences.get(index) + 1);
-					addFragmentsAddPosition(index, matchingFragments, communityFragments, candidates.getElement(i).getIdentifier());
+					addFragmentsAddPosition(candidates.getElement(i).getPrecursorMolecule(), index, matchingFragments, communityFragments, candidates.getElement(i).getIdentifier());
 					vector_formulas.get(index).add(tmp_formula[1]);
 					vector_smiles.get(index).add(tmp_smiles[1]);
 					vector_intensities.get(index).add(Double.parseDouble(tmp_intensity[1]));
@@ -197,16 +198,16 @@ public class CollectCommuniesAndFragmentPeaks {
 	 * @param matchedFragments
 	 * @param communityFragments
 	 */
-	public static void addFragmentsAddPositionInitial(int position, ArrayList<ArrayList<FingerPrintFragmentCollection>> matchedFragments, DefaultBitArrayFragment[] communityFragments, String candidateIdentifier) {
+	public static void addFragmentsAddPositionInitial(IMolecularStructure precursorMolecule, int position, ArrayList<ArrayList<FingerPrintFragmentCollection>> matchedFragments, DefaultBitArrayFragment[] communityFragments, String candidateIdentifier) {
 		if(communityFragments == null || communityFragments.length == 0) return;
-		CollectCommuniesAndFragmentPeaks.FingerPrintFragment fragment = temp.new FingerPrintFragment(communityFragments[0]);
+		CollectCommuniesAndFragmentPeaks.FingerPrintFragment fragment = temp.new FingerPrintFragment(precursorMolecule, communityFragments[0]);
 		ArrayList<FingerPrintFragmentCollection> tmpVec = new ArrayList<FingerPrintFragmentCollection>();
 		FingerPrintFragmentCollection newCollection = temp.new FingerPrintFragmentCollection(fragment, candidateIdentifier);
 		tmpVec.add(newCollection);
 		matchedFragments.add(position, tmpVec);
 		for(int i = 1; i < communityFragments.length; i++) {
 			ArrayList<FingerPrintFragmentCollection> collections = matchedFragments.get(position);
-			CollectCommuniesAndFragmentPeaks.FingerPrintFragment newFragment = temp.new FingerPrintFragment(communityFragments[i]);
+			CollectCommuniesAndFragmentPeaks.FingerPrintFragment newFragment = temp.new FingerPrintFragment(precursorMolecule, communityFragments[i]);
 			boolean fragmentClassFound = false;
 			for(int j = 0; j < collections.size(); j++) {
 				FingerPrintFragmentCollection currentCollection = collections.get(j);
@@ -223,10 +224,10 @@ public class CollectCommuniesAndFragmentPeaks {
 		}
 	}
 	
-	public static void addFragmentsAddPosition(int position, ArrayList<ArrayList<FingerPrintFragmentCollection>> matchedFragments, DefaultBitArrayFragment[] communityFragments, String candidateIdentifier) {
+	public static void addFragmentsAddPosition(IMolecularStructure precursorMolecule, int position, ArrayList<ArrayList<FingerPrintFragmentCollection>> matchedFragments, DefaultBitArrayFragment[] communityFragments, String candidateIdentifier) {
 		for(int i = 0; i < communityFragments.length; i++) {
 			ArrayList<FingerPrintFragmentCollection> collections = matchedFragments.get(position);
-			CollectCommuniesAndFragmentPeaks.FingerPrintFragment newFragment = temp.new FingerPrintFragment(communityFragments[i]);
+			CollectCommuniesAndFragmentPeaks.FingerPrintFragment newFragment = temp.new FingerPrintFragment(precursorMolecule, communityFragments[i]);
 			boolean fragmentClassFound = false;
 			for(int j = 0; j < collections.size(); j++) {
 				FingerPrintFragmentCollection currentCollection = collections.get(j);
@@ -282,9 +283,9 @@ public class CollectCommuniesAndFragmentPeaks {
 		IBitFingerprint fingerprint;
 		DefaultBitArrayFragment fragment;
 		
-		public FingerPrintFragment(DefaultBitArrayFragment fragment) {
+		public FingerPrintFragment(IMolecularStructure precursorMolecule, DefaultBitArrayFragment fragment) {
 			this.fragment = fragment;
-			fingerprint = TanimotoSimilarity.calculateFingerPrint(fragment.getStructureAsIAtomContainer());
+			fingerprint = TanimotoSimilarity.calculateFingerPrint(fragment.getStructureAsIAtomContainer(precursorMolecule));
 		}
 		
 		public DefaultBitArrayFragment getFragment() {
@@ -329,17 +330,17 @@ public class CollectCommuniesAndFragmentPeaks {
 			return this.collectedFragments.size();
 		}
 		
-		public void printFragmentCollection() {
+		public void printFragmentCollection(IMolecularStructure precursorMolecule) {
 			for(int i = 0; i < this.collectedFragments.size(); i++) {
-				System.out.print(this.originatingCanidateIdentifier.get(i) + ":" + this.collectedFragments.get(i).getFragment().getSmiles() + " ");
+				System.out.print(this.originatingCanidateIdentifier.get(i) + ":" + this.collectedFragments.get(i).getFragment().getSmiles(precursorMolecule) + " ");
 			}
 			System.out.println();
 		}
 		
-		public String toString() {
+		public String toString(IMolecularStructure precursorMolecule) {
 			String string = "";
 			for(int i = 0; i < this.collectedFragments.size(); i++) {
-				string += this.originatingCanidateIdentifier.get(i) + ":" + this.collectedFragments.get(i).getFragment().getSmiles() + " ";
+				string += this.originatingCanidateIdentifier.get(i) + ":" + this.collectedFragments.get(i).getFragment().getSmiles(precursorMolecule) + " ";
 			}
 			return string;
 		}

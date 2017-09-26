@@ -77,8 +77,8 @@ public class StandardSingleStructureImageGenerator implements IImageGenerator {
 	 * @return
 	 * @throws CDKException
 	 */
-	public RenderedImage generateImage(final IFragment structure) throws Exception {
-		return this.generateImage(structure.getStructureAsIAtomContainer());
+	public RenderedImage generateImage(IMolecularStructure precursorMolecule, final IFragment structure) throws Exception {
+		return this.generateImage(structure.getStructureAsIAtomContainer(precursorMolecule));
 	}
 
 	/**

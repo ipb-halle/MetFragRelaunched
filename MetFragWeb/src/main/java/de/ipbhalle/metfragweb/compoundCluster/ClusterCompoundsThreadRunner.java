@@ -5,10 +5,10 @@ import java.io.Serializable;
 import org.primefaces.model.DefaultOrganigramNode;
 import org.primefaces.model.OrganigramNode;
 
+import de.ipbhalle.metfraglib.fingerprint.ClusterWrapper;
+import de.ipbhalle.metfraglib.fingerprint.TanimotoSimilarity;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.list.CandidateList;
-import de.ipbhalle.metfraglib.similarity.ClusterWrapper;
-import de.ipbhalle.metfraglib.similarity.TanimotoSimilarity;
 import de.ipbhalle.metfragweb.container.BeanSettingsContainer;
 import de.ipbhalle.metfragweb.container.Messages;
 import de.ipbhalle.metfragweb.container.MetFragResultsContainer;
@@ -64,13 +64,14 @@ public class ClusterCompoundsThreadRunner extends ThreadRunner implements Serial
 			if(cwRoot.isLeaf()) tnRoot = new DefaultOrganigramNode("compound", new ClusterLeaf(resultsMap.get(cwRoot.getName()), 0.0), null);
 			else tnRoot = new DefaultOrganigramNode("compoundGroup", new ClusterNode(0.0), null);
 			
-			this.setNodeAttributes(tnRoot);
+			this.setNodeAttributes(tnRoot, true);
 			
 			clusterWrapperStack.push(cwRoot);
 			treeNodeStack.push(tnRoot);
 			
 			this.leaves = new java.util.Vector<OrganigramNode>();
 			
+			int numberExpandedNodes = 0;
 			while(!clusterWrapperStack.isEmpty()) {
 				ClusterWrapper cwCurrent = clusterWrapperStack.pop();
 				OrganigramNode tnCurrent = treeNodeStack.pop();
@@ -84,7 +85,12 @@ public class ClusterCompoundsThreadRunner extends ThreadRunner implements Serial
 					}
 					else tnNext = new DefaultOrganigramNode("compoundGroup", new ClusterNode(0.0), tnCurrent);
 
-					this.setNodeAttributes(tnNext);
+					if(numberExpandedNodes < 6) {
+						numberExpandedNodes++;
+						this.setNodeAttributes(tnNext, true);
+					} else {
+						this.setNodeAttributes(tnNext, false);
+					}
 					
 					clusterWrapperStack.push(child);
 					treeNodeStack.push(tnNext);
@@ -101,8 +107,8 @@ public class ClusterCompoundsThreadRunner extends ThreadRunner implements Serial
 		System.out.println("finished clustering");
 	}
 	
-	protected void setNodeAttributes(OrganigramNode node) {
-		node.setExpanded(false);
+	protected void setNodeAttributes(OrganigramNode node, boolean expanded) {
+		node.setExpanded(expanded);
 		node.setDroppable(false);
 		node.setDraggable(false);
 		node.setSelectable(true);

@@ -27,6 +27,7 @@ import de.ipbhalle.metfraglib.fragment.DefaultBitArrayFragment;
 import de.ipbhalle.metfraglib.fragment.TopDownBitArrayFragment;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.interfaces.IFragment;
+import de.ipbhalle.metfraglib.interfaces.IMolecularStructure;
 
 public class HighlightSubStructureImageGenerator extends StandardSingleStructureImageGenerator {
 
@@ -58,18 +59,16 @@ public class HighlightSubStructureImageGenerator extends StandardSingleStructure
 		return image;
 	}
 
-	public RenderedImage generateImage(final IFragment structure) throws Exception {
-		if (structure instanceof DefaultBitArrayFragment)
-			return generateImage((DefaultBitArrayFragment) structure);
-		if (structure instanceof TopDownBitArrayFragment)
-			return generateImage((DefaultBitArrayFragment) structure);
-		return super.generateImage(structure);
+	public RenderedImage generateImage(IMolecularStructure precursorMolecule, final IFragment structure) throws Exception {
+		if (structure instanceof DefaultBitArrayFragment || structure instanceof TopDownBitArrayFragment)
+			return generateImage(precursorMolecule, (DefaultBitArrayFragment) structure);
+		return super.generateImage(precursorMolecule, structure);
 	}
 
-	public RenderedImage generateImage(final DefaultBitArrayFragment structure) {
+	public RenderedImage generateImage(IMolecularStructure precursorMolecule, final DefaultBitArrayFragment structure) {
 		Image image = new BufferedImage(this.imageWidth, this.imageHeight, BufferedImage.TYPE_INT_ARGB);
 		try {
-			IAtomContainer molecule = new AtomContainer(structure.getPrecursor().getStructureAsIAtomContainer());
+			IAtomContainer molecule = new AtomContainer(precursorMolecule.getStructureAsIAtomContainer());
 			StructureDiagramGenerator sdg = new StructureDiagramGenerator();
 			sdg.setMolecule(molecule);
 			sdg.generateCoordinates();

@@ -2,6 +2,7 @@ package de.ipbhalle.metfraglib.score;
 
 import org.openscience.cdk.fingerprint.IBitFingerprint;
 
+import de.ipbhalle.metfraglib.fingerprint.TanimotoSimilarity;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.interfaces.IMatch;
 import de.ipbhalle.metfraglib.list.CandidateList;
@@ -9,7 +10,6 @@ import de.ipbhalle.metfraglib.list.SortedTandemMassPeakList;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.peak.TandemMassPeak;
 import de.ipbhalle.metfraglib.settings.Settings;
-import de.ipbhalle.metfraglib.similarity.TanimotoSimilarity;
 
 /**
  * fetch spectra from MoNA by spectral similarity

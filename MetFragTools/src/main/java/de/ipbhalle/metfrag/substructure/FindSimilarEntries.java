@@ -9,7 +9,7 @@ import org.openscience.cdk.exception.InvalidSmilesException;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
-import de.ipbhalle.metfraglib.similarity.TanimotoSimilarity;
+import de.ipbhalle.metfraglib.fingerprint.TanimotoSimilarity;
 
 public class FindSimilarEntries {
 

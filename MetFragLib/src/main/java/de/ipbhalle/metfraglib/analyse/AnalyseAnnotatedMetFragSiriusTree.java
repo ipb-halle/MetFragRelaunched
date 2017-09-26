@@ -1,6 +1,7 @@
 package de.ipbhalle.metfraglib.analyse;
 
 import de.ipbhalle.metfraglib.exceptions.RelativeIntensityNotDefinedException;
+import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.list.MatchList;
 import de.ipbhalle.metfraglib.list.SiriusNodePeakList;
 import de.ipbhalle.metfraglib.match.FragmentFormulaToPeakMatch;
@@ -19,7 +20,7 @@ public class AnalyseAnnotatedMetFragSiriusTree {
 	 * @param candidateNumber
 	 * @return
 	 */
-	public String getAnnotatedDotTree(MatchList matchList) {
+	public String getAnnotatedDotTree(ICandidate candidate, MatchList matchList) {
 		String dotString = "strict digraph {\n";
 		for(int i = 0; i < this.peakList.getNumberElements(); i++) {
 			SiriusNodePeak currentPeak = (SiriusNodePeak)this.peakList.getElement(i);
@@ -27,8 +28,8 @@ public class AnalyseAnnotatedMetFragSiriusTree {
 			if(peakMatch != null) {
 				try {
 					dotString += currentPeak.getDotEntry("\\nInt: " + currentPeak.getIntensity() + "\\nMetFrag:\\n" 
-									+ peakMatch.getBestMatchedFragment().getMolecularFormula()
-									+ "\\n" + peakMatch.getBestMatchedFragment().getSmiles(), "red", "grey") + "\n";
+									+ peakMatch.getBestMatchedFragment().getMolecularFormula(candidate.getPrecursorMolecule())
+									+ "\\n" + peakMatch.getBestMatchedFragment().getSmiles(candidate.getPrecursorMolecule()), "red", "grey") + "\n";
 				} catch (RelativeIntensityNotDefinedException e) {
 					e.printStackTrace();
 				}

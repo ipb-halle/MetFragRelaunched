@@ -9,9 +9,9 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.smiles.smarts.SMARTSQueryTool;
 
 import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
+import de.ipbhalle.metfraglib.fingerprint.TanimotoSimilarity;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.list.DefaultList;
-import de.ipbhalle.metfraglib.similarity.TanimotoSimilarity;
 
 public class SmartsGroup extends DefaultList {
 

@@ -1,4 +1,4 @@
-package de.ipbhalle.metfraglib.similarity;
+package de.ipbhalle.metfraglib.fingerprint;
 
 import org.openscience.cdk.fingerprint.IBitFingerprint;
 

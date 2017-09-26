@@ -21,7 +21,7 @@ public class CandidateListWriterExtendedPSV implements IWriter {
 		return this.write(list, filename, path);
 	}
 	
-	public boolean writeFile(File file, IList list, Settings settings) {
+	public boolean writeFile(File file, IList list, Settings settings) throws Exception {
 		CandidateList candidateList = null;
 		int numberOfPeaksUsed = 0;
 		if(list instanceof ScoredCandidateList || list instanceof SortedScoredCandidateList) {
@@ -36,6 +36,7 @@ public class CandidateListWriterExtendedPSV implements IWriter {
 		String[] lines = new String[candidateList.getNumberElements()];
 		for(int i = 0; i < candidateList.getNumberElements(); i++) {
 			ICandidate scoredCandidate = candidateList.getElement(i);
+			scoredCandidate.initialisePrecursorCandidate();
 			int countExplainedPeaks = 0;
 			if(scoredCandidate.getMatchList() != null) {
 				MatchList matchList = scoredCandidate.getMatchList();
@@ -65,7 +66,7 @@ public class CandidateListWriterExtendedPSV implements IWriter {
 					} catch (RelativeIntensityNotDefinedException e1) {
 						continue;
 					}
-					String formula = scoredCandidate.getMatchList().getElement(ii).getModifiedFormulasStringOfBestMatchedFragment();
+					String formula = scoredCandidate.getMatchList().getElement(ii).getModifiedFormulasStringOfBestMatchedFragment(scoredCandidate.getPrecursorMolecule());
 					sumFormulasOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + formula + ";";
 				
 					atomFastBitArray += scoredCandidate.getMatchList().getElement(ii).getMatchFragmentsAtomsInfo() + ";";

@@ -4,9 +4,9 @@ import org.openscience.cdk.fingerprint.IBitFingerprint;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
+import de.ipbhalle.metfraglib.fingerprint.TanimotoSimilarity;
 import de.ipbhalle.metfraglib.list.SortedSimilarityTandemMassPeakList;
 import de.ipbhalle.metfraglib.list.SortedTandemMassPeakList;
-import de.ipbhalle.metfraglib.similarity.TanimotoSimilarity;
 
 public class SpectralPeakListCollection {
 

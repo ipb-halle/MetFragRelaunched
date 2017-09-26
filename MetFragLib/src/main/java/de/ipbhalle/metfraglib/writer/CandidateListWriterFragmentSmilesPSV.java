@@ -21,7 +21,7 @@ public class CandidateListWriterFragmentSmilesPSV implements IWriter {
 		return this.write(list, filename, path);
 	}
 	
-	public boolean writeFile(File file, IList list, Settings settings) {
+	public boolean writeFile(File file, IList list, Settings settings) throws Exception {
 		CandidateList candidateList = null;
 		int numberOfPeaksUsed = 0;
 		if(list instanceof ScoredCandidateList || list instanceof SortedScoredCandidateList) {
@@ -38,6 +38,7 @@ public class CandidateListWriterFragmentSmilesPSV implements IWriter {
 		for(int i = 0; i < candidateList.getNumberElements(); i++) {
 			int countExplainedPeaks = 0;
 			ICandidate scoredCandidate = candidateList.getElement(i);
+			scoredCandidate.initialisePrecursorCandidate();
 			if(scoredCandidate.getMatchList() != null) {
 				MatchList matchList = scoredCandidate.getMatchList();
 				for(int l = 0; l < matchList.getNumberElements(); l++) {
@@ -67,11 +68,11 @@ public class CandidateListWriterFragmentSmilesPSV implements IWriter {
 					} catch (RelativeIntensityNotDefinedException e1) {
 						continue;
 					}
-					String formula = scoredCandidate.getMatchList().getElement(ii).getModifiedFormulaStringOfBestMatchedFragment();
+					String formula = scoredCandidate.getMatchList().getElement(ii).getModifiedFormulaStringOfBestMatchedFragment(scoredCandidate.getPrecursorMolecule());
 					
 					sumFormulasOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + formula + ";";
-					smilesOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + scoredCandidate.getMatchList().getElement(ii).getBestMatchedFragment().getSmiles() + ";";
-					aromaticSmilesOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + scoredCandidate.getMatchList().getElement(ii).getBestMatchedFragment().getAromaticSmiles() + ";";
+					smilesOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + scoredCandidate.getMatchList().getElement(ii).getBestMatchedFragment().getSmiles(scoredCandidate.getPrecursorMolecule()) + ";";
+					aromaticSmilesOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + scoredCandidate.getMatchList().getElement(ii).getBestMatchedFragment().getAromaticSmiles(scoredCandidate.getPrecursorMolecule()) + ";";
 				}
 				if(sumFormulasOfFragmentsExplainedPeaks.length() != 0) sumFormulasOfFragmentsExplainedPeaks = sumFormulasOfFragmentsExplainedPeaks.substring(0, sumFormulasOfFragmentsExplainedPeaks.length() - 1);
 				if(peaksExplained.length() != 0) peaksExplained = peaksExplained.substring(0, peaksExplained.length() - 1);

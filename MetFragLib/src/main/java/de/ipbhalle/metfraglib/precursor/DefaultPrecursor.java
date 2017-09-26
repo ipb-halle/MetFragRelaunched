@@ -16,7 +16,7 @@ public class DefaultPrecursor implements IMolecularStructure {
 	 * Important: hydrogens should be represented implicitly
 	 * 
 	 */
-	protected final IAtomContainer precursorMolecule;
+	protected IAtomContainer precursorMolecule;
 	protected double neutralMonoisotopicMass;
 	protected IMolecularFormula molecularFormula;
 	
@@ -101,5 +101,17 @@ public class DefaultPrecursor implements IMolecularStructure {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public void resetAtomContainer() {
+		this.precursorMolecule = null;
+	}
+
+
+	@Override
+	public void setAtomContainer(IAtomContainer molecule) {
+		this.precursorMolecule = molecule;
+	}
+
 
 }

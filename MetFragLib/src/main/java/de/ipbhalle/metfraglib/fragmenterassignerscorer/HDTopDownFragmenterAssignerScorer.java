@@ -113,7 +113,7 @@ public class HDTopDownFragmenterAssignerScorer extends TopDownFragmenterAssigner
 				 */
 				HDTopDownBitArrayFragmentWrapper wrappedPrecursorFragment = toProcessFragments.poll();
 				if(wrappedPrecursorFragment.getWrappedFragment().isDiscardedForFragmentation()) {
-					AbstractTopDownBitArrayFragment clonedFragment = (AbstractTopDownBitArrayFragment)wrappedPrecursorFragment.getWrappedFragment().clone();
+					AbstractTopDownBitArrayFragment clonedFragment = (AbstractTopDownBitArrayFragment)wrappedPrecursorFragment.getWrappedFragment().clone(this.candidates[0].getPrecursorMolecule());
 					clonedFragment.setAsDiscardedForFragmentation();
 					newToProcessFragments.add(new HDTopDownBitArrayFragmentWrapper(clonedFragment, wrappedPrecursorFragment.getCurrentPeakIndexPointer(), wrappedPrecursorFragment.getCurrentPeakIndexPointerHD()));
 					continue;
@@ -157,7 +157,7 @@ public class HDTopDownFragmenterAssignerScorer extends TopDownFragmenterAssigner
 					for(int d = 0; d < deuteratedCandidateNumber; d++) {
 						newFragmentWrapper.setPrecursorIndex(d);
 						int tempPeakPointerHD = newFragmentWrapper.getCurrentPeakIndexPointerHD();
-						this.matchFragmentHD(tempPeakPointerHD, newFragmentWrapper, tandemMassPeakListHD, peakIndexToPeakMatchHD[d], fragmentIndexToPeakMatchHD[d]);
+						this.matchFragmentHD(tempPeakPointerHD, newFragmentWrapper, tandemMassPeakListHD, peakIndexToPeakMatchHD[d], fragmentIndexToPeakMatchHD[d], d);
 					}
 					newToProcessFragments.add(newFragmentWrapper);
 				}
@@ -278,7 +278,7 @@ public class HDTopDownFragmenterAssignerScorer extends TopDownFragmenterAssigner
 				scoreValuesSingleMatch = bestFragment.getFragmentScores();
 			}
 			catch(Exception e) {
-				matchFragmentList.printElements();
+				matchFragmentList.printElements(this.candidates[0].getPrecursorMolecule());
 				System.out.println(this.candidates[0].getIdentifier() + " " + key);
 				return;
 			}
@@ -324,11 +324,12 @@ public class HDTopDownFragmenterAssignerScorer extends TopDownFragmenterAssigner
 			MatchFragmentNode bestFragment = matchFragmentList.getRootNode();
 			IMatch match = bestFragment.getMatch();
 			
-			sumFormulasOfFragmentsExplainedPeaks += match.getMatchedPeak().getMass() + ":" + match.getModifiedFormulaStringOfBestMatchedFragment() + ";";
+			sumFormulasOfFragmentsExplainedPeaks += match.getMatchedPeak().getMass()
+					+ ":" + match.getModifiedFormulaStringOfBestMatchedFragment(candidate.getPrecursorMolecule()) + ";";
 			// write out fragment smiles of HDX candidates if extended writer is set
 			if(this.extendedWriter) {
 				try {
-					smilesOfFragmentsExplainedPeaks += match.getMatchedPeak().getMass() + ":" + MoleculeFunctions.getFragmentSmilesHD(match.getBestMatchedFragment(), precursorID) + ";";
+					smilesOfFragmentsExplainedPeaks += match.getMatchedPeak().getMass() + ":" + MoleculeFunctions.getFragmentSmilesHD(this.candidates[precursorID].getPrecursorMolecule(), match.getBestMatchedFragment(), precursorID) + ";";
 				} catch (CloneNotSupportedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -339,7 +340,7 @@ public class HDTopDownFragmenterAssignerScorer extends TopDownFragmenterAssigner
 				scoreValuesSingleMatch = bestFragment.getFragmentScores();
 			}
 			catch(Exception e) {
-				matchFragmentList.printElements();
+				matchFragmentList.printElements(candidate.getPrecursorMolecule());
 				System.out.println(candidate.getIdentifier() + " " + key);
 				return;
 			}
@@ -395,7 +396,7 @@ public class HDTopDownFragmenterAssignerScorer extends TopDownFragmenterAssigner
 			 * calculate match
 			 */
 			if(tempPeakPointer >= 0) {
-				matched = currentFragmentWrapper.getWrappedFragment().matchToPeak(currentPeak, this.precursorIonTypeIndex, this.positiveMode, match);
+				matched = currentFragmentWrapper.getWrappedFragment().matchToPeak(this.candidates[0].getPrecursorMolecule(), currentPeak, this.precursorIonTypeIndex, this.positiveMode, match);
 			}
 			/*
 			 * check whether match has occurred
@@ -484,7 +485,7 @@ public class HDTopDownFragmenterAssignerScorer extends TopDownFragmenterAssigner
 	protected boolean matchFragmentHD(int tempPeakPointer, HDTopDownBitArrayFragmentWrapper currentFragmentWrapper, 
 			SortedTandemMassPeakList tandemMassPeakList, 
 			java.util.HashMap<Integer, MatchFragmentList> peakIndexToPeakMatch,
-			java.util.HashMap<Integer, MatchPeakList> fragmentIndexToPeakMatch) 
+			java.util.HashMap<Integer, MatchPeakList> fragmentIndexToPeakMatch, int precursorIndex) 
 	{
 		byte matched = -1;
 		boolean matchedAndAdded = false;
@@ -495,7 +496,7 @@ public class HDTopDownFragmenterAssignerScorer extends TopDownFragmenterAssigner
 			 * calculate match
 			 */
 			if(tempPeakPointer >= 0) 
-				matched = currentFragmentWrapper.matchToPeak(currentPeak, this.precursorIonTypeIndexHD, this.positiveMode, match);
+				matched = currentFragmentWrapper.matchToPeak(this.candidates[precursorIndex].getPrecursorMolecule(), currentPeak, this.precursorIonTypeIndexHD, this.positiveMode, match);
 			/*
 			 * check whether match has occurred
 			 */
