@@ -344,6 +344,9 @@ public class SettingsChecker {
 		
 		if(FingerprintType == null) return true;
 		
+		boolean checkPositive = ClassNames.containsFingerprintType((String)FingerprintType);
+		if(!checkPositive) this.logger.error((String)FingerprintType + " is no known fingerprint type.");
+		
 		return ClassNames.containsFingerprintType((String)FingerprintType);
 	}
 	

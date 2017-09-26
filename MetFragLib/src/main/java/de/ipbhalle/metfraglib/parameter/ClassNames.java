@@ -74,6 +74,7 @@ import de.ipbhalle.metfraglib.writer.CandidateListWriterExtendedPSV;
 import de.ipbhalle.metfraglib.writer.CandidateListWriterExtendedFragmentsXLS;
 import de.ipbhalle.metfraglib.writer.CandidateListWriterExtendedXLS;
 import de.ipbhalle.metfraglib.writer.CandidateListWriterFragmentSmilesPSV;
+import de.ipbhalle.metfraglib.writer.CandidateListWriterLossFragmentSmilesCompletePSV;
 import de.ipbhalle.metfraglib.writer.CandidateListWriterLossFragmentSmilesExtendedPSV;
 import de.ipbhalle.metfraglib.writer.CandidateListWriterSDF;
 import de.ipbhalle.metfraglib.writer.CandidateListWriterXLS;
@@ -206,6 +207,7 @@ public class ClassNames {
 		candidateListWriterNameToClassName.put("FragmentSmilesPSV", CandidateListWriterFragmentSmilesPSV.class.getName());
 		candidateListWriterNameToClassName.put("LossFragmentSmilesPSV", CandidateListWriterLossFragmentSmilesPSV.class.getName());
 		candidateListWriterNameToClassName.put("LossFragmentSmilesExtendedPSV", CandidateListWriterLossFragmentSmilesExtendedPSV.class.getName());
+		candidateListWriterNameToClassName.put("LossFragmentSmilesCompletePSV", CandidateListWriterLossFragmentSmilesCompletePSV.class.getName());
 		candidateListWriterNameToClassName.put("SDF", CandidateListWriterSDF.class.getName());
 		candidateListWriterNameToClassName.put("XLS", CandidateListWriterXLS.class.getName());
 		candidateListWriterNameToClassName.put("ExtendedXLS", CandidateListWriterExtendedXLS.class.getName());
@@ -271,5 +273,20 @@ public class ClassNames {
 	
 	public static boolean containsFingerprintType(String scoreName) {
 		return fingerprinterNameToClassName.containsKey(scoreName);
+	}
+	
+	public static String getClassOfFingerprintClassName(String fingerprintName) {
+		return fingerprinterNameToClassName.get(fingerprintName);
+	}
+	
+	public static String[] getFingerprintNames() {
+		String[] fingerprintClassNames = new String[fingerprinterNameToClassName.size()];
+		java.util.Iterator<?> it = fingerprinterNameToClassName.keySet().iterator();
+		int index = 0;
+		while(it.hasNext()) {
+			fingerprintClassNames[index] = (String)it.next();
+			index++;
+		}
+		return fingerprintClassNames;
 	}
 }
