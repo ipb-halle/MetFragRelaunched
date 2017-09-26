@@ -10,14 +10,14 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
 import de.ipbhalle.metfraglib.interfaces.IFragment;
 import de.ipbhalle.metfraglib.interfaces.IMolecularStructure;
-import de.ipbhalle.metfraglib.settings.Settings;
+import de.ipbhalle.metfraglib.parameter.ClassNames;
 
 public class Fingerprint {
 
 	private IFingerprinter fingerprinter;
 	
 	public Fingerprint(String fingerprinterClassName) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
-		this.fingerprinter = (IFingerprinter) Class.forName(fingerprinterClassName).getConstructor(Settings.class).newInstance();
+		this.fingerprinter = (IFingerprinter) Class.forName(ClassNames.getClassOfFingerprintClassName(fingerprinterClassName)).getConstructor().newInstance();
 	}
 	
 	public IBitFingerprint calculateFingerPrint(IAtomContainer s1) throws CDKException {

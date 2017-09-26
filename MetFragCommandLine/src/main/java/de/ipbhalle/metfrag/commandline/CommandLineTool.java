@@ -39,7 +39,7 @@ public class CommandLineTool {
 			printHelp();
 			System.exit(0);
 		}
-		
+
 		File parameterFile = null;
 		MetFragGlobalSettings settings = null;
 		if(commandLineArguments.containsKey(VariableNames.PARAMETER_FILE_NAME)) {
@@ -86,7 +86,9 @@ public class CommandLineTool {
 		
 		//check settings with SettingsChecker	
 		SettingsChecker settingsChecker = new SettingsChecker();
-		if(!settingsChecker.check(settings)) System.exit(2);
+		if(!settingsChecker.check(settings)) {
+			System.exit(2);
+		}
 
 		/*
 		 * load hd plugin
