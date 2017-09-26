@@ -58,7 +58,7 @@ public class CandidateWriterXLS implements IWriter {
 			return false;
 		
 		ICandidate candidate = candidateList.getElement(0);
-		
+		candidate.initialisePrecursorCandidate();
 		xlsFile.createNewFile();
 		WritableWorkbook workbook = Workbook.createWorkbook(xlsFile);
 		WritableSheet sheet1 = workbook.createSheet("MetFrag Candidate Result", 0);
@@ -127,7 +127,7 @@ public class CandidateWriterXLS implements IWriter {
 					sheet1.addCell(new Label(column + colWidthImage, (propertyRow + 5) + (rowHeightImage * fragmentRow), "Fragment " + imagesWritten, arial10formatBold));
 					
 					sheet1.addCell(new Label(column + colWidthImage, (propertyRow + 5) + (rowHeightImage * fragmentRow) + 2, "Formula", arial10formatBold));
-					sheet1.addCell(new Label(column + colWidthImage + 1, (propertyRow + 5) + (rowHeightImage * fragmentRow) + 2, match.getModifiedFormulaStringOfBestMatchedFragment(), arial10format));
+					sheet1.addCell(new Label(column + colWidthImage + 1, (propertyRow + 5) + (rowHeightImage * fragmentRow) + 2, match.getModifiedFormulaStringOfBestMatchedFragment(candidate.getPrecursorMolecule()), arial10format));
 					
 					sheet1.addCell(new Label(column + colWidthImage, (propertyRow + 5) + (rowHeightImage * fragmentRow) + 3, "Mass", arial10formatBold));
 					sheet1.addCell(new Label(column + colWidthImage + 1, (propertyRow + 5) + (rowHeightImage * fragmentRow) + 3, String.valueOf(MathTools.round(match.getBestMatchFragmentMass(), 5)), arial10format));
@@ -184,7 +184,7 @@ public class CandidateWriterXLS implements IWriter {
 		
 		for (int i = 0; i < matchList.getNumberElements(); i++) {
 
-			RenderedImage renderedImage = imageGenerator.generateImage(matchList.getElement(i).getBestMatchedFragment());
+			RenderedImage renderedImage = imageGenerator.generateImage(candidate.getPrecursorMolecule(), matchList.getElement(i).getBestMatchedFragment());
 
 			molImages.add(renderedImage);
 

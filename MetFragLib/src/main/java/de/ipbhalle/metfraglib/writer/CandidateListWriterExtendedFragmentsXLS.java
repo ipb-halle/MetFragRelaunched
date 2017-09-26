@@ -50,6 +50,7 @@ public class CandidateListWriterExtendedFragmentsXLS implements IWriter {
 		for (int i = 0; i < candidateList.getNumberElements(); i++) {
 			int countExplainedPeaks = 0;
 			ICandidate scoredCandidate = candidateList.getElement(i);
+			scoredCandidate.initialisePrecursorCandidate();
 			if (scoredCandidate.getMatchList() != null) {
 				MatchList matchList = scoredCandidate.getMatchList();
 				for (int l = 0; l < matchList.getNumberElements(); l++) {
@@ -78,7 +79,7 @@ public class CandidateListWriterExtendedFragmentsXLS implements IWriter {
 					}
 					String formula = scoredCandidate.getMatchList()
 							.getElement(ii)
-							.getModifiedFormulaStringOfBestMatchedFragment();
+							.getModifiedFormulaStringOfBestMatchedFragment(scoredCandidate.getPrecursorMolecule());
 					sumFormulasOfFragmentsExplainedPeaks += scoredCandidate
 							.getMatchList().getElement(ii).getMatchedPeak()
 							.getMass()
@@ -268,7 +269,7 @@ public class CandidateListWriterExtendedFragmentsXLS implements IWriter {
 				MatchList matchList = candidateList.getElement(i)
 						.getMatchList();
 				for (int k = 0; k < matchList.getNumberElements(); k++) {
-					currentList.add(imageGenerator.generateImage(matchList
+					currentList.add(imageGenerator.generateImage(candidateList.getElement(i).getPrecursorMolecule(), matchList
 							.getElement(k).getBestMatchedFragment()));
 				}
 			}

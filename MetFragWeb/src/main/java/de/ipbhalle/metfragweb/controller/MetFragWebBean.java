@@ -29,7 +29,6 @@ import org.primefaces.event.SlideEndEvent;
 import org.primefaces.event.organigram.OrganigramNodeCollapseEvent;
 import org.primefaces.event.organigram.OrganigramNodeExpandEvent;
 import org.primefaces.event.organigram.OrganigramNodeSelectEvent;
-import org.primefaces.model.DefaultOrganigramNode;
 import org.primefaces.model.OrganigramNode;
 import org.primefaces.model.StreamedContent;
 import org.primefaces.model.chart.AxisType;
@@ -39,6 +38,7 @@ import org.primefaces.model.chart.LineChartSeries;
 import de.ipbhalle.metfraglib.additionals.MathTools;
 import de.ipbhalle.metfraglib.exceptions.AtomTypeNotKnownFromInputListException;
 import de.ipbhalle.metfraglib.imagegenerator.HighlightSubStructureImageGenerator;
+import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.list.DefaultPeakList;
 import de.ipbhalle.metfraglib.list.MatchList;
 import de.ipbhalle.metfraglib.match.FragmentMassToPeakMatch;
@@ -75,13 +75,13 @@ import de.ipbhalle.metfragweb.validator.SmartsValidator;
 @SessionScoped
 public class MetFragWebBean {
 
-	private final String version = "v2.0.5";
+	private final String version = "v2.0.6";
 	/*
 	 * combines all the settings
 	 */
 	protected BeanSettingsContainer beanSettingsContainer;
 	
-	protected boolean compoundClusteringEnabled = true;
+	protected boolean compoundClusteringEnabled = false;
 	protected Thread clusterCompoundsThread;
 	protected ClusterCompoundsThreadRunner clusterCompoundsThreadRunner;
 	private OrganigramNode selectedNode;
@@ -2189,9 +2189,8 @@ public class MetFragWebBean {
 				this.beanSettingsContainer.setProcessCompoundsDialogHeader("");
 				this.beanSettingsContainer.resetProcessStatus();
 				//start clustering compounds
-				if(this.compoundClusteringEnabled) {
+				if(this.compoundClusteringEnabled && this.getNumberProcessedCompounds() < 1000) {
 					if(this.filteredMetFragResultsContainer.getMetFragResults().size() >= 5) {
-						//this.buildAlternativeRootNode();
 						this.clusterCompoundsThreadRunner = new ClusterCompoundsThreadRunner(this.beanSettingsContainer, 
 								this.infoMessages, this.errorMessages, this.filteredMetFragResultsContainer);
 						this.clusterCompoundsThread = new Thread(this.clusterCompoundsThreadRunner);
@@ -2331,21 +2330,6 @@ public class MetFragWebBean {
     
     public void nodeSelectListener(OrganigramNodeSelectEvent event) {
     	
-    }
-    
-    OrganigramNode alternativeRootNode;
-    
-    public OrganigramNode getAlternativeCompoundsClusterRoot() {
-    	return this.alternativeRootNode;
-    }
-    
-    public void buildAlternativeRootNode() {
-    	this.alternativeRootNode = new DefaultOrganigramNode("compoundGroup", new de.ipbhalle.metfragweb.compoundCluster.ClusterNode(1.0), null);
-    	OrganigramNode node = new DefaultOrganigramNode("compoundGroup", new de.ipbhalle.metfragweb.compoundCluster.ClusterNode(1.0), this.alternativeRootNode);
-    	new DefaultOrganigramNode("compoundGroup", new de.ipbhalle.metfragweb.compoundCluster.ClusterNode(1.0), this.alternativeRootNode);
-     	new DefaultOrganigramNode("compoundGroup", new de.ipbhalle.metfragweb.compoundCluster.ClusterNode(1.0), this.alternativeRootNode);
-     	new DefaultOrganigramNode("compoundGroup", new de.ipbhalle.metfragweb.compoundCluster.ClusterNode(1.0), node);
-     	new DefaultOrganigramNode("compoundGroup", new de.ipbhalle.metfragweb.compoundCluster.ClusterNode(1.0), node);
     }
     
     public boolean getClusterImageTooltipRendered() {
@@ -2526,7 +2510,6 @@ public class MetFragWebBean {
 		
 		this.generateScoreDistributionModelView();
 		if(this.clusterCompoundsThreadRunner != null && this.clusterCompoundsThreadRunner.isReady()) {
-			System.out.println("updating scores");
 			this.clusterCompoundsThreadRunner.updateScores();
 		}
 	}
@@ -2684,6 +2667,14 @@ public class MetFragWebBean {
 		//start creating the fragments
 		this.currentFragments = new java.util.Vector<Fragment>();
 		String sessionId = this.getSessionId();
+		ICandidate candidate = molecule.getRoot().getCandidate();
+		try {
+			candidate.initialisePrecursorCandidate();
+		} catch (Exception e1) {
+			System.err.println("error when initialising precursor for fragment generation");
+			e1.printStackTrace();
+			return;
+		}
 		for(int i = 0; i < molecule.getMatchList().getNumberElements(); i++) {
 			try {
 				HighlightSubStructureImageGenerator imageGenerator = new HighlightSubStructureImageGenerator();
@@ -2695,21 +2686,30 @@ public class MetFragWebBean {
 				RenderedImage image;
 				java.io.File imageFile = new java.io.File(imageFolderFragments.getAbsolutePath() + Constants.OS_SPECIFIC_FILE_SEPARATOR + "fragment_" + i + ".png");
 				try {
-					image = imageGenerator.generateImage(molecule.getMatchList().getElement(i).getBestMatchedFragment());
+					image = imageGenerator.generateImage(candidate.getPrecursorMolecule(), molecule.getMatchList().getElement(i).getBestMatchedFragment());
 					ImageIO.write(image, "png", imageFile); 
 				} catch (Exception e) {
 					System.err.println("error generating fragment image");
 				}
 				FragmentMassToPeakMatch match = (FragmentMassToPeakMatch)molecule.getMatchList().getElement(i);
+				match.getBestMatchedFragment();
 				this.currentFragments.add(
-						new Fragment(match.getModifiedFormulaHtmlStringOfBestMatchedFragment(),
+						new Fragment(match.getModifiedFormulaHtmlStringOfBestMatchedFragment(candidate.getPrecursorMolecule()),
 								MathTools.round(match.getBestMatchFragmentMass(), 5),
 								"/files/" + sessionId + "/images/fragments/fragment_" + i + ".png",
 								match.getMatchedPeak().getMass(), this.currentFragments.size() + 1));
 			} catch (Exception e) {
+				e.printStackTrace();
 				System.err.println("error generating fragment image for " + molecule.getIdentifier() + " " + i);
 				continue;
 			}
+		}
+		try {
+			candidate.resetPrecursorMolecule();
+		} catch (Exception e1) {
+			System.err.println("error when initialising precursor for fragment generation");
+			e1.printStackTrace();
+			return;
 		}
 	}
 	

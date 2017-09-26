@@ -13,9 +13,9 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 
 import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
 import de.ipbhalle.metfraglib.exceptions.AtomTypeNotKnownFromInputListException;
+import de.ipbhalle.metfraglib.fingerprint.TanimotoSimilarity;
 import de.ipbhalle.metfraglib.molecularformula.ByteMolecularFormula;
 import de.ipbhalle.metfraglib.parameter.Constants;
-import de.ipbhalle.metfraglib.similarity.TanimotoSimilarity;
 
 public class ConvertMSPtoMetFragRecord {
 

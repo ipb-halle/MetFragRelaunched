@@ -41,6 +41,8 @@ public class ProcessingStatus {
 			//this.processStatusString = "Processing Candidates - " + percentageValue + " %";
 			this.processStatusString = "Processing Candidates";
 			this.logger.info(this.percentageValue + " %");
+			// run garage collector after clearing fragments
+		//	System.gc();
 		}
 	}
 	

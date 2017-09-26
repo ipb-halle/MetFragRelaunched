@@ -5,8 +5,8 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 
 import de.ipbhalle.metfraglib.additionals.MathTools;
 import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
+import de.ipbhalle.metfraglib.fingerprint.TanimotoSimilarity;
 import de.ipbhalle.metfraglib.list.DefaultList;
-import de.ipbhalle.metfraglib.similarity.TanimotoSimilarity;
 
 public class PeakToSmartsGroupListCollection extends DefaultList {
 	

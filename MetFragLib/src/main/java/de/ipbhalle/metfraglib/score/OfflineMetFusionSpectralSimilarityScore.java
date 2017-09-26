@@ -4,6 +4,7 @@ import org.openscience.cdk.fingerprint.IBitFingerprint;
 
 import de.ipbhalle.metfraglib.candidate.PrecursorCandidate;
 import de.ipbhalle.metfraglib.collection.SpectralPeakListCollection;
+import de.ipbhalle.metfraglib.fingerprint.TanimotoSimilarity;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.interfaces.IMatch;
 import de.ipbhalle.metfraglib.list.DefaultPeakList;
@@ -12,7 +13,6 @@ import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.peaklistreader.FilteredStringTandemMassPeakListReader;
 import de.ipbhalle.metfraglib.settings.MetFragGlobalSettings;
 import de.ipbhalle.metfraglib.settings.Settings;
-import de.ipbhalle.metfraglib.similarity.TanimotoSimilarity;
 
 /**
  * fetch spectra from offline spectral file

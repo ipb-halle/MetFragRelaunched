@@ -11,5 +11,6 @@ public interface INode {
 	public void resetMaxScore();
 	public int getLeafsUnderneath();
 	public void setLeafsUnderneath(int leafsUnderneath);
+	public String getNodeColorCSS(double maximumScore);
 	
 }

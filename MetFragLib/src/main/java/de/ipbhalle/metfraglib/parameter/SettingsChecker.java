@@ -19,6 +19,7 @@ public class SettingsChecker {
 		if(!candidateFilterSettings(settings)) return false;
 		if(!scoringTypesSettings(settings)) return false;
 		if(!checkOutputSettings(settings)) return false;
+		if(!checkFingerprinterSettings(settings)) return false;
 		
 		return true;
 	}
@@ -31,6 +32,7 @@ public class SettingsChecker {
 		if(!checkFragmenterSettings(settings)) return false;
 		if(!candidateFilterSettings(settings)) return false;
 		if(!scoringTypesSettings(settings)) return false;
+		if(!checkFingerprinterSettings(settings)) return false;
 		if(checkOutput && !checkOutputSettings(settings)) return false;
 		
 		return true;
@@ -336,6 +338,20 @@ public class SettingsChecker {
 	 * @param settings
 	 * @return
 	 */
+	private boolean checkFingerprinterSettings(Settings settings) {
+		
+		Object FingerprintType = settings.get(VariableNames.FINGERPRINT_TYPE_NAME);
+		
+		if(FingerprintType == null) return true;
+		
+		return ClassNames.containsFingerprintType((String)FingerprintType);
+	}
+	
+	/**
+	 * 
+	 * @param settings
+	 * @return
+	 */
 	private boolean candidateFilterSettings(Settings settings) {
 		
 		boolean checkPositive = true;
@@ -381,6 +397,12 @@ public class SettingsChecker {
 					}
 				}
 				else if(MetFragPreProcessingCandidateFilterValue[i].equals("ElementInclusionExclusiveFilter")) {
+					if(FilterIncludedElements == null) {
+						this.logger.error(VariableNames.PRE_CANDIDATE_FILTER_INCLUDED_ELEMENTS_NAME + " is not defined!");
+						checkPositive = false;
+					}
+				}
+				else if(MetFragPreProcessingCandidateFilterValue[i].equals("ElementInclusionOptionalFilter")) {
 					if(FilterIncludedElements == null) {
 						this.logger.error(VariableNames.PRE_CANDIDATE_FILTER_INCLUDED_ELEMENTS_NAME + " is not defined!");
 						checkPositive = false;

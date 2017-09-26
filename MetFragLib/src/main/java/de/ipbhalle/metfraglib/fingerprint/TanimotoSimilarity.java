@@ -1,4 +1,4 @@
-package de.ipbhalle.metfraglib.similarity;
+package de.ipbhalle.metfraglib.fingerprint;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

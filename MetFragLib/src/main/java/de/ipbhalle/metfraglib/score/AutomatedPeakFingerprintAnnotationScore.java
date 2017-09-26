@@ -63,7 +63,7 @@ public class AutomatedPeakFingerprintAnnotationScore extends AbstractScore {
 			} else {
 				FastBitArray currentFingerprint = null;
 				try {
-					currentFingerprint = new FastBitArray(MoleculeFunctions.getNormalizedFingerprint(currentMatch.getBestMatchedFragment()));
+					currentFingerprint = new FastBitArray(MoleculeFunctions.getNormalizedFingerprint(this.candidate.getPrecursorMolecule(), currentMatch.getBestMatchedFragment()));
 				} catch (InvalidSmilesException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

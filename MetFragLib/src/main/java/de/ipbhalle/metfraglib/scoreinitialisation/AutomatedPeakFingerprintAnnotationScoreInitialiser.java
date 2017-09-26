@@ -107,7 +107,7 @@ public class AutomatedPeakFingerprintAnnotationScoreInitialiser  implements ISco
 						IFragment frag = match.getBestMatchedFragment();
 						FastBitArray currentFingerprint = null;
 						try {
-							currentFingerprint = new FastBitArray(MoleculeFunctions.getNormalizedFingerprint(frag));
+							currentFingerprint = new FastBitArray(MoleculeFunctions.getNormalizedFingerprint(candidates[i].getPrecursorMolecule(), frag));
 						} catch (InvalidSmilesException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();

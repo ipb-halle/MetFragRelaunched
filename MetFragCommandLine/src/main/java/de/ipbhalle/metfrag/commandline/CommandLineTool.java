@@ -178,10 +178,12 @@ public class CommandLineTool {
 					MatchList matchList = scoredCandidateList.getElement(i).getMatchList();
 					for(int j = 0; j < matchList.getNumberElements(); j++) {
 						try {
-							RenderedImage renderedImage = imageGenerator.generateImage((DefaultBitArrayFragment)matchList.getElement(j).getBestMatchedFragment());
+							scoredCandidateList.getElement(i).initialisePrecursorCandidate();
+							RenderedImage renderedImage = imageGenerator.generateImage(scoredCandidateList.getElement(i).getPrecursorMolecule(), (DefaultBitArrayFragment)matchList.getElement(j).getBestMatchedFragment());
 							DefaultList imageList = new DefaultList();
 							imageList.addElement(renderedImage);
 							imageWriter.write(imageList, (String)settings.get(VariableNames.SAMPLE_NAME) + "_" + scoredCandidateList.getElement(i).getIdentifier() + "_fragment_id" + (j+1), (String)settings.get(VariableNames.STORE_RESULTS_PATH_NAME));
+							scoredCandidateList.getElement(i).resetPrecursorMolecule();
 						} catch (Exception e) {
 							logger.error("Error: Could not write fragment image files.");
 							System.exit(9);

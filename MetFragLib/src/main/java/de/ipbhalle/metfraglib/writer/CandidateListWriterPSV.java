@@ -22,7 +22,7 @@ public class CandidateListWriterPSV implements IWriter {
 		return this.write(list, filename, path);
 	}
 	
-	public boolean writeFile(File file, IList list, Settings settings) throws IOException {
+	public boolean writeFile(File file, IList list, Settings settings) throws Exception {
 		CandidateList candidateList = null;
 		int numberOfPeaksUsed = 0;
 		if(list instanceof ScoredCandidateList || list instanceof SortedScoredCandidateList) {
@@ -43,6 +43,7 @@ public class CandidateListWriterPSV implements IWriter {
 		for(int i = 0; i < candidateList.getNumberElements(); i++) {
 			int countExplainedPeaks = 0;
 			ICandidate scoredCandidate = candidateList.getElement(i);
+			scoredCandidate.initialisePrecursorCandidate();
 			if(scoredCandidate.getMatchList() != null) {
 				MatchList matchList = scoredCandidate.getMatchList();
 				for(int l = 0; l < matchList.getNumberElements(); l++) {
@@ -70,7 +71,7 @@ public class CandidateListWriterPSV implements IWriter {
 					} catch (RelativeIntensityNotDefinedException e1) {
 						continue;
 					}
-					String formula = scoredCandidate.getMatchList().getElement(ii).getModifiedFormulaStringOfBestMatchedFragment();
+					String formula = scoredCandidate.getMatchList().getElement(ii).getModifiedFormulaStringOfBestMatchedFragment(scoredCandidate.getPrecursorMolecule());
 					
 					sumFormulasOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + formula + ";";
 				

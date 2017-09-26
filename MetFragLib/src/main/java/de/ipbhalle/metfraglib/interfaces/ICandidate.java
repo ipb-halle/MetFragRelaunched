@@ -18,12 +18,16 @@ public interface ICandidate {
 	public IAtomContainer getAtomContainer() throws Exception;
 	
 	public IAtomContainer getImplicitHydrogenAtomContainer() throws Exception;
-	
+
+	public void setPrecursorMolecule() throws Exception;
+
 	/**
 	 * 
 	 * @return
 	 */
 	public String getInChI();
+	
+	public void resetPrecursorMolecule();
 	
 	/**
 	 * 

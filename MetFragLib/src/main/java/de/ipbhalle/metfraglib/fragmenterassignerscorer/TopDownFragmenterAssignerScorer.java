@@ -2,6 +2,7 @@ package de.ipbhalle.metfraglib.fragmenterassignerscorer;
 
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.interfaces.IMatch;
+import de.ipbhalle.metfraglib.interfaces.IMolecularStructure;
 import de.ipbhalle.metfraglib.list.FragmentList;
 import de.ipbhalle.metfraglib.list.MatchList;
 import de.ipbhalle.metfraglib.list.SortedTandemMassPeakList;
@@ -10,7 +11,6 @@ import de.ipbhalle.metfraglib.match.MatchFragmentNode;
 import de.ipbhalle.metfraglib.match.MatchPeakList;
 import de.ipbhalle.metfraglib.match.MatchPeakNode;
 import de.ipbhalle.metfraglib.settings.Settings;
-import de.ipbhalle.metfraglib.similarity.TanimotoSimilarity;
 import de.ipbhalle.metfraglib.parameter.Constants;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.precursor.AbstractTopDownBitArrayPrecursor;
@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import org.openscience.cdk.fingerprint.IBitFingerprint;
 
 import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
+import de.ipbhalle.metfraglib.fingerprint.TanimotoSimilarity;
 import de.ipbhalle.metfraglib.fragment.AbstractTopDownBitArrayFragment;
 import de.ipbhalle.metfraglib.fragment.AbstractTopDownBitArrayFragmentWrapper;
 
@@ -84,9 +85,9 @@ public class TopDownFragmenterAssignerScorer extends AbstractFragmenterAssignerS
 				AbstractTopDownBitArrayFragmentWrapper wrappedPrecursorFragment = toProcessFragments.poll();
 				
 				if(wrappedPrecursorFragment.getWrappedFragment().isDiscardedForFragmentation()) {
-					AbstractTopDownBitArrayFragment clonedFragment = (AbstractTopDownBitArrayFragment)wrappedPrecursorFragment.getWrappedFragment().clone();
+					AbstractTopDownBitArrayFragment clonedFragment = (AbstractTopDownBitArrayFragment)wrappedPrecursorFragment.getWrappedFragment().clone(candidatePrecursor);
 					clonedFragment.setAsDiscardedForFragmentation();
-					newToProcessFragments.add(new AbstractTopDownBitArrayFragmentWrapper(clonedFragment, wrappedPrecursorFragment.getCurrentPeakIndexPointer()));
+					if(clonedFragment.getTreeDepth() < maximumTreeDepth) newToProcessFragments.add(new AbstractTopDownBitArrayFragmentWrapper(clonedFragment, wrappedPrecursorFragment.getCurrentPeakIndexPointer()));
 					continue;
 				}
 				/*
@@ -104,9 +105,9 @@ public class TopDownFragmenterAssignerScorer extends AbstractFragmenterAssignerS
 				 */
 				for(int l = 0; l < fragmentsOfCurrentTreeDepth.size(); l++) {
 					AbstractTopDownBitArrayFragment currentFragment = fragmentsOfCurrentTreeDepth.get(l);
-					
+
 					if(!fragmentsOfCurrentTreeDepth.get(l).isValidFragment()) {
-						newToProcessFragments.add(new AbstractTopDownBitArrayFragmentWrapper(fragmentsOfCurrentTreeDepth.get(l), currentPeakPointer));
+						if(currentFragment.getTreeDepth() < maximumTreeDepth) newToProcessFragments.add(new AbstractTopDownBitArrayFragmentWrapper(fragmentsOfCurrentTreeDepth.get(l), currentPeakPointer));
 						continue;
 					}
 					/*
@@ -116,7 +117,7 @@ public class TopDownFragmenterAssignerScorer extends AbstractFragmenterAssignerS
 					
 					if(this.wasAlreadyGeneratedByHashtable(currentFragment)) {
 						currentFragment.setAsDiscardedForFragmentation();
-						newToProcessFragments.add(new AbstractTopDownBitArrayFragmentWrapper(currentFragment, currentPeakPointer));
+						if(currentFragment.getTreeDepth() < maximumTreeDepth) newToProcessFragments.add(new AbstractTopDownBitArrayFragmentWrapper(currentFragment, currentPeakPointer));
 						continue;
 					}
 
@@ -127,7 +128,7 @@ public class TopDownFragmenterAssignerScorer extends AbstractFragmenterAssignerS
 						/*
 						 * calculate match
 						 */
-						matched = currentFragment.matchToPeak(tandemMassPeakList.getElement(tempPeakPointer), precursorIonTypeIndex, positiveMode, match);
+						matched = currentFragment.matchToPeak(candidatePrecursor, tandemMassPeakList.getElement(tempPeakPointer), precursorIonTypeIndex, positiveMode, match);
 						/*
 						 * check whether match has occurred
 						 */
@@ -144,14 +145,6 @@ public class TopDownFragmenterAssignerScorer extends AbstractFragmenterAssignerS
 							newNode.setScore(currentScores[0][0]);
 							newNode.setFragmentScores(currentScores[0]);
 							newNode.setOptimalValues(currentScores[1]);
-
-						/*	MatchFragmentNode newNode = new MatchFragmentNode(currentFragment);
-							newNode.setScore(currentScores[0][0]);
-							newNode.setFragmentScores(currentScores[0]);
-							newNode.setOptimalValues(currentScores[1]);
-							newNode.setHydrogenDifference(((DefaultFragmentToPeakMatch)match[0]).getNumberOfHydrogensDifferToPeakMass(0));
-							newNode.setFragmentAdductTypeIndex(((DefaultFragmentToPeakMatch)match[0]).getFragmentsAdductTypeIndex(0));
-							*/
 							/*
 							 * find correct location in the fragment list
 							 */
@@ -198,7 +191,7 @@ public class TopDownFragmenterAssignerScorer extends AbstractFragmenterAssignerS
 							/*
 							 * mark current fragment for further fragmentation
 							 */
-							newToProcessFragments.add(new AbstractTopDownBitArrayFragmentWrapper(currentFragment, tempPeakPointer));
+							if(currentFragment.getTreeDepth() < maximumTreeDepth) newToProcessFragments.add(new AbstractTopDownBitArrayFragmentWrapper(currentFragment, tempPeakPointer));
 						}
 						/*
 						 * if the current fragment has matched to the current peak then set the current peak index to the next peak as the current fragment can 
@@ -213,6 +206,7 @@ public class TopDownFragmenterAssignerScorer extends AbstractFragmenterAssignerS
 			toProcessFragments = newToProcessFragments;
 		}
 		
+		toProcessFragments.clear();
 		this.matchList = new MatchList();
 		
 		/*
@@ -239,7 +233,7 @@ public class TopDownFragmenterAssignerScorer extends AbstractFragmenterAssignerS
 				scoreValuesSingleMatch = bestFragment.getFragmentScores();
 			}
 			catch(Exception e) {
-				matchFragmentList.printElements();
+				matchFragmentList.printElements(this.candidates[0].getPrecursorMolecule());
 				System.out.println(this.candidates[0].getIdentifier() + " " + key);
 				System.exit(1);
 			}
@@ -263,7 +257,11 @@ public class TopDownFragmenterAssignerScorer extends AbstractFragmenterAssignerS
 			index++;
 		}
 		
+		for(int i = 0; i < this.matchList.getNumberElements(); i++)
+			this.matchList.getElement(i).shallowNullify();
+			
 		this.settings.set(VariableNames.MATCH_LIST_NAME, this.matchList);
+		
 		this.candidates[0].setMatchList(this.matchList);
 		
 		if(this.scoreCollection == null) return;
@@ -444,7 +442,7 @@ public class TopDownFragmenterAssignerScorer extends AbstractFragmenterAssignerS
 		while(it.hasNext()) {
 			int key = it.next();
 			System.out.print(key + " -> ");
-			peakIndexToPeakMatch.get(key).printElements();
+			peakIndexToPeakMatch.get(key).printElements(this.candidates[0].getPrecursorMolecule());
 			/*
 			 * peakID -> fragments
 			0 -> 188:104.05002:C7H6N:9.148574830115374	202:104.05002:C7H6N:9.148574830115374	139:105.05784:C7H7N:8.339671410655502	
@@ -531,10 +529,10 @@ public class TopDownFragmenterAssignerScorer extends AbstractFragmenterAssignerS
 		this.bitArrayToFragment = null;
 	}
 	
-	protected void addFingerPrintsToArrayList(ArrayList<AbstractTopDownBitArrayFragment> fragments, ArrayList<String> fingerprints, ArrayList<IBitFingerprint> fps) {
+	protected void addFingerPrintsToArrayList(IMolecularStructure precursorMolecule, ArrayList<AbstractTopDownBitArrayFragment> fragments, ArrayList<String> fingerprints, ArrayList<IBitFingerprint> fps) {
 		for(int i = 0; i < fragments.size(); i++) {
 			int index = 0;
-			IBitFingerprint fp = TanimotoSimilarity.calculateFingerPrint(fragments.get(i).getStructureAsIAtomContainer());
+			IBitFingerprint fp = TanimotoSimilarity.calculateFingerPrint(fragments.get(i).getStructureAsIAtomContainer(precursorMolecule));
 			String fingerprint = MoleculeFunctions.fingerPrintToString(fp);
 			int compareResult = -1;
 			while(index < fingerprints.size()) {

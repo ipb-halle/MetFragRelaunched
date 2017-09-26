@@ -26,6 +26,7 @@ public class MetFragGlobalSettings extends Settings {
 		this.defaults.put(VariableNames.SCORE_NAMES_NOT_TO_SCALE, Constants.DEFAULT_SCORE_NAMES_NOT_TO_SCALE);
 		this.defaults.put(VariableNames.PROCESS_CANDIDATES, Constants.DEFAULT_PROCESS_CANDIDATES);
 		this.defaults.put(VariableNames.USE_SMILES_NAME, Constants.DEFAULT_USE_SMILES);
+		this.defaults.put(VariableNames.FINGERPRINT_TYPE_NAME, Constants.DEFAULT_FINGERPRINT_TYPE);
 		/*
 		 * needs to be set externally
 		 */
@@ -40,7 +41,6 @@ public class MetFragGlobalSettings extends Settings {
 
 		this.defaults.put(VariableNames.METFRAG_DATABASE_TYPE_NAME, Constants.DEFAULT_METFRAG_DATABASE_TYPE);
 		this.defaults.put(VariableNames.METFRAG_FRAGMENTER_TYPE_NAME, Constants.DEFAULT_METFRAG_FRAGMENTER_TYPE);
-		this.defaults.put(VariableNames.METFRAG_ASSIGNER_TYPE_NAME, Constants.DEFAULT_METFRAG_ASSIGNER_TYPE);
 		this.defaults.put(VariableNames.METFRAG_ASSIGNER_SCORER_NAME, Constants.DEFAULT_METFRAG_ASSIGNER_SCORER);
 		this.defaults.put(VariableNames.METFRAG_SCORE_TYPES_NAME, Constants.DEFAULT_METFRAG_SCORE_TYPES);
 		this.defaults.put(VariableNames.METFRAG_CANDIDATE_WRITER_NAME, Constants.DEFAULT_METFRAG_CANDIDATE_WRITER);

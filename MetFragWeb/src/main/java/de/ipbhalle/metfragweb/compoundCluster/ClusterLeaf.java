@@ -19,7 +19,11 @@ public class ClusterLeaf extends ClusterNode {
 		if(this.metfragResult != null) this.maxScore = this.metfragResult.getScore();
 		else this.maxScore = 0.0;
 	}
-	
+
+	public double getMaxScore() {
+		return this.maxScore;
+	}
+
 	public void setMetfragResult(MetFragResult metfragResult) {
 		this.metfragResult = metfragResult;
 	}

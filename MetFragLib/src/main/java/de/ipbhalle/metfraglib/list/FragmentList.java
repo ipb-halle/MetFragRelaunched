@@ -2,6 +2,7 @@ package de.ipbhalle.metfraglib.list;
 
 import de.ipbhalle.metfraglib.exceptions.AtomTypeNotKnownFromInputListException;
 import de.ipbhalle.metfraglib.interfaces.IFragment;
+import de.ipbhalle.metfraglib.interfaces.IMolecularStructure;
 
 public class FragmentList extends DefaultList {
 
@@ -40,9 +41,7 @@ public class FragmentList extends DefaultList {
 
 	public void shallowNullify() {
 		if(this.list != null)
-			for(int i = 0; i < this.list.size(); i++) 
-				if(this.list.get(i) != null)
-					((IFragment)this.list.get(i)).shallowNullify();
+			this.list.clear();
 	}
 	
 	/**
@@ -50,9 +49,9 @@ public class FragmentList extends DefaultList {
 	 * @param fragment
 	 * @return
 	 */
-	public byte suitsToFragmentList(IFragment fragment) {
+	public byte suitsToFragmentList(IMolecularStructure precursorMolecule, IFragment fragment) {
 		try {
-			return ((IFragment)this.list.get(0)).shareEqualProperties(fragment);
+			return ((IFragment)this.list.get(0)).shareEqualProperties(precursorMolecule, fragment);
 		} catch (AtomTypeNotKnownFromInputListException e) {
 			e.printStackTrace();
 		}

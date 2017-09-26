@@ -160,6 +160,7 @@ public class GetRankOfCandidateMultipleThreadCSV {
 					output + "/" + id + ".txt", type);
 			threads.add(thread);
 		}
+
 		if (!stdout)
 			System.out.println("preparation finished");
 
@@ -192,7 +193,7 @@ public class GetRankOfCandidateMultipleThreadCSV {
 			resultFiles = _resfolder.listFiles(fileFilter);
 		}
 		File[] paramFiles = _paramfolder.listFiles();
-
+		
 		java.util.HashMap<String, String> csvToInChIKey = new java.util.HashMap<String, String>();
 
 		for (int i = 0; i < resultFiles.length; i++) {
@@ -217,11 +218,15 @@ public class GetRankOfCandidateMultipleThreadCSV {
 				} else if (line.matches("# InChIKey [A-Z]*-*[A-Z]*-*[A-Z]*")) {
 					csvToInChIKey.put(resultFiles[i].getAbsolutePath(), line.split("\\s+")[2].split("-")[0]);
 					break;
+				} else if (line.matches("# [A-Z]*-*[A-Z]*-*[A-Z]*")) {
+					csvToInChIKey.put(resultFiles[i].getAbsolutePath(), line.split("\\s+")[1].split("-")[0]);
+					break;
 				}
 
 			}
 			breader.close();
 		}
+		
 		return csvToInChIKey;
 	}
 
@@ -386,6 +391,7 @@ public class GetRankOfCandidateMultipleThreadCSV {
 					db = new LocalCSVDatabase(settings);
 			} else
 				db = new LocalCSVDatabase(settings);
+
 			ArrayList<String> identifiers = null;
 			try {
 				identifiers = db.getCandidateIdentifiers();
@@ -449,9 +455,9 @@ public class GetRankOfCandidateMultipleThreadCSV {
 				}
 			}
 			// if correct not found
-			if (correctGroup == null) {
+			if (correctGroup == null && !outputtype.equals("list")) {
 				System.out.println("inchikey1=" + correctInChIKey1 + " not found in " + csv);
-				System.exit(0);
+				return;
 			}
 
 			// store maximal scores
@@ -462,53 +468,55 @@ public class GetRankOfCandidateMultipleThreadCSV {
 			}
 
 			String[] outputString = new String[weights.length];
-			for (int w = 0; w < weights.length; w++) {
-
-				int rank = 0;
-				double wc = 0;
-				double bc = 0;
-
-				// get final score of correct candidate
-				double correctFinalScore = correctGroup.getBestMaximumScore(weights[w], maximumscores);
-				java.util.Enumeration<String> keys = groupedCandidates.keys();
-
-				// calculate ranking values
-				while (keys.hasMoreElements()) {
-					GroupedCandidate currentGroup = groupedCandidates.get(keys.nextElement());
-					double currentScore = currentGroup.getBestMaximumScore(weights[w], maximumscores);
-					if (currentScore >= correctFinalScore)
-						rank++;
-					if (currentScore > correctFinalScore)
-						bc++;
-					if (currentScore < correctFinalScore)
-						wc++;
+			if(!outputtype.equals("list")) {	
+				for (int w = 0; w < weights.length; w++) {
+	
+					int rank = 0;
+					double wc = 0;
+					double bc = 0;
+	
+					// get final score of correct candidate
+					double correctFinalScore = correctGroup.getBestMaximumScore(weights[w], maximumscores);
+					java.util.Enumeration<String> keys = groupedCandidates.keys();
+	
+					// calculate ranking values
+					while (keys.hasMoreElements()) {
+						GroupedCandidate currentGroup = groupedCandidates.get(keys.nextElement());
+						double currentScore = currentGroup.getBestMaximumScore(weights[w], maximumscores);
+						if (currentScore >= correctFinalScore)
+							rank++;
+						if (currentScore > correctFinalScore)
+							bc++;
+						if (currentScore < correctFinalScore)
+							wc++;
+					}
+					// calculate RRP of correct
+					double rrp = getRRP(bc, wc, groupedCandidates.size());
+					int indexOfCorrect = correctGroup.getBestIndex();
+	
+					// define output values
+					String values = scoringPropertyNames[0] + "="
+							+ candidates.getElement(indexOfCorrect).getProperty(scoringPropertyNames[0]) + "";
+					String maximalValues = "Max" + scoringPropertyNames[0] + "="
+							+ scorenameToMaximum.get(scoringPropertyNames[0]);
+					for (int i = 1; i < scoringPropertyNames.length; i++) {
+						values += " " + scoringPropertyNames[i] + "="
+								+ candidates.getElement(indexOfCorrect).getProperty(scoringPropertyNames[i]);
+						maximalValues += " Max" + scoringPropertyNames[i] + "="
+								+ scorenameToMaximum.get(scoringPropertyNames[i]);
+					}
+	
+					String weightString = "weights=" + weights[w][0];
+					for (int i = 1; i < weights[w].length; i++)
+						weightString += "," + weights[w][i];
+	
+					outputString[w] = new File(csv).getName() + " " + correctInChIKey1 + " " + rank + " "
+							+ groupedCandidates.size() + " " + correctGroup.getBestIdentifier() + " "
+							+ candidates.getElement(indexOfCorrect).getProperty("NoExplPeaks") + " "
+							+ candidates.getElement(indexOfCorrect).getProperty("NumberPeaksUsed") + " " + rrp + " " + bc
+							+ " " + wc + " " + values + " " + maximalValues + " " + weightString + " "
+							+ this.getAvgRank(rank, (int) bc);
 				}
-				// calculate RRP of correct
-				double rrp = getRRP(bc, wc, groupedCandidates.size());
-				int indexOfCorrect = correctGroup.getBestIndex();
-
-				// define output values
-				String values = scoringPropertyNames[0] + "="
-						+ candidates.getElement(indexOfCorrect).getProperty(scoringPropertyNames[0]) + "";
-				String maximalValues = "Max" + scoringPropertyNames[0] + "="
-						+ scorenameToMaximum.get(scoringPropertyNames[0]);
-				for (int i = 1; i < scoringPropertyNames.length; i++) {
-					values += " " + scoringPropertyNames[i] + "="
-							+ candidates.getElement(indexOfCorrect).getProperty(scoringPropertyNames[i]);
-					maximalValues += " Max" + scoringPropertyNames[i] + "="
-							+ scorenameToMaximum.get(scoringPropertyNames[i]);
-				}
-
-				String weightString = "weights=" + weights[w][0];
-				for (int i = 1; i < weights[w].length; i++)
-					weightString += "," + weights[w][i];
-
-				outputString[w] = new File(csv).getName() + " " + correctInChIKey1 + " " + rank + " "
-						+ groupedCandidates.size() + " " + correctGroup.getBestIdentifier() + " "
-						+ candidates.getElement(indexOfCorrect).getProperty("NoExplPeaks") + " "
-						+ candidates.getElement(indexOfCorrect).getProperty("NumberPeaksUsed") + " " + rrp + " " + bc
-						+ " " + wc + " " + values + " " + maximalValues + " " + weightString + " "
-						+ this.getAvgRank(rank, (int) bc);
 			}
 
 			if (!stdout && outputtype.equals("rank")) {
@@ -530,13 +538,14 @@ public class GetRankOfCandidateMultipleThreadCSV {
 				}
 			} else if(outputtype.equals("list")) {
 				java.util.Enumeration<String> keys = groupedCandidates.keys();
-
+				
 				java.io.BufferedWriter bwriter = null;
 				try {
 					bwriter = new java.io.BufferedWriter(new java.io.FileWriter(new java.io.File(this.outputFile)));
 					while (keys.hasMoreElements()) {
 						String curKey = keys.nextElement();
 						GroupedCandidate currentGroup = groupedCandidates.get(curKey);
+						currentGroup.getBestMaximumScore(weights[0], maximumscores);
 						String candidateLine = currentGroup.getBestSmiles() + " " + currentGroup.getCalculatedBestMaximumScore() + 
 								" " + curKey;
 						bwriter.write(candidateLine);

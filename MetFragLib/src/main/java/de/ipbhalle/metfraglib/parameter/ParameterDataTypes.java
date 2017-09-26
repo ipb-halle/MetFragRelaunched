@@ -33,6 +33,7 @@ public class ParameterDataTypes {
 		parameterDatatypes.put(	VariableNames.MAXIMUM_CANDIDATE_LIMIT_TO_STOP_NAME, 					"Integer"	);
 		parameterDatatypes.put(	VariableNames.PROCESS_CANDIDATES,					 					"Boolean"	);
 		parameterDatatypes.put(	VariableNames.USE_SMILES_NAME,					 						"Boolean"	);
+		parameterDatatypes.put(	VariableNames.FINGERPRINT_TYPE_NAME,			 						"String"	);
 		
 		parameterDatatypes.put(	VariableNames.METFRAG_DATABASE_TYPE_NAME, 								"String"	);
 		parameterDatatypes.put(	VariableNames.COMBINED_REFERENCE_SCORE_VALUES,							"String[]"	);

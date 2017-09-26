@@ -19,6 +19,7 @@ public class LocalExtendedMetChemDatabase extends LocalMetChemDatabase {
 
 	protected HashMap<String, Double> cidToNumberOfPubMedReferences;
 	protected HashMap<String, Double> cidToNumberOfPatents;
+	protected HashMap<String, Double> cidToXlogpValues;
 	
 	public LocalExtendedMetChemDatabase(Settings settings) {
 		super(settings);
@@ -41,6 +42,9 @@ public class LocalExtendedMetChemDatabase extends LocalMetChemDatabase {
 		logger.info("Fetching patents");
 		if(processingStatus != null) processingStatus.setRetrievingStatusString("Retrieving Patents");
 		this.assignNumberOfPatents(cids);
+		logger.info("Fetching XLogP");
+		this.assignXlogpValues(cids);
+		
 		for(int i = 0; i < candidateList.getNumberElements(); i++) {
 			this.addExtendedInformation(candidateList.getElement(i));
 		}
@@ -63,9 +67,9 @@ public class LocalExtendedMetChemDatabase extends LocalMetChemDatabase {
 		this.assignNumberOfPubMedReferences(cid);
 		logger.info("Fetching patents");
 		if(processingStatus != null) processingStatus.setRetrievingStatusString("Retrieving Patents");
-		
 		this.assignNumberOfPatents(cid);
-		this.assignNumberOfPatents(cid);
+		logger.info("Fetching XLogP values");
+		this.assignXlogpValues(cid);
 
 		if(processingStatus != null) processingStatus.setRetrievingStatusString("Retrieving Candidates");
 		return candidate;
@@ -74,6 +78,14 @@ public class LocalExtendedMetChemDatabase extends LocalMetChemDatabase {
 	protected void addExtendedInformation(ICandidate candidate) {
 		candidate.setProperty(VariableNames.PUBCHEM_NUMBER_PATENTS_NAME, this.cidToNumberOfPatents.get(candidate.getIdentifier()));
 		candidate.setProperty(VariableNames.PUBCHEM_NUMBER_PUBMED_REFERENCES_NAME, this.cidToNumberOfPubMedReferences.get(candidate.getIdentifier()));
+		try {
+			if(this.cidToXlogpValues.containsKey(candidate.getIdentifier())) candidate.setProperty(VariableNames.PUBCHEM_XLOGP_NAME, this.cidToXlogpValues.get(candidate.getIdentifier()));
+		} catch(Exception e) {
+			e.printStackTrace();
+			System.out.println(this.cidToXlogpValues);
+			System.out.println(candidate.getIdentifier());
+			this.cidToXlogpValues.get(candidate.getIdentifier());
+		}
 	}
 
 	public double getNumberOfPatents(String identifier) {
@@ -84,6 +96,73 @@ public class LocalExtendedMetChemDatabase extends LocalMetChemDatabase {
 		return this.cidToNumberOfPubMedReferences.get(identifier) != null ? (Double)this.cidToNumberOfPubMedReferences.get(identifier) : 0d;
 	}
 
+	public double getXlogpValue(String identifier) {
+		return this.cidToXlogpValues.get(identifier) != null ? (Double)this.cidToXlogpValues.get(identifier) : 0d;
+	}
+
+	protected void assignXlogpValues(ArrayList<String> cidsVec) {
+		String idString = "";
+		this.cidToXlogpValues = new java.util.HashMap<String, Double>();
+		if(cidsVec == null || cidsVec.size() == 0)
+			return;
+
+		JSONParser parser = new JSONParser();
+		for(int i = 0; i < cidsVec.size(); i++) {
+			idString += "," + cidsVec.get(i);
+			if((i % 100 == 0 && i != 0) || (i == cidsVec.size() - 1)) {
+				idString = idString.substring(1, idString.length());
+				String urlname = "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/" + idString + "/property/XLogP/JSON";
+				logger.trace(urlname);
+				java.io.InputStream stream = null;
+				try {
+					stream = this.getStreamForPubChemInfo(urlname);
+				} catch(Exception e) {
+					
+				}
+				if(stream == null) {
+					String[] tmp_cids = idString.split(",");
+					for(int k = 0; k < tmp_cids.length; k++) {
+						this.cidToXlogpValues.put(tmp_cids[k], 0d);
+					}
+					idString = "";
+					continue;
+				}
+				JSONObject jsonObject = null;
+				try {
+					jsonObject = (JSONObject)parser.parse(new java.io.InputStreamReader(stream));
+					stream.close();
+					stream = null;
+				} catch (IOException e) {
+					logger.error("Error: Could not fetch XLogP values.");
+					this.cidToXlogpValues = new java.util.HashMap<String, Double>();
+					for(int k = 0; k < cidsVec.size(); k++) {
+						this.cidToXlogpValues.put(cidsVec.get(k), 0d);
+					}
+					return;
+				} catch (ParseException e) {
+					logger.error("Error: Could not fetch XLogP values.");
+					this.cidToXlogpValues = new java.util.HashMap<String, Double>();
+					for(int k = 0; k < cidsVec.size(); k++) {
+						this.cidToXlogpValues.put(cidsVec.get(k), 0d);
+					}
+					return;
+				}
+				if(jsonObject == null) {
+					logger.error("Error: Could not create JSON object for fetching XLogP values.");
+					return;
+				}
+				JSONArray jsonArray = (JSONArray)((JSONObject)jsonObject.get("PropertyTable")).get("Properties");
+				Object[] objs = jsonArray.toArray();
+				for(int k = 0; k < objs.length; k++) {
+					String cid = String.valueOf(((JSONObject)objs[k]).get("CID"));
+					String xlogp = String.valueOf(((JSONObject)objs[k]).get("XLogP"));
+					if(xlogp != null && !xlogp.equals("null")) this.cidToXlogpValues.put(cid, Double.parseDouble(xlogp));
+				}
+				idString = "";
+			}
+		}
+	}
+	
 	protected void assignNumberOfPubMedReferences(ArrayList<String> cidsVec) {
 		String idString = "";
 		this.cidToNumberOfPubMedReferences = new java.util.HashMap<String, Double>();
