@@ -33,7 +33,7 @@ public class CalculateScoreFromResultFilePeakLossThreadFP {
 	
 	public static int numberFinished = 0;
 	public static java.util.Hashtable<String, String> argsHash;
-
+	
 	public static boolean getArgs(String[] args) {
 		argsHash = new java.util.Hashtable<String, String>();
 		for (String arg : args) {
@@ -42,7 +42,8 @@ public class CalculateScoreFromResultFilePeakLossThreadFP {
 			if (!tmp[0].equals("parampath") && !tmp[0].equals("resultpath") 
 					&& !tmp[0].equals("threads") && !tmp[0].equals("output")
 					&& !tmp[0].equals("alphaPeak") && !tmp[0].equals("betaPeak") 
-					&& !tmp[0].equals("alphaLoss") && !tmp[0].equals("betaLoss")) {
+					&& !tmp[0].equals("alphaLoss") && !tmp[0].equals("betaLoss")
+					&& !tmp[0].equals("fingerprinttype")) {
 				System.err.println("property " + tmp[0] + " not known.");
 				return false;
 			}
@@ -85,6 +86,9 @@ public class CalculateScoreFromResultFilePeakLossThreadFP {
 			System.err.println("no csv defined");
 			return false;
 		}
+		if (!argsHash.containsKey("fingerprinttype")) {
+			argsHash.put("fingerprinttype", "FingerprintOfExplPeaks");
+		}
 		return true;
 	}
 
@@ -99,6 +103,7 @@ public class CalculateScoreFromResultFilePeakLossThreadFP {
 		String alphaLoss = (String)argsHash.get("alphaLoss");
 		String betaLoss = (String)argsHash.get("betaLoss");
 		int numberThreads = Integer.parseInt(argsHash.get("threads"));
+		String fingerprinttype = (String)argsHash.get("fingerprinttype");
 		
 		ALPHA_VALUE_PEAK = Double.parseDouble(alphaPeak);
 		BETA_VALUE_PEAK = Double.parseDouble(betaPeak);
@@ -147,7 +152,7 @@ public class CalculateScoreFromResultFilePeakLossThreadFP {
 			settings.set(VariableNames.PEAK_LIST_NAME, peakListReader.read());
 			
 			
-			ProcessThread thread = new CalculateScoreFromResultFilePeakLossThreadFP().new ProcessThread(settings, outputfolder);
+			ProcessThread thread = new CalculateScoreFromResultFilePeakLossThreadFP().new ProcessThread(settings, outputfolder, fingerprinttype);
 			threads.add(thread);
 		}
 		System.out.println("preparation finished");
@@ -220,15 +225,17 @@ public class CalculateScoreFromResultFilePeakLossThreadFP {
 	class ProcessThread extends Thread {
 		protected Settings settings;
 		protected String outputFolder;
+		protected String fingerprintType;
 
 		/**
 		 * 
 		 * @param settings
 		 * @param outputFolder
 		 */
-		public ProcessThread(Settings settings, String outputFolder) {
+		public ProcessThread(Settings settings, String outputFolder, String fingerprintType) {
 			this.settings = settings;
 			this.outputFolder = outputFolder;
+			this.fingerprintType = fingerprintType;
 		}
 		
 		/**
@@ -311,7 +318,7 @@ public class CalculateScoreFromResultFilePeakLossThreadFP {
 				ICandidate currentCandidate = candidates.getElement(k);
 				String fps = "";
 				try {
-					fps = (String)currentCandidate.getProperty("FragmentFingerprintOfExplPeaks");
+					fps = (String)currentCandidate.getProperty("Fragment" + this.fingerprintType);
 					if(fps.equals("NA")) {
 						currentCandidate.setProperty("PeakMatchList", new ArrayList<Match>());
 						continue;
@@ -409,7 +416,7 @@ public class CalculateScoreFromResultFilePeakLossThreadFP {
 				 * check whether the single run was successful
 				 */
 				ICandidate currentCandidate = candidates.getElement(k);
-				String fps = (String)currentCandidate.getProperty("LossFingerprintOfExplPeaks");
+				String fps = (String)currentCandidate.getProperty("Loss" + this.fingerprintType);
 				if(fps.equals("NA")) {
 					currentCandidate.setProperty("LossMatchList", new ArrayList<Match>());
 					continue;
