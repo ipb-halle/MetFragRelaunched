@@ -43,8 +43,8 @@ public class CandidateListWriterLossFragmentSmilesCompletePSV implements IWriter
 		}
 		if(candidateList == null) return false;
 		
-		String[] lines = new String[candidateList.getNumberElements()];
-		String heading = "";
+		StringBuilder[] lines = new StringBuilder[candidateList.getNumberElements()];
+		StringBuilder heading = new StringBuilder();
 		
 		FingerprintCollection fingerprintCollection = new FingerprintCollection();
 		for(int i = 0; i < candidateList.getNumberElements(); i++) {
@@ -65,14 +65,14 @@ public class CandidateListWriterLossFragmentSmilesCompletePSV implements IWriter
 				}
 			}
 			
-			String peaksExplained = "";
-			String sumFormulasOfFragmentsExplainedPeaks = "";
-			String smilesOfFragmentsExplainedPeaks = "";
-			String aromaticSmilesOfFragmentsExplainedPeaks = "";
+			StringBuilder peaksExplained = new StringBuilder();
+			StringBuilder sumFormulasOfFragmentsExplainedPeaks =  new StringBuilder();
+			StringBuilder smilesOfFragmentsExplainedPeaks =  new StringBuilder();
+			StringBuilder aromaticSmilesOfFragmentsExplainedPeaks =  new StringBuilder();
 			
-			String fingerprintOfFragmentsExplainedPeaks[] = new String[fingerprintCollection.getNumberFingerprinters()];
+			StringBuilder fingerprintOfFragmentsExplainedPeaks[] = new StringBuilder[fingerprintCollection.getNumberFingerprinters()];
 			for(int ii = 0; ii < fingerprintOfFragmentsExplainedPeaks.length; ii++)
-				fingerprintOfFragmentsExplainedPeaks[ii] = "";
+				fingerprintOfFragmentsExplainedPeaks[ii] = new StringBuilder();
 			
 			if(scoredCandidate.getMatchList() != null) 
 			{
@@ -82,8 +82,10 @@ public class CandidateListWriterLossFragmentSmilesCompletePSV implements IWriter
 				{
 					try {
 						double intensity = scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getIntensity();
-						peaksExplained += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() 
-								+ "_" + intensity + ";";
+						peaksExplained.append(scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass()); 
+						peaksExplained.append("_");
+						peaksExplained.append(intensity);
+						peaksExplained.append(";");
 					} catch (RelativeIntensityNotDefinedException e1) {
 						continue;
 					}
@@ -94,7 +96,10 @@ public class CandidateListWriterLossFragmentSmilesCompletePSV implements IWriter
 						correctedMasses[ii] = MathTools.round(calculateMassOfFormula(formula), 5);
 						mass = correctedMasses[ii];
 					}
-					sumFormulasOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + formula + ";";
+					sumFormulasOfFragmentsExplainedPeaks.append(scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass());
+					sumFormulasOfFragmentsExplainedPeaks.append(":");
+					sumFormulasOfFragmentsExplainedPeaks.append(formula);
+					sumFormulasOfFragmentsExplainedPeaks.append(";");
 					// get fragment of explained peak
 					IFragment frag = scoredCandidate.getMatchList().getElement(ii).getBestMatchedFragment();
 					String smiles = "";
@@ -107,35 +112,32 @@ public class CandidateListWriterLossFragmentSmilesCompletePSV implements IWriter
 						continue;
 					}
 					
-					for(int iii = 0; iii < fps.length; iii++) 
-						fingerprintOfFragmentsExplainedPeaks[iii] += mass + ":" + fps[iii] + ";";	
-					smilesOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + smiles + ";";
-					aromaticSmilesOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + frag.getAromaticSmiles(scoredCandidate.getPrecursorMolecule()) + ";";
+					for(int iii = 0; iii < fps.length; iii++) {
+						fingerprintOfFragmentsExplainedPeaks[iii].append(mass);
+						fingerprintOfFragmentsExplainedPeaks[iii].append(":");
+						fingerprintOfFragmentsExplainedPeaks[iii].append(fps[iii]);
+						fingerprintOfFragmentsExplainedPeaks[iii].append(";");	
+					}
+					smilesOfFragmentsExplainedPeaks.append(scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass());
+					smilesOfFragmentsExplainedPeaks.append(":");
+					smilesOfFragmentsExplainedPeaks.append(smiles);
+					smilesOfFragmentsExplainedPeaks.append(";");
+					aromaticSmilesOfFragmentsExplainedPeaks.append(scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass());
+					aromaticSmilesOfFragmentsExplainedPeaks.append(":");
+					aromaticSmilesOfFragmentsExplainedPeaks.append(frag.getAromaticSmiles(scoredCandidate.getPrecursorMolecule()));
+					aromaticSmilesOfFragmentsExplainedPeaks.append(";");
 				}
-				if(sumFormulasOfFragmentsExplainedPeaks.length() != 0) sumFormulasOfFragmentsExplainedPeaks = sumFormulasOfFragmentsExplainedPeaks.substring(0, sumFormulasOfFragmentsExplainedPeaks.length() - 1);
-				if(peaksExplained.length() != 0) peaksExplained = peaksExplained.substring(0, peaksExplained.length() - 1);
-				for(int ii = 0; ii < fingerprintOfFragmentsExplainedPeaks.length; ii++) 
-					if(fingerprintOfFragmentsExplainedPeaks[ii].length() != 0) 
-						fingerprintOfFragmentsExplainedPeaks[ii] = fingerprintOfFragmentsExplainedPeaks[ii].substring(0, fingerprintOfFragmentsExplainedPeaks[ii].length() - 1);
-				if(smilesOfFragmentsExplainedPeaks.length() != 0) smilesOfFragmentsExplainedPeaks = smilesOfFragmentsExplainedPeaks.substring(0, smilesOfFragmentsExplainedPeaks.length() - 1);
-				if(aromaticSmilesOfFragmentsExplainedPeaks.length() != 0) aromaticSmilesOfFragmentsExplainedPeaks = aromaticSmilesOfFragmentsExplainedPeaks.substring(0, aromaticSmilesOfFragmentsExplainedPeaks.length() - 1);
 				
-				if(peaksExplained.length() == 0) peaksExplained = "NA";
-				if(sumFormulasOfFragmentsExplainedPeaks.length() == 0) sumFormulasOfFragmentsExplainedPeaks = "NA";
-				if(smilesOfFragmentsExplainedPeaks.length() == 0) smilesOfFragmentsExplainedPeaks = "NA";
-				if(aromaticSmilesOfFragmentsExplainedPeaks.length() == 0) aromaticSmilesOfFragmentsExplainedPeaks = "NA";
-				for(int ii = 0; ii < fingerprintOfFragmentsExplainedPeaks.length; ii++) 
-					if(fingerprintOfFragmentsExplainedPeaks[ii].length() == 0) 
-						fingerprintOfFragmentsExplainedPeaks[ii] = "NA";
-				
-				scoredCandidate.setProperty("ExplPeaks", peaksExplained);
-				scoredCandidate.setProperty("FormulasOfExplPeaks", sumFormulasOfFragmentsExplainedPeaks);
-				scoredCandidate.setProperty("SmilesOfExplPeaks", smilesOfFragmentsExplainedPeaks);
+				scoredCandidate.setProperty("ExplPeaks", peaksExplained.length() == 0 ? "NA" : peaksExplained.substring(0, peaksExplained.length() - 1));
+				scoredCandidate.setProperty("FormulasOfExplPeaks", sumFormulasOfFragmentsExplainedPeaks.length() == 0 ? "NA" : sumFormulasOfFragmentsExplainedPeaks.substring(0, sumFormulasOfFragmentsExplainedPeaks.length() - 1));
+				scoredCandidate.setProperty("SmilesOfExplPeaks", smilesOfFragmentsExplainedPeaks.length() == 0 ? "NA" : smilesOfFragmentsExplainedPeaks.substring(0, smilesOfFragmentsExplainedPeaks.length() - 1));
 				for(int ii = 0; ii < fingerprintCollection.getNumberFingerprinters(); ii++) 
-					scoredCandidate.setProperty("FragmentFingerprintOfExplPeaks" + fingerprintCollection.getNameOfFingerprinter(ii), fingerprintOfFragmentsExplainedPeaks[ii]);
-				scoredCandidate.setProperty("AromaticSmilesOfExplPeaks", aromaticSmilesOfFragmentsExplainedPeaks);
+					scoredCandidate.setProperty("FragmentFingerprintOfExplPeaks" + fingerprintCollection.getNameOfFingerprinter(ii), fingerprintOfFragmentsExplainedPeaks[ii].length() == 0 ? "NA" : fingerprintOfFragmentsExplainedPeaks[ii].substring(0, fingerprintOfFragmentsExplainedPeaks[ii].length() - 1));
+				scoredCandidate.setProperty("AromaticSmilesOfExplPeaks", aromaticSmilesOfFragmentsExplainedPeaks.length() == 0 ? "NA" : aromaticSmilesOfFragmentsExplainedPeaks.substring(0, aromaticSmilesOfFragmentsExplainedPeaks.length() - 1));
+				
 				scoredCandidate.setProperty("NumberPeaksUsed", numberOfPeaksUsed);
 				scoredCandidate.setProperty("NoExplPeaks", countExplainedPeaks);
+				
 				//add loss information
 				if(settings != null) {
 					String[][] lossesInformation = createLossAnnotations(scoredCandidate.getPrecursorMolecule(), scoredCandidate.getMatchList(), settings, correctedMasses, fingerprintCollection);
@@ -149,22 +151,26 @@ public class CandidateListWriterLossFragmentSmilesCompletePSV implements IWriter
 			java.util.Enumeration<String> keys = scoredCandidate.getProperties().keys();
 			if(keys.hasMoreElements()) {
 				String key = keys.nextElement();
-				if(i == 0) heading += key;
-				lines[i] = "" + scoredCandidate.getProperty(key);
+				if(i == 0) heading.append(key);
+				lines[i].append(scoredCandidate.getProperty(key));
 			}
 			while(keys.hasMoreElements()) {
 				String key = keys.nextElement();
-				if(i == 0) heading += "|" + key;
-				lines[i] += "|" + scoredCandidate.getProperty(key);
+				if(i == 0) {
+					heading.append("|");
+					heading.append(key);
+				}
+				lines[i].append("|");
+				lines[i].append(scoredCandidate.getProperty(key));
 			}
 		}
 		java.io.BufferedWriter bwriter;
 		try {
 			bwriter = new java.io.BufferedWriter(new FileWriter(file));
-			bwriter.write(heading);
+			bwriter.write(heading.toString());
 			bwriter.newLine();
 			for(int i = 0; i < lines.length; i++) {
-				bwriter.write(lines[i]);
+				bwriter.write(lines[i].toString());
 				bwriter.newLine();
 			}
 			bwriter.close();
