@@ -327,13 +327,14 @@ public class MoleculeFunctions {
 	}
 	
 	public static String fingerPrintToString(IBitFingerprint fp) {
-		String string = "";
-		for(int i = 0; i < fp.size(); i++) {
-			string += fp.get(i) ? "1" : "0";
+		int size = (int)fp.size();
+		char[] set = new char[size];
+		for(int i = 0; i < size; i++) {
+			set[i] = fp.get(i) ? '1' : '0';
 		}
-		return string;
+		return String.valueOf(set);
 	}
-
+	
 	public static IBitFingerprint stringToFingerPrint(String string) {
 		java.util.BitSet bitSet = new java.util.BitSet(string.length());
 		for(int i = 0; i < string.length(); i++) {
