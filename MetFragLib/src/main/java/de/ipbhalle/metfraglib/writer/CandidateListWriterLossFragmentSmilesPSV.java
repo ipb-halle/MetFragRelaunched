@@ -217,20 +217,7 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 					double diff = peakMassJ - peakMassI;
 					IFragment diffFragment = fragmentJ.getDifferenceFragment(precursorMolecule, fragmentI);
 					if(diffFragment == null) continue;
-					/*
-					String smiles = diffFragment.getSmiles(precursorMolecule);
-					IAtomContainer con;
-					try {
-						con = MoleculeFunctions.getAtomContainerFromSMILES(smiles);
-					} catch (Exception e) {
-						System.err.println("Could not generate container from " + smiles);
-						continue;
-					}
 
-					String preparedSmiles = MoleculeFunctions.generateSmiles(con);
-					lossFingerprint.add(MoleculeFunctions.fingerPrintToString(fingerprint.calculateFingerPrint(con)));
-					MoleculeFunctions.prepareAtomContainer(con, false);
-					*/
 					IAtomContainer con = fingerprint.getNormalizedAtomContainer(precursorMolecule, diffFragment);
 						
 					lossFingerprint.add(fingerprint.getNormalizedFingerprint(con));
@@ -243,20 +230,7 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 			double diff = ionmass - peakMassI;
 			IFragment diffFragment = fragmentI.getDifferenceFragment(precursorMolecule);
 			if(diffFragment == null) continue;
-			
-			/*
-			String smiles = diffFragment.getSmiles(precursorMolecule);
-			IAtomContainer con;
-			try {
-				con = MoleculeFunctions.getAtomContainerFromSMILES(smiles);
-			} catch (Exception e) {
-				System.err.println("Could not generate container from " + smiles);
-				continue;
-			}
-			
-			MoleculeFunctions.prepareAtomContainer(con, false);
-			String preparedSmiles = MoleculeFunctions.generateSmiles(con);
-			*/
+
 			IAtomContainer con = fingerprint.getNormalizedAtomContainer(precursorMolecule, diffFragment);
 			lossFingerprint.add(fingerprint.getNormalizedFingerprint(con));
 			lossSmiles.add(fingerprint.getNormalizedSmiles(con));
@@ -264,20 +238,39 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 			lossMassDiff.add(diff);
 		}
 
-		String diffSmiles = "NA";
-		String diffSmarts = "NA";
-		String diffFingerPrint = "NA";
+		StringBuilder diffSmiles = new StringBuilder();
+		StringBuilder diffSmarts = new StringBuilder();
+		StringBuilder diffFingerPrint = new StringBuilder();
 		if(lossMassDiff.size() >= 1) {
-			diffSmiles = lossMassDiff.get(0) + ":" + lossSmiles.get(0);
-			diffSmarts = lossMassDiff.get(0) + ":" + lossSmarts.get(0);
-			diffFingerPrint = lossMassDiff.get(0) + ":" + lossFingerprint.get(0);
+			diffSmiles.append(lossMassDiff.get(0));
+			diffSmiles.append(":");
+			diffSmiles.append(lossSmiles.get(0));
+			diffSmarts.append(lossMassDiff.get(0));
+			diffSmarts.append(":");
+			diffSmarts.append(lossSmarts.get(0));
+			diffFingerPrint.append(lossMassDiff.get(0));
+			diffFingerPrint.append(":");
+			diffFingerPrint.append(lossFingerprint.get(0));
 		}
 		for(int i = 1; i < lossMassDiff.size(); i++) {
-			diffSmiles += ";" + lossMassDiff.get(i) + ":" + lossSmiles.get(i);
-			diffSmarts += ";" + lossMassDiff.get(i) + ":" + lossSmarts.get(i);
-			diffFingerPrint += ";" + lossMassDiff.get(i) + ":" + lossFingerprint.get(i);
+			diffSmiles.append(";");
+			diffSmiles.append(lossMassDiff.get(i));
+			diffSmiles.append(":");
+			diffSmiles.append(lossSmiles.get(i));
+			diffSmarts.append(";");
+			diffSmarts.append(lossMassDiff.get(i));
+			diffSmarts.append(":");
+			diffSmarts.append(lossSmarts.get(i));
+			diffFingerPrint.append(";");
+			diffFingerPrint.append(lossMassDiff.get(i));
+			diffFingerPrint.append(":");
+			diffFingerPrint.append(lossFingerprint.get(i));
 		}
-		return new String[] {diffSmiles, diffSmarts, diffFingerPrint};
+		return new String[] {
+			diffSmiles.length() == 0 ? "NA" : diffSmiles.toString(), 
+			diffSmarts.length() == 0 ? "NA" : diffSmarts.toString(), 
+			diffFingerPrint.length() == 0 ? "NA" : diffFingerPrint.toString()
+		};
 	}
 	
 	public void nullify() {
