@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import org.openscience.cdk.interfaces.IAtomContainer;
+
 import de.ipbhalle.metfraglib.additionals.MathTools;
 import de.ipbhalle.metfraglib.exceptions.AtomTypeNotKnownFromInputListException;
 import de.ipbhalle.metfraglib.exceptions.RelativeIntensityNotDefinedException;
@@ -93,15 +95,18 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 					sumFormulasOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + formula + ";";
 					// get fragment of explained peak
 					IFragment frag = scoredCandidate.getMatchList().getElement(ii).getBestMatchedFragment();
-					String[] fpsm = null;
+					String fp = null;
+					String smiles = null;
 					try {
-						fpsm = fingerprint.getNormalizedFingerprintSmiles(scoredCandidate.getPrecursorMolecule(), frag);
+						IAtomContainer con = fingerprint.getNormalizedAtomContainer(scoredCandidate.getPrecursorMolecule(), frag);
+						smiles = fingerprint.getNormalizedSmiles(con);
+						fp = fingerprint.getNormalizedFingerprint(con);
 					} catch(Exception e) {
 						continue;
 					}
 					
-					fingerprintOfFragmentsExplainedPeaks += mass + ":" + fpsm[0] + ";";	
-					smilesOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + fpsm[1] + ";";
+					fingerprintOfFragmentsExplainedPeaks += mass + ":" + fp + ";";	
+					smilesOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + smiles + ";";
 					aromaticSmilesOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + frag.getAromaticSmiles(scoredCandidate.getPrecursorMolecule()) + ";";
 				}
 				if(sumFormulasOfFragmentsExplainedPeaks.length() != 0) sumFormulasOfFragmentsExplainedPeaks = sumFormulasOfFragmentsExplainedPeaks.substring(0, sumFormulasOfFragmentsExplainedPeaks.length() - 1);
@@ -217,9 +222,10 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 					lossFingerprint.add(MoleculeFunctions.fingerPrintToString(fingerprint.calculateFingerPrint(con)));
 					MoleculeFunctions.prepareAtomContainer(con, false);
 					*/
-					String[] fpsm = fingerprint.getNormalizedFingerprintSmiles(precursorMolecule, diffFragment);
-					lossFingerprint.add(fpsm[0]);
-					lossSmiles.add(fpsm[1]);
+					IAtomContainer con = fingerprint.getNormalizedAtomContainer(precursorMolecule, diffFragment);
+						
+					lossFingerprint.add(fingerprint.getNormalizedFingerprint(con));
+					lossSmiles.add(fingerprint.getNormalizedSmiles(con));
 					lossSmarts.add(diffFragment.getAromaticSmiles(precursorMolecule));
 					lossMassDiff.add(diff);
 				}
@@ -242,9 +248,9 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 			MoleculeFunctions.prepareAtomContainer(con, false);
 			String preparedSmiles = MoleculeFunctions.generateSmiles(con);
 			*/
-			String[] fpsm = fingerprint.getNormalizedFingerprintSmiles(precursorMolecule, diffFragment);
-			lossFingerprint.add(fpsm[0]);
-			lossSmiles.add(fpsm[1]);
+			IAtomContainer con = fingerprint.getNormalizedAtomContainer(precursorMolecule, diffFragment);
+			lossFingerprint.add(fingerprint.getNormalizedFingerprint(con));
+			lossSmiles.add(fingerprint.getNormalizedSmiles(con));
 			lossSmarts.add(diffFragment.getAromaticSmiles(precursorMolecule));
 			lossMassDiff.add(diff);
 		}

@@ -34,7 +34,24 @@ public class FingerprintCollection {
 		return this.fingerprinter[index].getClass().getName().replaceAll(".*\\.", "");
 	}
 	
-	public String[][] getNormalizedFingerprintSmiles(IMolecularStructure precursorMolecule, IFragment frag) throws Exception {
+	public String getNormalizedSmiles(IAtomContainer con) {
+		
+		String smiles = MoleculeFunctions.generateSmiles(con);
+		
+		return smiles;
+	}
+	
+	public String[] getNormalizedFingerprint(IAtomContainer con) throws Exception {
+		
+		IBitFingerprint[] fps = this.calculateFingerPrint(con);
+		String[] fps_strings = new String[fps.length];
+		for(int i = 0; i < this.fingerprinter.length; i++) 
+			fps_strings[i] = MoleculeFunctions.fingerPrintToString(fps[i]);
+		
+		return fps_strings;
+	}
+	
+	public IAtomContainer getNormalizedAtomContainer(IMolecularStructure precursorMolecule, IFragment frag) throws Exception {
 		String preSmiles = frag.getSmiles(precursorMolecule);
 		String inchi1 = ""; 
 		boolean useSmiles = false;
@@ -51,14 +68,8 @@ public class FingerprintCollection {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		IBitFingerprint[] fps = this.calculateFingerPrint(con);
-		String[][] fps_smiles = new String[fps.length][2];
 		
-		String smiles = MoleculeFunctions.generateSmiles(con);
-		for(int i = 0; i < this.fingerprinter.length; i++) 
-			fps_smiles[i] = new String[] {MoleculeFunctions.fingerPrintToString(fps[i]), smiles};
-		
-		return fps_smiles;
+		return con;
 	}
 	
 	public int getNumberFingerprinters() {

@@ -24,7 +24,14 @@ public class Fingerprint {
 		return this.fingerprinter.getBitFingerprint(s1);
 	}
 	
-	public String[] getNormalizedFingerprintSmiles(IMolecularStructure precursorMolecule, IFragment frag) throws Exception {
+	public String getNormalizedSmiles(IAtomContainer con) {
+		
+		String smiles = MoleculeFunctions.generateSmiles(con);
+		
+		return smiles;
+	}
+
+	public IAtomContainer getNormalizedAtomContainer(IMolecularStructure precursorMolecule, IFragment frag) {
 		String preSmiles = frag.getSmiles(precursorMolecule);
 		String inchi1 = ""; 
 		boolean useSmiles = false;
@@ -41,9 +48,13 @@ public class Fingerprint {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		String fpString = MoleculeFunctions.fingerPrintToString(this.calculateFingerPrint(con));
-		String smiles = MoleculeFunctions.generateSmiles(con);
+		return con;
+	}
+	
+	public String getNormalizedFingerprint(IAtomContainer con) throws Exception {
 		
-		return new String[] {fpString, smiles};
+		String fpString = MoleculeFunctions.fingerPrintToString(this.calculateFingerPrint(con));
+		
+		return fpString;
 	}
 }
