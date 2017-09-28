@@ -247,25 +247,42 @@ public class CandidateListWriterLossFragmentSmilesCompletePSV implements IWriter
 			lossMassDiff.add(diff);
 		}
 
-		String diffSmiles = "NA";
-		String diffSmarts = "NA";
-		String[] diffFingerPrints = new String[fingerprintCollection.getNumberFingerprinters()];  
-		for(int i = 0; i < diffFingerPrints.length; i++) diffFingerPrints[i] = "NA";
+		StringBuilder diffSmiles = new StringBuilder();
+		StringBuilder diffSmarts = new StringBuilder();
+		StringBuilder[] diffFingerPrints = new StringBuilder[fingerprintCollection.getNumberFingerprinters()];  
+		for(int i = 0; i < diffFingerPrints.length; i++) diffFingerPrints[i] = new StringBuilder();
 		if(lossMassDiff.size() >= 1) {
-			diffSmiles = lossMassDiff.get(0) + ":" + lossSmiles.get(0);
-			diffSmarts = lossMassDiff.get(0) + ":" + lossSmarts.get(0);
-			for(int ii = 0; ii < diffFingerPrints.length; ii++) 
-				diffFingerPrints[ii] = lossMassDiff.get(0) + ":" + lossFingerprint.get(0)[ii];
+			diffSmiles.append(lossMassDiff.get(0));
+			diffSmiles.append(":");
+			diffSmiles.append(lossSmiles.get(0));
+			diffSmarts.append(lossMassDiff.get(0));
+			diffSmarts.append(":");
+			diffSmarts.append(lossSmarts.get(0));
+			for(int ii = 0; ii < diffFingerPrints.length; ii++) { 
+				diffFingerPrints[ii].append(lossMassDiff.get(0));
+				diffFingerPrints[ii].append(":");
+				diffFingerPrints[ii].append(lossFingerprint.get(0)[ii]);
+			}
 		}
 		for(int i = 1; i < lossMassDiff.size(); i++) {
-			diffSmiles += ";" + lossMassDiff.get(i) + ":" + lossSmiles.get(i);
-			diffSmarts += ";" + lossMassDiff.get(i) + ":" + lossSmarts.get(i);
-			for(int ii = 0; ii < diffFingerPrints.length; ii++) 
-				diffFingerPrints[ii] +=  ";" + lossMassDiff.get(i) + ":" + lossFingerprint.get(i)[ii];
+			diffSmiles.append(";");
+			diffSmiles.append(lossMassDiff.get(i));
+			diffSmiles.append(":");
+			diffSmiles.append(lossSmiles.get(i));
+			diffSmarts.append(";");
+			diffSmarts.append(lossMassDiff.get(i));
+			diffSmarts.append(":");
+			diffSmarts.append(lossSmarts.get(i));
+			for(int ii = 0; ii < diffFingerPrints.length; ii++) {
+				diffFingerPrints[ii].append(";");
+				diffFingerPrints[ii].append(lossMassDiff.get(i));
+				diffFingerPrints[ii].append(":");
+				diffFingerPrints[ii].append(lossFingerprint.get(i)[ii]);
+			}
 		}
 		String[][] fps_return = new String[fingerprintCollection.getNumberFingerprinters()][3];
 		for(int i = 0; i < fingerprintCollection.getNumberFingerprinters(); i++) {
-			fps_return[i] = new String[] {diffSmiles, diffSmarts, diffFingerPrints[i]};
+			fps_return[i] = new String[] {diffSmiles.toString(), diffSmarts.toString(), diffFingerPrints[i].toString()};
 		}
 		return fps_return;
 	}
