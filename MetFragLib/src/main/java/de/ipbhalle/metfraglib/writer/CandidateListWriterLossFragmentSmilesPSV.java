@@ -46,6 +46,7 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 		
 		Fingerprint fingerprint = new Fingerprint((String)settings.get(VariableNames.FINGERPRINT_TYPE_NAME));
 		for(int i = 0; i < candidateList.getNumberElements(); i++) {
+			System.out.println(i);
 			int countExplainedPeaks = 0;
 			ICandidate scoredCandidate = candidateList.getElement(i);
 			scoredCandidate.initialisePrecursorCandidate();
