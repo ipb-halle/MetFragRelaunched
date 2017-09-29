@@ -68,8 +68,6 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 			
 			StringBuilder peaksExplained = new StringBuilder();
 			StringBuilder sumFormulasOfFragmentsExplainedPeaks = new StringBuilder();
-			StringBuilder smilesOfFragmentsExplainedPeaks = new StringBuilder();
-			StringBuilder aromaticSmilesOfFragmentsExplainedPeaks = new StringBuilder();
 			
 			StringBuilder fingerprintOfFragmentsExplainedPeaks = new StringBuilder();
 			
@@ -102,10 +100,8 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 					// get fragment of explained peak
 					IFragment frag = scoredCandidate.getMatchList().getElement(ii).getBestMatchedFragment();
 					String fp = null;
-					String smiles = null;
 					try {
 						IAtomContainer con = fingerprint.getNormalizedAtomContainer(scoredCandidate.getPrecursorMolecule(), frag);
-						smiles = fingerprint.getNormalizedSmiles(con);
 						fp = fingerprint.getNormalizedFingerprint(con);
 					} catch(Exception e) {
 						continue;
@@ -114,30 +110,18 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 					fingerprintOfFragmentsExplainedPeaks.append(":");
 					fingerprintOfFragmentsExplainedPeaks.append(fp);
 					fingerprintOfFragmentsExplainedPeaks.append(";");	
-					smilesOfFragmentsExplainedPeaks.append(scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass());
-					smilesOfFragmentsExplainedPeaks.append(":");
-					smilesOfFragmentsExplainedPeaks.append(smiles);
-					smilesOfFragmentsExplainedPeaks.append(";");
-					aromaticSmilesOfFragmentsExplainedPeaks.append(scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass());
-					aromaticSmilesOfFragmentsExplainedPeaks.append(":");
-					aromaticSmilesOfFragmentsExplainedPeaks.append(frag.getAromaticSmiles(scoredCandidate.getPrecursorMolecule()));
-					aromaticSmilesOfFragmentsExplainedPeaks.append(";");
 				}
 				
 				scoredCandidate.setProperty("ExplPeaks", peaksExplained.length() == 0 ? "NA" : peaksExplained.substring(0, peaksExplained.length() - 1));
 				scoredCandidate.setProperty("FormulasOfExplPeaks", sumFormulasOfFragmentsExplainedPeaks.length() == 0 ? "NA" : sumFormulasOfFragmentsExplainedPeaks.substring(0, sumFormulasOfFragmentsExplainedPeaks.length() - 1));
-				scoredCandidate.setProperty("SmilesOfExplPeaks", smilesOfFragmentsExplainedPeaks.length() == 0 ? "NA" : smilesOfFragmentsExplainedPeaks.substring(0, smilesOfFragmentsExplainedPeaks.length() - 1));
 				scoredCandidate.setProperty("FragmentFingerprintOfExplPeaks", fingerprintOfFragmentsExplainedPeaks.length() == 0 ? "NA" : fingerprintOfFragmentsExplainedPeaks.substring(0, fingerprintOfFragmentsExplainedPeaks.length() - 1));
-				scoredCandidate.setProperty("AromaticSmilesOfExplPeaks", aromaticSmilesOfFragmentsExplainedPeaks.length() == 0 ? "NA" : aromaticSmilesOfFragmentsExplainedPeaks.substring(0, aromaticSmilesOfFragmentsExplainedPeaks.length() - 1));
 				
 				scoredCandidate.setProperty("NumberPeaksUsed", numberOfPeaksUsed);
 				scoredCandidate.setProperty("NoExplPeaks", countExplainedPeaks);
 				//add loss information
 				if(settings != null) {
-					String[] lossesInformation = createLossAnnotations(scoredCandidate.getPrecursorMolecule(), scoredCandidate.getMatchList(), settings, correctedMasses, fingerprint);
-					scoredCandidate.setProperty("LossSmilesOfExplPeaks", lossesInformation[0]);
-					scoredCandidate.setProperty("LossAromaticSmilesOfExplPeaks", lossesInformation[1]);
-					scoredCandidate.setProperty("LossFingerprintOfExplPeaks", lossesInformation[2]);
+					String lossesFingerprints = createLossAnnotations(scoredCandidate.getPrecursorMolecule(), scoredCandidate.getMatchList(), settings, correctedMasses, fingerprint);
+					scoredCandidate.setProperty("LossFingerprintOfExplPeaks", lossesFingerprints);
 				}
 			}
 	
@@ -182,10 +166,8 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 	 * @param settings
 	 * @throws Exception 
 	 */
-	private String[] createLossAnnotations(IMolecularStructure precursorMolecule, MatchList matchList, Settings settings, double[] correctedMasses, Fingerprint fingerprint) throws Exception {
+	private String createLossAnnotations(IMolecularStructure precursorMolecule, MatchList matchList, Settings settings, double[] correctedMasses, Fingerprint fingerprint) throws Exception {
 		java.util.ArrayList<String> lossFingerprint = new java.util.ArrayList<String>();
-		java.util.ArrayList<String> lossSmiles = new java.util.ArrayList<String>();
-		java.util.ArrayList<String> lossSmarts = new java.util.ArrayList<String>();
 		java.util.ArrayList<Double> lossMassDiff = new java.util.ArrayList<Double>();
 		
 		//for the precursor ion
@@ -221,8 +203,6 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 					IAtomContainer con = fingerprint.getNormalizedAtomContainer(precursorMolecule, diffFragment);
 						
 					lossFingerprint.add(fingerprint.getNormalizedFingerprint(con));
-					lossSmiles.add(fingerprint.getNormalizedSmiles(con));
-					lossSmarts.add(diffFragment.getAromaticSmiles(precursorMolecule));
 					lossMassDiff.add(diff);
 				}
 			}
@@ -233,44 +213,22 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 
 			IAtomContainer con = fingerprint.getNormalizedAtomContainer(precursorMolecule, diffFragment);
 			lossFingerprint.add(fingerprint.getNormalizedFingerprint(con));
-			lossSmiles.add(fingerprint.getNormalizedSmiles(con));
-			lossSmarts.add(diffFragment.getAromaticSmiles(precursorMolecule));
 			lossMassDiff.add(diff);
 		}
 
-		StringBuilder diffSmiles = new StringBuilder();
-		StringBuilder diffSmarts = new StringBuilder();
 		StringBuilder diffFingerPrint = new StringBuilder();
 		if(lossMassDiff.size() >= 1) {
-			diffSmiles.append(lossMassDiff.get(0));
-			diffSmiles.append(":");
-			diffSmiles.append(lossSmiles.get(0));
-			diffSmarts.append(lossMassDiff.get(0));
-			diffSmarts.append(":");
-			diffSmarts.append(lossSmarts.get(0));
 			diffFingerPrint.append(lossMassDiff.get(0));
 			diffFingerPrint.append(":");
 			diffFingerPrint.append(lossFingerprint.get(0));
 		}
 		for(int i = 1; i < lossMassDiff.size(); i++) {
-			diffSmiles.append(";");
-			diffSmiles.append(lossMassDiff.get(i));
-			diffSmiles.append(":");
-			diffSmiles.append(lossSmiles.get(i));
-			diffSmarts.append(";");
-			diffSmarts.append(lossMassDiff.get(i));
-			diffSmarts.append(":");
-			diffSmarts.append(lossSmarts.get(i));
 			diffFingerPrint.append(";");
 			diffFingerPrint.append(lossMassDiff.get(i));
 			diffFingerPrint.append(":");
 			diffFingerPrint.append(lossFingerprint.get(i));
 		}
-		return new String[] {
-			diffSmiles.length() == 0 ? "NA" : diffSmiles.toString(), 
-			diffSmarts.length() == 0 ? "NA" : diffSmarts.toString(), 
-			diffFingerPrint.length() == 0 ? "NA" : diffFingerPrint.toString()
-		};
+		return diffFingerPrint.length() == 0 ? "NA" : diffFingerPrint.toString();
 	}
 	
 	public void nullify() {
