@@ -108,7 +108,6 @@ public class CombinedSingleCandidateMetFragProcess implements Runnable {
 		this.fas.assignInteremScoresResults();
 		//set the reference to the scored candidate(s)
 		this.scoredPrecursorCandidates = this.fas.getCandidates();
-		
 		if(logger.isTraceEnabled()) {
 			logger.trace("\t\tcleaning candidates");
 		}

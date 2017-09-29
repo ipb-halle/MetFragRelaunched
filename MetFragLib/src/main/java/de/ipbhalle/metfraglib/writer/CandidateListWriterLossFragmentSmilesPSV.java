@@ -44,12 +44,35 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 		
 		StringBuilder heading = new StringBuilder();
 
+		java.util.Enumeration<String> keys = candidateList.getElement(0).getProperties().keys();
+		if(keys.hasMoreElements()) {
+			String key = keys.nextElement();
+			heading.append(key);
+		}
+		while(keys.hasMoreElements()) {
+			String key = keys.nextElement();
+			heading.append("|");
+			heading.append(key);
+		}
+		heading.append("|");
+		heading.append("ExplPeaks");
+		heading.append("|");
+		heading.append("FormulasOfExplPeaks");
+		heading.append("|");
+		heading.append("FragmentFingerprintOfExplPeaks");
+		heading.append("|");
+		heading.append("NumberPeaksUsed");
+		heading.append("|");
+		heading.append("NoExplPeaks");
+		heading.append("|");
+		heading.append("LossFingerprintOfExplPeaks");
+		
 		java.io.BufferedWriter bwriter = new java.io.BufferedWriter(new FileWriter(file));
-		boolean headerWritten = false;
+		bwriter.write(heading.toString());
+		bwriter.newLine();
 		Fingerprint fingerprint = new Fingerprint((String)settings.get(VariableNames.FINGERPRINT_TYPE_NAME));
 		for(int i = 0; i < candidateList.getNumberElements(); i++) {
 			StringBuilder line = new StringBuilder();
-			System.out.println(i);
 			int countExplainedPeaks = 0;
 			ICandidate scoredCandidate = candidateList.getElement(i);
 			scoredCandidate.initialisePrecursorCandidate();
@@ -64,6 +87,17 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 					}
 					countExplainedPeaks++;
 				}
+			}
+			
+			keys = scoredCandidate.getProperties().keys();
+			if(keys.hasMoreElements()) {
+				String key = keys.nextElement();
+				line.append(scoredCandidate.getProperty(key));
+			}
+			while(keys.hasMoreElements()) {
+				String key = keys.nextElement();
+				line.append("|");
+				line.append(scoredCandidate.getProperty(key));
 			}
 			
 			StringBuilder peaksExplained = new StringBuilder();
@@ -112,40 +146,24 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 					fingerprintOfFragmentsExplainedPeaks.append(";");	
 				}
 				
-				scoredCandidate.setProperty("ExplPeaks", peaksExplained.length() == 0 ? "NA" : peaksExplained.substring(0, peaksExplained.length() - 1));
-				scoredCandidate.setProperty("FormulasOfExplPeaks", sumFormulasOfFragmentsExplainedPeaks.length() == 0 ? "NA" : sumFormulasOfFragmentsExplainedPeaks.substring(0, sumFormulasOfFragmentsExplainedPeaks.length() - 1));
-				scoredCandidate.setProperty("FragmentFingerprintOfExplPeaks", fingerprintOfFragmentsExplainedPeaks.length() == 0 ? "NA" : fingerprintOfFragmentsExplainedPeaks.substring(0, fingerprintOfFragmentsExplainedPeaks.length() - 1));
-				
-				scoredCandidate.setProperty("NumberPeaksUsed", numberOfPeaksUsed);
-				scoredCandidate.setProperty("NoExplPeaks", countExplainedPeaks);
+				line.append("|");
+				line.append(peaksExplained.length() == 0 ? "NA" : peaksExplained.substring(0, peaksExplained.length() - 1));
+				line.append("|");
+				line.append(sumFormulasOfFragmentsExplainedPeaks.length() == 0 ? "NA" : sumFormulasOfFragmentsExplainedPeaks.substring(0, sumFormulasOfFragmentsExplainedPeaks.length() - 1));
+				line.append("|");
+				line.append(fingerprintOfFragmentsExplainedPeaks.length() == 0 ? "NA" : fingerprintOfFragmentsExplainedPeaks.substring(0, fingerprintOfFragmentsExplainedPeaks.length() - 1));
+				line.append("|");
+				line.append(numberOfPeaksUsed);
+				line.append("|");
+				line.append(countExplainedPeaks);
 				//add loss information
 				if(settings != null) {
 					String lossesFingerprints = createLossAnnotations(scoredCandidate.getPrecursorMolecule(), scoredCandidate.getMatchList(), settings, correctedMasses, fingerprint);
-					scoredCandidate.setProperty("LossFingerprintOfExplPeaks", lossesFingerprints);
+					line.append("|");
+					line.append(lossesFingerprints);
 				}
 			}
 	
-			java.util.Enumeration<String> keys = scoredCandidate.getProperties().keys();
-			if(keys.hasMoreElements()) {
-				String key = keys.nextElement();
-				if(i == 0) heading.append(key);
-				line.append(scoredCandidate.getProperty(key));
-			}
-			while(keys.hasMoreElements()) {
-				String key = keys.nextElement();
-				if(i == 0) {
-					heading.append("|");
-					heading.append(key);
-					
-				}
-				line.append("|");
-				line.append(scoredCandidate.getProperty(key));
-			}
-			if(!headerWritten) {
-				bwriter.write(heading.toString());
-				bwriter.newLine();
-				headerWritten = true;
-			}
 			bwriter.write(line.toString());
 			bwriter.newLine();
 		}
