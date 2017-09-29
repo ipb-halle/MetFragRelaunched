@@ -2,7 +2,6 @@ package de.ipbhalle.metfraglib.writer;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 
 import org.openscience.cdk.interfaces.IAtomContainer;
 
@@ -43,12 +42,13 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 		}
 		if(candidateList == null) return false;
 		
-		StringBuilder[] lines = new StringBuilder[candidateList.getNumberElements()];
 		StringBuilder heading = new StringBuilder();
-		
+
+		java.io.BufferedWriter bwriter = new java.io.BufferedWriter(new FileWriter(file));
+		boolean headerWritten = false;
 		Fingerprint fingerprint = new Fingerprint((String)settings.get(VariableNames.FINGERPRINT_TYPE_NAME));
 		for(int i = 0; i < candidateList.getNumberElements(); i++) {
-			lines[i] = new StringBuilder();
+			StringBuilder line = new StringBuilder();
 			System.out.println(i);
 			int countExplainedPeaks = 0;
 			ICandidate scoredCandidate = candidateList.getElement(i);
@@ -129,7 +129,7 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 			if(keys.hasMoreElements()) {
 				String key = keys.nextElement();
 				if(i == 0) heading.append(key);
-				lines[i].append(scoredCandidate.getProperty(key));
+				line.append(scoredCandidate.getProperty(key));
 			}
 			while(keys.hasMoreElements()) {
 				String key = keys.nextElement();
@@ -138,26 +138,19 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 					heading.append(key);
 					
 				}
-				lines[i].append("|");
-				lines[i].append(scoredCandidate.getProperty(key));
+				line.append("|");
+				line.append(scoredCandidate.getProperty(key));
 			}
-		}
-		java.io.BufferedWriter bwriter;
-		try {
-			bwriter = new java.io.BufferedWriter(new FileWriter(file));
-			bwriter.write(heading.toString());
-			bwriter.newLine();
-			for(int i = 0; i < lines.length; i++) {
-				bwriter.write(lines[i].toString());
+			if(!headerWritten) {
+				bwriter.write(heading.toString());
 				bwriter.newLine();
+				headerWritten = true;
 			}
-			bwriter.close();
-			return true;
-		} catch (IOException e) {
-			e.printStackTrace();
+			bwriter.write(line.toString());
+			bwriter.newLine();
 		}
-		
-		return false;
+		bwriter.close();
+		return true;
 	}
 	
 	/**
