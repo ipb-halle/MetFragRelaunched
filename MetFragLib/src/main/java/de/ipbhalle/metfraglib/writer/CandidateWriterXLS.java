@@ -58,6 +58,7 @@ public class CandidateWriterXLS implements IWriter {
 			return false;
 		
 		ICandidate candidate = candidateList.getElement(0);
+		if(settings != null) candidate.setUseSmiles((Boolean)settings.get(VariableNames.USE_SMILES_NAME));
 		candidate.initialisePrecursorCandidate();
 		xlsFile.createNewFile();
 		WritableWorkbook workbook = Workbook.createWorkbook(xlsFile);
