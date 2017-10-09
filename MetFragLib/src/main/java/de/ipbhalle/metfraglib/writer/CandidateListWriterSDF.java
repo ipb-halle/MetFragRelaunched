@@ -19,6 +19,7 @@ import de.ipbhalle.metfraglib.list.MatchList;
 import de.ipbhalle.metfraglib.list.ScoredCandidateList;
 import de.ipbhalle.metfraglib.list.SortedScoredCandidateList;
 import de.ipbhalle.metfraglib.parameter.Constants;
+import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.settings.Settings;
 
 public class CandidateListWriterSDF implements IWriter {
@@ -44,6 +45,7 @@ public class CandidateListWriterSDF implements IWriter {
 			return false;
 		for (int i = 0; i < candidateList.getNumberElements(); i++) {
 			ICandidate candidate = candidateList.getElement(i);
+			if(settings != null) candidate.setUseSmiles((Boolean)settings.get(VariableNames.USE_SMILES_NAME));
 			candidate.initialisePrecursorCandidate();
 			IAtomContainer candidateAtomContainer = null;
 			try {

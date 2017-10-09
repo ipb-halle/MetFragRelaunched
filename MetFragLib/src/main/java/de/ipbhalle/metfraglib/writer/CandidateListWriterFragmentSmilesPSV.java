@@ -13,6 +13,7 @@ import de.ipbhalle.metfraglib.list.MatchList;
 import de.ipbhalle.metfraglib.list.ScoredCandidateList;
 import de.ipbhalle.metfraglib.list.SortedScoredCandidateList;
 import de.ipbhalle.metfraglib.parameter.Constants;
+import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.settings.Settings;
 
 public class CandidateListWriterFragmentSmilesPSV implements IWriter {
@@ -38,6 +39,7 @@ public class CandidateListWriterFragmentSmilesPSV implements IWriter {
 		for(int i = 0; i < candidateList.getNumberElements(); i++) {
 			int countExplainedPeaks = 0;
 			ICandidate scoredCandidate = candidateList.getElement(i);
+			if(settings != null) scoredCandidate.setUseSmiles((Boolean)settings.get(VariableNames.USE_SMILES_NAME));
 			scoredCandidate.initialisePrecursorCandidate();
 			if(scoredCandidate.getMatchList() != null) {
 				MatchList matchList = scoredCandidate.getMatchList();
