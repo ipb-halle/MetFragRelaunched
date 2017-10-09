@@ -22,7 +22,8 @@ import org.apache.commons.csv.CSVPrinter;
 public class CandidateListWriterCSV implements IWriter {
 
 	public boolean write(IList list, String filename, String path, Settings settings) throws Exception {
-		return this.write(list, filename, path);
+		File file = new File(path + Constants.OS_SPECIFIC_FILE_SEPARATOR + filename + ".csv");
+		return this.writeFile(file, list, settings);
 	}
 	
 	public boolean write(IList list, String filename, String path) throws Exception {
@@ -55,6 +56,9 @@ public class CandidateListWriterCSV implements IWriter {
 		for(int i = 0; i < candidateList.getNumberElements(); i++) {
 			int countExplainedPeaks = 0;
 			ICandidate scoredCandidate = candidateList.getElement(i);
+			if(settings != null) {
+				scoredCandidate.setUseSmiles((Boolean)settings.get(VariableNames.USE_SMILES_NAME));
+			}
 			scoredCandidate.initialisePrecursorCandidate();
 			if(scoredCandidate.getMatchList() != null) {
 				MatchList matchList = scoredCandidate.getMatchList();
