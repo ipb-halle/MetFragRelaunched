@@ -193,7 +193,7 @@ public class GetRankOfCandidateMultipleThreadCSV {
 			resultFiles = _resfolder.listFiles(fileFilter);
 		}
 		File[] paramFiles = _paramfolder.listFiles();
-		
+
 		java.util.HashMap<String, String> csvToInChIKey = new java.util.HashMap<String, String>();
 
 		for (int i = 0; i < resultFiles.length; i++) {

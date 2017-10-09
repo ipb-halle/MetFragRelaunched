@@ -171,7 +171,6 @@ public class LocalCSVDatabase extends AbstractDatabase {
 				reader.close();
 				throw new Exception();
 			}
-			
 			for(CSVRecord record : parser) {
 				ICandidate precursorCandidate = new TopDownPrecursorCandidate(record.get(VariableNames.INCHI_NAME), record.get(VariableNames.IDENTIFIER_NAME));
 				for(int ii = 0; ii < propertyNames.size(); ii++) {
@@ -185,7 +184,6 @@ public class LocalCSVDatabase extends AbstractDatabase {
 					}	
 				}
 				this.candidates.put(precursorCandidate.getIdentifier(), precursorCandidate);
-			
 			}
 			
 			parser.close();

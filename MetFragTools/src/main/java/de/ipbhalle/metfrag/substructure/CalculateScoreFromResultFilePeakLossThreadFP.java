@@ -87,7 +87,7 @@ public class CalculateScoreFromResultFilePeakLossThreadFP {
 			return false;
 		}
 		if (!argsHash.containsKey("fingerprinttype")) {
-			argsHash.put("fingerprinttype", "FingerprintOfExplPeaks");
+			argsHash.put("fingerprinttype", "");
 		}
 		return true;
 	}
@@ -293,7 +293,7 @@ public class CalculateScoreFromResultFilePeakLossThreadFP {
 			
 			CandidateListWriterCSV writer = new CandidateListWriterCSV();
 			try {
-				writer.write(candidates, (String)this.settings.get(VariableNames.SAMPLE_NAME), this.outputFolder);
+				writer.write(candidates, (String)this.settings.get(VariableNames.SAMPLE_NAME), this.outputFolder, settings);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -318,7 +318,7 @@ public class CalculateScoreFromResultFilePeakLossThreadFP {
 				ICandidate currentCandidate = candidates.getElement(k);
 				String fps = "";
 				try {
-					fps = (String)currentCandidate.getProperty("Fragment" + this.fingerprintType);
+					fps = (String)currentCandidate.getProperty("FragmentFingerprintOfExplPeaks" + this.fingerprintType);
 					if(fps.equals("NA")) {
 						currentCandidate.setProperty("PeakMatchList", new ArrayList<Match>());
 						continue;
@@ -397,7 +397,6 @@ public class CalculateScoreFromResultFilePeakLossThreadFP {
 				groupList.setBetaProb(betaProbability / sum_f);
 				groupList.setProbabilityToConditionalProbability_sp();
 				groupList.calculateSumProbabilites();
-				
 			}
 			
 			return;
@@ -416,7 +415,7 @@ public class CalculateScoreFromResultFilePeakLossThreadFP {
 				 * check whether the single run was successful
 				 */
 				ICandidate currentCandidate = candidates.getElement(k);
-				String fps = (String)currentCandidate.getProperty("Loss" + this.fingerprintType);
+				String fps = (String)currentCandidate.getProperty("LossFingerprintOfExplPeaks" + this.fingerprintType);
 				if(fps.equals("NA")) {
 					currentCandidate.setProperty("LossMatchList", new ArrayList<Match>());
 					continue;
