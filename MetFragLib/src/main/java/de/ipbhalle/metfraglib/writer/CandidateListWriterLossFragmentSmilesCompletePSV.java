@@ -200,7 +200,7 @@ public class CandidateListWriterLossFragmentSmilesCompletePSV implements IWriter
 		boolean ispositive = (Boolean)settings.get(VariableNames.IS_POSITIVE_ION_MODE_NAME);
 		
 		double adductMass = Constants.getIonisationTypeMassCorrection(Constants.ADDUCT_NOMINAL_MASSES.indexOf(ionmode), ispositive);
-		double precursorMass = (Double)settings.get(VariableNames.PRECURSOR_NEUTRAL_MASS_NAME);
+		double precursorMass = precursorMolecule.getNeutralMonoisotopicMass();
 		
 		double ionmass = precursorMass + adductMass ;
 		
@@ -282,7 +282,8 @@ public class CandidateListWriterLossFragmentSmilesCompletePSV implements IWriter
 		}
 		String[][] fps_return = new String[fingerprintCollection.getNumberFingerprinters()][3];
 		for(int i = 0; i < fingerprintCollection.getNumberFingerprinters(); i++) {
-			fps_return[i] = new String[] {diffSmiles.toString(), diffSmarts.toString(), diffFingerPrints[i].toString()};
+			if(diffFingerPrints[i].toString().equals("")) fps_return[i] = new String[] {"NA", "NA", "NA"};
+			else fps_return[i] = new String[] {diffSmiles.toString(), diffSmarts.toString(), diffFingerPrints[i].toString()};
 		}
 		return fps_return;
 	}

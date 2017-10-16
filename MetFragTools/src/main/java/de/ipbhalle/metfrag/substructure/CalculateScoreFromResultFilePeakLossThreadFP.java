@@ -422,13 +422,19 @@ public class CalculateScoreFromResultFilePeakLossThreadFP {
 				}
 				String[] tmp = fps.split(";");
 				ArrayList<Match> matchlist = new ArrayList<Match>();
-				for(int i = 0; i < tmp.length; i++) {
-					String[] tmp1 = tmp[i].split(":");
-					double mass = Double.parseDouble(tmp1[0]);
-					MassToFingerprintGroupList matchingLossToFingerprintGroupList = lossToFingerprintGroupListCollection.getElementByPeak(mass, mzppm, mzabs);
-					if(matchingLossToFingerprintGroupList != null) mass = matchingLossToFingerprintGroupList.getPeakmz();
-					Match match = new CalculateScoreFromResultFilePeakLossThreadFP().new Match(tmp1[1], mass);
-					matchlist.add(match);
+				try {
+					for(int i = 0; i < tmp.length; i++) {
+						String[] tmp1 = tmp[i].split(":");
+						double mass = Double.parseDouble(tmp1[0]);
+						MassToFingerprintGroupList matchingLossToFingerprintGroupList = lossToFingerprintGroupListCollection.getElementByPeak(mass, mzppm, mzabs);
+						if(matchingLossToFingerprintGroupList != null) mass = matchingLossToFingerprintGroupList.getPeakmz();
+						Match match = new CalculateScoreFromResultFilePeakLossThreadFP().new Match(tmp1[1], mass);
+						matchlist.add(match);
+					}
+				} catch(Exception e) {
+					System.err.println("error LossFingerprintOfExplPeaks" + this.fingerprintType + " " + settings.get(VariableNames.LOCAL_DATABASE_PATH_NAME) + " " + currentCandidate.getIdentifier());
+					e.printStackTrace();
+					return;
 				}
 				
 				currentCandidate.setProperty("LossMatchList", matchlist);
