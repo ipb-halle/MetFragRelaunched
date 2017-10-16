@@ -421,7 +421,12 @@ public class GetRankOfCandidateMultipleThreadCSV {
 				double[] scores = new double[scoringPropertyNames.length];
 				// get score and check for maximum
 				for (int k = 0; k < scores.length; k++) {
-					scores[k] = Double.parseDouble((String) candidates.getElement(i).getProperty(scoringPropertyNames[k]));
+					try {
+						scores[k] = Double.parseDouble((String) candidates.getElement(i).getProperty(scoringPropertyNames[k]));
+					} catch(Exception e) {
+						System.err.println("error reading " + this.csv);
+						System.err.println("could not get property " + scoringPropertyNames[k]);
+					}
 					if (transformScores && scoresToTransform.contains(scoringPropertyNames[k])) {
 						if (scores[k] != 0.0)
 							scores[k] = 1.0 / (Math.abs(Math.log(scores[k])));

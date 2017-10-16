@@ -288,7 +288,8 @@ public class CandidateListWriterLossFragmentSmilesCompletePSV implements IWriter
 		}
 		String[][] fps_return = new String[fingerprintCollection.getNumberFingerprinters()][3];
 		for(int i = 0; i < fingerprintCollection.getNumberFingerprinters(); i++) {
-			fps_return[i] = new String[] {diffSmiles.toString(), diffSmarts.toString(), diffFingerPrints[i].toString()};
+			if(diffFingerPrints[i].toString().equals("")) fps_return[i] = new String[] {"NA", "NA", "NA"};
+			else fps_return[i] = new String[] {diffSmiles.toString(), diffSmarts.toString(), diffFingerPrints[i].toString()};
 		}
 		return fps_return;
 	}
