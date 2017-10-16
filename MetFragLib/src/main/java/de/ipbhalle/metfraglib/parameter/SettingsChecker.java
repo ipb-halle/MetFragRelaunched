@@ -38,6 +38,10 @@ public class SettingsChecker {
 		return true;
 	}
 	
+	public Logger getLogger() {
+		return this.logger;
+	}
+	
 	/**
 	 * 
 	 * @param settings

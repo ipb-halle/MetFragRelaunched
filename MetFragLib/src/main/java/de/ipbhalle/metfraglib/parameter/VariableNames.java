@@ -5,26 +5,26 @@ public class VariableNames {
 	/*
 	 * global settings
 	 */
-	public static final String PEAK_LIST_NAME 									= 	"PeakList";
+	public static final String PEAK_LIST_NAME 										= 	"PeakList";
 	public static final String DATABASE_RELATIVE_MASS_DEVIATION_NAME 				= 	"DatabaseSearchRelativeMassDeviation";
 	public static final String ABSOLUTE_MASS_DEVIATION_NAME 						= 	"FragmentPeakMatchAbsoluteMassDeviation";
 	public static final String RELATIVE_MASS_DEVIATION_NAME 						= 	"FragmentPeakMatchRelativeMassDeviation";
-	public static final String MAXIMUM_TREE_DEPTH_NAME 							= 	"MaximumTreeDepth";
-	public static final String PRECURSOR_ION_MODE_NAME 							= 	"PrecursorIonMode";
-	public static final String PRECURSOR_ION_MODE_STRING_NAME 					= 	"PrecursorIonType";
+	public static final String MAXIMUM_TREE_DEPTH_NAME 								= 	"MaximumTreeDepth";
+	public static final String PRECURSOR_ION_MODE_NAME 								= 	"PrecursorIonMode";
+	public static final String PRECURSOR_ION_MODE_STRING_NAME 						= 	"PrecursorIonType";
 	public static final String IS_POSITIVE_ION_MODE_NAME							= 	"IsPositiveIonMode";
-	public static final String PRECURSOR_NEUTRAL_MASS_NAME 						= 	"NeutralPrecursorMass";
-	public static final String PRECURSOR_ION_MASS_NAME 							= 	"IonizedPrecursorMass";
+	public static final String PRECURSOR_NEUTRAL_MASS_NAME 							= 	"NeutralPrecursorMass";
+	public static final String PRECURSOR_ION_MASS_NAME 								= 	"IonizedPrecursorMass";
 	public static final String CONSIDER_HYDROGEN_SHIFTS_NAME 						= 	"ConsiderHydrogenShifts";
 	public static final String PRECURSOR_MOLECULAR_FORMULA_NAME 					= 	"NeutralPrecursorMolecularFormula";
-	public static final String PRECURSOR_DATABASE_IDS_NAME 						= 	"PrecursorCompoundIDs";
-	public static final String PEAK_LIST_PATH_NAME 								= 	"PeakListPath";
+	public static final String PRECURSOR_DATABASE_IDS_NAME 							= 	"PrecursorCompoundIDs";
+	public static final String PEAK_LIST_PATH_NAME 									= 	"PeakListPath";
 	public static final String LOCAL_DATABASE_PATH_NAME 							= 	"LocalDatabasePath";
-	public static final String NUMBER_OF_DIGITS_AFTER_ROUNDING_NAME				= 	"NumberOfDigitsAfterRounding";
-	public static final String PARAMETER_FILE_NAME								= 	"ParameterFile";
+	public static final String NUMBER_OF_DIGITS_AFTER_ROUNDING_NAME					= 	"NumberOfDigitsAfterRounding";
+	public static final String PARAMETER_FILE_NAME									= 	"ParameterFile";
 	public static final String PROCESS_CANDIDATES									=	"ProcessCandidates";
-	public static final String USE_SMILES_NAME									=	"UseSmiles";
-	public static final String FINGERPRINT_TYPE_NAME									=	"FingerprintType";
+	public static final String USE_SMILES_NAME										=	"UseSmiles";
+	public static final String FINGERPRINT_TYPE_NAME								=	"FingerprintType";
 	
 	public static final String METFRAG_DATABASE_TYPE_NAME 							= 	"MetFragDatabaseType";
 	public static final String METFRAG_FRAGMENTER_TYPE_NAME 						= 	"MetFragFragmenterType";
