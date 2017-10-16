@@ -177,7 +177,13 @@ public class LocalPSVDatabase extends AbstractDatabase {
 					if (k == propNameToIndex.get(VariableNames.INCHI_NAME) || k == propNameToIndex.get(VariableNames.IDENTIFIER_NAME))
 						continue;
 					if (propNameToIndex.get(VariableNames.MONOISOTOPIC_MASS_NAME) != null && k == propNameToIndex.get(VariableNames.MONOISOTOPIC_MASS_NAME))
-						precursorCandidate.setProperty(colNames[k], Double.parseDouble(tmp[propNameToIndex.get(colNames[k])]));
+						try {
+							precursorCandidate.setProperty(colNames[k], Double.parseDouble(tmp[propNameToIndex.get(colNames[k])]));
+						} catch(Exception e) {
+							System.err.println("error in file " + f.getName() + " for " + identifier);
+							System.err.println("error in column: " + colNames[k] + " " + tmp[propNameToIndex.get(colNames[k])]);
+							e.printStackTrace();
+						}
 					else
 						try {
 							precursorCandidate.setProperty(colNames[k], tmp[propNameToIndex.get(colNames[k])]);

@@ -50,7 +50,6 @@ public class SettingsChecker {
 		/**
 		 * check peak list file
 		 */
-		System.out.println((String)settings.get(VariableNames.METFRAG_PEAK_LIST_READER_NAME));
 		if(settings.get(VariableNames.PEAK_LIST_STRING_NAME) != null 
 				&& ((String)settings.get(VariableNames.METFRAG_PEAK_LIST_READER_NAME)).equals(FilteredStringTandemMassPeakListReader.class.getName())) {
 			//nothing to do here
