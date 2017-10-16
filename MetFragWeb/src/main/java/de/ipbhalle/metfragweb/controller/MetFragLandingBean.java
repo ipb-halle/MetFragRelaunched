@@ -40,7 +40,6 @@ public class MetFragLandingBean {
 		this.allowedNames.add(VariableNames.PRECURSOR_MOLECULAR_FORMULA_NAME);
 		this.allowedNames.add(VariableNames.PRECURSOR_ION_MODE_NAME);
 		this.allowedNames.add(VariableNames.PEAK_LIST_NAME);
-		this.allowedNames.add(VariableNames.PRECURSOR_ION_MASS_NAME);
 		this.allowedNames.add(VariableNames.METFRAG_DATABASE_TYPE_NAME);
 		this.allowedDatabases = new java.util.LinkedList<String>();
 		this.allowedDatabases.add("KEGG");

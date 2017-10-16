@@ -29,7 +29,7 @@ public class FindSimilarEntries {
 			if(line.startsWith("# MolecularFingerPrint")) {
 				lastFingerprint = line.split("\\s+")[3];
 				double sim = TanimotoSimilarity.calculateSimilarity(MoleculeFunctions.stringToFingerPrint(lastFingerprint), MoleculeFunctions.stringToFingerPrint(fingerprint));
-				if(sim >= 0.6) System.out.println(lastID + " " + sim);
+				if(sim >= 0.8) System.out.println(lastID + " " + sim);
 			}
 		}
 		breader.close();
