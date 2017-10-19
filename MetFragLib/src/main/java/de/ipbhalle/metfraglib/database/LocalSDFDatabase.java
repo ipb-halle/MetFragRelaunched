@@ -143,7 +143,7 @@ public class LocalSDFDatabase extends AbstractDatabase {
 				identifiers.add(identifier);
 				String[] inchiInfo = MoleculeFunctions.getInChIInfoFromAtomContainer(molecule);
 				ICandidate precursorCandidate = new TopDownPrecursorCandidate(inchiInfo[0], identifier);
-
+				precursorCandidate.setProperty(VariableNames.SMILES_NAME, MoleculeFunctions.generateSmiles(molecule));
 				java.util.Iterator<Object> properties = molecule.getProperties().keySet().iterator();
 				while (properties.hasNext()) {
 					String key = (String) properties.next();

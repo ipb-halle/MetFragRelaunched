@@ -7,4 +7,5 @@ public abstract class AbstractPeakList extends DefaultList {
 	public abstract boolean containsMass(double mass, double mzppm, double mzabs);
 
 	public abstract Double getBestMatchingMass(double mass, double mzppm, double mzabs);
+	
 }

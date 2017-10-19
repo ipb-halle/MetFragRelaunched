@@ -41,11 +41,9 @@ public class AutomatedPeakFingerprintAnnotationScoreInitialiser  implements ISco
 			MassToFingerprintGroupListCollection peakToFingerprintGroupListCollection = new MassToFingerprintGroupListCollection();
 			String filename = (String)settings.get(VariableNames.FINGERPRINT_PEAK_ANNOTATION_FILE_NAME);
 			DefaultPeakList peakList = (DefaultPeakList)settings.get(VariableNames.PEAK_LIST_NAME);
-			//Double mzppm = (Double)settings.get(VariableNames.RELATIVE_MASS_DEVIATION_NAME);
-			//Double mzabs = (Double)settings.get(VariableNames.ABSOLUTE_MASS_DEVIATION_NAME);
+			Double mzppm = (Double)settings.get(VariableNames.RELATIVE_MASS_DEVIATION_NAME);
+			Double mzabs = (Double)settings.get(VariableNames.ABSOLUTE_MASS_DEVIATION_NAME);
 			
-			double maxPeakMass = peakList.getMaximumMassValue();
-			double minPeakMass = peakList.getMinimumMassValue();
 			BufferedReader breader = new BufferedReader(new FileReader(new File(filename)));
 			String line = "";
 			while((line = breader.readLine()) != null) {
@@ -60,9 +58,8 @@ public class AutomatedPeakFingerprintAnnotationScoreInitialiser  implements ISco
 				}
 				String[] tmp = line.split("\\s+");
 				Double peak = Double.parseDouble(tmp[0]);
-				//Double matchedMass = peakList.getBestMatchingMass(peak, mzppm, mzabs);
 				//if(matchedMass == null) continue;
-				if(peak > (maxPeakMass + 5.0) || peak < (minPeakMass - 5.0)) continue;
+				if(!peakList.containsMass(peak, mzppm, mzabs)) continue;
 				MassToFingerprintGroupList peakToFingerprintGroupList = new MassToFingerprintGroupList(peak);
 				FingerprintGroup fingerprintGroup = null;
 				for(int i = 1; i < tmp.length; i++) {

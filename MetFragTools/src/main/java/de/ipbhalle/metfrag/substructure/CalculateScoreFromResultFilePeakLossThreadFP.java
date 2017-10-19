@@ -244,7 +244,7 @@ public class CalculateScoreFromResultFilePeakLossThreadFP {
 		public void run() {
 			IDatabase db = null;
 			String dbFilename = (String)settings.get(VariableNames.LOCAL_DATABASE_PATH_NAME);
-			if(dbFilename.endsWith("psv")) db = new LocalPSVDatabase(settings);
+			if(dbFilename.endsWith("psv")) db = new LocalPSVDatabase(this.settings);
 			else db = new LocalCSVDatabase(settings);
 			ArrayList<String> ids = null;
 			try {
@@ -265,7 +265,7 @@ public class CalculateScoreFromResultFilePeakLossThreadFP {
 				e1.printStackTrace();
 			}
 			if(candidates.getNumberElements() == 0) {
-				System.out.println("No candidates found in " + (String)settings.get(VariableNames.LOCAL_DATABASE_PATH_NAME));
+				System.out.println("No candidates found in " + (String)this.settings.get(VariableNames.LOCAL_DATABASE_PATH_NAME));
 				return;
 			}
 			
