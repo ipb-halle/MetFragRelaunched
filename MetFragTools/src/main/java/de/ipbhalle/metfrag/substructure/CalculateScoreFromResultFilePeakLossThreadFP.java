@@ -368,7 +368,6 @@ public class CalculateScoreFromResultFilePeakLossThreadFP {
 			
 			for(int i = 0; i < peakToFingerprintGroupListCollection.getNumberElements(); i++) {
 				MassToFingerprintGroupList groupList = peakToFingerprintGroupListCollection.getElement(i);
-				
 				// sum_f P(f,m)
 				// calculate sum of MF_s (including the alpha count) and the joint probabilities
 				// at this stage getProbability() returns the absolute counts from the annotation files
@@ -407,9 +406,6 @@ public class CalculateScoreFromResultFilePeakLossThreadFP {
 			MassToFingerprintsHashMap lossMassToFingerprints = new MassToFingerprintsHashMap();
 			MassToFingerprintGroupListCollection lossToFingerprintGroupListCollection = (MassToFingerprintGroupListCollection)settings.get(VariableNames.LOSS_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME);
 			
-			Double mzppm = (Double)settings.get(VariableNames.RELATIVE_MASS_DEVIATION_NAME);
-			Double mzabs = (Double)settings.get(VariableNames.ABSOLUTE_MASS_DEVIATION_NAME);
-		
 			for(int k = 0; k < candidates.getNumberElements(); k++) {
 				/*
 				 * check whether the single run was successful
@@ -426,7 +422,8 @@ public class CalculateScoreFromResultFilePeakLossThreadFP {
 					for(int i = 0; i < tmp.length; i++) {
 						String[] tmp1 = tmp[i].split(":");
 						double mass = Double.parseDouble(tmp1[0]);
-						MassToFingerprintGroupList matchingLossToFingerprintGroupList = lossToFingerprintGroupListCollection.getElementByPeak(mass, mzppm, mzabs);
+					//	MassToFingerprintGroupList matchingLossToFingerprintGroupList = lossToFingerprintGroupListCollection.getElementByPeak(mass, mzppm, mzabs);
+						MassToFingerprintGroupList matchingLossToFingerprintGroupList = lossToFingerprintGroupListCollection.getElementByPeak(mass);
 						if(matchingLossToFingerprintGroupList != null) mass = matchingLossToFingerprintGroupList.getPeakmz();
 						Match match = new CalculateScoreFromResultFilePeakLossThreadFP().new Match(tmp1[1], mass);
 						matchlist.add(match);

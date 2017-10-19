@@ -20,6 +20,15 @@ public class DefaultPeakList extends AbstractPeakList {
 		}
 		return minimumMassValue;
 	}
+
+	public double getMaximumMassValue() {
+		double maximumMassValue = 0.0;
+		for(int i = 0; i < this.list.size(); i++) {
+			double currentMassValue = ((IPeak)this.list.get(i)).getMass();
+			if(currentMassValue > maximumMassValue) maximumMassValue = currentMassValue;
+		}
+		return maximumMassValue;
+	}
 	
 	public void initialiseMassLimits(double relativeMassDeviation, double absoluteMassDeviation) {
 		for(int i = 0; i < this.list.size(); i++) 

@@ -49,7 +49,20 @@ public class CandidateListWriterLossFragmentSmilesCompletePSV implements IWriter
 		
 		StringBuilder heading = new StringBuilder();
 
+		candidateList.getElement(0).removeProperty("ExplPeaks");
+		candidateList.getElement(0).removeProperty("FormulasOfExplPeaks");
+		candidateList.getElement(0).removeProperty("NumberPeaksUsed");
+		candidateList.getElement(0).removeProperty("NoExplPeaks");
+
+		String[] fpnames = ClassNames.getFingerprintNames();
+		for(int ii = 0; ii < fpnames.length; ii++) {
+			candidateList.getElement(0).removeProperty("FragmentFingerprintOfExplPeaks" + fpnames[ii]);
+			candidateList.getElement(0).removeProperty("LossFingerprintOfExplPeaks" + fpnames[ii]);
+		}	
+		
 		java.util.Enumeration<String> keys = candidateList.getElement(0).getProperties().keys();
+		
+		
 		if(keys.hasMoreElements()) {
 			String key = keys.nextElement();
 			heading.append(key);
@@ -68,7 +81,6 @@ public class CandidateListWriterLossFragmentSmilesCompletePSV implements IWriter
 		heading.append("|");
 		heading.append("NoExplPeaks");
 		
-		String[] fpnames = ClassNames.getFingerprintNames();
 		for(int i = 0; i < fpnames.length; i++) {
 			heading.append("|");
 			heading.append("FragmentFingerprintOfExplPeaks" + fpnames[i]);
@@ -85,6 +97,16 @@ public class CandidateListWriterLossFragmentSmilesCompletePSV implements IWriter
 			StringBuilder line = new StringBuilder();
 			int countExplainedPeaks = 0;
 			ICandidate scoredCandidate = candidateList.getElement(i);
+			scoredCandidate.removeProperty("ExplPeaks");
+			scoredCandidate.removeProperty("FormulasOfExplPeaks");
+			scoredCandidate.removeProperty("NumberPeaksUsed");
+			scoredCandidate.removeProperty("NoExplPeaks");
+
+			for(int ii = 0; ii < fpnames.length; ii++) {
+				scoredCandidate.removeProperty("FragmentFingerprintOfExplPeaks" + fpnames[ii]);
+				scoredCandidate.removeProperty("LossFingerprintOfExplPeaks" + fpnames[ii]);
+			}	
+			
 			if(settings != null) scoredCandidate.setUseSmiles((Boolean)settings.get(VariableNames.USE_SMILES_NAME));
 			scoredCandidate.initialisePrecursorCandidate();
 			if(scoredCandidate.getMatchList() != null) {
