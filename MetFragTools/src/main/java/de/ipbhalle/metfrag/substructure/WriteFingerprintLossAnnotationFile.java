@@ -90,7 +90,7 @@ public class WriteFingerprintLossAnnotationFile {
 		//SmilesOfExplPeaks
 		for(int i = 0; i < candidateList.getNumberElements(); i++) {
 			ICandidate candidate = candidateList.getElement(i);
-			String fingerprintsOfExplPeaks = (String)candidate.getProperty("Loss" + fingerprinttype);
+			String fingerprintsOfExplPeaks = (String)candidate.getProperty("LossFingerprintOfExplPeaks" + fingerprinttype);
 			if(fingerprintsOfExplPeaks.equals("NA") || fingerprintsOfExplPeaks.length() == 0) continue;
 			fingerprintsOfExplPeaks = fingerprintsOfExplPeaks.trim();
 			
@@ -118,7 +118,8 @@ public class WriteFingerprintLossAnnotationFile {
 		Hashtable<Integer, ArrayList<Double>> grouplistid_to_masses = new Hashtable<Integer, ArrayList<Double>>();
 		for(int i = 0; i < peakMassesSorted.size(); i++) {
 			Double currentPeak = peakMassesSorted.get(i);
-			MassToFingerprintGroupList peakToFingerprintGroupList = peakToFingerprintGroupListCollection.getElementByPeakInterval(currentPeak, mzppm, mzabs);
+			//MassToFingerprintGroupList peakToFingerprintGroupList = peakToFingerprintGroupListCollection.getElementByPeakInterval(currentPeak, mzppm, mzabs);
+			MassToFingerprintGroupList peakToFingerprintGroupList = peakToFingerprintGroupListCollection.getElementByPeak(currentPeak);
 			if(peakToFingerprintGroupList == null) {
 				peakToFingerprintGroupList = new MassToFingerprintGroupList(currentPeak);
 				peakToFingerprintGroupList.setId(id);
