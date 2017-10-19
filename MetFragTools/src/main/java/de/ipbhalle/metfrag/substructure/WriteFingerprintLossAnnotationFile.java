@@ -61,7 +61,7 @@ public class WriteFingerprintLossAnnotationFile {
 		String output = null;
 		Integer occurThresh = null;
 		String csv = "";
-		String fingerprinttype = "FingerprintOfExplPeaks";
+		String fingerprinttype = "";
 		if(readParameters.containsKey("output")) output = readParameters.get("output");
 		if(readParameters.containsKey("occurThresh")) occurThresh = Integer.parseInt(readParameters.get("occurThresh"));
 		if(readParameters.containsKey("csv")) csv = (String)readParameters.get("csv");

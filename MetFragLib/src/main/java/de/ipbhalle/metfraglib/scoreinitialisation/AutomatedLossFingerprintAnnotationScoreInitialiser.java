@@ -31,9 +31,6 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 			
 			java.util.ArrayList<Double> massDifferences = calculatePeakDifferences(peakList, neutralPrecursorMass, adductMass, mzppm, mzabs);
 			
-			double maxLossMass = massDifferences.get(massDifferences.size() - 1);
-			double minLossMass = massDifferences.get(0);
-			
 			BufferedReader breader = new BufferedReader(new FileReader(new File(filename)));
 			String line = "";
 			while((line = breader.readLine()) != null) {
@@ -48,8 +45,8 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 				}
 				String[] tmp = line.split("\\s+");
 				Double loss = Double.parseDouble(tmp[0]);
-				//if(!this.containsMass(loss, massDifferences, mzabs, mzppm)) continue;
-				if(loss > (maxLossMass + 5.0) || loss < (minLossMass - 5.0)) continue;
+				if(!this.containsMass(loss, massDifferences, mzabs, mzppm)) continue;
+				//if(loss > (maxLossMass + 5.0) || loss < (minLossMass - 5.0)) continue;
 				
 				MassToFingerprintGroupList lossToFingerprintGroupList = new MassToFingerprintGroupList(loss);
 				FingerprintGroup fingerprintGroup = null;

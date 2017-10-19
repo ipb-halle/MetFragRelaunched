@@ -61,12 +61,12 @@ public class WriteFingerprintPeakAnnotationFile {
 		String output = null;
 		Integer occurThresh = null;
 		String csv = "";
-		String fingerprinttype = "FingerprintOfExplPeaks";
+		String fingerprinttype = "";
 		if(readParameters.containsKey("output")) output = readParameters.get("output");
 		if(readParameters.containsKey("occurThresh")) occurThresh = Integer.parseInt(readParameters.get("occurThresh"));
 		if(readParameters.containsKey("csv")) csv = (String)readParameters.get("csv");
 		if(readParameters.containsKey("fingerprinttype")) fingerprinttype = (String)readParameters.get("fingerprinttype");
-		
+
 		ArrayList<Double> peakMassesSorted = new ArrayList<Double>();
 		ArrayList<String> fingerprintsSorted = new ArrayList<String>();
 		

@@ -92,5 +92,4 @@ public class DefaultPeakList extends AbstractPeakList {
 		else return null;
 	}
 	
-	
 }
