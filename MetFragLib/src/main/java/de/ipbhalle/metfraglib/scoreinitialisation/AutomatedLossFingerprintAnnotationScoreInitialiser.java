@@ -33,41 +33,61 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 			
 			BufferedReader breader = new BufferedReader(new FileReader(new File(filename)));
 			String line = "";
+			int numObservationsMerged = 0;
+			int singleNumObservationsMerged = 1;
+			double upperLimitMass = 0.0;
+			MassToFingerprintGroupList lossToFingerprintGroupList = null;
 			while((line = breader.readLine()) != null) {
 				line = line.trim();
 				if(line.length() == 0) continue;
 				if(line.startsWith("#")) continue;
 				if(line.startsWith("SUMMARY")) {
+					if(lossToFingerprintGroupList != null) {
+						lossToFingerprintGroupList.setPeakmz(MathTools.round(lossToFingerprintGroupList.getPeakmz() / (double)singleNumObservationsMerged, 6));
+						if(this.containsMass(lossToFingerprintGroupList.getPeakmz(), massDifferences, mzabs, mzppm)) {
+							lossToFingerprintGroupList.setPeakmz(lossToFingerprintGroupList.getPeakmz());
+							lossToFingerprintGroupListCollection.addElement(lossToFingerprintGroupList);
+							lossToFingerprintGroupList = null;
+						}
+					}
 					String[] tmp = line.split("\\s+");
 					settings.set(VariableNames.LOSS_FINGERPRINT_DENOMINATOR_COUNT_NAME, Double.parseDouble(tmp[2]));
-					settings.set(VariableNames.LOSS_FINGERPRINT_TUPLE_COUNT_NAME, Double.parseDouble(tmp[1]));
+					settings.set(VariableNames.LOSS_FINGERPRINT_TUPLE_COUNT_NAME, Double.parseDouble(tmp[1]) - numObservationsMerged);
 					continue;
 				}
 				String[] tmp = line.split("\\s+");
 				Double loss = Double.parseDouble(tmp[0]);
-				if(!this.containsMass(loss, massDifferences, mzabs, mzppm)) continue;
-				//if(loss > (maxLossMass + 5.0) || loss < (minLossMass - 5.0)) continue;
-				
-				MassToFingerprintGroupList lossToFingerprintGroupList = new MassToFingerprintGroupList(loss);
-				FingerprintGroup fingerprintGroup = null;
-				for(int i = 1; i < tmp.length; i++) {
-					if((i % 2) == 1) {
-						if(fingerprintGroup != null) 
-							lossToFingerprintGroupList.addElement(fingerprintGroup);
-						double count = Double.parseDouble(tmp[i]);
-						fingerprintGroup = new FingerprintGroup(count);
-						fingerprintGroup.setNumberObserved((int)count);
+				FingerprintGroup[] groups = this.getFingerprintGroup(tmp);
+				if(loss > upperLimitMass) {
+					if(lossToFingerprintGroupList != null) {
+						lossToFingerprintGroupList.setPeakmz(MathTools.round(lossToFingerprintGroupList.getPeakmz() / (double)singleNumObservationsMerged, 6));
+						singleNumObservationsMerged = 1;
+						if(this.containsMass(lossToFingerprintGroupList.getPeakmz(), massDifferences, mzabs, mzppm)) {
+							lossToFingerprintGroupList.setPeakmz(lossToFingerprintGroupList.getPeakmz());
+							lossToFingerprintGroupListCollection.addElement(lossToFingerprintGroupList);
+							lossToFingerprintGroupList = null;
+						}
 					}
-					else {
-						fingerprintGroup.setFingerprint(tmp[i]);
-					}
-					if(i == (tmp.length - 1)) {
-						lossToFingerprintGroupList.addElement(fingerprintGroup);
-						lossToFingerprintGroupListCollection.addElement(lossToFingerprintGroupList);
+					upperLimitMass = loss + mzabs + MathTools.calculateAbsoluteDeviation(loss, mzppm);
+					lossToFingerprintGroupList = new MassToFingerprintGroupList(loss);
+					for(int i = 0; i < groups.length; i++)
+						lossToFingerprintGroupList.addElement(groups[i]);
+				} else {
+					lossToFingerprintGroupList.setPeakmz(lossToFingerprintGroupList.getPeakmz() + loss);
+					numObservationsMerged++;
+					singleNumObservationsMerged++;
+					for(int i = 0; i < groups.length; i++) {
+						FingerprintGroup curGroup = lossToFingerprintGroupList.getElementByFingerprint(groups[i].getFingerprint());
+						if(curGroup == null) lossToFingerprintGroupList.addElement(groups[i]);
+						else {
+							curGroup.setNumberObserved(curGroup.getNumberObserved() + groups[i].getNumberObserved());
+							curGroup.setProbability(curGroup.getProbability() + groups[i].getProbability());
+						}
 					}
 				}
 			}
 			breader.close();
+
 			settings.set(VariableNames.LOSS_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME, lossToFingerprintGroupListCollection);
 		}
 	}
@@ -89,6 +109,20 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 			
 		}
 		return false;
+	}
+
+	protected FingerprintGroup[] getFingerprintGroup(String[] splittedLine) {
+		FingerprintGroup[] groups = new FingerprintGroup[(splittedLine.length - 1) / 2];
+		int index = 0;
+		for(int i = 1; i < splittedLine.length; i+=2) {
+			double count = Double.parseDouble(splittedLine[i]);
+			FingerprintGroup newGroup = new FingerprintGroup(count);
+			newGroup.setNumberObserved((int)count);
+			newGroup.setFingerprint(splittedLine[i + 1]);
+			groups[index] = newGroup;
+			index++;
+		}
+		return groups;
 	}
 	
 	/**
