@@ -8,6 +8,7 @@ import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.exception.InvalidSmilesException;
 
 import de.ipbhalle.metfraglib.FastBitArray;
+import de.ipbhalle.metfraglib.additionals.MathTools;
 import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.interfaces.IFragment;
@@ -43,44 +44,65 @@ public class AutomatedPeakFingerprintAnnotationScoreInitialiser  implements ISco
 			DefaultPeakList peakList = (DefaultPeakList)settings.get(VariableNames.PEAK_LIST_NAME);
 			Double mzppm = (Double)settings.get(VariableNames.RELATIVE_MASS_DEVIATION_NAME);
 			Double mzabs = (Double)settings.get(VariableNames.ABSOLUTE_MASS_DEVIATION_NAME);
-			
 			BufferedReader breader = new BufferedReader(new FileReader(new File(filename)));
 			String line = "";
+			int numObservationsMerged = 0;
+			int singleNumObservationsMerged = 1;
+			double upperLimitMass = 0.0;
+			MassToFingerprintGroupList peakToFingerprintGroupList = null;
 			while((line = breader.readLine()) != null) {
 				line = line.trim();
 				if(line.length() == 0) continue;
 				if(line.startsWith("#")) continue;
 				if(line.startsWith("SUMMARY")) {
+					if(peakToFingerprintGroupList != null) {
+						peakToFingerprintGroupList.setPeakmz(MathTools.round(peakToFingerprintGroupList.getPeakmz() / (double)singleNumObservationsMerged, 6));
+						Double matchedMass = peakList.getBestMatchingMass(peakToFingerprintGroupList.getPeakmz(), mzppm, mzabs);
+						if(matchedMass != null) {
+							peakToFingerprintGroupList.setPeakmz(matchedMass);
+							peakToFingerprintGroupListCollection.addElement(peakToFingerprintGroupList);
+							peakToFingerprintGroupList = null;
+						}
+					}
 					String[] tmp = line.split("\\s+");
 					settings.set(VariableNames.PEAK_FINGERPRINT_DENOMINATOR_COUNT_NAME, Double.parseDouble(tmp[2]));
-					settings.set(VariableNames.PEAK_FINGERPRINT_TUPLE_COUNT_NAME, Double.parseDouble(tmp[1]));
+					settings.set(VariableNames.PEAK_FINGERPRINT_TUPLE_COUNT_NAME, Double.parseDouble(tmp[1]) - numObservationsMerged);
 					continue;
 				}
 				String[] tmp = line.split("\\s+");
 				Double peak = Double.parseDouble(tmp[0]);
 				//if(matchedMass == null) continue;
-				if(!peakList.containsMass(peak, mzppm, mzabs)) continue;
-				MassToFingerprintGroupList peakToFingerprintGroupList = new MassToFingerprintGroupList(peak);
-				FingerprintGroup fingerprintGroup = null;
-				for(int i = 1; i < tmp.length; i++) {
-					if((i % 2) == 1) {
-						if(fingerprintGroup != null) 
-							peakToFingerprintGroupList.addElement(fingerprintGroup);
-						double count = Double.parseDouble(tmp[i]);
-						fingerprintGroup = new FingerprintGroup(count);
-						fingerprintGroup.setNumberObserved((int)count);
+				FingerprintGroup[] groups = this.getFingerprintGroup(tmp);
+				if(peak > upperLimitMass) {
+					if(peakToFingerprintGroupList != null) {
+						peakToFingerprintGroupList.setPeakmz(MathTools.round(peakToFingerprintGroupList.getPeakmz() / (double)singleNumObservationsMerged, 6));
+						singleNumObservationsMerged = 1;
+						Double matchedMass = peakList.getBestMatchingMass(peakToFingerprintGroupList.getPeakmz(), mzppm, mzabs);
+						if(matchedMass != null) {
+							peakToFingerprintGroupList.setPeakmz(matchedMass);
+							peakToFingerprintGroupListCollection.addElement(peakToFingerprintGroupList);
+							peakToFingerprintGroupList = null;
+						}
 					}
-					else {
-						fingerprintGroup.setFingerprint(tmp[i]);
-					}
-					if(i == (tmp.length - 1)) {
-						peakToFingerprintGroupList.addElement(fingerprintGroup);
-						peakToFingerprintGroupListCollection.addElement(peakToFingerprintGroupList);
+					upperLimitMass = peak + mzabs + MathTools.calculateAbsoluteDeviation(peak, mzppm);
+					peakToFingerprintGroupList = new MassToFingerprintGroupList(peak);
+					for(int i = 0; i < groups.length; i++)
+						peakToFingerprintGroupList.addElement(groups[i]);
+				} else {
+					peakToFingerprintGroupList.setPeakmz(peakToFingerprintGroupList.getPeakmz() + peak);
+					numObservationsMerged++;
+					singleNumObservationsMerged++;
+					for(int i = 0; i < groups.length; i++) {
+						FingerprintGroup curGroup = peakToFingerprintGroupList.getElementByFingerprint(groups[i].getFingerprint());
+						if(curGroup == null) peakToFingerprintGroupList.addElement(groups[i]);
+						else {
+							curGroup.setNumberObserved(curGroup.getNumberObserved() + groups[i].getNumberObserved());
+							curGroup.setProbability(curGroup.getProbability() + groups[i].getProbability());
+						}
 					}
 				}
 			}
 			breader.close();
-		
 			settings.set(VariableNames.PEAK_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME, peakToFingerprintGroupListCollection);
 		}
 	}
@@ -171,6 +193,20 @@ public class AutomatedPeakFingerprintAnnotationScoreInitialiser  implements ISco
 		return;
 	}
 	
+	protected FingerprintGroup[] getFingerprintGroup(String[] splittedLine) {
+		FingerprintGroup[] groups = new FingerprintGroup[(splittedLine.length - 1) / 2];
+		int index = 0;
+		for(int i = 1; i < splittedLine.length; i+=2) {
+			double count = Double.parseDouble(splittedLine[i]);
+			FingerprintGroup newGroup = new FingerprintGroup(count);
+			newGroup.setNumberObserved((int)count);
+			newGroup.setFingerprint(splittedLine[i + 1]);
+			groups[index] = newGroup;
+			index++;
+		}
+		return groups;
+	}
+	
 	/**
 	 * calculates the number of peaks in the background based on the number of intervals between a start and an end mass value
 	 * 
@@ -188,5 +224,5 @@ public class AutomatedPeakFingerprintAnnotationScoreInitialiser  implements ISco
 		}
 		return numberIntervals - numberForeGroundPeaks;
 	}
-
+	
 }
