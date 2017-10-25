@@ -27,6 +27,7 @@ import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 
 import de.ipbhalle.metfraglib.FastBitArray;
+import de.ipbhalle.metfraglib.additionals.MathTools;
 import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
 import de.ipbhalle.metfraglib.inchi.InChIToStructure;
 import de.ipbhalle.metfraglib.molecularformula.HDByteMolecularFormula;
@@ -193,7 +194,7 @@ public class SmilesDeuteriumGeneration {
 				//its.setProperty(VariableNames.SMILES_NAME, sg.create(its));
 				its.setProperty(VariableNames.MOLECULAR_FORMULA_NAME, formula.toString());
 				
-				double mass = formula.getMonoisotopicMass();
+				double mass = MathTools.round(formula.getMonoisotopicMass(), 6);
 				its.setProperty(VariableNames.MONOISOTOPIC_MASS_NAME, formula.getMonoisotopicMass());
 				//its.setProperty(VariableNames.INCHI_KEY_1_NAME, JniInchiWrapper.getInchiKey(inchi).getKey().split("-")[0]);
 				//its.setProperty(VariableNames.INCHI_KEY_2_NAME, JniInchiWrapper.getInchiKey(inchi).getKey().split("-")[1]);
@@ -201,10 +202,10 @@ public class SmilesDeuteriumGeneration {
 				its.setProperty("AromaticDeuteriums", numberDeuteriumsAromaticExchanged);
 				its.setProperty("MissedDeuteriums", 0);
 				
-				its.setProperty("M+H", mass + Constants.getMonoisotopicMassOfAtom("H") - Constants.ELECTRON_MASS);
-				its.setProperty("M+D", mass + Constants.getMonoisotopicMassOfAtom("D") - Constants.ELECTRON_MASS);
-				its.setProperty("M-H", mass - Constants.getMonoisotopicMassOfAtom("H") + Constants.ELECTRON_MASS);
-				its.setProperty("M-D", mass - Constants.getMonoisotopicMassOfAtom("D") + Constants.ELECTRON_MASS);
+				its.setProperty("M+H", MathTools.round(mass + Constants.getMonoisotopicMassOfAtom("H") - Constants.ELECTRON_MASS, 6));
+				its.setProperty("M+D", MathTools.round(mass + Constants.getMonoisotopicMassOfAtom("D") - Constants.ELECTRON_MASS, 6));
+				its.setProperty("M-H", MathTools.round(mass - Constants.getMonoisotopicMassOfAtom("H") + Constants.ELECTRON_MASS, 6));
+				its.setProperty("M-D", MathTools.round(mass - Constants.getMonoisotopicMassOfAtom("D") + Constants.ELECTRON_MASS, 6));
 				
 				IAtomContainer con = MoleculeFunctions.removeHydrogens(its, toExchange);
 				

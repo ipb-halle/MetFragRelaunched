@@ -400,6 +400,7 @@ public class GetRankOfCandidateMultipleThreadCSV {
 				e1.printStackTrace();
 				System.exit(1);
 			} catch (Exception e1) {
+				System.err.println(this.csv);
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 				System.exit(1);
@@ -472,7 +473,7 @@ public class GetRankOfCandidateMultipleThreadCSV {
 				maximumscores[i] = scorenameToMaximum.get(scoringPropertyNames[i]);
 			}
 
-			String[] outputString = new String[weights.length];
+			StringBuilder[] outputString = new StringBuilder[weights.length];
 			if(!outputtype.equals("list")) {	
 				for (int w = 0; w < weights.length; w++) {
 	
@@ -515,12 +516,34 @@ public class GetRankOfCandidateMultipleThreadCSV {
 					for (int i = 1; i < weights[w].length; i++)
 						weightString += "," + weights[w][i];
 	
-					outputString[w] = new File(csv).getName() + " " + correctInChIKey1 + " " + rank + " "
-							+ groupedCandidates.size() + " " + correctGroup.getBestIdentifier() + " "
-							+ candidates.getElement(indexOfCorrect).getProperty("NoExplPeaks") + " "
-							+ candidates.getElement(indexOfCorrect).getProperty("NumberPeaksUsed") + " " + rrp + " " + bc
-							+ " " + wc + " " + values + " " + maximalValues + " " + weightString + " "
-							+ this.getAvgRank(rank, (int) bc);
+					outputString[w] = new StringBuilder();
+					outputString[w].append(new File(csv).getName());
+					outputString[w].append(" ");
+					outputString[w].append(correctInChIKey1);
+					outputString[w].append(" ");
+					outputString[w].append(rank);
+					outputString[w].append(" ");
+					outputString[w].append(groupedCandidates.size());
+					outputString[w].append(" ");
+					outputString[w].append(correctGroup.getBestIdentifier());
+					outputString[w].append(" ");
+					outputString[w].append(candidates.getElement(indexOfCorrect).getProperty("NoExplPeaks"));
+					outputString[w].append(" ");
+					outputString[w].append(candidates.getElement(indexOfCorrect).getProperty("NumberPeaksUsed"));
+					outputString[w].append(" ");
+					outputString[w].append(rrp);
+					outputString[w].append(" ");
+					outputString[w].append(bc);
+					outputString[w].append(" ");
+					outputString[w].append(wc);
+					outputString[w].append(" ");
+					outputString[w].append(values);
+					outputString[w].append(" ");
+					outputString[w].append(maximalValues);
+					outputString[w].append(" ");
+					outputString[w].append(weightString);
+					outputString[w].append(" ");
+					outputString[w].append(this.getAvgRank(rank, (int) bc));
 				}
 			}
 
@@ -528,8 +551,8 @@ public class GetRankOfCandidateMultipleThreadCSV {
 				java.io.BufferedWriter bwriter = null;
 				try {
 					bwriter = new java.io.BufferedWriter(new java.io.FileWriter(new java.io.File(this.outputFile)));
-					for (String string : outputString) {
-						bwriter.write(string);
+					for (StringBuilder string : outputString) {
+						bwriter.write(string.toString());
 						bwriter.newLine();
 					}
 					bwriter.close();
@@ -538,8 +561,8 @@ public class GetRankOfCandidateMultipleThreadCSV {
 					e.printStackTrace();
 				}
 			} else if(stdout && outputtype.equals("rank")) {
-				for (String string : outputString) {
-					System.out.println(string);
+				for (StringBuilder string : outputString) {
+					System.out.println(string.toString());
 				}
 			} else if(outputtype.equals("list")) {
 				java.util.Enumeration<String> keys = groupedCandidates.keys();
