@@ -57,7 +57,11 @@ public class CandidateListWriterCSV implements IWriter {
 			int countExplainedPeaks = 0;
 			ICandidate scoredCandidate = candidateList.getElement(i);
 			if(settings != null) scoredCandidate.setUseSmiles((Boolean)settings.get(VariableNames.USE_SMILES_NAME));
-			scoredCandidate.initialisePrecursorCandidate();
+			try {
+				scoredCandidate.initialisePrecursorCandidate();
+			} catch(Exception e) {
+				continue;
+			}
 			if(scoredCandidate.getMatchList() != null) {
 				MatchList matchList = scoredCandidate.getMatchList();
 				for(int l = 0; l < matchList.getNumberElements(); l++) {

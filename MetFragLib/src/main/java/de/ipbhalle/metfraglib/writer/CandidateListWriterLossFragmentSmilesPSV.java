@@ -201,7 +201,7 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 				peakMassI = correctedMasses[i];
 			//compare with matches with greater mass than the current one
 			for(int j = i + 1; j < matchList.getNumberElements(); j++) {
-				IMatch matchJ = matchList.getElement(i);
+				IMatch matchJ = matchList.getElement(j);
 			//	double peakMassJ = matchJ.getMatchedPeak().getMass();
 				double peakMassJ = matchJ.getMatchedPeak().getMass();
 				if((Boolean)settings.get(VariableNames.CORRECT_MASSES_FOR_FINGERPRINT_ANNOTATION_NAME))

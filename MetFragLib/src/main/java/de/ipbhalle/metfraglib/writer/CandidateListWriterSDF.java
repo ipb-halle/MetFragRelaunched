@@ -46,7 +46,11 @@ public class CandidateListWriterSDF implements IWriter {
 		for (int i = 0; i < candidateList.getNumberElements(); i++) {
 			ICandidate candidate = candidateList.getElement(i);
 			if(settings != null) candidate.setUseSmiles((Boolean)settings.get(VariableNames.USE_SMILES_NAME));
-			candidate.initialisePrecursorCandidate();
+			try {
+				candidate.initialisePrecursorCandidate();
+			} catch(Exception e) {
+				continue;
+			}
 			IAtomContainer candidateAtomContainer = null;
 			try {
 				candidateAtomContainer = candidate.getAtomContainer();

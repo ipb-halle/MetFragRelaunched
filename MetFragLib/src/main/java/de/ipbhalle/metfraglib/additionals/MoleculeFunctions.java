@@ -334,7 +334,7 @@ public class MoleculeFunctions {
 		}
 		return String.valueOf(set);
 	}
-	
+
 	public static IBitFingerprint stringToFingerPrint(String string) {
 		java.util.BitSet bitSet = new java.util.BitSet(string.length());
 		for(int i = 0; i < string.length(); i++) {
