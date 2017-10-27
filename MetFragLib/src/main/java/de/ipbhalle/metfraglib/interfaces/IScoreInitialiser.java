@@ -10,7 +10,7 @@ public interface IScoreInitialiser {
 	public void initScoreParameters(Settings settings) throws Exception;
 	
 
-	public void postProcessScoreParameters(Settings settings);
+	public void postProcessScoreParameters(Settings settings) throws Exception;
 	
 	
 }

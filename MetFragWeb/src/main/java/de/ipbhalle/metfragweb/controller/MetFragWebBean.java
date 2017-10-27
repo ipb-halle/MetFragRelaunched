@@ -75,7 +75,7 @@ import de.ipbhalle.metfragweb.validator.SmartsValidator;
 @SessionScoped
 public class MetFragWebBean {
 
-	private final String version = "v2.0.6";
+	private final String version = "v2.0.8";
 	/*
 	 * combines all the settings
 	 */
@@ -264,6 +264,7 @@ public class MetFragWebBean {
 		System.out.println("parametersUploadListener");
 		FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("metFragWebBean");
 		this.errorMessages.removeKey("updateParametersError");
+		this.errorMessages.removeKey("buttonDownloadCompoundsError");
 		this.infoMessages.removeKey("updateParametersInfo");
 		//do the work
 		this.init();
@@ -322,6 +323,7 @@ public class MetFragWebBean {
 			return;
 		}
 		this.errorMessages.removeKey("inputMeasuredMassError");
+		this.errorMessages.removeKey("buttonDownloadCompoundsError");
 		try {
 			int mode = this.beanSettingsContainer.getMeasuredMassMode();
 			if(mode == 1000 || mode == -1000) mode = 0;
@@ -522,6 +524,7 @@ public class MetFragWebBean {
 		// check mass
 		if (this.beanSettingsContainer.getNeutralMonoisotopicMass() != null && this.beanSettingsContainer.getNeutralMonoisotopicMass().length() != 0) {
 			massIsGiven = true;
+			this.errorMessages.removeKey("buttonDownloadCompoundsError");
 			try {
 				double value = Double.parseDouble(this.beanSettingsContainer.getNeutralMonoisotopicMass());
 				if (value <= 0.0 || value > 1250)

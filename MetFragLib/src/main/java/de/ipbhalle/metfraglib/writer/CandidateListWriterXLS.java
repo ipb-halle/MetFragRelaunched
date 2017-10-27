@@ -50,12 +50,17 @@ public class CandidateListWriterXLS implements IWriter {
 		}
 		if (candidateList == null)
 			return false;
-
+		
+		java.util.ArrayList<Integer> correctIndeces = new java.util.ArrayList<Integer>();
 		for (int i = 0; i < candidateList.getNumberElements(); i++) {
 			int countExplainedPeaks = 0;
 			ICandidate scoredCandidate = candidateList.getElement(i);
 			if(settings != null) scoredCandidate.setUseSmiles((Boolean)settings.get(VariableNames.USE_SMILES_NAME));
-			scoredCandidate.initialisePrecursorCandidate();
+			try {
+				scoredCandidate.initialisePrecursorCandidate();
+			} catch(Exception e) {
+				continue;
+			}
 			if (scoredCandidate.getMatchList() != null) {
 				MatchList matchList = scoredCandidate.getMatchList();
 				for (int l = 0; l < matchList.getNumberElements(); l++) {
@@ -110,6 +115,7 @@ public class CandidateListWriterXLS implements IWriter {
 				scoredCandidate.setProperty("NoExplPeaks", countExplainedPeaks);
 			}
 			scoredCandidate.resetPrecursorMolecule();
+			correctIndeces.add(i);
 		}
 
 		boolean withImages = false;
@@ -149,9 +155,9 @@ public class CandidateListWriterXLS implements IWriter {
 			}
 		}
 
-		for (int i = 0; i < candidateList.getNumberElements(); i++) {
+		for (int i = 0; i < correctIndeces.size(); i++) {
 			java.util.Hashtable<String, Object> properties = candidateList
-					.getElement(i).getProperties();
+					.getElement(correctIndeces.get(i)).getProperties();
 			Iterator<String> propNames = properties.keySet().iterator();
 
 			while (propNames.hasNext()) {

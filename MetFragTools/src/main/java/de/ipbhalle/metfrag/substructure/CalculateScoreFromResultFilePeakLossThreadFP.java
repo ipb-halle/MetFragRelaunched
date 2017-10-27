@@ -309,8 +309,6 @@ public class CalculateScoreFromResultFilePeakLossThreadFP {
 			// to determine F_u
 			MassToFingerprintsHashMap peakMassToFingerprints = new MassToFingerprintsHashMap();
 			MassToFingerprintGroupListCollection peakToFingerprintGroupListCollection = (MassToFingerprintGroupListCollection)settings.get(VariableNames.PEAK_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME);
-			Double mzppm = (Double)settings.get(VariableNames.RELATIVE_MASS_DEVIATION_NAME);
-			Double mzabs = (Double)settings.get(VariableNames.ABSOLUTE_MASS_DEVIATION_NAME);
 			
 			for(int k = 0; k < candidates.getNumberElements(); k++) {
 				/*
@@ -339,7 +337,7 @@ public class CalculateScoreFromResultFilePeakLossThreadFP {
 				currentCandidate.setProperty("PeakMatchList", matchlist);
 				for(int j = 0; j < matchlist.size(); j++) {
 					Match match = matchlist.get(j);
-					MassToFingerprintGroupList peakToFingerprintGroupList = peakToFingerprintGroupListCollection.getElementByPeak(match.getMass(), mzppm, mzabs);
+					MassToFingerprintGroupList peakToFingerprintGroupList = peakToFingerprintGroupListCollection.getElementByPeak(match.getMass());
 					if(peakToFingerprintGroupList == null) continue;
 					FastBitArray currentFingerprint = new FastBitArray(match.getFingerprint());
 					//	if(match.getMatchedPeak().getMass() < 60) System.out.println(match.getMatchedPeak().getMass() + " " + currentFingerprint + " " + fragSmiles);

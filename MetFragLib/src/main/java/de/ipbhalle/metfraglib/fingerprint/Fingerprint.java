@@ -7,6 +7,7 @@ import org.openscience.cdk.fingerprint.IBitFingerprint;
 import org.openscience.cdk.fingerprint.IFingerprinter;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
+import de.ipbhalle.metfraglib.FastBitArray;
 import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
 import de.ipbhalle.metfraglib.interfaces.IFragment;
 import de.ipbhalle.metfraglib.interfaces.IMolecularStructure;
@@ -56,5 +57,15 @@ public class Fingerprint {
 		String fpString = MoleculeFunctions.fingerPrintToString(this.calculateFingerPrint(con));
 		
 		return fpString;
+	}
+
+	protected FastBitArray fingerPrintToFastBitArray(IBitFingerprint fp) {
+		FastBitArray bitArray = new FastBitArray((int)fp.size());
+		for(int i = 0; i < bitArray.getSize(); i++) if(fp.get(i)) bitArray.set(i);
+		return bitArray;
+	}
+	
+	public FastBitArray getNormalizedFastBitArrayFingerprint(IAtomContainer con) throws Exception {
+		return this.fingerPrintToFastBitArray(this.calculateFingerPrint(con));
 	}
 }

@@ -3,13 +3,15 @@ package de.ipbhalle.metfraglib.scoreinitialisation;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.lang.reflect.InvocationTargetException;
 
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.exception.InvalidSmilesException;
+import org.openscience.cdk.interfaces.IAtomContainer;
 
 import de.ipbhalle.metfraglib.FastBitArray;
-import de.ipbhalle.metfraglib.additionals.MathTools;
 import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
+import de.ipbhalle.metfraglib.fingerprint.Fingerprint;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.interfaces.IFragment;
 import de.ipbhalle.metfraglib.interfaces.IMatch;
@@ -47,23 +49,12 @@ public class AutomatedPeakFingerprintAnnotationScoreInitialiser  implements ISco
 			BufferedReader breader = new BufferedReader(new FileReader(new File(filename)));
 			String line = "";
 			int numObservationsMerged = 0;
-			int singleNumObservationsMerged = 1;
-			double upperLimitMass = 0.0;
-			MassToFingerprintGroupList peakToFingerprintGroupList = null;
+			java.util.HashMap<Double, MassToFingerprintGroupList> mergedFingerprintGroupLists = new java.util.HashMap<Double, MassToFingerprintGroupList>();
 			while((line = breader.readLine()) != null) {
 				line = line.trim();
 				if(line.length() == 0) continue;
 				if(line.startsWith("#")) continue;
 				if(line.startsWith("SUMMARY")) {
-					if(peakToFingerprintGroupList != null) {
-						peakToFingerprintGroupList.setPeakmz(MathTools.round(peakToFingerprintGroupList.getPeakmz() / (double)singleNumObservationsMerged, 6));
-						Double matchedMass = peakList.getBestMatchingMass(peakToFingerprintGroupList.getPeakmz(), mzppm, mzabs);
-						if(matchedMass != null) {
-							peakToFingerprintGroupList.setPeakmz(matchedMass);
-							peakToFingerprintGroupListCollection.addElement(peakToFingerprintGroupList);
-							peakToFingerprintGroupList = null;
-						}
-					}
 					String[] tmp = line.split("\\s+");
 					settings.set(VariableNames.PEAK_FINGERPRINT_DENOMINATOR_COUNT_NAME, Double.parseDouble(tmp[2]));
 					settings.set(VariableNames.PEAK_FINGERPRINT_TUPLE_COUNT_NAME, Double.parseDouble(tmp[1]) - numObservationsMerged);
@@ -71,49 +62,45 @@ public class AutomatedPeakFingerprintAnnotationScoreInitialiser  implements ISco
 				}
 				String[] tmp = line.split("\\s+");
 				Double peak = Double.parseDouble(tmp[0]);
-				//if(matchedMass == null) continue;
-				FingerprintGroup[] groups = this.getFingerprintGroup(tmp);
-				if(peak > upperLimitMass) {
-					if(peakToFingerprintGroupList != null) {
-						peakToFingerprintGroupList.setPeakmz(MathTools.round(peakToFingerprintGroupList.getPeakmz() / (double)singleNumObservationsMerged, 6));
-						singleNumObservationsMerged = 1;
-						Double matchedMass = peakList.getBestMatchingMass(peakToFingerprintGroupList.getPeakmz(), mzppm, mzabs);
-						if(matchedMass != null) {
-							peakToFingerprintGroupList.setPeakmz(matchedMass);
-							peakToFingerprintGroupListCollection.addElement(peakToFingerprintGroupList);
-							peakToFingerprintGroupList = null;
+				Double matchedMass = peakList.getBestMatchingMass(peak, mzppm, mzabs);
+				if(matchedMass != null) {
+					FingerprintGroup[] groups = this.getFingerprintGroup(tmp);
+					if(mergedFingerprintGroupLists.containsKey(matchedMass)) {
+						numObservationsMerged++;
+						MassToFingerprintGroupList currentGroupList = mergedFingerprintGroupLists.get(matchedMass);
+						for(int i = 0; i < groups.length; i++) {
+							FingerprintGroup curGroup = currentGroupList.getElementByFingerprint(groups[i].getFingerprint());
+							if(curGroup == null) currentGroupList.addElement(groups[i]);
+							else {
+								curGroup.setNumberObserved(curGroup.getNumberObserved() + groups[i].getNumberObserved());
+								curGroup.setProbability(curGroup.getProbability() + groups[i].getProbability());
+							}
 						}
-					}
-					upperLimitMass = peak + mzabs + MathTools.calculateAbsoluteDeviation(peak, mzppm);
-					peakToFingerprintGroupList = new MassToFingerprintGroupList(peak);
-					for(int i = 0; i < groups.length; i++)
-						peakToFingerprintGroupList.addElement(groups[i]);
-				} else {
-					peakToFingerprintGroupList.setPeakmz(peakToFingerprintGroupList.getPeakmz() + peak);
-					numObservationsMerged++;
-					singleNumObservationsMerged++;
-					for(int i = 0; i < groups.length; i++) {
-						FingerprintGroup curGroup = peakToFingerprintGroupList.getElementByFingerprint(groups[i].getFingerprint());
-						if(curGroup == null) peakToFingerprintGroupList.addElement(groups[i]);
-						else {
-							curGroup.setNumberObserved(curGroup.getNumberObserved() + groups[i].getNumberObserved());
-							curGroup.setProbability(curGroup.getProbability() + groups[i].getProbability());
-						}
+					} else {
+						MassToFingerprintGroupList currentGroupList = new MassToFingerprintGroupList(matchedMass);
+						for(int i = 0; i < groups.length; i++)
+							currentGroupList.addElement(groups[i]);
+						mergedFingerprintGroupLists.put(matchedMass, currentGroupList);
 					}
 				}
+			}
+			java.util.Iterator<Double> it = mergedFingerprintGroupLists.keySet().iterator();
+			while(it.hasNext()) {
+				peakToFingerprintGroupListCollection.addElementSorted(mergedFingerprintGroupLists.get(it.next()));
 			}
 			breader.close();
 			settings.set(VariableNames.PEAK_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME, peakToFingerprintGroupListCollection);
 		}
 	}
 
-	public void postProcessScoreParameters(Settings settings) {
+	public void postProcessScoreParameters(Settings settings) throws Exception {
 		CombinedSingleCandidateMetFragProcess[] processes = (CombinedSingleCandidateMetFragProcess[])settings.get(VariableNames.METFRAG_PROCESSES_NAME);
 		
 		// to determine F_u
-		MassToFingerprints massToFingerprints = new MassToFingerprints();
+		MassToFingerprints peakMassToFingerprints = new MassToFingerprints();
 		MassToFingerprintGroupListCollection peakToFingerprintGroupListCollection = (MassToFingerprintGroupListCollection)settings.get(VariableNames.PEAK_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME);
-
+		Fingerprint fingerprint = new Fingerprint((String)settings.get(VariableNames.FINGERPRINT_TYPE_NAME));
+		
 		for(CombinedSingleCandidateMetFragProcess scmfp : processes) {
 			/*
 			 * check whether the single run was successful
@@ -129,7 +116,8 @@ public class AutomatedPeakFingerprintAnnotationScoreInitialiser  implements ISco
 						IFragment frag = match.getBestMatchedFragment();
 						FastBitArray currentFingerprint = null;
 						try {
-							currentFingerprint = new FastBitArray(MoleculeFunctions.getNormalizedFingerprint(candidates[i].getPrecursorMolecule(), frag));
+							IAtomContainer con = fingerprint.getNormalizedAtomContainer(candidates[i].getPrecursorMolecule(), frag);
+							currentFingerprint = fingerprint.getNormalizedFastBitArrayFingerprint(con);
 						} catch (InvalidSmilesException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -142,18 +130,19 @@ public class AutomatedPeakFingerprintAnnotationScoreInitialiser  implements ISco
 						if (!peakToFingerprintGroupList.containsFingerprint(currentFingerprint)) {
 							// if not add the fingerprint to background by addFingerprint function
 							// addFingerprint checks also whether fingerprint was already added
-							massToFingerprints.addFingerprint(match.getMatchedPeak().getMass(), currentFingerprint);
+							peakMassToFingerprints.addFingerprint(match.getMatchedPeak().getMass(), currentFingerprint);
 						}
 					}
 				}
 			}
 		}
 
-		double alpha = (Double)settings.get(VariableNames.PEAK_FINGERPRINT_ANNOTATION_ALPHA_VALUE_NAME);					// alpha
-		double beta = (Double)settings.get(VariableNames.PEAK_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME);						// beta
-		double f_seen = (Double)settings.get(VariableNames.PEAK_FINGERPRINT_TUPLE_COUNT_NAME);								// f_s
-		double f_unseen = massToFingerprints.getOverallSize();																// f_u
-		double sumFingerprintFrequencies = (Double)settings.get(VariableNames.PEAK_FINGERPRINT_DENOMINATOR_COUNT_NAME);		// \sum_N \sum_Ln 1
+		double alpha = (double)settings.get(VariableNames.PEAK_FINGERPRINT_ANNOTATION_ALPHA_VALUE_NAME);					// alpha
+		double beta = (double)settings.get(VariableNames.PEAK_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME);						// beta
+		
+		double f_seen = (double)settings.get(VariableNames.PEAK_FINGERPRINT_TUPLE_COUNT_NAME);								// f_s
+		double f_unseen = peakMassToFingerprints.getOverallSize();																// f_u
+		double sumFingerprintFrequencies = (double)settings.get(VariableNames.PEAK_FINGERPRINT_DENOMINATOR_COUNT_NAME);		// \sum_N \sum_Ln 1
 		
 		// set value for denominator of P(f,m)
 		double denominatorValue = sumFingerprintFrequencies + alpha * f_seen + alpha * f_unseen + beta;
@@ -164,27 +153,30 @@ public class AutomatedPeakFingerprintAnnotationScoreInitialiser  implements ISco
 		
 		for(int i = 0; i < peakToFingerprintGroupListCollection.getNumberElements(); i++) {
 			MassToFingerprintGroupList groupList = peakToFingerprintGroupListCollection.getElement(i);
-
+			// sum_f P(f,m)
+			// calculate sum of MF_s (including the alpha count) and the joint probabilities
+			// at this stage getProbability() returns the absolute counts from the annotation files
 			double sum_f = 0.0;
 			double sumFsProbabilities = 0.0;
 			for(int ii = 0; ii < groupList.getNumberElements(); ii++) {
 				// first calculate P(f,m)
-				groupList.getElement(ii).setJointProbability((groupList.getElement(ii).getNumberObserved() + alpha) / denominatorValue);
+				groupList.getElement(ii).setJointProbability((groupList.getElement(ii).getProbability() + alpha) / denominatorValue);
 				// sum_f P(f,m) -> for F_s
 				sumFsProbabilities += groupList.getElement(ii).getJointProbability();
 			}
-
-			double sumFuProbabilities = alphaProbability * massToFingerprints.getSize(groupList.getPeakmz());
+			
+			// calculate the sum of probabilities for un-observed fingerprints for the current mass
+			double sumFuProbabilities = alphaProbability * peakMassToFingerprints.getSize(groupList.getPeakmz());
 			
 			sum_f += sumFsProbabilities;
 			sum_f += sumFuProbabilities;
 			sum_f += betaProbability;
-			
+		
 			for(int ii = 0; ii < groupList.getNumberElements(); ii++) {
 				// second calculate P(f|m)
 				groupList.getElement(ii).setConditionalProbability_sp(groupList.getElement(ii).getJointProbability() / sum_f);
 			}
-
+			
 			groupList.setAlphaProb(alphaProbability / sum_f);
 			groupList.setBetaProb(betaProbability / sum_f);
 			groupList.setProbabilityToConditionalProbability_sp();
