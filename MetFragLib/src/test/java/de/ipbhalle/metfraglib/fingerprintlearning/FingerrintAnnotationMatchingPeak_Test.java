@@ -79,6 +79,7 @@ public class FingerrintAnnotationMatchingPeak_Test {
 		assertEquals("Incorrect number fingerprints found", peakToFingerprintGroupList.getNumberElements(), 14);
 
 		this.initPeak.postProcessScoreParameters(this.settings);
+		
 		MassFingerprintMatch mfm = ((MassFingerprintMatch)((java.util.ArrayList<?>)this.candidate.getProperty("PeakMatchList")).get(0));
 		assertEquals("Incorrect fingerprint", mfm.getFingerprint().toString(), "000000000000000000000000000000000000000000000000000010000000000000000000000000000000000010000000000000000000000010000000000000100010000000110011010001010100101101111000000000000000000000000000");
 		AutomatedPeakFingerprintAnnotationScore score = new AutomatedPeakFingerprintAnnotationScore(this.settings);

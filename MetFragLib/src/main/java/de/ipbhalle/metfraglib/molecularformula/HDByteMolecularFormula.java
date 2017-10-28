@@ -93,7 +93,7 @@ public class HDByteMolecularFormula extends ByteMolecularFormula {
 		}
 		monoisotopicMass += Constants.getMonoisotopicMassOfAtom("H") * (this.numberHydrogens - this.numberDeuterium);
 		monoisotopicMass += Constants.getMonoisotopicMassOfAtom("D") * (this.numberDeuterium);
-		return MathTools.round(monoisotopicMass, Constants.DEFAULT_NUMBER_OF_DIGITS_AFTER_ROUNDING);
+		return MathTools.round(monoisotopicMass);
 	}
 	
 	/**

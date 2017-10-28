@@ -102,9 +102,7 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 		boolean ispositive = (Boolean)settings.get(VariableNames.IS_POSITIVE_ION_MODE_NAME);
 		
 		double adductMass = Constants.getIonisationTypeMassCorrection(Constants.ADDUCT_NOMINAL_MASSES.indexOf(ionmode), ispositive);
-		double precursorMass = (Double)settings.get(VariableNames.PRECURSOR_NEUTRAL_MASS_NAME);
 		
-		double ionmass = precursorMass + adductMass ;
 		Fingerprint fingerprint = new Fingerprint((String)settings.get(VariableNames.FINGERPRINT_TYPE_NAME));
 		
 		for(CombinedSingleCandidateMetFragProcess scmfp : processes) {
@@ -112,52 +110,52 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 			 * check whether the single run was successful
 			 */
 			if(scmfp.wasSuccessful()) {
-				ICandidate[] candidates = scmfp.getScoredPrecursorCandidates();
-				for(int ii = 0; ii < candidates.length; ii++) {
-					java.util.ArrayList<MassFingerprintMatch> lossMatchlist = new java.util.ArrayList<MassFingerprintMatch>();
-					MatchList matchlist = candidates[ii].getMatchList();
-					if(matchlist == null || matchlist.getNumberElements() == 0) {
-						candidates[ii].setProperty("LossMatchList", lossMatchlist);
-						continue;
-					}
-					candidates[ii].initialisePrecursorCandidate();
-					for(int i = 0; i < matchlist.getNumberElements(); i++) {
-						IMatch matchI = matchlist.getElement(i);
-						IFragment fragmentI = matchI.getBestMatchedFragment();
-						double peakMassI = matchI.getMatchedPeak().getMass();
-						for(int j = i + 1; j < matchlist.getNumberElements(); j++) {
-							IMatch matchJ = matchlist.getElement(i);
-							double peakMassJ = matchJ.getMatchedPeak().getMass();
-							IFragment fragmentJ = matchJ.getBestMatchedFragment();
-							if(fragmentJ.isRealSubStructure(fragmentI)) {
-								double diff = peakMassJ - peakMassI;
-								IFragment diffFragment = fragmentJ.getDifferenceFragment(candidates[ii].getPrecursorMolecule(), fragmentI);
-								if(diffFragment == null) continue;
-								IAtomContainer con = fingerprint.getNormalizedAtomContainer(candidates[ii].getPrecursorMolecule(), diffFragment);							
-								lossMatchlist.add(new MassFingerprintMatch(diff, fingerprint.getNormalizedFastBitArrayFingerprint(con)));
-							}
+				ICandidate candidate = scmfp.getScoredPrecursorCandidates()[0];
+				double precursorMass = candidate.getPrecursorMolecule().getNeutralMonoisotopicMass();
+				double ionmass = MathTools.round(precursorMass + adductMass);				
+				java.util.ArrayList<MassFingerprintMatch> lossMatchlist = new java.util.ArrayList<MassFingerprintMatch>();
+				MatchList matchlist = candidate.getMatchList();
+				if(matchlist == null || matchlist.getNumberElements() == 0) {
+					candidate.setProperty("LossMatchList", lossMatchlist);
+					continue;
+				}
+				candidate.initialisePrecursorCandidate();
+				for(int i = 0; i < matchlist.getNumberElements(); i++) {
+					IMatch matchI = matchlist.getElement(i);
+					IFragment fragmentI = matchI.getBestMatchedFragment();
+					double peakMassI = matchI.getMatchedPeak().getMass();
+					for(int j = i + 1; j < matchlist.getNumberElements(); j++) {
+						IMatch matchJ = matchlist.getElement(i);
+						double peakMassJ = matchJ.getMatchedPeak().getMass();
+						IFragment fragmentJ = matchJ.getBestMatchedFragment();
+						if(fragmentJ.isRealSubStructure(fragmentI)) {
+							double diff = MathTools.round(peakMassJ - peakMassI);
+							IFragment diffFragment = fragmentJ.getDifferenceFragment(candidate.getPrecursorMolecule(), fragmentI);
+							if(diffFragment == null) continue;
+							IAtomContainer con = fingerprint.getNormalizedAtomContainer(candidate.getPrecursorMolecule(), diffFragment);							
+							lossMatchlist.add(new MassFingerprintMatch(diff, fingerprint.getNormalizedFastBitArrayFingerprint(con)));
 						}
-						//do the same for the precursor ion
-						double diff = ionmass - peakMassI;
-						IFragment diffFragment = fragmentI.getDifferenceFragment(candidates[ii].getPrecursorMolecule());
-						if(diffFragment == null) continue;
+					}
+					//do the same for the precursor ion
+					double diff = MathTools.round(ionmass - peakMassI);
+					IFragment diffFragment = fragmentI.getDifferenceFragment(candidate.getPrecursorMolecule());
+					if(diffFragment == null) continue;
 
-						IAtomContainer con = fingerprint.getNormalizedAtomContainer(candidates[ii].getPrecursorMolecule(), diffFragment);
-						lossMatchlist.add(new MassFingerprintMatch(diff, fingerprint.getNormalizedFastBitArrayFingerprint(con)));
-					}
-					candidates[ii].setProperty("LossMatchList", lossMatchlist);
-					for(int j = 0; j < lossMatchlist.size(); j++) {
-						MassFingerprintMatch lossMatch = lossMatchlist.get(j);
-						MassToFingerprintGroupList lossToFingerprintGroupList = lossToFingerprintGroupListCollection.getElementByPeak(lossMatch.getMass(), mzppm, mzabs);
-						if(lossToFingerprintGroupList == null) continue;
-						lossMatch.setMass(lossToFingerprintGroupList.getPeakmz());
-						FastBitArray currentFingerprint = lossMatch.getFingerprint();
-						// check whether fingerprint was observed for current peak mass in the training data
-						if (!lossToFingerprintGroupList.containsFingerprint(currentFingerprint)) {
-							// if not add the fingerprint to background by addFingerprint function
-							// addFingerprint checks also whether fingerprint was already added
-							lossMassToFingerprints.addFingerprint(lossMatch.getMass(), currentFingerprint);
-						}
+					IAtomContainer con = fingerprint.getNormalizedAtomContainer(candidate.getPrecursorMolecule(), diffFragment);
+					lossMatchlist.add(new MassFingerprintMatch(diff, fingerprint.getNormalizedFastBitArrayFingerprint(con)));
+				}
+				candidate.setProperty("LossMatchList", lossMatchlist);
+				for(int j = 0; j < lossMatchlist.size(); j++) {
+					MassFingerprintMatch lossMatch = lossMatchlist.get(j);
+					MassToFingerprintGroupList lossToFingerprintGroupList = lossToFingerprintGroupListCollection.getElementByPeak(lossMatch.getMass(), mzppm, mzabs);
+					if(lossToFingerprintGroupList == null) continue;
+					lossMatch.setMass(lossToFingerprintGroupList.getPeakmz());
+					FastBitArray currentFingerprint = lossMatch.getFingerprint();
+					// check whether fingerprint was observed for current peak mass in the training data
+					if (!lossToFingerprintGroupList.containsFingerprint(currentFingerprint)) {
+						// if not add the fingerprint to background by addFingerprint function
+						// addFingerprint checks also whether fingerprint was already added
+						lossMassToFingerprints.addFingerprint(lossMatch.getMass(), currentFingerprint);
 					}
 				}
 			}

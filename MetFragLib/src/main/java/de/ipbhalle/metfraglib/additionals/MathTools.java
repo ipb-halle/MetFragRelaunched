@@ -1,10 +1,16 @@
 package de.ipbhalle.metfraglib.additionals;
 
-public class MathTools {
+import de.ipbhalle.metfraglib.parameter.Constants;
 
+public class MathTools {
+	
 	public static double round(double val, double digits) {
 		double multiplier = Math.pow(10.0, digits);
 		return (double)Math.round(val * multiplier) / multiplier;
+	}
+	
+	public static double round(double val) {
+		return round(val, Constants.DEFAULT_NUMBER_OF_DIGITS_AFTER_ROUNDING);
 	}
 	
 	public static double calculateAbsoluteDeviation(double peak, double ppm)

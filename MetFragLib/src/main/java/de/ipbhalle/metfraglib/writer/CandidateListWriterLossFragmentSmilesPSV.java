@@ -125,7 +125,7 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 					double mass = scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass();
 					if((Boolean)settings.get(VariableNames.CORRECT_MASSES_FOR_FINGERPRINT_ANNOTATION_NAME)) {
 						matchedFormulas[ii] = formula;
-						correctedMasses[ii] = MathTools.round(calculateMassOfFormula(formula), 5);
+						correctedMasses[ii] = MathTools.round(calculateMassOfFormula(formula));
 						mass = correctedMasses[ii];
 					}
 					sumFormulasOfFragmentsExplainedPeaks.append(scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass());
@@ -187,39 +187,36 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 		boolean ispositive = (Boolean)settings.get(VariableNames.IS_POSITIVE_ION_MODE_NAME);
 		
 		double adductMass = Constants.getIonisationTypeMassCorrection(Constants.ADDUCT_NOMINAL_MASSES.indexOf(ionmode), ispositive);
-		double precursorMass = (Double)settings.get(VariableNames.PRECURSOR_NEUTRAL_MASS_NAME);
+		double precursorMass = precursorMolecule.getNeutralMonoisotopicMass();
 		
-		double ionmass = precursorMass + adductMass ;
+		double ionmass = MathTools.round(precursorMass + adductMass);
 		
 		//check all matches
 		for(int i = 0; i < matchList.getNumberElements(); i++) {
 			IMatch matchI = matchList.getElement(i);
 			IFragment fragmentI = matchI.getBestMatchedFragment();
-		//	double peakMassI = matchI.getMatchedPeak().getMass();
 			double peakMassI = matchI.getMatchedPeak().getMass();
 			if((Boolean)settings.get(VariableNames.CORRECT_MASSES_FOR_FINGERPRINT_ANNOTATION_NAME))
 				peakMassI = correctedMasses[i];
-			//compare with matches with greater mass than the current one
+			//compare with matches having greater mass than the current one
 			for(int j = i + 1; j < matchList.getNumberElements(); j++) {
 				IMatch matchJ = matchList.getElement(j);
-			//	double peakMassJ = matchJ.getMatchedPeak().getMass();
 				double peakMassJ = matchJ.getMatchedPeak().getMass();
 				if((Boolean)settings.get(VariableNames.CORRECT_MASSES_FOR_FINGERPRINT_ANNOTATION_NAME))
 					peakMassJ = correctedMasses[j];
 				IFragment fragmentJ = matchJ.getBestMatchedFragment();
 				if(fragmentJ.isRealSubStructure(fragmentI)) {
-					double diff = peakMassJ - peakMassI;
+					double diff = MathTools.round(peakMassJ - peakMassI);
 					IFragment diffFragment = fragmentJ.getDifferenceFragment(precursorMolecule, fragmentI);
 					if(diffFragment == null) continue;
-
 					IAtomContainer con = fingerprint.getNormalizedAtomContainer(precursorMolecule, diffFragment);
-						
 					lossFingerprint.add(fingerprint.getNormalizedFingerprint(con));
 					lossMassDiff.add(diff);
 				}
 			}
 			//do the same for the precursor ion
-			double diff = ionmass - peakMassI;
+			double diff = MathTools.round(ionmass - peakMassI);
+
 			IFragment diffFragment = fragmentI.getDifferenceFragment(precursorMolecule);
 			if(diffFragment == null) continue;
 
@@ -227,7 +224,6 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 			lossFingerprint.add(fingerprint.getNormalizedFingerprint(con));
 			lossMassDiff.add(diff);
 		}
-
 		StringBuilder diffFingerPrint = new StringBuilder();
 		if(lossMassDiff.size() >= 1) {
 			diffFingerPrint.append(lossMassDiff.get(0));

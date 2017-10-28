@@ -114,7 +114,7 @@ public class ByteMolecularFormula implements IMolecularFormula {
 			monoisotopicMass += Constants.getMonoisotopicMassOfAtom(this.atomsAsIndeces[i]) * this.numberOfAtoms[i];
 		}
 		monoisotopicMass += Constants.getMonoisotopicMassOfAtom("H") * this.numberHydrogens;
-		return MathTools.round(monoisotopicMass, Constants.DEFAULT_NUMBER_OF_DIGITS_AFTER_ROUNDING);
+		return MathTools.round(monoisotopicMass);
 	}
 	
 	/**

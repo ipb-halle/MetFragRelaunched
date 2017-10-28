@@ -60,7 +60,7 @@ public class BitArrayFragmentMolecularFormula extends ByteMolecularFormula {
 		for(int i = 0; i < this.atomsAsIndeces.length; i++)
 			monoisotopicMass += Constants.getMonoisotopicMassOfAtom(this.atomsAsIndeces[i]) * this.numberOfAtoms[i];
 		monoisotopicMass += Constants.HYDROGEN_MASS * this.numberHydrogens;
-		return MathTools.round(monoisotopicMass, Constants.DEFAULT_NUMBER_OF_DIGITS_AFTER_ROUNDING);
+		return MathTools.round(monoisotopicMass);
 	}
 	
 	/**
