@@ -136,6 +136,10 @@ public class CombinedSingleCandidateMetFragProcess implements Runnable {
 		return this.fas;
 	}
 
+	public void setScoredPrecursorCandidates(ICandidate candidate) {
+		this.scoredPrecursorCandidates = new ICandidate[] {candidate};
+	}
+	
 	public ICandidate[] getScoredPrecursorCandidates() {
 		return this.scoredPrecursorCandidates;
 	}
@@ -146,6 +150,10 @@ public class CombinedSingleCandidateMetFragProcess implements Runnable {
 	
 	public boolean wasSuccessful() {
 		return this.wasSuccessful;
+	}
+
+	public void setWasSuccessful(boolean successful) {
+		this.wasSuccessful = successful;
 	}
 	
 	public void setPreProcessingCandidateFilterCollection(PreProcessingCandidateFilterCollection preProcessingCandidateFilterCollection) {

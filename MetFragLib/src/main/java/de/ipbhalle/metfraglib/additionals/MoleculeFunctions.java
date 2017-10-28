@@ -25,6 +25,7 @@ import org.openscience.cdk.smiles.SmilesParser;
 import org.openscience.cdk.tools.CDKHydrogenAdder;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
+import de.ipbhalle.metfraglib.FastBitArray;
 import de.ipbhalle.metfraglib.exceptions.ExplicitHydrogenRepresentationException;
 import de.ipbhalle.metfraglib.fingerprint.TanimotoSimilarity;
 import de.ipbhalle.metfraglib.interfaces.IFragment;
@@ -34,23 +35,6 @@ import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.precursor.HDTopDownBitArrayPrecursor;
 
 public class MoleculeFunctions {
-	
-	/*
-	public static de.ipbhalle.metfraglib.inchi.InChIGeneratorFactory inchiFactory;
-	public static IsotopeFactory isotopeFactory;
-	public static SmilesParser sp;
-    
-	static {
-		try {
-			inchiFactory = de.ipbhalle.metfraglib.inchi.InChIGeneratorFactory.getInstance();
-			isotopeFactory = Isotopes.getInstance();
-			sp  = new SmilesParser(SilentChemObjectBuilder.getInstance());
-		} catch (CDKException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}*/
 
 	public static String generateSmiles(IAtomContainer molecule) {
 		SmilesGenerator sg = new SmilesGenerator();
@@ -341,6 +325,14 @@ public class MoleculeFunctions {
 			if(string.charAt(i) == '1') bitSet.set(i);
 		}
 		return new BitSetFingerprint(bitSet);
+	}
+
+	public static FastBitArray stringToFastBitArray(String string) {
+		FastBitArray bitSet = new FastBitArray(string.length());
+		for(int i = 0; i < string.length(); i++) {
+			if(string.charAt(i) == '1') bitSet.set(i);
+		}
+		return bitSet;
 	}
 	
 	public static double getCDKXLogValue(IAtomContainer molecule) {

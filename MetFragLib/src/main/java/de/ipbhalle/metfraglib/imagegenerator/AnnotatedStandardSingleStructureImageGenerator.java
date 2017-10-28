@@ -141,7 +141,7 @@ public class AnnotatedStandardSingleStructureImageGenerator extends StandardSing
 	    IAtomContainer m = null;
 		
 	    try {
-			m = MoleculeFunctions.getAtomContainerFromInChI("InChI=1S/C15H14O6/c16-8-4-11(18)9-6-13(20)15(21-14(9)5-8)7-1-2-10(17)12(19)3-7/h1-5,13,15-20H,6H2/t13-,15-/m1/s1");
+			m = MoleculeFunctions.getAtomContainerFromInChI("InChI=1S/C20H22O9/c21-8-16-17(25)18(26)20(29-16)27-11-5-13(23)12-7-14(24)19(28-15(12)6-11)9-1-3-10(22)4-2-9/h1-6,14,16-26H,7-8H2/t14-,16+,17-,18+,19-,20+/m1/s1");
 			//m = MoleculeFunctions.getAtomContainerFromSMILES("C1CN(C(=N1)N)CC2=CN=C(C=C2)Cl");
 			MoleculeFunctions.prepareAtomContainer(m, true);
 		} catch (Exception e) {
@@ -154,9 +154,9 @@ public class AnnotatedStandardSingleStructureImageGenerator extends StandardSing
 	    s.setImageWidth(1500);
 	    s.setStrokeRation(1.2);
 	    s.setBondAsCharacters(false);
-	    s.setAtomIndexStart(1);
-	    s.setBondIndexStart(1);
-	    s.setAnnotateBonds(false);
+	    s.setAtomIndexStart(0);
+	    s.setBondIndexStart(0);
+	    s.setAnnotateBonds(true);
 	    RenderedImage img = s.generateImage(m, "1");
 	    try {
 			ImageIO.write((RenderedImage) img, "PNG", new java.io.File("/tmp/file.png"));

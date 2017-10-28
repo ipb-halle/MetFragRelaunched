@@ -4,13 +4,19 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 
+import org.openscience.cdk.interfaces.IAtomContainer;
+
+import de.ipbhalle.metfraglib.FastBitArray;
 import de.ipbhalle.metfraglib.additionals.MathTools;
+import de.ipbhalle.metfraglib.exceptions.AtomTypeNotKnownFromInputListException;
+import de.ipbhalle.metfraglib.fingerprint.Fingerprint;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.interfaces.IFragment;
 import de.ipbhalle.metfraglib.interfaces.IMatch;
 import de.ipbhalle.metfraglib.interfaces.IScoreInitialiser;
 import de.ipbhalle.metfraglib.list.DefaultPeakList;
 import de.ipbhalle.metfraglib.list.MatchList;
+import de.ipbhalle.metfraglib.match.MassFingerprintMatch;
 import de.ipbhalle.metfraglib.parameter.Constants;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.peak.TandemMassPeak;
@@ -84,7 +90,7 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 		}
 	}
 
-	public void postProcessScoreParameters(Settings settings) {
+	public void postProcessScoreParameters(Settings settings) throws AtomTypeNotKnownFromInputListException, Exception {
 		CombinedSingleCandidateMetFragProcess[] processes = (CombinedSingleCandidateMetFragProcess[])settings.get(VariableNames.METFRAG_PROCESSES_NAME);
 		
 		MassToFingerprintsHashMap lossMassToFingerprints = new MassToFingerprintsHashMap();
@@ -99,6 +105,7 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 		double precursorMass = (Double)settings.get(VariableNames.PRECURSOR_NEUTRAL_MASS_NAME);
 		
 		double ionmass = precursorMass + adductMass ;
+		Fingerprint fingerprint = new Fingerprint((String)settings.get(VariableNames.FINGERPRINT_TYPE_NAME));
 		
 		for(CombinedSingleCandidateMetFragProcess scmfp : processes) {
 			/*
@@ -107,9 +114,16 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 			if(scmfp.wasSuccessful()) {
 				ICandidate[] candidates = scmfp.getScoredPrecursorCandidates();
 				for(int ii = 0; ii < candidates.length; ii++) {
+					java.util.ArrayList<MassFingerprintMatch> lossMatchlist = new java.util.ArrayList<MassFingerprintMatch>();
 					MatchList matchlist = candidates[ii].getMatchList();
+					if(matchlist == null || matchlist.getNumberElements() == 0) {
+						candidates[ii].setProperty("LossMatchList", lossMatchlist);
+						continue;
+					}
+					candidates[ii].initialisePrecursorCandidate();
 					for(int i = 0; i < matchlist.getNumberElements(); i++) {
 						IMatch matchI = matchlist.getElement(i);
+						IFragment fragmentI = matchI.getBestMatchedFragment();
 						double peakMassI = matchI.getMatchedPeak().getMass();
 						for(int j = i + 1; j < matchlist.getNumberElements(); j++) {
 							IMatch matchJ = matchlist.getElement(i);
@@ -117,43 +131,88 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 							IFragment fragmentJ = matchJ.getBestMatchedFragment();
 							if(fragmentJ.isRealSubStructure(fragmentI)) {
 								double diff = peakMassJ - peakMassI;
-								IFragment diffFragment = fragmentJ.getDifferenceFragment(precursorMolecule, fragmentI);
+								IFragment diffFragment = fragmentJ.getDifferenceFragment(candidates[ii].getPrecursorMolecule(), fragmentI);
 								if(diffFragment == null) continue;
-
-								IAtomContainer con = fingerprint.getNormalizedAtomContainer(precursorMolecule, diffFragment);
-									
-								lossFingerprint.add(fingerprint.getNormalizedFingerprint(con));
-								lossMassDiff.add(diff);
+								IAtomContainer con = fingerprint.getNormalizedAtomContainer(candidates[ii].getPrecursorMolecule(), diffFragment);							
+								lossMatchlist.add(new MassFingerprintMatch(diff, fingerprint.getNormalizedFastBitArrayFingerprint(con)));
 							}
 						}
-						
-						
-						
-						MassToFingerprintGroupList peakToFingerprintGroupList = peakToFingerprintGroupListCollection.getElementByPeak(match.getMatchedPeak().getMass());
-						if(peakToFingerprintGroupList == null) continue;
-						IFragment frag = match.getBestMatchedFragment();
-						FastBitArray currentFingerprint = null;
-						try {
-							IAtomContainer con = fingerprint.getNormalizedAtomContainer(candidates[i].getPrecursorMolecule(), frag);
-							currentFingerprint = fingerprint.getNormalizedFastBitArrayFingerprint(con);
-						} catch (InvalidSmilesException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (CDKException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						//	if(match.getMatchedPeak().getMass() < 60) System.out.println(match.getMatchedPeak().getMass() + " " + currentFingerprint + " " + fragSmiles);
+						//do the same for the precursor ion
+						double diff = ionmass - peakMassI;
+						IFragment diffFragment = fragmentI.getDifferenceFragment(candidates[ii].getPrecursorMolecule());
+						if(diffFragment == null) continue;
+
+						IAtomContainer con = fingerprint.getNormalizedAtomContainer(candidates[ii].getPrecursorMolecule(), diffFragment);
+						lossMatchlist.add(new MassFingerprintMatch(diff, fingerprint.getNormalizedFastBitArrayFingerprint(con)));
+					}
+					candidates[ii].setProperty("LossMatchList", lossMatchlist);
+					for(int j = 0; j < lossMatchlist.size(); j++) {
+						MassFingerprintMatch lossMatch = lossMatchlist.get(j);
+						MassToFingerprintGroupList lossToFingerprintGroupList = lossToFingerprintGroupListCollection.getElementByPeak(lossMatch.getMass(), mzppm, mzabs);
+						if(lossToFingerprintGroupList == null) continue;
+						lossMatch.setMass(lossToFingerprintGroupList.getPeakmz());
+						FastBitArray currentFingerprint = lossMatch.getFingerprint();
 						// check whether fingerprint was observed for current peak mass in the training data
-						if (!peakToFingerprintGroupList.containsFingerprint(currentFingerprint)) {
+						if (!lossToFingerprintGroupList.containsFingerprint(currentFingerprint)) {
 							// if not add the fingerprint to background by addFingerprint function
 							// addFingerprint checks also whether fingerprint was already added
-							peakMassToFingerprints.addFingerprint(match.getMatchedPeak().getMass(), currentFingerprint);
+							lossMassToFingerprints.addFingerprint(lossMatch.getMass(), currentFingerprint);
 						}
 					}
 				}
 			}
 		}
+		
+		double alpha = (double)settings.get(VariableNames.LOSS_FINGERPRINT_ANNOTATION_ALPHA_VALUE_NAME);					// alpha
+		double beta = (double)settings.get(VariableNames.LOSS_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME);						// beta
+		
+		double f_seen = (double)settings.get(VariableNames.LOSS_FINGERPRINT_TUPLE_COUNT_NAME);								// f_s
+		double f_unseen = lossMassToFingerprints.getOverallSize();																// f_u
+		double sumFingerprintFrequencies = (double)settings.get(VariableNames.LOSS_FINGERPRINT_DENOMINATOR_COUNT_NAME);		// \sum_N \sum_Ln 1
+		
+		// set value for denominator of P(f,m)
+		double denominatorValue = sumFingerprintFrequencies + alpha * f_seen + alpha * f_unseen + beta;
+
+		settings.set(VariableNames.LOSS_FINGERPRINT_DENOMINATOR_VALUE_NAME, denominatorValue);
+		
+		double alphaProbability = alpha / denominatorValue; // P(f,m) F_u
+		double betaProbability = beta / denominatorValue;	// p(f,m) not annotated
+		
+		for(int i = 0; i < lossToFingerprintGroupListCollection.getNumberElements(); i++) {
+			MassToFingerprintGroupList groupList = lossToFingerprintGroupListCollection.getElement(i);
+			
+			// sum_f P(f,m)
+			// calculate sum of MF_s (including the alpha count) and the joint probabilities
+			// at this stage getProbability() returns the absolute counts from the annotation files
+			double sum_f = 0.0;
+			double sumFsProbabilities = 0.0;
+			for(int ii = 0; ii < groupList.getNumberElements(); ii++) {
+				// first calculate P(f,m)
+				groupList.getElement(ii).setJointProbability((groupList.getElement(ii).getProbability() + alpha) / denominatorValue);
+				// sum_f P(f,m) -> for F_s
+				sumFsProbabilities += groupList.getElement(ii).getJointProbability();
+			}
+			
+			// calculate the sum of probabilities for un-observed fingerprints for the current mass
+			double sumFuProbabilities = alphaProbability * lossMassToFingerprints.getSize(groupList.getPeakmz());
+			
+			sum_f += sumFsProbabilities;
+			sum_f += sumFuProbabilities;
+			sum_f += betaProbability;
+		
+			for(int ii = 0; ii < groupList.getNumberElements(); ii++) {
+				// second calculate P(f|m)
+				groupList.getElement(ii).setConditionalProbability_sp(groupList.getElement(ii).getJointProbability() / sum_f);
+			}
+			
+			groupList.setAlphaProb(alphaProbability / sum_f);
+			groupList.setBetaProb(betaProbability / sum_f);
+			groupList.setProbabilityToConditionalProbability_sp();
+			groupList.calculateSumProbabilites();
+
+		}
+
+		return;
 	}
 	
 	protected Double containsMass(double mass, java.util.ArrayList<Double> massArrayList, double mzabs, double mzppm) {
