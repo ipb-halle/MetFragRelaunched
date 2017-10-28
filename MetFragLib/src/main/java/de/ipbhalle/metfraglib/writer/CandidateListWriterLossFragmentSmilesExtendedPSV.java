@@ -88,7 +88,7 @@ public class CandidateListWriterLossFragmentSmilesExtendedPSV implements IWriter
 					double mass = scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass();
 					if((Boolean)settings.get(VariableNames.CORRECT_MASSES_FOR_FINGERPRINT_ANNOTATION_NAME)) {
 						matchedFormulas[ii] = formula;
-						correctedMasses[ii] = MathTools.round(calculateMassOfFormula(formula), 5);
+						correctedMasses[ii] = MathTools.round(calculateMassOfFormula(formula));
 						mass = correctedMasses[ii];
 					}
 					sumFormulasOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + formula + ";";

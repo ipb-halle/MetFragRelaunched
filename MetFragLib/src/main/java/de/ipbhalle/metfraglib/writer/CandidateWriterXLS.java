@@ -131,7 +131,7 @@ public class CandidateWriterXLS implements IWriter {
 					sheet1.addCell(new Label(column + colWidthImage + 1, (propertyRow + 5) + (rowHeightImage * fragmentRow) + 2, match.getModifiedFormulaStringOfBestMatchedFragment(candidate.getPrecursorMolecule()), arial10format));
 					
 					sheet1.addCell(new Label(column + colWidthImage, (propertyRow + 5) + (rowHeightImage * fragmentRow) + 3, "Mass", arial10formatBold));
-					sheet1.addCell(new Label(column + colWidthImage + 1, (propertyRow + 5) + (rowHeightImage * fragmentRow) + 3, String.valueOf(MathTools.round(match.getBestMatchFragmentMass(), 5)), arial10format));
+					sheet1.addCell(new Label(column + colWidthImage + 1, (propertyRow + 5) + (rowHeightImage * fragmentRow) + 3, String.valueOf(MathTools.round(match.getBestMatchFragmentMass())), arial10format));
 					
 					sheet1.addCell(new Label(column + colWidthImage, (propertyRow + 5) + (rowHeightImage * fragmentRow) + 4, "Peak m/z", arial10formatBold));
 					sheet1.addCell(new Label(column + colWidthImage + 1, (propertyRow + 5) + (rowHeightImage * fragmentRow) + 4, String.valueOf(match.getMatchedPeak().getMass()), arial10format));

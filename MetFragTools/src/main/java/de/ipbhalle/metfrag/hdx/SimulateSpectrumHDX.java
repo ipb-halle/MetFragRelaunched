@@ -152,11 +152,11 @@ public class SimulateSpectrumHDX {
 					spectrumHDX[i][0] += Constants.getMonoisotopicMassOfAtom("D") - Constants.HYDROGEN_MASS;
 			}
 			if(method != 3) {
-				spectrumHDX[i][0] = MathTools.round(spectrumHDX[i][0], 5);
+				spectrumHDX[i][0] = MathTools.round(spectrumHDX[i][0]);
 			}
 			else {
-				spectrumHDX[i * 2][0] = MathTools.round(spectrumHDX[i * 2][0], 5);
-				spectrumHDX[(i * 2) + 1][0] = MathTools.round(spectrumHDX[(i * 2) + 1][0], 5);
+				spectrumHDX[i * 2][0] = MathTools.round(spectrumHDX[i * 2][0]);
+				spectrumHDX[(i * 2) + 1][0] = MathTools.round(spectrumHDX[(i * 2) + 1][0]);
 			}
 		}
 		return spectrumHDX;

@@ -93,7 +93,7 @@ public class MetFragResult implements Serializable {
 	}
 	
 	public double getRoundedMass() {
-		return MathTools.round(this.root.mass, 5);
+		return MathTools.round(this.root.mass);
 	}
 	
 	public String getName() {

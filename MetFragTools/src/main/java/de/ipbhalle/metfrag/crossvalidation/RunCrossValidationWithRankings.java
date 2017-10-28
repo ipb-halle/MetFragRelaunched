@@ -188,7 +188,7 @@ public class RunCrossValidationWithRankings {
 					//check that current query is not in current fold
 					if(current_fold != folds[row_index]) {
 						int current_rank = rank_matrix[row_index][weight_index] - 1;
-						int current_avg_rank = (int)Math.ceil(MathTools.round(avg_rank_matrix[row_index][weight_index] - 1.0, 6));
+						int current_avg_rank = (int)Math.ceil(MathTools.round(avg_rank_matrix[row_index][weight_index] - 1.0));
 						//check whether current rank is greater than ranking check limit
 						if(current_rank < check_best_rank_positions) {
 							ranking_numbers[current_rank]++;
@@ -224,12 +224,12 @@ public class RunCrossValidationWithRankings {
 				if(current_fold != folds[row_index]) continue;
 				number_in_fold[current_fold]++;
 				int current_rank = rank_matrix[row_index][best_weight_index[current_fold]] - 1;
-				double current_avg_rank = MathTools.round(avg_rank_matrix[row_index][best_weight_index[current_fold]] - 1, 6);
+				double current_avg_rank = MathTools.round(avg_rank_matrix[row_index][best_weight_index[current_fold]] - 1);
 				int rounded_current_avg_rank = (int)Math.ceil(current_avg_rank);
 				int current_better_cands = better_candidates_matrix[row_index][best_weight_index[current_fold]] - 1;
 				int current_worse_cands = worse_candidates_matrix[row_index][best_weight_index[current_fold]] - 1;
 				int current_total_cands = total_candidates_matrix[row_index][best_weight_index[current_fold]] - 1;
-				query_testing_avg_rankings[row_index] = MathTools.round(current_avg_rank + 1.0, 6);
+				query_testing_avg_rankings[row_index] = MathTools.round(current_avg_rank + 1.0);
 				query_testing_rankings[row_index] = current_rank + 1;
 				query_testing_better_cands[row_index] = current_better_cands + 1;
 				query_testing_worse_cands[row_index] = current_worse_cands + 1;

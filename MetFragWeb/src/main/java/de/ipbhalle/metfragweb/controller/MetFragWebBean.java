@@ -333,7 +333,7 @@ public class MetFragWebBean {
 				this.errorMessages.setMessage("inputMeasuredMassError", "Error: Input results in a negative neutral mass.");
 				return;
 			}
-			this.beanSettingsContainer.setNeutralMonoisotopicMass(String.valueOf(MathTools.round(value, 6)));
+			this.beanSettingsContainer.setNeutralMonoisotopicMass(String.valueOf(MathTools.round(value)));
 		} catch(Exception e) {
 			e.printStackTrace();
 			this.errorMessages.setMessage("inputMeasuredMassError", "Error: Error calculating mass value.");
@@ -2698,7 +2698,7 @@ public class MetFragWebBean {
 				match.getBestMatchedFragment();
 				this.currentFragments.add(
 						new Fragment(match.getModifiedFormulaHtmlStringOfBestMatchedFragment(candidate.getPrecursorMolecule()),
-								MathTools.round(match.getBestMatchFragmentMass(), 5),
+								MathTools.round(match.getBestMatchFragmentMass()),
 								"/files/" + sessionId + "/images/fragments/fragment_" + i + ".png",
 								match.getMatchedPeak().getMass(), this.currentFragments.size() + 1));
 			} catch (Exception e) {
@@ -2813,7 +2813,7 @@ public class MetFragWebBean {
 		if(this.processedPeaklistObject == null) return peaks;
 		for(int i = 0; i < this.processedPeaklistObject.getNumberElements(); i++) {
 			Double currentMass = ((TandemMassPeak)this.processedPeaklistObject.getElement(i)).getMass();
-			peaks.add(new SelectItem(((TandemMassPeak)this.processedPeaklistObject.getElement(i)).getID(), String.valueOf(MathTools.round(currentMass, 4))));
+			peaks.add(new SelectItem(((TandemMassPeak)this.processedPeaklistObject.getElement(i)).getID(), String.valueOf(MathTools.round(currentMass))));
 		}
 		return peaks;
 	}

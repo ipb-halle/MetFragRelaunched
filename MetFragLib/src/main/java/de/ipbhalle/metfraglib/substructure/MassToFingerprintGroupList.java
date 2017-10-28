@@ -275,7 +275,7 @@ public class MassToFingerprintGroupList extends DefaultList {
 		this.peakmz = 0.0;
 		for(double mass : masses) this.peakmz += mass;
 		this.peakmz /= masses.size();
-		this.peakmz = MathTools.round(this.peakmz, 6.0);
+		this.peakmz = MathTools.round(this.peakmz);
 	}
 	
 	/**

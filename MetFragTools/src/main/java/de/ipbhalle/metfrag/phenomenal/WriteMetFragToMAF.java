@@ -688,11 +688,11 @@ public class WriteMetFragToMAF {
 					else 
 						currentCandidateLine += "\t";
 					currentCandidateLine += "\t";													// metabolite_identification
-					currentCandidateLine += "\t" + MathTools.round(this.consensusMZ, 5); 			// mass_to_charge
+					currentCandidateLine += "\t" + MathTools.round(this.consensusMZ); 			// mass_to_charge
 					currentCandidateLine += "\t";													// fragmentation 
 					currentCandidateLine += "\t" + adductType;										// modifications
 					currentCandidateLine += "\t" + charge;	  										// charge
-					currentCandidateLine += "\t" + MathTools.round(this.consensusRT, 5);			// mass_to_charge
+					currentCandidateLine += "\t" + MathTools.round(this.consensusRT);			// mass_to_charge
 					currentCandidateLine += "\t\t\t\t\t\t"; 										// taxid species database database_version
 																									// reliability uri 
 					currentCandidateLine += "\tMetFrag";											// search_engine

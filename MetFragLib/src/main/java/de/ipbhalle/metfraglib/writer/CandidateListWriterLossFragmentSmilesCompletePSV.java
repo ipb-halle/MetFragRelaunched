@@ -159,7 +159,7 @@ public class CandidateListWriterLossFragmentSmilesCompletePSV implements IWriter
 					double mass = scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass();
 					if((Boolean)settings.get(VariableNames.CORRECT_MASSES_FOR_FINGERPRINT_ANNOTATION_NAME)) {
 						matchedFormulas[ii] = formula;
-						correctedMasses[ii] = MathTools.round(calculateMassOfFormula(formula), 6.0);
+						correctedMasses[ii] = MathTools.round(calculateMassOfFormula(formula));
 						mass = correctedMasses[ii];
 					}
 					sumFormulasOfFragmentsExplainedPeaks.append(scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass());
@@ -200,7 +200,7 @@ public class CandidateListWriterLossFragmentSmilesCompletePSV implements IWriter
 						line.append("|");
 						line.append(fingerprintOfFragmentsExplainedPeaks[ii].length() == 0 ? "NA" : fingerprintOfFragmentsExplainedPeaks[ii].substring(0, fingerprintOfFragmentsExplainedPeaks[ii].length() - 1));
 						line.append("|");
-						line.append(lossesInformation[ii][2]);
+						line.append(lossesInformation[ii][0]);
 					}
 				}
 			}
@@ -219,8 +219,6 @@ public class CandidateListWriterLossFragmentSmilesCompletePSV implements IWriter
 	 */
 	private String[][] createLossAnnotations(IMolecularStructure precursorMolecule, MatchList matchList, Settings settings, double[] correctedMasses, FingerprintCollection fingerprintCollection) throws Exception {
 		java.util.ArrayList<String[]> lossFingerprint = new java.util.ArrayList<String[]>();
-		java.util.ArrayList<String> lossSmiles = new java.util.ArrayList<String>();
-		java.util.ArrayList<String> lossSmarts = new java.util.ArrayList<String>();
 		java.util.ArrayList<Double> lossMassDiff = new java.util.ArrayList<Double>();
 		
 		//for the precursor ion
@@ -230,61 +228,47 @@ public class CandidateListWriterLossFragmentSmilesCompletePSV implements IWriter
 		double adductMass = Constants.getIonisationTypeMassCorrection(Constants.ADDUCT_NOMINAL_MASSES.indexOf(ionmode), ispositive);
 		double precursorMass = precursorMolecule.getNeutralMonoisotopicMass();
 		
-		double ionmass = precursorMass + adductMass ;
+		double ionmass = MathTools.round(precursorMass + adductMass);
 		
 		//check all matches
 		for(int i = 0; i < matchList.getNumberElements(); i++) {
 			IMatch matchI = matchList.getElement(i);
 			IFragment fragmentI = matchI.getBestMatchedFragment();
-		//	double peakMassI = matchI.getMatchedPeak().getMass();
 			double peakMassI = matchI.getMatchedPeak().getMass();
 			if((Boolean)settings.get(VariableNames.CORRECT_MASSES_FOR_FINGERPRINT_ANNOTATION_NAME))
 				peakMassI = correctedMasses[i];
 			//compare with matches with greater mass than the current one
 			for(int j = i + 1; j < matchList.getNumberElements(); j++) {
 				IMatch matchJ = matchList.getElement(j);
-			//	double peakMassJ = matchJ.getMatchedPeak().getMass();
 				double peakMassJ = matchJ.getMatchedPeak().getMass();
 				if((Boolean)settings.get(VariableNames.CORRECT_MASSES_FOR_FINGERPRINT_ANNOTATION_NAME))
 					peakMassJ = correctedMasses[j];
 				IFragment fragmentJ = matchJ.getBestMatchedFragment();
 				if(fragmentJ.isRealSubStructure(fragmentI)) {
-					double diff = peakMassJ - peakMassI;
+					double diff = MathTools.round(peakMassJ - peakMassI);
 					IFragment diffFragment = fragmentJ.getDifferenceFragment(precursorMolecule, fragmentI);
 					if(diffFragment == null) continue;
 					
 					IAtomContainer con = fingerprintCollection.getNormalizedAtomContainer(precursorMolecule, diffFragment);
 					
 					lossFingerprint.add(fingerprintCollection.getNormalizedFingerprint(con));
-					lossSmiles.add(fingerprintCollection.getNormalizedSmiles(con));
-					lossSmarts.add(diffFragment.getAromaticSmiles(precursorMolecule));
-					lossMassDiff.add(MathTools.round(diff, 6.0));
+					lossMassDiff.add(diff);
 				}
 			}
 			//do the same for the precursor ion
-			double diff = ionmass - peakMassI;
+			double diff = MathTools.round(ionmass - peakMassI);
 			IFragment diffFragment = fragmentI.getDifferenceFragment(precursorMolecule);
 			if(diffFragment == null) continue;
 			
 			IAtomContainer con = fingerprintCollection.getNormalizedAtomContainer(precursorMolecule, diffFragment);
 			
 			lossFingerprint.add(fingerprintCollection.getNormalizedFingerprint(con));
-			lossSmiles.add(fingerprintCollection.getNormalizedSmiles(con));
-			lossSmarts.add(diffFragment.getAromaticSmiles(precursorMolecule));
-			lossMassDiff.add(MathTools.round(diff, 6.0));
+			lossMassDiff.add(diff);
 		}
 
-		StringBuilder diffSmiles = new StringBuilder();
-		StringBuilder diffSmarts = new StringBuilder();
 		StringBuilder[] diffFingerPrints = new StringBuilder[fingerprintCollection.getNumberFingerprinters()];  
 		for(int i = 0; i < diffFingerPrints.length; i++) diffFingerPrints[i] = new StringBuilder();
 		if(lossMassDiff.size() >= 1) {
-			diffSmiles.append(lossMassDiff.get(0));
-			diffSmiles.append(":");
-			diffSmiles.append(lossSmiles.get(0));
-			diffSmarts.append(lossMassDiff.get(0));
-			diffSmarts.append(":");
-			diffSmarts.append(lossSmarts.get(0));
 			for(int ii = 0; ii < diffFingerPrints.length; ii++) { 
 				diffFingerPrints[ii].append(lossMassDiff.get(0));
 				diffFingerPrints[ii].append(":");
@@ -292,14 +276,6 @@ public class CandidateListWriterLossFragmentSmilesCompletePSV implements IWriter
 			}
 		}
 		for(int i = 1; i < lossMassDiff.size(); i++) {
-			diffSmiles.append(";");
-			diffSmiles.append(lossMassDiff.get(i));
-			diffSmiles.append(":");
-			diffSmiles.append(lossSmiles.get(i));
-			diffSmarts.append(";");
-			diffSmarts.append(lossMassDiff.get(i));
-			diffSmarts.append(":");
-			diffSmarts.append(lossSmarts.get(i));
 			for(int ii = 0; ii < diffFingerPrints.length; ii++) {
 				diffFingerPrints[ii].append(";");
 				diffFingerPrints[ii].append(lossMassDiff.get(i));
@@ -310,7 +286,7 @@ public class CandidateListWriterLossFragmentSmilesCompletePSV implements IWriter
 		String[][] fps_return = new String[fingerprintCollection.getNumberFingerprinters()][3];
 		for(int i = 0; i < fingerprintCollection.getNumberFingerprinters(); i++) {
 			if(diffFingerPrints[i].toString().equals("")) fps_return[i] = new String[] {"NA", "NA", "NA"};
-			else fps_return[i] = new String[] {diffSmiles.toString(), diffSmarts.toString(), diffFingerPrints[i].toString()};
+			else fps_return[i] = new String[] {diffFingerPrints[i].toString()};
 		}
 		return fps_return;
 	}

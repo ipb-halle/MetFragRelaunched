@@ -98,7 +98,7 @@ public class SortedTandemMassPeakList extends DefaultPeakList {
 			bsquare += intensity2 * intensity2;
 		}
 		if(asquare == 0.0 || bsquare == 0.0) return 0.0;
-		return MathTools.round(numerator / Math.sqrt(asquare * bsquare), 4.0);
+		return MathTools.round(numerator / Math.sqrt(asquare * bsquare));
 	}
 
 	public double cosineSimilarityLog(SortedTandemMassPeakList peakList, double mzppm, double mzabs) {
@@ -127,7 +127,7 @@ public class SortedTandemMassPeakList extends DefaultPeakList {
 			bsquare += intensity2 * intensity2;
 		}
 		if(asquare == 0.0 || bsquare == 0.0) return 0.0;
-		return MathTools.round(numerator / Math.sqrt(asquare * bsquare), 4.0);
+		return MathTools.round(numerator / Math.sqrt(asquare * bsquare));
 	}
 	
 	public int getNumberPeaksUsed() {
