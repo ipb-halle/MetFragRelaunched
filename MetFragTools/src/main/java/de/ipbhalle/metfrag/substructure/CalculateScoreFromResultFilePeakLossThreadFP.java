@@ -6,6 +6,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import de.ipbhalle.metfraglib.FastBitArray;
+import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
 import de.ipbhalle.metfraglib.database.LocalCSVDatabase;
 import de.ipbhalle.metfraglib.database.LocalPSVDatabase;
 import de.ipbhalle.metfraglib.exceptions.MultipleHeadersFoundInInputDatabaseException;
@@ -13,8 +14,11 @@ import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.interfaces.IDatabase;
 import de.ipbhalle.metfraglib.interfaces.IPeakListReader;
 import de.ipbhalle.metfraglib.list.CandidateList;
+import de.ipbhalle.metfraglib.match.MassFingerprintMatch;
 import de.ipbhalle.metfraglib.parameter.SettingsChecker;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
+import de.ipbhalle.metfraglib.score.AutomatedLossFingerprintAnnotationScore;
+import de.ipbhalle.metfraglib.score.AutomatedPeakFingerprintAnnotationScore;
 import de.ipbhalle.metfraglib.scoreinitialisation.AutomatedLossFingerprintAnnotationScoreInitialiser;
 import de.ipbhalle.metfraglib.scoreinitialisation.AutomatedPeakFingerprintAnnotationScoreInitialiser;
 import de.ipbhalle.metfraglib.settings.MetFragGlobalSettings;
@@ -189,36 +193,18 @@ public class CalculateScoreFromResultFilePeakLossThreadFP {
 		return settings;
 	}
 	
-	public static Match getMatchByMass(ArrayList<?> matches, Double peakMass) {
+	public static MassFingerprintMatch getMatchByMass(ArrayList<?> matches, Double peakMass) {
 		return getMatchByMass(matches, peakMass, false);
 	}
 
-	public static Match getMatchByMass(ArrayList<?> matches, Double peakMass, boolean debug) {
+	public static MassFingerprintMatch getMatchByMass(ArrayList<?> matches, Double peakMass, boolean debug) {
 		for(int i = 0; i < matches.size(); i++) {
-			Match match = (Match)matches.get(i);
+			MassFingerprintMatch match = (MassFingerprintMatch)matches.get(i);
 			if(debug) System.out.println(match.getMass());
 			if(match.getMass().equals(peakMass)) 
 				return match;
 		}
 		return null;
-	}
-	
-	class Match {
-		private String fp;
-		private Double mass;
-		
-		Match(String fp, Double mass) {
-			this.fp = fp;
-			this.mass = mass;
-		}
-		
-		public Double getMass() {
-			return this.mass;
-		}
-		
-		public String getFingerprint() {
-			return this.fp;
-		}
 	}
 	
 	class ProcessThread extends Thread {
@@ -283,9 +269,13 @@ public class CalculateScoreFromResultFilePeakLossThreadFP {
 			postProcessScoreParametersPeak(this.settings, candidates);
 			postProcessScoreParametersLoss(this.settings, candidates);
 			
-			for(int i = 0; i < candidates.getNumberElements(); i++) { 
-				singlePostCalculatePeak(this.settings, candidates.getElement(i));
-				singlePostCalculateLoss(this.settings, candidates.getElement(i));
+			
+			for(int i = 0; i < candidates.getNumberElements(); i++) {
+				this.settings.set(VariableNames.CANDIDATE_NAME, candidates.getElement(i));
+				AutomatedPeakFingerprintAnnotationScore peakScore = new AutomatedPeakFingerprintAnnotationScore(this.settings);
+				AutomatedLossFingerprintAnnotationScore lossScore = new AutomatedLossFingerprintAnnotationScore(this.settings);
+				peakScore.singlePostCalculate();
+				lossScore.singlePostCalculate();
 				candidates.getElement(i).removeProperty("PeakMatchList");
 				candidates.getElement(i).removeProperty("LossMatchList");
 			}
@@ -319,7 +309,7 @@ public class CalculateScoreFromResultFilePeakLossThreadFP {
 				try {
 					fps = (String)currentCandidate.getProperty("FragmentFingerprintOfExplPeaks" + this.fingerprintType);
 					if(fps.equals("NA")) {
-						currentCandidate.setProperty("PeakMatchList", new ArrayList<Match>());
+						currentCandidate.setProperty("PeakMatchList", new ArrayList<MassFingerprintMatch>());
 						continue;
 					}
 				} catch(Exception e) {
@@ -327,16 +317,16 @@ public class CalculateScoreFromResultFilePeakLossThreadFP {
 					
 				}
 				String[] tmp = fps.split(";");
-				ArrayList<Match> matchlist = new ArrayList<Match>();
+				ArrayList<MassFingerprintMatch> matchlist = new ArrayList<MassFingerprintMatch>();
 				for(int i = 0; i < tmp.length; i++) {
 					String[] tmp1 = tmp[i].split(":");
-					Match match = new CalculateScoreFromResultFilePeakLossThreadFP().new Match(tmp1[1], Double.parseDouble(tmp1[0]));
+					MassFingerprintMatch match = new MassFingerprintMatch(Double.parseDouble(tmp1[0]), MoleculeFunctions.stringToFastBitArray(tmp1[1]));
 					matchlist.add(match);
 				}
 				
 				currentCandidate.setProperty("PeakMatchList", matchlist);
 				for(int j = 0; j < matchlist.size(); j++) {
-					Match match = matchlist.get(j);
+					MassFingerprintMatch match = matchlist.get(j);
 					MassToFingerprintGroupList peakToFingerprintGroupList = peakToFingerprintGroupListCollection.getElementByPeak(match.getMass());
 					if(peakToFingerprintGroupList == null) continue;
 					FastBitArray currentFingerprint = new FastBitArray(match.getFingerprint());
@@ -414,19 +404,18 @@ public class CalculateScoreFromResultFilePeakLossThreadFP {
 				ICandidate currentCandidate = candidates.getElement(k);
 				String fps = (String)currentCandidate.getProperty("LossFingerprintOfExplPeaks" + this.fingerprintType);
 				if(fps.equals("NA")) {
-					currentCandidate.setProperty("LossMatchList", new ArrayList<Match>());
+					currentCandidate.setProperty("LossMatchList", new ArrayList<MassFingerprintMatch>());
 					continue;
 				}
 				String[] tmp = fps.split(";");
-				ArrayList<Match> matchlist = new ArrayList<Match>();
+				ArrayList<MassFingerprintMatch> matchlist = new ArrayList<MassFingerprintMatch>();
 				try {
 					for(int i = 0; i < tmp.length; i++) {
 						String[] tmp1 = tmp[i].split(":");
 						double mass = Double.parseDouble(tmp1[0]);
 						MassToFingerprintGroupList matchingLossToFingerprintGroupList = lossToFingerprintGroupListCollection.getElementByPeak(mass, mzppm, mzabs);
-					//	MassToFingerprintGroupList matchingLossToFingerprintGroupList = lossToFingerprintGroupListCollection.getElementByPeak(mass);
 						if(matchingLossToFingerprintGroupList != null) mass = matchingLossToFingerprintGroupList.getPeakmz();
-						Match match = new CalculateScoreFromResultFilePeakLossThreadFP().new Match(tmp1[1], mass);
+						MassFingerprintMatch match = new MassFingerprintMatch(matchingLossToFingerprintGroupList.getPeakmz(), MoleculeFunctions.stringToFastBitArray(tmp1[1]));
 						matchlist.add(match);
 					}
 				} catch(Exception e) {
@@ -437,13 +426,14 @@ public class CalculateScoreFromResultFilePeakLossThreadFP {
 				
 				currentCandidate.setProperty("LossMatchList", matchlist);
 				for(int j = 0; j < matchlist.size(); j++) {
-					Match match = matchlist.get(j);
-					MassToFingerprintGroupList peakToFingerprintGroupList = lossToFingerprintGroupListCollection.getElementByPeak(match.getMass());
-					if(peakToFingerprintGroupList == null) continue;
+					MassFingerprintMatch match = matchlist.get(j);
+					MassToFingerprintGroupList lossToFingerprintGroupList = lossToFingerprintGroupListCollection.getElementByPeak(match.getMass());
+					if(lossToFingerprintGroupList == null) continue;
+					match.setMass(lossToFingerprintGroupList.getPeakmz());
 					FastBitArray currentFingerprint = new FastBitArray(match.getFingerprint());
 					//	if(match.getMatchedPeak().getMass() < 60) System.out.println(match.getMatchedPeak().getMass() + " " + currentFingerprint + " " + fragSmiles);
 					// check whether fingerprint was observed for current peak mass in the training data
-					if (!peakToFingerprintGroupList.containsFingerprint(currentFingerprint)) {
+					if (!lossToFingerprintGroupList.containsFingerprint(currentFingerprint)) {
 						// if not add the fingerprint to background by addFingerprint function
 						// addFingerprint checks also whether fingerprint was already added
 						lossMassToFingerprints.addFingerprint(match.getMass(), currentFingerprint);
@@ -529,7 +519,7 @@ public class CalculateScoreFromResultFilePeakLossThreadFP {
 				// get f_m_observed
 				MassToFingerprintGroupList peakToFingerprintGroupList = peakToFingerprintGroupListCollection.getElement(i);
 				Double currentMass = peakToFingerprintGroupList.getPeakmz();
-				Match currentMatch = getMatchByMass(matchlist, currentMass);
+				MassFingerprintMatch currentMatch = getMatchByMass(matchlist, currentMass);
 				//(fingerprintToMasses.getSize(currentFingerprint));
 				if(currentMatch == null) {
 					matchProb.add(peakToFingerprintGroupList.getBetaProb());
@@ -582,7 +572,7 @@ public class CalculateScoreFromResultFilePeakLossThreadFP {
 				Double currentMass = lossToFingerprintGroupList.getPeakmz();
 				boolean debug = false;
 			//	if(i == 8) debug = true;
-				Match currentMatch = getMatchByMass(matchlist, currentMass, debug);
+				MassFingerprintMatch currentMatch = getMatchByMass(matchlist, currentMass, debug);
 				if(currentMatch == null) {
 					matchProb.add(lossToFingerprintGroupList.getBetaProb());
 					matchType.add(3);

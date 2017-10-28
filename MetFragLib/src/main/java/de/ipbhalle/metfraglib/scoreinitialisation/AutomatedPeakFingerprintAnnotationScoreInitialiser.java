@@ -3,14 +3,12 @@ package de.ipbhalle.metfraglib.scoreinitialisation;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.lang.reflect.InvocationTargetException;
 
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.exception.InvalidSmilesException;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import de.ipbhalle.metfraglib.FastBitArray;
-import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
 import de.ipbhalle.metfraglib.fingerprint.Fingerprint;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.interfaces.IFragment;
@@ -18,6 +16,7 @@ import de.ipbhalle.metfraglib.interfaces.IMatch;
 import de.ipbhalle.metfraglib.interfaces.IScoreInitialiser;
 import de.ipbhalle.metfraglib.list.DefaultPeakList;
 import de.ipbhalle.metfraglib.list.MatchList;
+import de.ipbhalle.metfraglib.match.MassFingerprintMatch;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.process.CombinedSingleCandidateMetFragProcess;
 import de.ipbhalle.metfraglib.settings.Settings;
@@ -36,7 +35,7 @@ import de.ipbhalle.metfraglib.substructure.MassToFingerprintGroupListCollection;
  * @author cruttkie
  *
  */
-public class AutomatedPeakFingerprintAnnotationScoreInitialiser  implements IScoreInitialiser {
+public class AutomatedPeakFingerprintAnnotationScoreInitialiser implements IScoreInitialiser {
 
 	@Override
 	public void initScoreParameters(Settings settings) throws Exception {
@@ -106,34 +105,39 @@ public class AutomatedPeakFingerprintAnnotationScoreInitialiser  implements ISco
 			 * check whether the single run was successful
 			 */
 			if(scmfp.wasSuccessful()) {
-				ICandidate[] candidates = scmfp.getScoredPrecursorCandidates();
-				for(int i = 0; i < candidates.length; i++) {
-					MatchList matchlist = candidates[i].getMatchList();
-					for(int j = 0; j < matchlist.getNumberElements(); j++) {
-						IMatch match = matchlist.getElement(j);
-						MassToFingerprintGroupList peakToFingerprintGroupList = peakToFingerprintGroupListCollection.getElementByPeak(match.getMatchedPeak().getMass());
-						if(peakToFingerprintGroupList == null) continue;
-						IFragment frag = match.getBestMatchedFragment();
-						FastBitArray currentFingerprint = null;
-						try {
-							IAtomContainer con = fingerprint.getNormalizedAtomContainer(candidates[i].getPrecursorMolecule(), frag);
-							currentFingerprint = fingerprint.getNormalizedFastBitArrayFingerprint(con);
-						} catch (InvalidSmilesException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (CDKException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						//	if(match.getMatchedPeak().getMass() < 60) System.out.println(match.getMatchedPeak().getMass() + " " + currentFingerprint + " " + fragSmiles);
-						// check whether fingerprint was observed for current peak mass in the training data
-						if (!peakToFingerprintGroupList.containsFingerprint(currentFingerprint)) {
-							// if not add the fingerprint to background by addFingerprint function
-							// addFingerprint checks also whether fingerprint was already added
-							peakMassToFingerprints.addFingerprint(match.getMatchedPeak().getMass(), currentFingerprint);
-						}
+				ICandidate candidate = scmfp.getScoredPrecursorCandidates()[0];
+				MatchList matchlist = candidate.getMatchList();
+				java.util.ArrayList<MassFingerprintMatch> peakMatchlist = new java.util.ArrayList<MassFingerprintMatch>();
+				if(matchlist == null || matchlist.getNumberElements() == 0) {
+					candidate.setProperty("PeakMatchList", peakMatchlist);
+					continue;
+				}
+				for(int j = 0; j < matchlist.getNumberElements(); j++) {
+					IMatch match = matchlist.getElement(j);
+					MassToFingerprintGroupList peakToFingerprintGroupList = peakToFingerprintGroupListCollection.getElementByPeak(match.getMatchedPeak().getMass());
+					if(peakToFingerprintGroupList == null) continue;
+					IFragment frag = match.getBestMatchedFragment();
+					FastBitArray currentFingerprint = null;
+					try {
+						IAtomContainer con = fingerprint.getNormalizedAtomContainer(candidate.getPrecursorMolecule(), frag);
+						currentFingerprint = fingerprint.getNormalizedFastBitArrayFingerprint(con);
+					} catch (InvalidSmilesException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (CDKException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					peakMatchlist.add(new MassFingerprintMatch(match.getMatchedPeak().getMass(), currentFingerprint));
+					//	if(match.getMatchedPeak().getMass() < 60) System.out.println(match.getMatchedPeak().getMass() + " " + currentFingerprint + " " + fragSmiles);
+					// check whether fingerprint was observed for current peak mass in the training data
+					if (!peakToFingerprintGroupList.containsFingerprint(currentFingerprint)) {
+						// if not add the fingerprint to background by addFingerprint function
+						// addFingerprint checks also whether fingerprint was already added
+						peakMassToFingerprints.addFingerprint(match.getMatchedPeak().getMass(), currentFingerprint);
 					}
 				}
+				candidate.setProperty("PeakMatchList", peakMatchlist);
 			}
 		}
 
@@ -141,7 +145,7 @@ public class AutomatedPeakFingerprintAnnotationScoreInitialiser  implements ISco
 		double beta = (double)settings.get(VariableNames.PEAK_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME);						// beta
 		
 		double f_seen = (double)settings.get(VariableNames.PEAK_FINGERPRINT_TUPLE_COUNT_NAME);								// f_s
-		double f_unseen = peakMassToFingerprints.getOverallSize();																// f_u
+		double f_unseen = peakMassToFingerprints.getOverallSize();															// f_u
 		double sumFingerprintFrequencies = (double)settings.get(VariableNames.PEAK_FINGERPRINT_DENOMINATOR_COUNT_NAME);		// \sum_N \sum_Ln 1
 		
 		// set value for denominator of P(f,m)

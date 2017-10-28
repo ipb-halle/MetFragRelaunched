@@ -55,8 +55,7 @@ public class WriteFingerprintPeakAnnotationFile {
 		}
 		
 		String filename = readParameters.get("filename");
-		Double mzppm = Double.parseDouble(readParameters.get("mzppm"));
-		Double mzabs = Double.parseDouble(readParameters.get("mzabs"));
+
 		Integer probabilityType = Integer.parseInt(readParameters.get("probtype"));
 		String output = null;
 		Integer occurThresh = null;
