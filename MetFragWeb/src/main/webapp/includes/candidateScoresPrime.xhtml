@@ -185,7 +185,7 @@
 					</h:panelGrid>
 
 					<h:outputLabel id="experimentalRetentionTimeLabelLabel"
-						value="Experimental RT: " />
+						value="Experimental RT (min): " />
 					<h:panelGrid columns="3" width="100%">
 						<p:inputText id="experimentalRetentionTime" required="false"
 							value="#{metFragWebBean.experimentalRetentionTimeValue}" size="4">
@@ -195,7 +195,7 @@
 							id="experimentalRetentionTimeLabelTooltip"
 							for="experimentalRetentionTimeLabelLabel">
 							<h:outputText
-								value="Define the retention time of the precursor measured in the experiment." />
+								value="Provide the retention time (in minutes) of the precursor measured in the experiment." />
 						</p:tooltip>
 						<h:panelGroup id="experimentalRetentionTimeValueError"
 							layout="block" styleClass="ui-messages ui-widget"
