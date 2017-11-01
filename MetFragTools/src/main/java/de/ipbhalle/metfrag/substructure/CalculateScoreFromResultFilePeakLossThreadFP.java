@@ -414,7 +414,7 @@ public class CalculateScoreFromResultFilePeakLossThreadFP {
 						String[] tmp1 = tmp[i].split(":");
 						double mass = Double.parseDouble(tmp1[0]);
 						MassToFingerprintGroupList matchingLossToFingerprintGroupList = lossToFingerprintGroupListCollection.getElementByPeak(mass, mzppm, mzabs);
-						if(matchingLossToFingerprintGroupList != null) mass = matchingLossToFingerprintGroupList.getPeakmz();
+						if(matchingLossToFingerprintGroupList == null) continue;
 						MassFingerprintMatch match = new MassFingerprintMatch(matchingLossToFingerprintGroupList.getPeakmz(), MoleculeFunctions.stringToFastBitArray(tmp1[1]));
 						matchlist.add(match);
 					}
