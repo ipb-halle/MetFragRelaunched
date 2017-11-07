@@ -63,11 +63,11 @@ public class AutomatedPeakFingerprintAnnotationScore extends AbstractScore {
 			} else {
 				FastBitArray currentFingerprint = new FastBitArray(currentMatch.getFingerprint());
 				// ToDo: at this stage try to check all fragments not only the best one
-				matches++;
 				// (p(m,f) + alpha) / sum_F(p(m,f)) + |F| * alpha
 				double matching_prob = peakToFingerprintGroupList.getMatchingProbability(currentFingerprint);
 				// |F|
 				if(matching_prob != 0.0) {
+					matches++;
 					this.value += Math.log(matching_prob);
 					matchProb.add(matching_prob);
 					matchType.add(1);

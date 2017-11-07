@@ -144,7 +144,7 @@ public class LocalCSVDatabase extends AbstractDatabase {
 		this.candidates = new java.util.HashMap<String, ICandidate>();
 		java.io.File f = new java.io.File((String) this.settings.get(VariableNames.LOCAL_DATABASE_PATH_NAME));
 		java.util.List<String> propertyNames = new java.util.ArrayList<String>();
-		
+		System.out.println(f.getAbsolutePath());
 		BufferedReader reader = null;
 		if (f.isFile()) {
 			reader = new BufferedReader(new FileReader(f));

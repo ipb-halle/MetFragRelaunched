@@ -26,5 +26,11 @@ public class MassFingerprintMatch {
 	public void setFingerprint(FastBitArray fingerprint) {
 		this.fingerprint = fingerprint;
 	} 
-	
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append(this.mass);
+		builder.append(":");
+		builder.append(this.fingerprint.toString());
+		return builder.toString();
+	}
 }

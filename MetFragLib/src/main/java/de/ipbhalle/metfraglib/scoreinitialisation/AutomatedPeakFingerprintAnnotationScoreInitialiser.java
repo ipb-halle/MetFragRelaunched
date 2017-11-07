@@ -112,6 +112,7 @@ public class AutomatedPeakFingerprintAnnotationScoreInitialiser implements IScor
 					candidate.setProperty("PeakMatchList", peakMatchlist);
 					continue;
 				}
+				candidate.initialisePrecursorCandidate();
 				for(int j = 0; j < matchlist.getNumberElements(); j++) {
 					IMatch match = matchlist.getElement(j);
 					MassToFingerprintGroupList peakToFingerprintGroupList = peakToFingerprintGroupListCollection.getElementByPeak(match.getMatchedPeak().getMass());
@@ -175,12 +176,10 @@ public class AutomatedPeakFingerprintAnnotationScoreInitialiser implements IScor
 			sum_f += sumFsProbabilities;
 			sum_f += sumFuProbabilities;
 			sum_f += betaProbability;
-		
 			for(int ii = 0; ii < groupList.getNumberElements(); ii++) {
 				// second calculate P(f|m)
 				groupList.getElement(ii).setConditionalProbability_sp(groupList.getElement(ii).getJointProbability() / sum_f);
 			}
-			
 			groupList.setAlphaProb(alphaProbability / sum_f);
 			groupList.setBetaProb(betaProbability / sum_f);
 			groupList.setProbabilityToConditionalProbability_sp();

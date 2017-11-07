@@ -1,0 +1,17 @@
+FragmentPeakMatchRelativeMassDeviation = 6
+PrecursorIonMode = 1
+MetFragCandidateWriter = LossFragmentSmilesPSV
+FragmentPeakMatchAbsoluteMassDeviation = 0.005
+MetFragDatabaseType = LocalPSV
+UseSmiles = True
+MetFragScoreTypes = FragmenterScore,AutomatedPeakFingerprintAnnotationScore
+MetFragScoreWeights = 1.0,1.0
+MinimumAbsolutePeakIntensity = 100
+MetFragPreProcessingCandidateFilter = UnconnectedCompoundFilter,IsotopeFilter
+MetFragPeakListReader = de.ipbhalle.metfraglib.peaklistreader.FilteredStringTandemMassPeakListReader
+MaximumTreeDepth = 2
+SampleName = parameter_file_example_1
+IsPositiveIonMode = True
+IonizedPrecursorMass = 779.2393
+PeakListString = 119.0492_1292;127.0303_69.7;147.0434_10412.6;147.561_59.6;165.0548_266.6;185.061_704.6;203.0683_397.9;213.0561_665.9;231.0668_2971.3;241.0501_177.8;245.0818_189.7;259.0651_180.4;263.0928_423;273.0774_1607.5;291.0867_3870.8;309.0973_2056.7;336.0497_14.4;378.0281_176.5;380.0207_310;409.0986_15.6;417.0881_12.8;437.1231_328.4;455.1341_2529.1;458.1054_33.7;471.1504_311.2;474.0284_75.9;506.0488_136.4;525.0712_74.7;527.0795_53.8;599.174_204.1;617.1857_2635.1;618.9203_14.4;619.6463_17.3;620.8087_10.8;670.0998_402.9;763.2222_82.4;779.2413_371
+# AFYIWKNGSIYXCQ-VMPITWQZSA-N

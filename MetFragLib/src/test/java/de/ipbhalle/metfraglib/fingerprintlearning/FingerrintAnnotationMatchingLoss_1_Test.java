@@ -28,7 +28,7 @@ import de.ipbhalle.metfraglib.settings.Settings;
 import de.ipbhalle.metfraglib.substructure.MassToFingerprintGroupList;
 import de.ipbhalle.metfraglib.substructure.MassToFingerprintGroupListCollection;
 
-public class FingerrintAnnotationMatchingLoss_Test {
+public class FingerrintAnnotationMatchingLoss_1_Test {
 
 	protected Settings settings;
 	protected AutomatedLossFingerprintAnnotationScoreInitialiser initLoss;

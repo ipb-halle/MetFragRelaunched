@@ -42,7 +42,7 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 			Double adductMass = Constants.getIonisationMassByNominalMassDifference((Integer)settings.get(VariableNames.PRECURSOR_ION_MODE_NAME));
 			
 			java.util.ArrayList<Double> massDifferences = this.calculatePeakDifferences(peakList, neutralPrecursorMass, adductMass, mzppm, mzabs);
-			
+			java.util.LinkedList<Double> lossMassesFound = new java.util.LinkedList<Double>();
 			BufferedReader breader = new BufferedReader(new FileReader(new File(filename)));
 			String line = "";
 			int numObservationsMerged = 0;
@@ -85,7 +85,13 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 			while(it.hasNext()) {
 				lossToFingerprintGroupListCollection.addElementSorted(mergedFingerprintGroupLists.get(it.next()));
 			}
+			for(int i = 0; i < massDifferences.size(); i++) {
+				if(lossToFingerprintGroupListCollection.getElementByPeak(massDifferences.get(i), mzppm, mzabs) != null)
+					lossMassesFound.add(massDifferences.get(i));
+			}
+
 			breader.close();
+			settings.set(VariableNames.LOSS_MASSES_FOUND_NAME, lossMassesFound);
 			settings.set(VariableNames.LOSS_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME, lossToFingerprintGroupListCollection);
 		}
 	}
@@ -125,22 +131,21 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 					IFragment fragmentI = matchI.getBestMatchedFragment();
 					double peakMassI = matchI.getMatchedPeak().getMass();
 					for(int j = i + 1; j < matchlist.getNumberElements(); j++) {
-						IMatch matchJ = matchlist.getElement(i);
+						IMatch matchJ = matchlist.getElement(j);
 						double peakMassJ = matchJ.getMatchedPeak().getMass();
 						IFragment fragmentJ = matchJ.getBestMatchedFragment();
 						if(fragmentJ.isRealSubStructure(fragmentI)) {
 							double diff = MathTools.round(peakMassJ - peakMassI);
 							IFragment diffFragment = fragmentJ.getDifferenceFragment(candidate.getPrecursorMolecule(), fragmentI);
 							if(diffFragment == null) continue;
-							IAtomContainer con = fingerprint.getNormalizedAtomContainer(candidate.getPrecursorMolecule(), diffFragment);							
+							IAtomContainer con = fingerprint.getNormalizedAtomContainer(candidate.getPrecursorMolecule(), diffFragment);	
 							lossMatchlist.add(new MassFingerprintMatch(diff, fingerprint.getNormalizedFastBitArrayFingerprint(con)));
 						}
 					}
 					//do the same for the precursor ion
-					double diff = MathTools.round(ionmass - peakMassI);
+					double diff = MathTools.round(ionmass - peakMassI);	
 					IFragment diffFragment = fragmentI.getDifferenceFragment(candidate.getPrecursorMolecule());
 					if(diffFragment == null) continue;
-
 					IAtomContainer con = fingerprint.getNormalizedAtomContainer(candidate.getPrecursorMolecule(), diffFragment);
 					lossMatchlist.add(new MassFingerprintMatch(diff, fingerprint.getNormalizedFastBitArrayFingerprint(con)));
 				}
@@ -149,7 +154,7 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 					MassFingerprintMatch lossMatch = lossMatchlist.get(j);
 					MassToFingerprintGroupList lossToFingerprintGroupList = lossToFingerprintGroupListCollection.getElementByPeak(lossMatch.getMass(), mzppm, mzabs);
 					if(lossToFingerprintGroupList == null) continue;
-					lossMatch.setMass(lossToFingerprintGroupList.getPeakmz());
+					//lossMatch.setMass(lossToFingerprintGroupList.getPeakmz());
 					FastBitArray currentFingerprint = lossMatch.getFingerprint();
 					// check whether fingerprint was observed for current peak mass in the training data
 					if (!lossToFingerprintGroupList.containsFingerprint(currentFingerprint)) {
@@ -207,7 +212,6 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 			groupList.setBetaProb(betaProbability / sum_f);
 			groupList.setProbabilityToConditionalProbability_sp();
 			groupList.calculateSumProbabilites();
-
 		}
 
 		return;
@@ -261,8 +265,7 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 	private java.util.ArrayList<Double> calculatePeakDifferences(DefaultPeakList peakList, double neutralPrecursorMass, double adductMass, double mzppm, double mzabs) {
 		java.util.ArrayList<Double> peakDifferences = new java.util.ArrayList<Double>();
 		
-		double ionmass = neutralPrecursorMass + adductMass;
-		
+		double ionmass = MathTools.round(neutralPrecursorMass + adductMass);
 		// calculate mass differences between mass peaks
 		for(int i = 0; i < peakList.getNumberElements(); i++) {
 			Double currentMass1 = ((TandemMassPeak)peakList.getElement(i)).getMass();
@@ -270,10 +273,10 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 			for(int j = i + 1; j < peakList.getNumberElements(); j++) {
 				Double currentMass2 = ((TandemMassPeak)peakList.getElement(j)).getMass();
 				if(currentMass2 <= currentMass1) continue;
-				double massDifference = currentMass2 - currentMass1;
+				double massDifference = MathTools.round(currentMass2 - currentMass1);
 				peakDifferences.add(massDifference);
 			}
-			peakDifferences.add(ionmass - currentMass1);
+			peakDifferences.add(MathTools.round(ionmass - currentMass1));
 		}
 
 		java.util.ArrayList<Double> peakDifferencesSorted = new java.util.ArrayList<Double>();
@@ -284,9 +287,10 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 				if(peakDifferencesSorted.get(index) > currentPeakDiff) break;
 				else index++;
 			}
-			peakDifferencesSorted.add(index, currentPeakDiff);
+			peakDifferencesSorted.add(index, MathTools.round(currentPeakDiff));
 		}
 		
+		/*
 		java.util.ArrayList<Double> peakDifferencesCombined = new java.util.ArrayList<Double>();
 		int index = 0;
 		while(index < peakDifferencesSorted.size()) {
@@ -300,10 +304,9 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 				massesAdded++;
 				index++;
 			}
-			peakDifferencesCombined.add(massSum / (double)massesAdded);
-		}
-		
-		return peakDifferencesCombined;
+			peakDifferencesCombined.add(MathTools.round(massSum / (double)massesAdded));
+		}*/
+		return peakDifferencesSorted;
 	}
 	
 }
