@@ -201,6 +201,7 @@ public class CombinedMetFragProcess implements Runnable {
 					scmfp.singlePostCalculateScores();
 					scmfp.assignScores();
 				} catch (Exception e) {
+					e.printStackTrace();
 					this.logger.error("Error when processing candidate ID " + scmfp.getScoredPrecursorCandidate().getIdentifier());
 					scmfp.getFragmenterAssignerScorer().nullifyScoresCollection();
 					return;
