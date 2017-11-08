@@ -18,6 +18,7 @@ import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.process.CombinedMetFragProcess;
 import de.ipbhalle.metfraglib.scoreinitialisation.AutomatedLossFingerprintAnnotationScoreInitialiser;
 import de.ipbhalle.metfraglib.settings.MetFragGlobalSettings;
+import de.ipbhalle.metfraglib.writer.CandidateListWriterCSV;
 
 public class FingerprintAnnotationMatchingLoss_2_Test {
 
@@ -55,9 +56,12 @@ public class FingerprintAnnotationMatchingLoss_2_Test {
 			e1.printStackTrace();
 		}
 		CandidateList scoredCandidateList = this.mp.getCandidateList();
+		CandidateListWriterCSV writer = new CandidateListWriterCSV();
+		writer.write(scoredCandidateList, "/tmp/test.csv");
+		
 		assertEquals("Number candidates not as expected", 2, scoredCandidateList.getNumberElements());
+		
 		Object prop1 = scoredCandidateList.getElement(0).getProperty("AutomatedLossFingerprintAnnotationScore_Probtypes");
-		System.out.println(prop1);
 		Object prop2 = scoredCandidateList.getElement(1).getProperty("AutomatedLossFingerprintAnnotationScore_Probtypes");
 		assertNotNull("LossScore Propery null in candidate " + scoredCandidateList.getElement(0).getIdentifier(), prop1);
 		assertNotNull("LossScore Propery null in candidate " + scoredCandidateList.getElement(1).getIdentifier(), prop2);
