@@ -369,30 +369,23 @@ public class PreCalculateScoreValuesFromResultFilePeakLossThreadFP {
 						double mass = Double.parseDouble(tmp1[0]);
 						MassToFingerprintGroupList matchingLossToFingerprintGroupList = lossToFingerprintGroupListCollection.getElementByPeak(mass, mzppm, mzabs);
 						if(matchingLossToFingerprintGroupList == null) continue;
-						MassFingerprintMatch match = new MassFingerprintMatch(matchingLossToFingerprintGroupList.getPeakmz(), MoleculeFunctions.stringToFastBitArray(tmp1[1]));
+						MassFingerprintMatch match = new MassFingerprintMatch(mass, MoleculeFunctions.stringToFastBitArray(tmp1[1]));
 						matchlist.add(match);
+						FastBitArray currentFingerprint = new FastBitArray(match.getFingerprint());
+						//	if(match.getMatchedPeak().getMass() < 60) System.out.println(match.getMatchedPeak().getMass() + " " + currentFingerprint + " " + fragSmiles);
+						// check whether fingerprint was observed for current peak mass in the training data
+						if (!matchingLossToFingerprintGroupList.containsFingerprint(currentFingerprint)) {
+							// if not add the fingerprint to background by addFingerprint function
+							// addFingerprint checks also whether fingerprint was already added
+							lossMassToFingerprints.addFingerprint(match.getMass(), currentFingerprint);
+						}
 					}
 				} catch(Exception e) {
 					System.err.println("error LossFingerprintOfExplPeaks" + this.fingerprintType + " " + settings.get(VariableNames.LOCAL_DATABASE_PATH_NAME) + " " + currentCandidate.getIdentifier());
 					e.printStackTrace();
 					return;
 				}
-				
 				currentCandidate.setProperty("LossMatchList", matchlist);
-				for(int j = 0; j < matchlist.size(); j++) {
-					MassFingerprintMatch match = matchlist.get(j);
-					MassToFingerprintGroupList lossToFingerprintGroupList = lossToFingerprintGroupListCollection.getElementByPeak(match.getMass());
-					if(lossToFingerprintGroupList == null) continue;
-					match.setMass(lossToFingerprintGroupList.getPeakmz());
-					FastBitArray currentFingerprint = new FastBitArray(match.getFingerprint());
-					//	if(match.getMatchedPeak().getMass() < 60) System.out.println(match.getMatchedPeak().getMass() + " " + currentFingerprint + " " + fragSmiles);
-					// check whether fingerprint was observed for current peak mass in the training data
-					if (!lossToFingerprintGroupList.containsFingerprint(currentFingerprint)) {
-						// if not add the fingerprint to background by addFingerprint function
-						// addFingerprint checks also whether fingerprint was already added
-						lossMassToFingerprints.addFingerprint(match.getMass(), currentFingerprint);
-					}
-				}
 			}
 
 			double f_seen = (double)settings.get(VariableNames.LOSS_FINGERPRINT_TUPLE_COUNT_NAME);								// f_s
@@ -525,19 +518,17 @@ public class PreCalculateScoreValuesFromResultFilePeakLossThreadFP {
 					matchProbTypes.append(":");
 					matchProbTypes.append(matching_prob);
 					matchProbTypes.append(":1");
-				}
-				else {
+				} else {
 					matchProbTypes.append(currentMatch.getMass());
 					matchProbTypes.append(":2");
 				}
-				if(i != (matchlist.size() - 1)) matchProbTypes.append(";");
+				matchProbTypes.append(";");
 			}
-			if(matchProbTypes.length() > 0 && lossMassesFound.size() > 0) matchProbTypes.append(";");
 			for(int i = 0; i < lossMassesFound.size(); i++) {
 				Double currentMass = (Double)lossMassesFound.get(i);
+				if(matchProbTypes.length() != 0 && matchProbTypes.charAt(matchProbTypes.length() - 1) != ';') matchProbTypes.append(";");
 				matchProbTypes.append(currentMass);
 				matchProbTypes.append(":3");
-				if(i != (lossMassesFound.size() - 1)) matchProbTypes.append(";");
 			}
 
 			candidate.removeProperty("LossMatchList");

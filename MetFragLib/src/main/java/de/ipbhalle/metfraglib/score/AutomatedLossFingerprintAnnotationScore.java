@@ -53,7 +53,6 @@ public class AutomatedLossFingerprintAnnotationScore extends AbstractScore {
 		for(int i = 0; i < matchlist.size(); i++) {
 			// get f_m_observed
 			MassFingerprintMatch currentMatch = (MassFingerprintMatch)matchlist.get(i);
-			
 			int foundLossMassIndex = lossMassesFound.indexOf(currentMatch.getMass());
 			if(foundLossMassIndex == -1) continue;
 			lossMassesFound.remove(foundLossMassIndex);
