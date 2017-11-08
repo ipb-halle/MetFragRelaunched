@@ -190,8 +190,10 @@ public class CandidateListWriterLossFragmentSmilesExtendedPSV implements IWriter
 		
 		double adductMass = Constants.getIonisationTypeMassCorrection(Constants.ADDUCT_NOMINAL_MASSES.indexOf(ionmode), ispositive);
 		double precursorMass = (Double)settings.get(VariableNames.PRECURSOR_NEUTRAL_MASS_NAME);
+		if((Boolean)settings.get(VariableNames.CORRECT_MASSES_FOR_FINGERPRINT_ANNOTATION_NAME))
+			precursorMass = precursorMolecule.getNeutralMonoisotopicMass();
 		
-		double ionmass = precursorMass + adductMass ;
+		double ionmass = precursorMass + adductMass;
 		
 		//check all matches
 		for(int i = 0; i < matchList.getNumberElements(); i++) {
@@ -203,7 +205,7 @@ public class CandidateListWriterLossFragmentSmilesExtendedPSV implements IWriter
 				peakMassI = correctedMasses[i];
 			//compare with matches with greater mass than the current one
 			for(int j = i + 1; j < matchList.getNumberElements(); j++) {
-				IMatch matchJ = matchList.getElement(i);
+				IMatch matchJ = matchList.getElement(j);
 			//	double peakMassJ = matchJ.getMatchedPeak().getMass();
 				double peakMassJ = matchJ.getMatchedPeak().getMass();
 				if((Boolean)settings.get(VariableNames.CORRECT_MASSES_FOR_FINGERPRINT_ANNOTATION_NAME))

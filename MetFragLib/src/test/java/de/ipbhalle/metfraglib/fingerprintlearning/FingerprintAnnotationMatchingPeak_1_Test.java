@@ -29,7 +29,7 @@ import de.ipbhalle.metfraglib.settings.Settings;
 import de.ipbhalle.metfraglib.substructure.MassToFingerprintGroupList;
 import de.ipbhalle.metfraglib.substructure.MassToFingerprintGroupListCollection;
 
-public class FingerrintAnnotationMatchingPeak_1_Test {
+public class FingerprintAnnotationMatchingPeak_1_Test {
 
 	protected Settings settings;
 	protected AutomatedPeakFingerprintAnnotationScoreInitialiser initPeak;

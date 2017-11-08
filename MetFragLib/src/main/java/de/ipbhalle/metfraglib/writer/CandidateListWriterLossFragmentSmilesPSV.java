@@ -198,7 +198,9 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 		boolean ispositive = (Boolean)settings.get(VariableNames.IS_POSITIVE_ION_MODE_NAME);
 		
 		double adductMass = Constants.getIonisationTypeMassCorrection(Constants.ADDUCT_NOMINAL_MASSES.indexOf(ionmode), ispositive);
-		double precursorMass = precursorMolecule.getNeutralMonoisotopicMass();
+		double precursorMass = (Double)settings.get(VariableNames.PRECURSOR_NEUTRAL_MASS_NAME);
+		if((Boolean)settings.get(VariableNames.CORRECT_MASSES_FOR_FINGERPRINT_ANNOTATION_NAME))
+			precursorMass = precursorMolecule.getNeutralMonoisotopicMass();
 		
 		double ionmass = MathTools.round(precursorMass + adductMass);
 		
