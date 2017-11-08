@@ -55,6 +55,7 @@ public class FingerprintAnnotationMatchingPeak_2_Test {
 			e1.printStackTrace();
 		}
 		CandidateList scoredCandidateList = this.mp.getCandidateList();
+		
 		assertEquals("Number candidates not as expected", 2, scoredCandidateList.getNumberElements());
 		Object prop1 = scoredCandidateList.getElement(0).getProperty("AutomatedPeakFingerprintAnnotationScore_Probtypes");
 		Object prop2 = scoredCandidateList.getElement(1).getProperty("AutomatedPeakFingerprintAnnotationScore_Probtypes");
