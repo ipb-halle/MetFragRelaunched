@@ -63,23 +63,26 @@ public class FingerrintAnnotationMatchingLoss_2_Test {
 		
 		String[] probTypes1 = ((String)prop1).split(";");
 		String[] probTypes2 = ((String)prop2).split(";");
+
+		for(int i = 0; i < probTypes1.length; i++)
+			System.out.println(probTypes1[i] + " " + probTypes2[i]);
 		
 		assertEquals("Number probability types not as expected", 179, probTypes1.length);
 		assertEquals("Number probability types not as expected", 179, probTypes2.length);
 		
 		Double lossScore1 = (Double)scoredCandidateList.getElement(0).getProperty("AutomatedLossFingerprintAnnotationScore");
 		Double lossScore2 = (Double)scoredCandidateList.getElement(1).getProperty("AutomatedLossFingerprintAnnotationScore");
+
+		System.out.println(lossScore1);
+		System.out.println(lossScore2);
 		
-		System.out.println(scoredCandidateList.getElement(0).getIdentifier());
-		System.out.println(scoredCandidateList.getElement(0).getProperty("AutomatedLossFingerprintAnnotationScore_Probtypes"));
-		
-		assertEquals("LossScore not as expected for candidate " + scoredCandidateList.getElement(0).getIdentifier(), -1022.469096646043, lossScore1, 0.00000001);
-		assertEquals("LossScore not as expected for candidate " + scoredCandidateList.getElement(1).getIdentifier(), -1054.8963913018906, lossScore2, 0.00000001);
+		assertEquals("LossScore not as expected for candidate " + scoredCandidateList.getElement(0).getIdentifier(), -1525.6108348316, lossScore1, 0.00000001);
+		assertEquals("LossScore not as expected for candidate " + scoredCandidateList.getElement(1).getIdentifier(), -1626.01428650929, lossScore2, 0.00000001);
 	
 		int lossMatch1 = (Integer)scoredCandidateList.getElement(0).getProperty("AutomatedLossFingerprintAnnotationScore_Matches");
 		int lossMatch2 = (Integer)scoredCandidateList.getElement(1).getProperty("AutomatedLossFingerprintAnnotationScore_Matches");
 		
-		assertEquals("LossMatchNumber not as expected for candidate " + scoredCandidateList.getElement(0).getIdentifier(), 4, lossMatch1);
+		assertEquals("LossMatchNumber not as expected for candidate " + scoredCandidateList.getElement(0).getIdentifier(), 9, lossMatch1);
 		assertEquals("LossMatchNumber not as expected for candidate " + scoredCandidateList.getElement(1).getIdentifier(), 1, lossMatch2);
 		
 	}

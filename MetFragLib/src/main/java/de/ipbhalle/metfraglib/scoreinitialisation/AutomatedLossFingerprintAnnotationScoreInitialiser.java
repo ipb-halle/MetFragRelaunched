@@ -136,6 +136,8 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 						IFragment fragmentJ = matchJ.getBestMatchedFragment();
 						if(fragmentJ.isRealSubStructure(fragmentI)) {
 							double diff = MathTools.round(peakMassJ - peakMassI);
+							MassToFingerprintGroupList matchingLossToFingerprintGroupList = lossToFingerprintGroupListCollection.getElementByPeak(diff, mzppm, mzabs);
+							if(matchingLossToFingerprintGroupList == null) continue;
 							IFragment diffFragment = fragmentJ.getDifferenceFragment(candidate.getPrecursorMolecule(), fragmentI);
 							if(diffFragment == null) continue;
 							IAtomContainer con = fingerprint.getNormalizedAtomContainer(candidate.getPrecursorMolecule(), diffFragment);	
@@ -144,6 +146,8 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 					}
 					//do the same for the precursor ion
 					double diff = MathTools.round(ionmass - peakMassI);	
+					MassToFingerprintGroupList matchingLossToFingerprintGroupList = lossToFingerprintGroupListCollection.getElementByPeak(diff, mzppm, mzabs);
+					if(matchingLossToFingerprintGroupList == null) continue;
 					IFragment diffFragment = fragmentI.getDifferenceFragment(candidate.getPrecursorMolecule());
 					if(diffFragment == null) continue;
 					IAtomContainer con = fingerprint.getNormalizedAtomContainer(candidate.getPrecursorMolecule(), diffFragment);

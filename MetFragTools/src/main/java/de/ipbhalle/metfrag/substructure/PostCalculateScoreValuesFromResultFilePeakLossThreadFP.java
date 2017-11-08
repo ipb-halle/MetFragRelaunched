@@ -447,37 +447,38 @@ public class PostCalculateScoreValuesFromResultFilePeakLossThreadFP {
 			return string;
 		}
 		
-		protected java.util.HashMap<Double, String> readMassToProbType(String line) {
-			java.util.HashMap<Double, String> massToProbType = new java.util.HashMap<Double, String>();
-			if(line.equals("NA")) return massToProbType;
+		protected void readMassToProbType(String line, java.util.Vector<Double> masses, java.util.Vector<String> probtypes) {
+			if(line.equals("NA")) return;
 			String[] tmp1 = line.split(";");
 			for(int i = 0; i < tmp1.length; i++) {
 				String[] tmp2 = tmp1[i].split(":");
 				String probType = tmp2[1];
 				if(tmp2.length == 3) probType += ":" + tmp2[2];
-				massToProbType.put(Double.parseDouble(tmp2[0]), probType);
+				masses.add(Double.parseDouble(tmp2[0]));
+				probtypes.add(probType);
 			}
-			return massToProbType;
+			return;
 		}
 		
 		public void singlePostCalculatePeak(Settings settings, ICandidate candidate) {
 			double value = 0.0;
 			int matches = 0;
-			java.util.HashMap<Double, String> massToProbType = this.readMassToProbType((String)candidate.getProperty("AutomatedPeakFingerprintAnnotationScore_Probtypes"));
+			java.util.Vector<Double> lossMasses = new java.util.Vector<Double>();
+			java.util.Vector<String> lossProbTypes = new java.util.Vector<String>();
+			this.readMassToProbType((String)candidate.getProperty("AutomatedPeakFingerprintAnnotationScore_Probtypes"), lossMasses, lossProbTypes);
 			ArrayList<Double> matchMasses = new ArrayList<Double>();
 			ArrayList<Double> matchProb = new ArrayList<Double>();
 			ArrayList<Integer> matchType = new ArrayList<Integer>(); // found - 1; alpha - 2; beta - 3
 			// get foreground fingerprint observations (m_f_observed)
-			java.util.Iterator<Double> it = massToProbType.keySet().iterator();
-
+			
 			double alpha = (double)settings.get(VariableNames.PEAK_FINGERPRINT_ANNOTATION_ALPHA_VALUE_NAME);					// alpha
 			java.util.HashMap<?, ?> massToSumF = (java.util.HashMap<?, ?>)settings.get("PeakMassToSumF");
 			java.util.HashMap<?, ?> massToAlphaProb = (java.util.HashMap<?, ?>)settings.get("PeakMassToAlphaProb");
 			java.util.HashMap<?, ?> massToBetaProb = (java.util.HashMap<?, ?>)settings.get("PeakMassToBetaProb");
 			Double denominatorValue = (Double)settings.get("PeakDenominatorValue");
-			while(it.hasNext()) {
-				Double mass = it.next();
-				String probType = massToProbType.get(mass);
+			for(int k = 0; k < lossMasses.size(); k++) {
+				Double mass = lossMasses.get(k);
+				String probType = lossProbTypes.get(k);
 				String[] tmp = probType.split(":");
 				//(fingerprintToMasses.getSize(currentFingerprint));
 				if(tmp.length == 1) {
@@ -488,7 +489,6 @@ public class PostCalculateScoreValuesFromResultFilePeakLossThreadFP {
 					matchType.add(Integer.parseInt(tmp[0]));
 					matchMasses.add(mass);
 					value += Math.log(prob);
-				
 				} else {
 					matches++;
 					// (p(m,f) + alpha) / sum_F(p(m,f)) + |F| * alpha
@@ -512,13 +512,14 @@ public class PostCalculateScoreValuesFromResultFilePeakLossThreadFP {
 		public void singlePostCalculateLoss(Settings settings, ICandidate candidate) {
 			double value = 0.0;
 			int matches = 0;
-			java.util.HashMap<Double, String> massToProbType = this.readMassToProbType((String)candidate.getProperty("AutomatedLossFingerprintAnnotationScore_Probtypes"));
+			java.util.Vector<Double> lossMasses = new java.util.Vector<Double>();
+			java.util.Vector<String> lossProbTypes = new java.util.Vector<String>();
+			this.readMassToProbType((String)candidate.getProperty("AutomatedLossFingerprintAnnotationScore_Probtypes"), lossMasses, lossProbTypes);
 			ArrayList<Double> matchMasses = new ArrayList<Double>();
 			ArrayList<Double> matchProb = new ArrayList<Double>();
 			ArrayList<Integer> matchType = new ArrayList<Integer>(); // found - 1; alpha - 2; beta - 3
 			// get foreground fingerprint observations (m_f_observed)
-			java.util.Iterator<Double> it = massToProbType.keySet().iterator();
-
+			
 			double alpha = (double)settings.get(VariableNames.LOSS_FINGERPRINT_ANNOTATION_ALPHA_VALUE_NAME);					// alpha
 			java.util.HashMap<?, ?> massToSumF = (java.util.HashMap<?, ?>)settings.get("LossMassToSumF");
 			java.util.HashMap<?, ?> massToAlphaProb = (java.util.HashMap<?, ?>)settings.get("LossMassToAlphaProb");
@@ -527,10 +528,10 @@ public class PostCalculateScoreValuesFromResultFilePeakLossThreadFP {
 			Object[] matchingMasses = massToSumF.keySet().toArray();
 			java.util.Arrays.sort(matchingMasses);
 			
-			while(it.hasNext()) {
-				Double curmass = it.next();
+			for(int k = 0; k < lossMasses.size(); k++) {
+				Double curmass = lossMasses.get(k);
+				String probType = lossProbTypes.get(k);
 				Double matchingMass = this.findMatchingLossMass(matchingMasses, curmass);
-				String probType = massToProbType.get(curmass);
 				String[] tmp = probType.split(":");
 				//(fingerprintToMasses.getSize(currentFingerprint));
 				if(tmp.length == 1) {
@@ -539,7 +540,7 @@ public class PostCalculateScoreValuesFromResultFilePeakLossThreadFP {
 					else if(tmp[0].equals("3")) prob = (Double)massToBetaProb.get(matchingMass);
 					matchProb.add(prob);
 					matchType.add(Integer.parseInt(tmp[0]));
-					matchMasses.add(matchingMass);
+					matchMasses.add(curmass);
 					value += Math.log(prob);
 				
 				} else {
@@ -551,7 +552,7 @@ public class PostCalculateScoreValuesFromResultFilePeakLossThreadFP {
 						value += Math.log(matching_prob);
 						matchProb.add(matching_prob);
 						matchType.add(1);
-						matchMasses.add(matchingMass);
+						matchMasses.add(curmass);
 					}
 				}
 			}

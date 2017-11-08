@@ -77,7 +77,7 @@ public class FingerrintAnnotationMatchingPeak_2_Test {
 		System.out.println(peakScore2);
 		
 		assertEquals("PeakScore not as expected for candidate " + scoredCandidateList.getElement(0).getIdentifier(), -141.84683482278223, peakScore1, 0.00000001);
-		assertEquals("PeakScore not as expected for candidate " + scoredCandidateList.getElement(1).getIdentifier(), -159.96693737565414, peakScore2, 0.00000001);
+		assertEquals("PeakScore not as expected for candidate " + scoredCandidateList.getElement(1).getIdentifier(), -159.966937375654, peakScore2, 0.00000001);
 	
 		int peakMatch1 = (Integer)scoredCandidateList.getElement(0).getProperty("AutomatedPeakFingerprintAnnotationScore_Matches");
 		int peakMatch2 = (Integer)scoredCandidateList.getElement(1).getProperty("AutomatedPeakFingerprintAnnotationScore_Matches");

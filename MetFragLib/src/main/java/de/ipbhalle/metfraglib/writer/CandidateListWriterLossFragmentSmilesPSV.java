@@ -30,6 +30,15 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 		return this.writeFile(new File(path + Constants.OS_SPECIFIC_FILE_SEPARATOR + filename + ".psv"), list, null);
 	}
 	
+	public void removeCandidateProperties(ICandidate candidate) {
+		candidate.removeProperty("ExplPeaks");
+		candidate.removeProperty("FormulasOfExplPeaks");
+		candidate.removeProperty("FragmentFingerprintOfExplPeaks");
+		candidate.removeProperty("NumberPeaksUsed");
+		candidate.removeProperty("NoExplPeaks");
+		candidate.removeProperty("LossFingerprintOfExplPeaks");
+	}
+	
 	public boolean writeFile(File file, IList list, Settings settings) throws Exception {
 		CandidateList candidateList = null;
 		int numberOfPeaksUsed = 0;
@@ -43,7 +52,8 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 		if(candidateList == null) return false;
 		
 		StringBuilder heading = new StringBuilder();
-
+		
+		this.removeCandidateProperties(candidateList.getElement(0));
 		java.util.Enumeration<String> keys = candidateList.getElement(0).getProperties().keys();
 		if(keys.hasMoreElements()) {
 			String key = keys.nextElement();
@@ -75,6 +85,7 @@ public class CandidateListWriterLossFragmentSmilesPSV implements IWriter {
 			StringBuilder line = new StringBuilder();
 			int countExplainedPeaks = 0;
 			ICandidate scoredCandidate = candidateList.getElement(i);
+			this.removeCandidateProperties(scoredCandidate);
 			if(settings != null) scoredCandidate.setUseSmiles((Boolean)settings.get(VariableNames.USE_SMILES_NAME));
 			scoredCandidate.initialisePrecursorCandidate();
 			if(scoredCandidate.getMatchList() != null) {
