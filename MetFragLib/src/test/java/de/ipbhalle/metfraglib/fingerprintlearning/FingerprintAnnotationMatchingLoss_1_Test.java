@@ -28,7 +28,7 @@ import de.ipbhalle.metfraglib.settings.Settings;
 import de.ipbhalle.metfraglib.substructure.MassToFingerprintGroupList;
 import de.ipbhalle.metfraglib.substructure.MassToFingerprintGroupListCollection;
 
-public class FingerrintAnnotationMatchingLoss_1_Test {
+public class FingerprintAnnotationMatchingLoss_1_Test {
 
 	protected Settings settings;
 	protected AutomatedLossFingerprintAnnotationScoreInitialiser initLoss;
@@ -81,10 +81,10 @@ public class FingerrintAnnotationMatchingLoss_1_Test {
 		assertEquals("Incorrect fingerprint", mfm.getFingerprint().toString(), "000000000000000000000000000000000000000000000000000011001000000000000001000000000110000011100001000000010000100000000000000000111011000011110010010001011010101000011000000000000000000000000000");
 		AutomatedLossFingerprintAnnotationScore score = new AutomatedLossFingerprintAnnotationScore(this.settings);
 		score.calculate();
-		score.singlePostCalculate();										 
+		score.singlePostCalculate();			
 		assertEquals("Incorrect number score value found", score.getValue(), -0.2934606670014012, 0.000000001);
 		assertEquals("Incorrect number fingerprint matches found", this.candidate.getProperty("AutomatedLossFingerprintAnnotationScore_Matches"), 1);
-		assertEquals("Incorrect number fingerprint prob types found", this.candidate.getProperty("AutomatedLossFingerprintAnnotationScore_Probtypes"), "1:0.7456785520607372:132.042354");
+		assertEquals("Incorrect number fingerprint prob types found", "1:0.7456785520607372:132.0418", this.candidate.getProperty("AutomatedLossFingerprintAnnotationScore_Probtypes"));
 	}
 
 	/*

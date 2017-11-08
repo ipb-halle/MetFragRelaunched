@@ -39,9 +39,10 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 			Double mzabs = (Double)settings.get(VariableNames.ABSOLUTE_MASS_DEVIATION_NAME);
 			
 			Double neutralPrecursorMass = (Double)settings.get(VariableNames.PRECURSOR_NEUTRAL_MASS_NAME);
-			Double adductMass = Constants.getIonisationMassByNominalMassDifference((Integer)settings.get(VariableNames.PRECURSOR_ION_MODE_NAME));
+			Double adductMass = Constants.getIonisationTypeMassCorrection(Constants.ADDUCT_NOMINAL_MASSES.indexOf((Integer)settings.get(VariableNames.PRECURSOR_ION_MODE_NAME)), (Boolean)settings.get(VariableNames.IS_POSITIVE_ION_MODE_NAME));
 			
-			java.util.ArrayList<Double> massDifferences = this.calculatePeakDifferences(peakList, neutralPrecursorMass, adductMass, mzppm, mzabs);
+			java.util.ArrayList<Double> massDifferences = this.calculatePeakDifferences(peakList, neutralPrecursorMass, adductMass);
+			java.util.ArrayList<Double> uniqueMassDifferences = calculateUniquePeakDifferences(massDifferences, mzppm, mzabs);
 			java.util.LinkedList<Double> lossMassesFound = new java.util.LinkedList<Double>();
 			BufferedReader breader = new BufferedReader(new FileReader(new File(filename)));
 			String line = "";
@@ -59,7 +60,7 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 				}
 				String[] tmp = line.split("\\s+");
 				Double loss = Double.parseDouble(tmp[0]);
-				Double matchedMass = this.containsMass(loss, massDifferences, mzabs, mzppm);
+				Double matchedMass = this.containsMass(loss, uniqueMassDifferences, mzabs, mzppm);
 				if(matchedMass != null) {
 					FingerprintGroup[] groups = this.getFingerprintGroup(tmp);
 					if(mergedFingerprintGroupLists.containsKey(matchedMass)) {
@@ -89,7 +90,6 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 				if(lossToFingerprintGroupListCollection.getElementByPeak(massDifferences.get(i), mzppm, mzabs) != null)
 					lossMassesFound.add(massDifferences.get(i));
 			}
-
 			breader.close();
 			settings.set(VariableNames.LOSS_MASSES_FOUND_NAME, lossMassesFound);
 			settings.set(VariableNames.LOSS_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME, lossToFingerprintGroupListCollection);
@@ -108,6 +108,8 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 		boolean ispositive = (Boolean)settings.get(VariableNames.IS_POSITIVE_ION_MODE_NAME);
 		
 		double adductMass = Constants.getIonisationTypeMassCorrection(Constants.ADDUCT_NOMINAL_MASSES.indexOf(ionmode), ispositive);
+		double precursorMass = (Double)settings.get(VariableNames.PRECURSOR_NEUTRAL_MASS_NAME);
+		double ionmass = MathTools.round(precursorMass + adductMass);				
 		
 		Fingerprint fingerprint = new Fingerprint((String)settings.get(VariableNames.FINGERPRINT_TYPE_NAME));
 		
@@ -117,8 +119,6 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 			 */
 			if(scmfp.wasSuccessful()) {
 				ICandidate candidate = scmfp.getScoredPrecursorCandidates()[0];
-				double precursorMass = candidate.getPrecursorMolecule().getNeutralMonoisotopicMass();
-				double ionmass = MathTools.round(precursorMass + adductMass);				
 				java.util.ArrayList<MassFingerprintMatch> lossMatchlist = new java.util.ArrayList<MassFingerprintMatch>();
 				MatchList matchlist = candidate.getMatchList();
 				if(matchlist == null || matchlist.getNumberElements() == 0) {
@@ -266,7 +266,7 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 	 * @param mzabs
 	 * @return
 	 */
-	private java.util.ArrayList<Double> calculatePeakDifferences(DefaultPeakList peakList, double neutralPrecursorMass, double adductMass, double mzppm, double mzabs) {
+	private java.util.ArrayList<Double> calculatePeakDifferences(DefaultPeakList peakList, double neutralPrecursorMass, double adductMass) {
 		java.util.ArrayList<Double> peakDifferences = new java.util.ArrayList<Double>();
 		
 		double ionmass = MathTools.round(neutralPrecursorMass + adductMass);
@@ -280,7 +280,8 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 				double massDifference = MathTools.round(currentMass2 - currentMass1);
 				peakDifferences.add(massDifference);
 			}
-			peakDifferences.add(MathTools.round(ionmass - currentMass1));
+			double diff = MathTools.round(ionmass - currentMass1);
+			peakDifferences.add(diff);
 		}
 
 		java.util.ArrayList<Double> peakDifferencesSorted = new java.util.ArrayList<Double>();
@@ -294,7 +295,10 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 			peakDifferencesSorted.add(index, MathTools.round(currentPeakDiff));
 		}
 		
-		/*
+		return peakDifferencesSorted;
+	}
+	
+	private java.util.ArrayList<Double> calculateUniquePeakDifferences(java.util.ArrayList<Double> peakDifferencesSorted, double mzppm, double mzabs) {
 		java.util.ArrayList<Double> peakDifferencesCombined = new java.util.ArrayList<Double>();
 		int index = 0;
 		while(index < peakDifferencesSorted.size()) {
@@ -309,8 +313,8 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 				index++;
 			}
 			peakDifferencesCombined.add(MathTools.round(massSum / (double)massesAdded));
-		}*/
-		return peakDifferencesSorted;
+		}
+		return peakDifferencesCombined;
 	}
 	
 }

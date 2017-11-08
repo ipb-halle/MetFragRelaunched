@@ -489,7 +489,6 @@ public class PreCalculateScoreValuesFromResultFilePeakLossThreadFP {
 				}
 				if(i != (peakToFingerprintGroupListCollection.getNumberElements() - 1)) matchProbTypes.append(";");
 			}
-
 			candidate.removeProperty("PeakMatchList");
 			candidate.setProperty("AutomatedPeakFingerprintAnnotationScore_Probtypes", matchProbTypes.toString());
 		}
