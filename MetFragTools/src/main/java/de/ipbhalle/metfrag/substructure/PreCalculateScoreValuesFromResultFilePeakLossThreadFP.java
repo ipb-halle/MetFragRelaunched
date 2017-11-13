@@ -567,8 +567,6 @@ public class PreCalculateScoreValuesFromResultFilePeakLossThreadFP {
 			candidate.removeProperty("SmilesOfExplPeaks");
 			candidate.removeProperty("LossFingerprintOfExplPeaksLingoFingerprinter");
 			candidate.removeProperty("FragmentFingerprintOfExplPeaksMACCSFingerprinter");
-			candidate.removeProperty("NoExplPeaks");
-			candidate.removeProperty("NumberPeaksUsed");
 			candidate.removeProperty("LossAromaticSmilesOfExplPeaks");
 			candidate.removeProperty("FragmentFingerprintOfExplPeaksLingoFingerprinter");
 			candidate.removeProperty("MaximumTreeDepth");
