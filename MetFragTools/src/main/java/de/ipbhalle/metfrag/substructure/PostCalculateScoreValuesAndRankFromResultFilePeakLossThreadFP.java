@@ -252,7 +252,7 @@ public class PostCalculateScoreValuesAndRankFromResultFilePeakLossThreadFP {
 				} else if(currentBestValueNeg == thisBestValueNeg) nextWeightIndexesOfInterestNeg.add(weightIndexesOfInterestNeg.get(w));
 			}
 			bestRanksNeg[i - 1] = currentBestValueNeg;
-			bestWeightIndexNeg = nextWeightIndexesOfInterestNeg.get(weightIndexesOfInterestNeg.get(0));
+			bestWeightIndexNeg = nextWeightIndexesOfInterestNeg.get(0);
 			weightIndexesOfInterestNeg = nextWeightIndexesOfInterestNeg;
 		}
 		String bestWeightStringPos = weights[bestWeightIndexPos][0] + "";
