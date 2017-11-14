@@ -21,7 +21,6 @@ public class CheckMatchMasses_Test {
 				MathTools.matchMasses(100.0, 100.1, 0, 0));
 		assertFalse("Masses: 100.0 100.1; mzppm:100  mzabs:0.05 	=> match", 
 				MathTools.matchMasses(100.0, 100.00001, 0, 0));
-		
 	}
 
 }

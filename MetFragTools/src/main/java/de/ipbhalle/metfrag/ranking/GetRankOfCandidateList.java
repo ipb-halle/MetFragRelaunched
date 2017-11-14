@@ -131,7 +131,7 @@ public class GetRankOfCandidateList {
 		}
 		// if correct not found
 		if (this.correctGroup == null && !this.outputtype.equals("list")) {
-			System.out.println("inchikey1=" + this.correctInChIKey1 + " not found in " + this.csv);
+			System.err.println("inchikey1=" + this.correctInChIKey1 + " not found in " + this.csv);
 			return;
 		}
 
@@ -260,6 +260,99 @@ public class GetRankOfCandidateList {
 
 	}
 
+	public int[] run_simple() {
+		this.groupedCandidates = new java.util.Hashtable<String, GroupedCandidate>();
+		this.scorenameToMaximum = new java.util.Hashtable<String, Double>();
+
+		MetFragGlobalSettings settings = new MetFragGlobalSettings();
+		settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, this.csv);
+
+		for (String scoreName : scoringPropertyNames)
+			this.scorenameToMaximum.put(scoreName, 0.0);
+		
+		for (int i = 0; i < this.candidates.getNumberElements(); i++) {
+			String currentInChIKey1 = (String) this.candidates.getElement(i).getProperty(VariableNames.INCHI_KEY_1_NAME);
+			double[] scores = new double[scoringPropertyNames.length];
+			// get score and check for maximum
+			for (int k = 0; k < scores.length; k++) {
+				try {
+					Object score = this.candidates.getElement(i).getProperty(this.scoringPropertyNames[k]);
+					if(score.getClass().getName().equals("java.lang.String"))
+						scores[k] = Double.parseDouble((String) score);
+					else if(score.getClass().getName().equals("java.lang.Double"))
+						scores[k] = (Double) score;
+					else if(score.getClass().getName().equals("java.lang.Integer"))
+						scores[k] = (Integer) score;
+				} catch (Exception e) {
+					System.err.println("error reading candidate " + currentInChIKey1);
+					System.err.println("could not get property " + k + " " + this.scoringPropertyNames[k]);
+					e.printStackTrace();
+				}
+				if (transformScores && scoresToTransform.contains(this.scoringPropertyNames[k])) {
+					if (scores[k] != 0.0)
+						scores[k] = 1.0 / (Math.abs(Math.log(scores[k])));
+				} else if (this.negScores && this.scoresToTransform.contains(this.scoringPropertyNames[k])) {
+					if (scores[k] != 0.0) {
+						scores[k] = 1.0 / (Math.abs(scores[k]));
+						this.candidates.getElement(i).setProperty(scoringPropertyNames[k], scores[k]);
+					}
+				}
+				if (scores[k] > this.scorenameToMaximum.get(this.scoringPropertyNames[k]))
+					this.scorenameToMaximum.put(this.scoringPropertyNames[k], scores[k]);
+			}
+			// group candidates by inchikey
+			ICandidate curCandidate = this.candidates.getElement(i);
+			if (this.groupedCandidates.containsKey(currentInChIKey1)) {
+				// add to existing
+				this.groupedCandidates.get(currentInChIKey1).add(
+						(String) curCandidate.getProperty(VariableNames.IDENTIFIER_NAME), scores, i,
+						(String) curCandidate.getProperty(VariableNames.INCHI_NAME),
+						(String) curCandidate.getProperty(VariableNames.SMILES_NAME));
+			} else {
+				// create new
+				GroupedCandidate gc = new GetRankOfCandidateList().new GroupedCandidate(
+						currentInChIKey1);
+				if (currentInChIKey1.equals(this.correctInChIKey1))
+					this.correctGroup = gc;
+				gc.add((String) curCandidate.getProperty(VariableNames.IDENTIFIER_NAME), scores, i,
+						(String) curCandidate.getProperty(VariableNames.INCHI_NAME),
+						(String) curCandidate.getProperty(VariableNames.SMILES_NAME));
+				this.groupedCandidates.put(currentInChIKey1, gc);
+			}
+		}
+		// if correct not found
+		if (this.correctGroup == null && !this.outputtype.equals("list")) {
+			System.err.println("inchikey1=" + this.correctInChIKey1 + " not found in " + this.csv);
+			return null;
+		}
+
+		// store maximal scores
+		double[] maximumscores = new double[this.scoringPropertyNames.length];
+
+		for (int i = 0; i < this.scoringPropertyNames.length; i++) {
+			maximumscores[i] = this.scorenameToMaximum.get(this.scoringPropertyNames[i]);
+		}
+		
+		int[] ranks = new int[this.weights.length];
+		for (int w = 0; w < this.weights.length; w++) {
+
+			int rank = 0;
+			// get final score of correct candidate
+			double correctFinalScore = this.correctGroup.getBestMaximumScore(this.weights[w], maximumscores);
+			java.util.Enumeration<String> keys = this.groupedCandidates.keys();
+
+			// calculate ranking values
+			while (keys.hasMoreElements()) {
+				GroupedCandidate currentGroup = this.groupedCandidates.get(keys.nextElement());
+				double currentScore = currentGroup.getBestMaximumScore(this.weights[w], maximumscores);
+				if (currentScore >= correctFinalScore)
+					rank++;
+			}
+			ranks[w] = rank;
+		}
+		return ranks;
+	}
+	
 	/**
 	 * 
 	 * @param bc
