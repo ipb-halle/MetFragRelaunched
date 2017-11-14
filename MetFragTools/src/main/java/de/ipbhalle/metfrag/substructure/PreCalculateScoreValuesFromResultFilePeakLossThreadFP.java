@@ -529,6 +529,7 @@ public class PreCalculateScoreValuesFromResultFilePeakLossThreadFP {
 			// get foreground fingerprint observations (m_f_observed)
 			StringBuilder matchProbTypes = new StringBuilder();
 			for (int i = 0; i < matchlist.size(); i++) {
+				// match with mass of the spectrum
 				MassFingerprintMatch currentMatch = (MassFingerprintMatch) matchlist.get(i);
 				int foundLossMassIndex = lossMassesFound.indexOf(currentMatch.getMass());
 				if (foundLossMassIndex == -1)
