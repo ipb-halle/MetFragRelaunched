@@ -10,9 +10,9 @@
 		<managed-bean-scope>session</managed-bean-scope>
 	</managed-bean>
 	<managed-bean>
-		<managed-bean-name>metFragXlogp</managed-bean-name>
-		<managed-bean-class>de.ipbhalle.metfragweb.controller.MetFragXlogp</managed-bean-class>
-		<managed-bean-scope>view</managed-bean-scope>
+		<managed-bean-name>compareSpectraBean</managed-bean-name>
+		<managed-bean-class>de.ipbhalle.metfragweb.controller.CompareSpectraBean</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
 	</managed-bean>
 	<managed-bean>
 		<managed-bean-name>metFragLandingBean</managed-bean-name>
