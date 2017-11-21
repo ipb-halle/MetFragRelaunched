@@ -11,61 +11,26 @@
 		type='text/css' />
 </h:head>
 
-<h:body
-	style="min-height: 100%; height:100%; margin-right: 0; margin-left: 0; margin-bottom:0; padding:0; font-size: 95%;
-	background: #E2E2E2 url('resources/images/body-bg.png') repeat-x scroll 0% 0%;">
+<h:body	style="min-height: 100%; height:100%; margin-right: 0; margin-left: 0; margin-bottom:0; padding:0; font-size: 0.8em;
+	background: #E2E2E2 url('resources/images/body-bg.png') repeat-x scroll 0% 0%; overflow-x: hidden;">
 	<h:panelGroup layout="block" id="container">
-		<div id="header"
-			style="width: 90%; margin-left: auto; margin-right: auto; padding-top: 25px">
-			<ui:insert name="header">
+		<div id="header" style="margin-left: auto; margin-right: auto; padding-top: 25px">
+			<ui:insert name="header" >
 				<ui:include src="includes/header.xhtml" />
 			</ui:insert>
 		</div>
-		<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-			xmlns:h="http://java.sun.com/jsf/html"
-			xmlns:f="http://java.sun.com/jsf/core"
-			xmlns:c="http://java.sun.com/jsp/jstl/core"
-			xmlns:p="http://primefaces.org/ui"
-			xmlns:pe="http://primefaces.org/ui">
-			<div id="comparespectra"
-				style="width: 90%; margin-left: auto; margin-right: auto;">
-
-				<h:form id="spectrumViewForm">
-					<h:panelGrid columns="2">
-						<h:panelGrid columns="1" id="peakListPanel">
-							<h3 style="margin-top: 0">PeakList 1</h3>
-							<p:inputTextarea rows="10" cols="20" autoResize="false"
-								value="#{compareSpectraBean.peakList1}" required="false"
-								style="resize: none" id="peakListInput1">
-								<p:ajax event="blur" update="peakListPanel" />
-							</p:inputTextarea>
-							<h3 style="margin-top: 30px">PeakList 2</h3>
-							<p:inputTextarea rows="10" cols="20" autoResize="false"
-								value="#{compareSpectraBean.peakList2}" required="false"
-								style="resize: none" id="peakListInput2">
-								<p:ajax event="blur" update="peakListPanel" />
-							</p:inputTextarea>
-							<p:commandButton style="height: 25px; font-size: 0.9em"
-								value="Show Spectra"
-								actionListener="#{compareSpectraBean.generateSpectrumModelViewListener}"
-								id="showSpectrumView" onclick="" update="spectrumViewForm">
-							</p:commandButton>
-						</h:panelGrid>
-						<h:panelGrid id="spectraViewPanel" columns="1">
-							<p:chart type="line" model="#{compareSpectraBean.spectrumModel}" style="height:300px;"/>
-							<!-- <p:chart style="height:300px; width:700px;" type="line"
-								model="#{compareSpectraBean.spectrumModel}"
-								widgetVar="spectrumChart">
-							</p:chart> -->
-							 <h:outputText id="spectraViewLabel" value="Spectra View" />
-						</h:panelGrid>
-					</h:panelGrid>
-
-				</h:form>
-			</div>
-
-		</ui:composition>
-
+		
+		<div id="content" style="margin-left: auto; margin-right: auto;">
+			<ui:insert name="content" >
+				<ui:include src="includes/comparespectraInclude.xhtml" />
+			</ui:insert>
+		</div>
+		
+		<div id="footer">
+			<ui:insert name="footer">
+				<ui:include src="includes/footer.xhtml" />
+			</ui:insert>
+		</div>
 	</h:panelGroup>
 </h:body>
 
