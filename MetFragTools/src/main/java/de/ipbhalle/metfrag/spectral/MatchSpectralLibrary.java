@@ -58,6 +58,7 @@ public class MatchSpectralLibrary {
 			e.printStackTrace();
 			System.exit(2);
 		}
+		System.out.println("read " + spectralPeakLists.getSize() + " library spectra");
 		
 		ArrayList<String> data = new ArrayList<String>();
 		
@@ -104,7 +105,7 @@ public class MatchSpectralLibrary {
 					querySpectraNames.add(lastSpectrumName);
 					peakString = "";
 				}
-				lastSpectrumName = line;
+				lastSpectrumName = line.replaceAll("^Name\\s*", "");
 			}
 			else {
 				peakString += line + "\n";

@@ -92,7 +92,8 @@ public class MultipleTandemMassPeakListReader extends AbstractPeakListReader {
 		while((line = breader.readLine()) != null) {
 			line = line.trim();
 			if(line.length() == 0 && peakList != null) {
-				if(peakList.isFullyInitialised()) {
+				//if(peakList.isFullyInitialised()) {
+				if(peakList.isPartlyInitialised()) {
 					peakList.calculateRelativeIntensities(Constants.DEFAULT_MAXIMUM_RELATIVE_INTENSITY);
 					spectralPeakListCollection.addPeakList(peakList);
 				}
@@ -100,7 +101,9 @@ public class MultipleTandemMassPeakListReader extends AbstractPeakListReader {
 			}
 			else if(line.length() == 0) continue;
 			else if(line.startsWith("#")) { //comment
-				if(peakList == null) peakList = new SortedSimilarityTandemMassPeakList(0.0);
+				if(peakList == null) {
+					peakList = new SortedSimilarityTandemMassPeakList(0.0);
+				}
 				line = line.replaceFirst("^#\\s*", "");
 				String[] tmp = line.split("=");
 				String paramname = tmp[0].trim();

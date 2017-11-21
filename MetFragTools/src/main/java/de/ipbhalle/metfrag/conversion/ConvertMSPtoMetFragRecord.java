@@ -11,6 +11,7 @@ import java.util.Hashtable;
 
 import org.openscience.cdk.interfaces.IAtomContainer;
 
+import de.ipbhalle.metfraglib.additionals.MathTools;
 import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
 import de.ipbhalle.metfraglib.exceptions.AtomTypeNotKnownFromInputListException;
 import de.ipbhalle.metfraglib.fingerprint.TanimotoSimilarity;
@@ -19,6 +20,7 @@ import de.ipbhalle.metfraglib.parameter.Constants;
 
 public class ConvertMSPtoMetFragRecord {
 
+	public static boolean EI_mode = false;
 	public static Hashtable<String, String> parameterConversion;
 	public static Hashtable<String, String> adductTypes;
 	public static Hashtable<String, String> chargeTypes;
@@ -36,14 +38,17 @@ public class ConvertMSPtoMetFragRecord {
 		parameterConversion.put("retention time:", "# RetentionTime = ");
 		parameterConversion.put("RETENTIONTIME:", "# RetentionTime = ");
 		parameterConversion.put("exact mass:", "# NeutralPrecursorMass = ");
+		parameterConversion.put("ExactMass:", "# NeutralPrecursorMass = ");
 		parameterConversion.put("ion mode:", "# IsPositiveIonMode = ");
 		parameterConversion.put("IONMODE:", "# IsPositiveIonMode = ");
 		parameterConversion.put("mass error:", "# MassError = ");
 		parameterConversion.put("precursor type:", "# PrecursorIonMode = ");
 		parameterConversion.put("PRECURSORTYPE:", "# PrecursorIonMode = ");
 		parameterConversion.put("Num Peaks:", "# NumPeaks = ");
+		parameterConversion.put("Num peaks:", "# NumPeaks = ");
 		parameterConversion.put("formula:", "# NeutralPrecursorMolecularFormula = ");
 		parameterConversion.put("FORMULA:", "# NeutralPrecursorMolecularFormula = ");
+		parameterConversion.put("Formula:", "# NeutralPrecursorMolecularFormula = ");
 		parameterConversion.put("LINKS:", "# SampleName = ");
 		parameterConversion.put("MASSBANKACCESSION:", "# SampleName = ");
 		
@@ -90,12 +95,13 @@ public class ConvertMSPtoMetFragRecord {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		if(args.length != 2) {
+		if(args.length != 3 && args.length != 2) {
 			System.err.println("MSP input file needed. MetFrag record output file needed.");
 			System.exit(1);
 		}
 		String mspfilename = args[0];
 		String metfragfilename = args[1];
+		if(args.length == 3) EI_mode = Boolean.parseBoolean(args[2]);
 		File mspfile = new File(mspfilename);
 		File metfragfile = new File(metfragfilename);
 		if(!mspfile.exists()) {
@@ -119,6 +125,7 @@ public class ConvertMSPtoMetFragRecord {
 			String lastFormula = "";
 			String lastSampleName = "";
 			String lastMZ = "";
+			String lastMass = "";
 			Entry currentEntry = new ConvertMSPtoMetFragRecord().new Entry();
 			while((line = breader.readLine()) != null) {
 				//get param name and value
@@ -145,13 +152,17 @@ public class ConvertMSPtoMetFragRecord {
 						lastSmiles = value;
 						currentEntry.smiles = lastSmiles;
 					}
-					if(paramname.equals("formula:") || paramname.equals("FORMULA:")) {
+					if(paramname.equals("formula:") || paramname.equals("FORMULA:") || paramname.equals("Formula:")) {
 						lastFormula = value;
 						currentEntry.formula = lastFormula;
 					}
 					if(paramname.equals("precursor m/z:") || paramname.equals("PRECURSORMZ:")) {
 						lastMZ = value;
 						currentEntry.ionizedmass = lastMZ;
+					}
+					if(paramname.equals("ExactMass:") || paramname.equals("Exact Mass:")) {
+						lastMass = value;
+						currentEntry.mass = lastMass;
 					}
 					if(paramname.equals("InChIKey:") || paramname.equals("INCHIKEY:")) {
 						lastInChIKey = value;
@@ -188,7 +199,7 @@ public class ConvertMSPtoMetFragRecord {
 								currentEntry.ionmode = "True";
 							}
 						}
-						else if(paramname.equals("Num Peaks:")) {
+						else if(paramname.equals("Num Peaks:") || paramname.equals("Num peaks:")) {
 							numberPeaks = Integer.parseInt(value);
 							lines.add(parameterConversion.get(paramname) + value);
 							currentEntry.numpeaks = value;
@@ -240,7 +251,7 @@ public class ConvertMSPtoMetFragRecord {
 						lastFormula = "";
 						lastInChIKey = "";
 						if(entryFine) {
-							if(currentEntry.ionmode == null) {
+							if(currentEntry.ionmode == null && currentEntry.adducttype != null) {
 								if(Constants.ADDUCT_CHARGES.get(Constants.ADDUCT_NOMINAL_MASSES.indexOf(Integer.parseInt(currentEntry.adducttype))))
 									currentEntry.ionmode = "True";
 								else
@@ -272,6 +283,7 @@ public class ConvertMSPtoMetFragRecord {
 			e.printStackTrace();
 		}
 		*/
+		System.out.println("parsing finished");
 		try {
 			BufferedWriter bwriter = new BufferedWriter(new FileWriter(metfragfile));
 			for(int i = 0; i < entries.size(); i++) {
@@ -346,12 +358,20 @@ public class ConvertMSPtoMetFragRecord {
 			if(smiles != null) string += "# Smiles = " + smiles + "\n";
 			if(inchikey != null) string += "# InChIKey = " + inchikey + "\n";
 			if(rt != null) string += "# RetentionTime = " + rt + "\n";
-			if(ionmode != null) string += "# IsPositiveIonMode = " + ionmode + "\n";
-			if(adducttype != null) string += "# PrecursorIonMode = " + adducttype + "\n";
+			if(!EI_mode && ionmode != null) string += "# IsPositiveIonMode = " + ionmode + "\n";
+			if(!EI_mode && adducttype != null) string += "# PrecursorIonMode = " + adducttype + "\n";
+			if(EI_mode) {
+				string += "# IsPositiveIonMode = True\n";
+				string += "# PrecursorIonMode = 0\n";
+			}
 			if(mass != null) string += "# NeutralPrecursorMass = " + mass + "\n";
+			if(formula != null) string += "# NeutralPrecursorMolecularFormula = " + formula + "\n";
 			if(masserror != null) string += "# MassError = " + masserror + "\n";
 			if(mslevel != null) string += "# MSLevel = " + mslevel + "\n";
 			if(ionizedmass != null) string += "# IonizedPrecursorMass = " + ionizedmass + "\n";
+			else if(mass != null && EI_mode) {
+				string += "# IonizedPrecursorMass = " + MathTools.round((Double.parseDouble(mass) - Constants.ELECTRON_MASS)) + "\n";
+			}
 			if(numpeaks != null) string += "# NumPeaks = " + numpeaks + "\n";
 			if(fingerprint != null) string += "# MolecularFingerPrint = " + fingerprint + "\n";
 			if(mzs != null && ints != null) {

@@ -58,6 +58,11 @@ public class SortedSimilarityTandemMassPeakList extends SortedTandemMassPeakList
 		this.sampleName = sampleName;
 	}
 
+	public boolean isPartlyInitialised() {
+		return this.inchikey1 != null 
+				&& this.isPositiveCharge != null;
+	}
+	
 	public boolean isFullyInitialised() {
 		return this.inchi != null && this.inchikey1 != null 
 				&& this.isPositiveCharge != null && this.measuredPrecursorMass != null && this.measuredPrecursorMass != 0.0;
