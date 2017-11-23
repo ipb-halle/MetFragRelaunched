@@ -49,4 +49,8 @@ public class DefaultList implements IList {
 	public void nullify() {
 		this.list = null;
 	}
+	
+	public void removeAll(java.util.ArrayList<Object> list) {
+		this.list.removeAll(list);
+	}
 }

@@ -53,6 +53,9 @@ public class VariableNames {
 	public static final String METFRAG_IMAGE_WRITER_NAME					=	"MetFragImageWriter";
 	//minimum intensity filter for FilteredTandemMassPeakListReader
 	public static final String MINIMUM_ABSOLUTE_PEAK_INTENSITY_NAME			=	"MinimumAbsolutePeakIntensity";
+	//use only this number of most abundant peaks
+	public static final String NUMBER_MAXIMUM_PEAKS_USED_NAME				=	"NumberMaximumPeaksUsed";
+	
 	public static final String MOLECULES_IN_MEMORY							=	"MoleculeInMemory";
 	public static final String COMBINED_REFERENCE_SCORE_VALUES				=	"CombinedReferenceScoreValues";
 	

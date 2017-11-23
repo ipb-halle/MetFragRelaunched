@@ -18,6 +18,7 @@ public class HDFilteredTandemMassPeakListReader extends FilteredTandemMassPeakLi
 	}
 
 	public DefaultPeakList read() {
+		int numberMaximumPeaksUsed = (Integer)settings.get(VariableNames.NUMBER_MAXIMUM_PEAKS_USED_NAME);
 		SortedTandemMassPeakList peakList = null;
 		String filename = (String)this.settings.get(VariableNames.HD_PEAK_LIST_PATH_NAME);
 		try {
@@ -50,6 +51,7 @@ public class HDFilteredTandemMassPeakListReader extends FilteredTandemMassPeakLi
 		}
 		for(int i = 0; i < peakList.getNumberElements(); i++)
 			peakList.getElement(i).setID(i);
+		this.deleteByMaximumNumberPeaksUsed(numberMaximumPeaksUsed, peakList);
 		peakList.calculateRelativeIntensities(Constants.DEFAULT_MAXIMUM_RELATIVE_INTENSITY);
 		return peakList;
 	}
