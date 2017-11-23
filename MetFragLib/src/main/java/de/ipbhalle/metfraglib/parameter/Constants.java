@@ -171,6 +171,7 @@ public class Constants {
 	public static final Double 				DEFAULT_FRAGMENT_PEAK_ABSOLUTE_MASS_DEV 					= 	0.01;
 	public static final Boolean 				DEFAULT_CONSIDER_HYDROGEN_MASS_DIFFERENCE 					= 	true;
 	public static final Double 				DEFAULT_MINIMUM_ABSOLUTE_PEAK_INTENSITY 					= 	0.0;
+	public static final Integer				DEFAULT_NUMBER_MAXIMUM_PEAKS_USED_NAME 						= 	-1;
 	public static final Double				DEFAULT_MINIMUM_FRAGMENT_MASS_LIMIT							=	0.0;
 	public static final Double				DEFAULT_PRECURSOR_NEUTRAL_MASS								=	null;
 	public static final Double				DEFAULT_DATABASE_RELATIVE_MASS_DEVIATION					=	null;

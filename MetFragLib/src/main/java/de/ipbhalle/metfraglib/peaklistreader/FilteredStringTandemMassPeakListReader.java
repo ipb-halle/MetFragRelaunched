@@ -19,6 +19,7 @@ public class FilteredStringTandemMassPeakListReader extends AbstractPeakListRead
 	}
 
 	public DefaultPeakList read() throws Exception {
+		int numberMaximumPeaksUsed = (Integer)settings.get(VariableNames.NUMBER_MAXIMUM_PEAKS_USED_NAME);
 		SortedTandemMassPeakList peakList = null;
 		String stringname = (String)this.settings.get(VariableNames.PEAK_LIST_STRING_NAME);
 		String peakDelim1 = "\\n";
@@ -47,6 +48,7 @@ public class FilteredStringTandemMassPeakListReader extends AbstractPeakListRead
 		}
 		for(int i = 0; i < peakList.getNumberElements(); i++)
 			peakList.getElement(i).setID(i);
+		this.deleteByMaximumNumberPeaksUsed(numberMaximumPeaksUsed, peakList);
 		peakList.calculateRelativeIntensities(Constants.DEFAULT_MAXIMUM_RELATIVE_INTENSITY);
 		return peakList;
 	}

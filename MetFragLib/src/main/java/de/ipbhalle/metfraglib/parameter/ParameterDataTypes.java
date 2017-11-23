@@ -30,6 +30,7 @@ public class ParameterDataTypes {
 		parameterDatatypes.put(	VariableNames.RELATIVE_MASS_DEVIATION_NAME, 							"Double"	);
 		parameterDatatypes.put(	VariableNames.LOCAL_DATABASE_PATH_NAME, 								"String"	);
 		parameterDatatypes.put(	VariableNames.MINIMUM_ABSOLUTE_PEAK_INTENSITY_NAME, 					"Double"	);
+		parameterDatatypes.put(	VariableNames.NUMBER_MAXIMUM_PEAKS_USED_NAME,		 					"Integer"	);
 		parameterDatatypes.put(	VariableNames.MAXIMUM_CANDIDATE_LIMIT_TO_STOP_NAME, 					"Integer"	);
 		parameterDatatypes.put(	VariableNames.PROCESS_CANDIDATES,					 					"Boolean"	);
 		parameterDatatypes.put(	VariableNames.USE_SMILES_NAME,					 						"Boolean"	);
