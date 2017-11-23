@@ -29,6 +29,7 @@ public class CompareSpectraBean {
 	 */
 	public CompareSpectraBean() {
 		System.out.println("CompareSpectraBean");
+		this.init();
 	}
 	
 	@PostConstruct
@@ -73,6 +74,7 @@ public class CompareSpectraBean {
 	}
 	
 	public void generateSpectrumModelViewListener(ActionEvent action) {
+		System.out.println("generateSpectrumModelViewListener");
 		this.generateSpectrumModelView();
 	}
 

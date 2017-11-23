@@ -21,6 +21,7 @@ import de.ipbhalle.metfraglib.parameter.Constants;
 public class ConvertMSPtoMetFragRecord {
 
 	public static boolean EI_mode = false;
+	public static boolean WITH_FINGERPRINT = false;
 	public static Hashtable<String, String> parameterConversion;
 	public static Hashtable<String, String> adductTypes;
 	public static Hashtable<String, String> chargeTypes;
@@ -39,6 +40,7 @@ public class ConvertMSPtoMetFragRecord {
 		parameterConversion.put("RETENTIONTIME:", "# RetentionTime = ");
 		parameterConversion.put("exact mass:", "# NeutralPrecursorMass = ");
 		parameterConversion.put("ExactMass:", "# NeutralPrecursorMass = ");
+		parameterConversion.put("EXACTMASS:", "# NeutralPrecursorMass = ");
 		parameterConversion.put("ion mode:", "# IsPositiveIonMode = ");
 		parameterConversion.put("IONMODE:", "# IsPositiveIonMode = ");
 		parameterConversion.put("mass error:", "# MassError = ");
@@ -95,13 +97,14 @@ public class ConvertMSPtoMetFragRecord {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		if(args.length != 3 && args.length != 2) {
+		if(args.length != 4 && args.length != 3 && args.length != 2) {
 			System.err.println("MSP input file needed. MetFrag record output file needed.");
 			System.exit(1);
 		}
 		String mspfilename = args[0];
 		String metfragfilename = args[1];
-		if(args.length == 3) EI_mode = Boolean.parseBoolean(args[2]);
+		if(args.length >= 3) EI_mode = Boolean.parseBoolean(args[2]);
+		if(args.length == 4) WITH_FINGERPRINT = Boolean.parseBoolean(args[3]);
 		File mspfile = new File(mspfilename);
 		File metfragfile = new File(metfragfilename);
 		if(!mspfile.exists()) {
@@ -113,8 +116,8 @@ public class ConvertMSPtoMetFragRecord {
 			System.exit(2);
 		}
 		java.util.ArrayList<String> lines = new java.util.ArrayList<String>();
-		java.util.ArrayList<Entry> entries = new java.util.ArrayList<Entry>();
 		try {
+			BufferedWriter bwriter = new BufferedWriter(new FileWriter(metfragfile));
 			BufferedReader breader = new BufferedReader(new FileReader(mspfile));
 			String line = "";
 			int numberPeaks = 0;
@@ -160,7 +163,7 @@ public class ConvertMSPtoMetFragRecord {
 						lastMZ = value;
 						currentEntry.ionizedmass = lastMZ;
 					}
-					if(paramname.equals("ExactMass:") || paramname.equals("Exact Mass:")) {
+					if(paramname.equals("ExactMass:") || paramname.equals("Exact Mass:") || paramname.equals("EXACTMASS:")) {
 						lastMass = value;
 						currentEntry.mass = lastMass;
 					}
@@ -224,7 +227,7 @@ public class ConvertMSPtoMetFragRecord {
 										else
 											currentEntry.ionmode = "False";
 									}
-									entries.add(currentEntry);
+									writeEntryToFile(bwriter, currentEntry);
 								}
 								currentEntry = new ConvertMSPtoMetFragRecord().new Entry();
 							}
@@ -232,6 +235,7 @@ public class ConvertMSPtoMetFragRecord {
 						else {
 							lines.add(parameterConversion.get(paramname) + value);
 							if(paramname.equals("Name:")) currentEntry.sampleName = value;
+							else if(paramname.equals("NAME:")) currentEntry.sampleName = value;
 							else if(paramname.equals("ms level:")) currentEntry.mslevel = value;
 							else if(paramname.equals("mass error:")) currentEntry.masserror = value;
 						}
@@ -257,62 +261,41 @@ public class ConvertMSPtoMetFragRecord {
 								else
 									currentEntry.ionmode = "False";
 							}
-							entries.add(currentEntry);
+							writeEntryToFile(bwriter, currentEntry);
 						}
 						currentEntry = new ConvertMSPtoMetFragRecord().new Entry();
 					}
 				}
 			}
 			breader.close();
+			bwriter.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+	}
 	
-		/*
-		try {
-			BufferedWriter bwriter = new BufferedWriter(new FileWriter(metfragfile));
-			for(int i = 0; i < lines.size(); i++) {
-				bwriter.write(lines.get(i));
-				bwriter.newLine();
+	public static void writeEntryToFile(BufferedWriter bwriter,  Entry entry) throws Exception {
+		if(WITH_FINGERPRINT && entry.inchi == null) {
+			if(entry.smiles != null) {
+				try {
+					entry.inchi = MoleculeFunctions.getInChIFromSmiles(entry.smiles);
+				} catch(Exception e) {
+					System.out.println("Error: " + entry.sampleName);
+				}
 			}
-			
-			bwriter.close();
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
-		*/
-		System.out.println("parsing finished");
-		try {
-			BufferedWriter bwriter = new BufferedWriter(new FileWriter(metfragfile));
-			for(int i = 0; i < entries.size(); i++) {
-				if(entries.get(i).inchi == null) {
-					if(entries.get(i).smiles != null) {
-						try {
-							entries.get(i).inchi = MoleculeFunctions.getInChIFromSmiles(entries.get(i).smiles);
-						} catch(Exception e) {
-							System.out.println("Error: " + entries.get(i).sampleName);
-							continue;
-						}
-					}
-				}
-				if(entries.get(i).inchi != null) {
-					IAtomContainer con = MoleculeFunctions.getAtomContainerFromInChI(entries.get(i).inchi);
-					MoleculeFunctions.prepareAtomContainer(con, true);
-					String fingerprint = MoleculeFunctions.fingerPrintToString(TanimotoSimilarity.calculateFingerPrint(con));
-					entries.get(i).fingerprint = fingerprint;
-				}
-				
-				bwriter.write(entries.get(i).toString());
-				bwriter.newLine();
-			}
-			
-			bwriter.close();
-		} catch (IOException e) {
-			e.printStackTrace();
+		if(WITH_FINGERPRINT && entry.inchi != null) {
+			IAtomContainer con = MoleculeFunctions.getAtomContainerFromInChI(entry.inchi);
+			MoleculeFunctions.prepareAtomContainer(con, true);
+			String fingerprint = MoleculeFunctions.fingerPrintToString(TanimotoSimilarity.calculateFingerPrint(con));
+			entry.fingerprint = fingerprint;
 		}
 		
+		bwriter.write(entry.toString());
+		bwriter.newLine();
 	}
 	
 	public static boolean checkInChIFormula(String inchi, String formula, String inchikey) throws AtomTypeNotKnownFromInputListException {
@@ -353,27 +336,27 @@ public class ConvertMSPtoMetFragRecord {
 		
 		public String toString() {
 			String string = "";
-			if(sampleName != null) string += "# SampleName = " + sampleName + "\n";
-			if(inchi != null) string += "# InChI = " + inchi + "\n";
-			if(smiles != null) string += "# Smiles = " + smiles + "\n";
-			if(inchikey != null) string += "# InChIKey = " + inchikey + "\n";
-			if(rt != null) string += "# RetentionTime = " + rt + "\n";
-			if(!EI_mode && ionmode != null) string += "# IsPositiveIonMode = " + ionmode + "\n";
-			if(!EI_mode && adducttype != null) string += "# PrecursorIonMode = " + adducttype + "\n";
+			if(sampleName != null && sampleName.length() != 0) string += "# SampleName = " + sampleName + "\n";
+			if(inchi != null && inchi.length() != 0) string += "# InChI = " + inchi + "\n";
+			if(smiles != null && smiles.length() != 0) string += "# Smiles = " + smiles + "\n";
+			if(inchikey != null && inchikey.length() != 0) string += "# InChIKey = " + inchikey + "\n";
+			if(rt != null && rt.length() != 0) string += "# RetentionTime = " + rt + "\n";
+			if(!EI_mode && ionmode != null && ionmode.length() != 0) string += "# IsPositiveIonMode = " + ionmode + "\n";
+			if(!EI_mode && adducttype != null && adducttype.length() != 0) string += "# PrecursorIonMode = " + adducttype + "\n";
 			if(EI_mode) {
 				string += "# IsPositiveIonMode = True\n";
 				string += "# PrecursorIonMode = 0\n";
 			}
-			if(mass != null) string += "# NeutralPrecursorMass = " + mass + "\n";
-			if(formula != null) string += "# NeutralPrecursorMolecularFormula = " + formula + "\n";
-			if(masserror != null) string += "# MassError = " + masserror + "\n";
-			if(mslevel != null) string += "# MSLevel = " + mslevel + "\n";
-			if(ionizedmass != null) string += "# IonizedPrecursorMass = " + ionizedmass + "\n";
-			else if(mass != null && EI_mode) {
+			if(mass != null && mass.length() != 0) string += "# NeutralPrecursorMass = " + mass + "\n";
+			if(formula != null && formula.length() != 0) string += "# NeutralPrecursorMolecularFormula = " + formula + "\n";
+			if(masserror != null && masserror.length() != 0) string += "# MassError = " + masserror + "\n";
+			if(mslevel != null && mslevel.length() != 0) string += "# MSLevel = " + mslevel + "\n";
+			if(ionizedmass != null && ionizedmass.length() != 0) string += "# IonizedPrecursorMass = " + ionizedmass + "\n";
+			else if(mass != null && EI_mode && mass.length() != 0) {
 				string += "# IonizedPrecursorMass = " + MathTools.round((Double.parseDouble(mass) - Constants.ELECTRON_MASS)) + "\n";
 			}
-			if(numpeaks != null) string += "# NumPeaks = " + numpeaks + "\n";
-			if(fingerprint != null) string += "# MolecularFingerPrint = " + fingerprint + "\n";
+			if(numpeaks != null && numpeaks.length() != 0) string += "# NumPeaks = " + numpeaks + "\n";
+			if(fingerprint != null && fingerprint.length() != 0) string += "# MolecularFingerPrint = " + fingerprint + "\n";
 			if(mzs != null && ints != null) {
 				for(int i = 0; i < ints.size(); i++) {
 					string += mzs.get(i) + " " + ints.get(i) + "\n";
