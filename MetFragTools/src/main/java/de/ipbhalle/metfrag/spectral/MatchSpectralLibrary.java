@@ -63,7 +63,6 @@ public class MatchSpectralLibrary {
 		ArrayList<String> data = new ArrayList<String>();
 		
 		for(int i = 0; i < querySpectra.size(); i++) {
-			System.out.println((i + 1) + "/" + querySpectra.size());
 			if(querySpectra.get(i).getNumberElements() <= 4) continue;
 			for(int j = 0; j < spectralPeakLists.getSize(); j++) {
 				double sim = spectralPeakLists.getPeakList(j).cosineSimilarity((SortedTandemMassPeakList)querySpectra.get(i), mzppm, mzabs);
