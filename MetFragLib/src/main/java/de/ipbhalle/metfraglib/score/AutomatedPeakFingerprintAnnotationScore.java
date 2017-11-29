@@ -83,9 +83,11 @@ public class AutomatedPeakFingerprintAnnotationScore extends AbstractScore {
 		}
 		if(peakToFingerprintGroupListCollection.getNumberElements() == 0) this.value = 0.0;
 
-		candidate.setProperty("AutomatedPeakFingerprintAnnotationScore_Matches", matches);
-		candidate.setProperty("AutomatedPeakFingerprintAnnotationScore", this.value);
-		candidate.setProperty("AutomatedPeakFingerprintAnnotationScore_Probtypes", this.getProbTypeString(matchProb, matchType, matchMasses));
+		this.candidate.setProperty("AutomatedPeakFingerprintAnnotationScore_Matches", matches);
+		this.candidate.setProperty("AutomatedPeakFingerprintAnnotationScore", this.value);
+		this.candidate.setProperty("AutomatedPeakFingerprintAnnotationScore_Probtypes", this.getProbTypeString(matchProb, matchType, matchMasses));
+		
+		this.candidate.removeProperty("PeakMatchList");
  	}
 	
 	public String getProbTypeString(java.util.ArrayList<Double> matchProb, java.util.ArrayList<Integer> matchType, java.util.ArrayList<Double> matchMasses) {

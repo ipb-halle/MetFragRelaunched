@@ -201,7 +201,7 @@ public class StandardSingleStructureImageGenerator implements IImageGenerator {
 		 IAtomContainer m = null;
 			try {
 				//m = MoleculeFunctions.getAtomContainerFromInChI("InChI=1S/C15H14O6/c16-8-4-11(18)9-6-13(20)15(21-14(9)5-8)7-1-2-10(17)12(19)3-7/h1-5,13,15-20H,6H2/t13-,15-/m1/s1");
-				m = MoleculeFunctions.getAtomContainerFromSMILES("C1C(C)(C)CC(N)CC1(C)(CN)");
+				m = MoleculeFunctions.getAtomContainerFromSMILES("CC(=O)Nc1cccc(c1)Br");
 
 				MoleculeFunctions.prepareAtomContainer(m, false);
 				//MoleculeFunctions.removeHydrogens(m);
