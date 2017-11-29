@@ -93,6 +93,11 @@ public class ParameterDataTypes {
 		parameterDatatypes.put( VariableNames.FINGERPRINT_PEAK_ANNOTATION_FILE_CONV_NAME,				 		"String"  	);
 		parameterDatatypes.put( VariableNames.FINGERPRINT_LOSS_ANNOTATION_FILE_NAME,				 			"String"  	);
 		
+		parameterDatatypes.put(	VariableNames.PEAK_FINGERPRINT_ANNOTATION_ALPHA_VALUE_NAME, 					"Double"	);
+		parameterDatatypes.put(	VariableNames.PEAK_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME, 						"Double"	);
+		parameterDatatypes.put(	VariableNames.LOSS_FINGERPRINT_ANNOTATION_ALPHA_VALUE_NAME, 					"Double"	);
+		parameterDatatypes.put(	VariableNames.LOSS_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME, 						"Double"	);
+		
 		/*
 		 * parameters for local database connection
 		 */

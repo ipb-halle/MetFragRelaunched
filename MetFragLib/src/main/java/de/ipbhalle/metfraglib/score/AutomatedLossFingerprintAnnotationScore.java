@@ -91,6 +91,8 @@ public class AutomatedLossFingerprintAnnotationScore extends AbstractScore {
 		this.candidate.setProperty("AutomatedLossFingerprintAnnotationScore_Matches", matches);
 		this.candidate.setProperty("AutomatedLossFingerprintAnnotationScore", this.value);
 		this.candidate.setProperty("AutomatedLossFingerprintAnnotationScore_Probtypes", this.getProbTypeString(matchProb, matchType, matchMasses));
+		
+		this.candidate.removeProperty("LossMatchList");
 	}
 
 	public String getProbTypeString(java.util.ArrayList<Double> matchProb, java.util.ArrayList<Integer> matchType, java.util.ArrayList<Double> matchMasses) {
