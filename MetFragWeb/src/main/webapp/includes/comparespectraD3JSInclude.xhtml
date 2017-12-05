@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<h:body>
+
+	<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+		xmlns:h="http://java.sun.com/jsf/html"
+		xmlns:f="http://java.sun.com/jsf/core"
+		xmlns:c="http://java.sun.com/jsp/jstl/core"
+		xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui">
+		<div id="comparespectra"
+			style="width: 90%; margin-left: auto; margin-right: auto;">
+
+			<h:form id="spectrumViewForm">
+				<h:panelGrid columns="2">
+					<h:panelGrid columns="1" id="peakListPanel">
+						<h3 style="margin-top: 0">Peaklist 1</h3>
+						<p:inputTextarea rows="10" cols="20" autoResize="false"
+							value="#{compareSpectraD3JSBean.peakList1}" required="true"
+							style="resize: none" id="peakListInput1">
+						</p:inputTextarea>
+						<h3 style="margin-top: 30px">Peaklist 2</h3>
+						<p:inputTextarea rows="10" cols="20" autoResize="false"
+							value="#{compareSpectraD3JSBean.peakList2}" required="true"
+							style="resize: none" id="peakListInput2">
+						</p:inputTextarea>
+						<p:commandButton style="height: 25px; font-size: 0.9em"
+							value="Show Spectra"
+							actionListener="#{compareSpectraD3JSBean.generateSpectrumModelViewListener}"
+							id="showSpectrumView" onclick="" update="@form">
+						</p:commandButton>
+					</h:panelGrid>
+					<h:panelGrid id="spectraViewPanel" columns="1">
+						<div id="spectrumview"></div>
+					</h:panelGrid>
+				</h:panelGrid>
+				<script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+						<script type="text/javascript" src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+						<script>
+							var margin = {
+								top : 40,
+								right : 20,
+								bottom : 30,
+								left : 70
+							}, width = 960 - margin.left - margin.right, height = 500 - margin.top - margin.bottom;
+
+							var formatPercent = d3.format(".0%");
+
+							var x = d3.scale.ordinal().rangeRoundBands([ 0, width ], .1);
+
+							var y = d3.scale.linear().range([ height, 0 ]);
+
+							var xAxis = d3.svg.axis().scale(x).orient("bottom");
+
+							var yAxis = d3.svg.axis().scale(y).orient("left").tickFormat(formatPercent);
+
+							var tip = d3.tip().attr('class', 'd3-tip').offset([ -10, 0 ]).html(function(d) {
+								return "<strong>Int:</strong><span>" + d.y + "</span><p></p><strong>m/z:</strong><span>" + d.x + "</span>";}
+							)
+							var svg = d3.select("#spectrumview").append("svg:svg").attr("width", width + margin.left + margin.right).attr("height", height + margin.top + margin.bottom).append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+							svg.call(tip);
+							
+							d3.tsv("#{compareSpectraD3JSBean.pathPeakLists}", type, function(error, data) {
+								x.domain(data.map(function(d) { return d.x; }));
+								y.domain([0, d3.max(data, function(d) { return d.y; })]);
+
+								svg.append("g")
+									.attr("class", "x axis")
+									.attr("transform", "translate(0," + height + ")")
+									.call(xAxis)
+									.append("text")
+									.text("m/z");
+
+								svg.append("g")
+									.attr("class", "y axis")
+									.call(yAxis)
+									.append("text")
+									.attr("transform", "rotate(-90)")
+									.attr("y", 6)
+									.attr("dy", ".71em")
+									.style("text-anchor", "end")
+									.text("Intensity");
+
+								svg.selectAll(".bar").data(data).enter()
+										.append("rect").attr("class", "bar")
+										.style("fill", function(d) {
+											return d.color;
+										}).attr("x", function(d) {
+											return x(d.x);
+										}).attr("width", 2).attr("y",
+												function(d) {
+													if(d.type == 1) { 
+											    		return y((d.y / 2.0) + 0.5);
+													} else {
+														return height / 2.0;
+													}
+											    }).attr("height", function(d) {
+											return (height / 2.0) - y((d.y / 2.0) + 0.5);
+										})
+
+								svg.selectAll(".dot").data(data).enter()
+										.append("circle").attr("class", "dot")
+										.attr("r", 3.5).attr("cx", function(d) {
+											return x(d.x) + 1;
+										}).attr("cy", function(d) {
+											if(d.type == 1) {
+												return y((d.y / 2.0) + 0.5);
+											} else {
+												return height - y((d.y / 2.0) + 0.5);
+											}
+										}).style("fill", function(d) {
+											return d.color;
+										}).on('mouseover', tip.show).on(
+												'mouseout', tip.hide)
+
+							});
+
+							function type(d) {
+								d.y = +d.y;
+								return d;
+							}
+						</script>
+			</h:form>
+
+		</div>
+
+	</ui:composition>
+	
+</h:body>
+
+</html>
