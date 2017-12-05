@@ -46,21 +46,26 @@ public class SmilesDeuteriumGeneration {
 		ArrayList<String> inchis = new ArrayList<String>();
 		ArrayList<Integer> numberToAddDeuteriums = new ArrayList<Integer>();
 		ArrayList<String> identifiers = new ArrayList<String>();
-		BufferedReader breader = new BufferedReader(
-				new FileReader(
-						new File(
-								args[0])));
+		File input = new File(args[0]);
+		BufferedReader breader = null;
+		if(!input.exists()) {
+			inchis.add(args[0]);
+			identifiers.add("1");
+		}
+		else
+			breader = new BufferedReader(new FileReader(input));
 		String line = "";
 		int identifier = 1;
-		while ((line = breader.readLine()) != null) {
-			String[] tmp = line.trim().split("\\s+");
-			inchis.add(tmp[0].trim());
-			if(tmp.length >= 2) numberToAddDeuteriums.add(Integer.parseInt(tmp[1].trim()));
-			if(tmp.length == 3) identifiers.add(tmp[2].trim());
-			else identifiers.add(identifier + "");
-			identifier++;
-		}
-		breader.close();
+		if(breader != null)
+			while ((line = breader.readLine()) != null) {
+				String[] tmp = line.trim().split("\\s+");
+				inchis.add(tmp[0].trim());
+				if(tmp.length >= 2) numberToAddDeuteriums.add(Integer.parseInt(tmp[1].trim()));
+				if(tmp.length == 3) identifiers.add(tmp[2].trim());
+				else identifiers.add(identifier + "");
+				identifier++;
+			}
+		if(breader != null) breader.close();
 		/*
 		 * generate deuterated version of inchi
 		 */
@@ -74,6 +79,7 @@ public class SmilesDeuteriumGeneration {
 			 * build the jni inchi atom container
 			 */
 			IAtomContainer its = MoleculeFunctions.parseSmilesImplicitHydrogen(inchis.get(j));
+			System.out.println(MoleculeFunctions.generateSmiles(its));
 			AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(its);
 			try {
 				adder.addImplicitHydrogens(its);
