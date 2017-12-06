@@ -121,11 +121,11 @@ public class CompareSpectraD3JSBean {
 	}
 	
 	public void setPeakList1(String peakList1) {
-		this.peakList1 = peakList1;
+		this.peakList1 = peakList1.replaceAll("^\\s+", "").replaceAll("\\n\\s+", "\n");
 	}
 
 	public void setPeakList2(String peakList2) {
-		this.peakList2 = peakList2;
+		this.peakList2 = peakList2.replaceAll("^\\s+", "").replaceAll("\\n\\s+", "\n");
 	}
 
 	public String getPeakList1() {
@@ -150,7 +150,16 @@ public class CompareSpectraD3JSBean {
 	
 	public void generateSpectrumModelViewListener(ActionEvent action) {
 		System.out.println("generateSpectrumModelViewListener");
-		
+		try {
+			System.out.println("write peaklists");
+			String rootfolder = this.getRootSessionFolder();
+		//	this.writeSpectrumToFile(this.peakList1, rootfolder + Constants.OS_SPECIFIC_FILE_SEPARATOR + "comparespectra" + Constants.OS_SPECIFIC_FILE_SEPARATOR + "peaklist1.tsv");
+		//	this.writeSpectrumToFile(this.peakList2, rootfolder + Constants.OS_SPECIFIC_FILE_SEPARATOR + "comparespectra" + Constants.OS_SPECIFIC_FILE_SEPARATOR + "peaklist2.tsv");
+			this.writeSpectraToFile(this.peakList1, this.peakList2, rootfolder + Constants.OS_SPECIFIC_FILE_SEPARATOR + "comparespectra" + Constants.OS_SPECIFIC_FILE_SEPARATOR + "peaklists.tsv");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public LineChartModel getSpectrumModel() {
