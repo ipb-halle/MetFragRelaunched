@@ -79,7 +79,6 @@ public class SmilesDeuteriumGeneration {
 			 * build the jni inchi atom container
 			 */
 			IAtomContainer its = MoleculeFunctions.parseSmilesImplicitHydrogen(inchis.get(j));
-			System.out.println(MoleculeFunctions.generateSmiles(its));
 			AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(its);
 			try {
 				adder.addImplicitHydrogens(its);
