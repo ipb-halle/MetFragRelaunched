@@ -5,12 +5,14 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets">
 
 <h:body>
-
+				
 	<ui:composition xmlns="http://www.w3.org/1999/xhtml"
 		xmlns:h="http://java.sun.com/jsf/html"
 		xmlns:f="http://java.sun.com/jsf/core"
 		xmlns:c="http://java.sun.com/jsp/jstl/core"
 		xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui">
+		<script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+		<script type="text/javascript" src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
 		<div id="comparespectra"
 			style="width: 90%; margin-left: auto; margin-right: auto;">
 
@@ -37,93 +39,116 @@
 						<div id="spectrumview"></div>
 					</h:panelGrid>
 				</h:panelGrid>
-				<script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
-						<script type="text/javascript" src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
-						<script>
-							var margin = {
-								top : 40,
-								right : 20,
-								bottom : 30,
-								left : 70
-							}, width = 960 - margin.left - margin.right, height = 500 - margin.top - margin.bottom;
+				<script>
+					var margin = {
+						top : 40,
+						right : 50,
+						bottom : 30,
+						left : 70
+					}, width = 960 - margin.left - margin.right, height = 500 - margin.top - margin.bottom;
 
-							var formatPercent = d3.format(".0%");
+					var formatPercent = d3.format(".0%");
 
-							var x = d3.scale.ordinal().rangeRoundBands([ 0, width ], .1);
+					var x = d3.scale.linear().range([margin.left, width - margin.right]);
+					var y = d3.scale.linear().range([ height / 2, 0 ]);
+					var y2 = d3.scale.linear().range([ height / 2, height ]);
+			
+					var xAxis = d3.svg.axis().scale(x).orient("bottom");
 
-							var y = d3.scale.linear().range([ height, 0 ]);
+					var yAxis = d3.svg.axis().scale(y).orient("left").tickFormat(formatPercent);
+					var yAxis2 = d3.svg.axis().scale(y2).orient("left").tickFormat(formatPercent);
 
-							var xAxis = d3.svg.axis().scale(x).orient("bottom");
+					var tip = d3.tip().attr('class', 'd3-tip').offset([ -10, 0 ]).html(function(d) {
+						return "<strong>Int:</strong><span>" + d.y + "</span><p></p><strong>m/z:</strong><span>" + d.x + "</span>";}
+					)
+					var svg = d3.select("#spectrumview")
+						.append("svg:svg").attr("width", width + margin.left + margin.right)
+						.attr("height", height + margin.top + margin.bottom).append("g")
+						.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-							var yAxis = d3.svg.axis().scale(y).orient("left").tickFormat(formatPercent);
+					svg.call(tip);
+					
+					d3.tsv("#{compareSpectraD3JSBean.pathPeakLists}", type, function(error, data) {
+						x.domain([d3.min(data, function(d) { return d.x; }), d3.max(data, function(d) { return d.x; })]);
+						y.domain([0, d3.max(data, function(d) { return d.y; })]);
 
-							var tip = d3.tip().attr('class', 'd3-tip').offset([ -10, 0 ]).html(function(d) {
-								return "<strong>Int:</strong><span>" + d.y + "</span><p></p><strong>m/z:</strong><span>" + d.x + "</span>";}
-							)
-							var svg = d3.select("#spectrumview").append("svg:svg").attr("width", width + margin.left + margin.right).attr("height", height + margin.top + margin.bottom).append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+						svg.append("g")
+							.attr("class", "x axis")
+							.attr("transform", "translate(0," + (height / 2)+ ")")
+							.call(xAxis)
+							.append("text")
+							.text("m/z")
+							.attr("x", width + 2);
 
-							svg.call(tip);
-							
-							d3.tsv("#{compareSpectraD3JSBean.pathPeakLists}", type, function(error, data) {
-								x.domain(data.map(function(d) { return d.x; }));
-								y.domain([0, d3.max(data, function(d) { return d.y; })]);
-
-								svg.append("g")
-									.attr("class", "x axis")
-									.attr("transform", "translate(0," + height + ")")
-									.call(xAxis)
-									.append("text")
-									.text("m/z");
-
-								svg.append("g")
-									.attr("class", "y axis")
-									.call(yAxis)
-									.append("text")
-									.attr("transform", "rotate(-90)")
-									.attr("y", 6)
-									.attr("dy", ".71em")
-									.style("text-anchor", "end")
-									.text("Intensity");
-
-								svg.selectAll(".bar").data(data).enter()
-										.append("rect").attr("class", "bar")
-										.style("fill", function(d) {
-											return d.color;
-										}).attr("x", function(d) {
-											return x(d.x);
-										}).attr("width", 2).attr("y",
-												function(d) {
-													if(d.type == 1) { 
-											    		return y((d.y / 2.0) + 0.5);
-													} else {
-														return height / 2.0;
-													}
-											    }).attr("height", function(d) {
-											return (height / 2.0) - y((d.y / 2.0) + 0.5);
-										})
-
-								svg.selectAll(".dot").data(data).enter()
-										.append("circle").attr("class", "dot")
-										.attr("r", 3.5).attr("cx", function(d) {
-											return x(d.x) + 1;
-										}).attr("cy", function(d) {
-											if(d.type == 1) {
-												return y((d.y / 2.0) + 0.5);
+						svg.append("g")
+							.attr("class", "y axis")
+							.call(yAxis)
+							.append("text")
+							.attr("transform", "rotate(-90)")
+							.attr("y", 6)
+							.attr("dy", ".71em")
+							.style("text-anchor", "end")
+							.text("Intensity");
+						
+						svg.append("g")
+							.attr("class", "y axis")
+							.call(yAxis2);
+						 
+						svg.append("line")
+	                    	.attr("x1", 0)
+	                    	.attr("y1", height / 2)
+	                    	.attr("x2", width)
+	                    	.attr("y2", height / 2)
+	                    	.attr("stroke", "black");
+						
+						svg.selectAll(".bar").data(data).enter()
+								.append("rect").attr("class", "bar")
+								.style("fill", function(d) {
+									return d.color;
+								}).attr("x", function(d) {
+									return x(d.x);
+								}).attr("width", 2).attr("y",
+										function(d) {
+											if(d.type == 1) { 
+									    		return y((d.y / 2.0) + 0.5);
 											} else {
-												return height - y((d.y / 2.0) + 0.5);
+												return height / 2.0;
 											}
-										}).style("fill", function(d) {
-											return "transparent";
-										}).on('mouseover', tip.show).on(
-												'mouseout', tip.hide)
+									    }).attr("height", function(d) {
+									return (height / 2.0) - y((d.y / 2.0) + 0.5);
+								})
 
-							});
+						svg.selectAll(".dot").data(data).enter()
+								.append("circle").attr("class", "dot")
+								.attr("r", 3.5).attr("cx", function(d) {
+									return x(d.x) + 1;
+								}).attr("cy", function(d) {
+									if(d.type == 1) {
+										return y((d.y / 2.0) + 0.5);
+									} else {
+										return height - y((d.y / 2.0) + 0.5);
+									}
+								}).style("fill", function(d) {
+									return "transparent";
+								}).on('mouseover', tip.show).on(
+										'mouseout', tip.hide)
 
-							function type(d) {
-								d.y = +d.y;
-								return d;
-							}
-						</script>
+					}).row(function(d) {
+					    // for each row of the data, create an object with these properties...
+					    return {
+					      x: +d.x,
+					      y: +d.y,
+					      name: d.name,
+					      color: d.color,
+					      type: +d.type
+					    };
+					  });
+
+					function type(d) {
+						d.y = +d.y;
+						return d;
+					}
+				</script>
 			</h:form>
 
 		</div>
