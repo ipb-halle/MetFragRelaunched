@@ -1,3 +1,14 @@
+## build/start app
+
+mvn package
+java -Dserver.port=8090 -jar target/MetFragRest-2.4.2.jar
+
+## start app
+
+mvn spring-boot:run
+
+## send query
+
 curl -X POST -H "Content-Type: application/json" http://localhost:8080/process -d \
     '{ 
         "fragmentpeakmatchabsolutemassdeviation": "0.001", 
