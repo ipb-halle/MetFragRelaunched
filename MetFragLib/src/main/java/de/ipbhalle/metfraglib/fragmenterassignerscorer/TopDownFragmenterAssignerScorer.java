@@ -55,7 +55,6 @@ public class TopDownFragmenterAssignerScorer extends AbstractFragmenterAssignerS
 		Integer precursorIonType = (Integer)settings.get(VariableNames.PRECURSOR_ION_MODE_NAME);
 		Boolean positiveMode = (Boolean)settings.get(VariableNames.IS_POSITIVE_ION_MODE_NAME);
 		int precursorIonTypeIndex = Constants.ADDUCT_NOMINAL_MASSES.indexOf(precursorIonType);
-		
 		this.fragmenter.setMinimumFragmentMassLimit(this.fragmenter.getMinimumFragmentMassLimit() - Constants.ADDUCT_MASSES.get(precursorIonTypeIndex));
 		
 		/*
