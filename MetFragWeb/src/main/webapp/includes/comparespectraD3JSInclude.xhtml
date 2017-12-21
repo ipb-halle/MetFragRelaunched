@@ -1,0 +1,407 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<h:body>
+
+	<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+		xmlns:h="http://java.sun.com/jsf/html"
+		xmlns:f="http://java.sun.com/jsf/core"
+		xmlns:c="http://java.sun.com/jsp/jstl/core"
+		xmlns:p="http://primefaces.org/ui" xmlns:pe="http://primefaces.org/ui">
+		<script type="text/javascript" src="https://d3js.org/d3.v3.min.js"></script>
+		<script type="text/javascript"
+			src="https://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+		<div id="comparespectra" style="width: 90%; margin-left: auto; margin-right: auto;">
+			<h:panelGrid columns="2">
+				<h:outputText value = "- " />
+				<h:outputText value = "compare two spectra by providing peaklists in the text forms" />
+				<h:outputText value = "- " />
+				<h:outputText value = "add a SMILES string in the text fields underneath to perform MetFrag's in silico fragmentation and peak annotation (only pos mode)" />
+				<h:outputText value = "- " />
+				<h:outputText value = "if SMILES strings are provided, annotated peaks will stay colored and non-annotated peaks get gray" />
+				<h:outputText value = "- " />
+				<h:outputText value = "hover over peak apex to get information and to display annotated fragments (if annotated)" />
+				<h:outputText value = "- " />
+				<h:outputText value = "zoom in by selecting a range in the spectrum viewer" />
+				<h:outputText value = "- " />
+				<h:outputText value = "zoom out again by clicking on the spectrum viewer" />
+			</h:panelGrid>
+			<h:form id="spectrumViewForm" style="margin-top: 2%">
+				<h:panelGrid columns="2">
+					<h:panelGrid columns="1" id="peakListPanel">
+						<h3 style="margin-top: 0">Peaklist 1</h3>
+						<p:inputTextarea rows="10" cols="20" autoResize="false"
+							value="#{compareSpectraD3JSBean.peakList1}" required="true"
+							style="resize: none" id="peakListInput1">
+						</p:inputTextarea>
+						<p:inputText cols="20" value="#{compareSpectraD3JSBean.smiles1}" id="smilesInput1" />
+						<p:watermark for="smilesInput1" value="SMILES" id="smilesWatermark1" />
+						<h3 style="margin-top: 30px">Peaklist 2</h3>
+						<p:inputTextarea rows="10" cols="20" autoResize="false"
+							value="#{compareSpectraD3JSBean.peakList2}" required="true"
+							style="resize: none" id="peakListInput2">
+						</p:inputTextarea>
+						<p:inputText cols="20" value="#{compareSpectraD3JSBean.smiles2}" id="smilesInput2" />
+						<p:watermark for="smilesInput2" value="SMILES" id="smilesWatermark2" />
+					</h:panelGrid>
+					<h:panelGrid id="spectraViewPanel" columns="1">
+						<p id="attributestext" style="position:absolute; margin-left:300px; pointer-events: none;"></p>
+						<div id="spectrumview"></div>
+					</h:panelGrid>
+				</h:panelGrid>
+				<h:panelGrid columns="3">
+					<h:panelGrid columns="2">
+						<h:outputLabel id="inputMzabsLabel" value="mzabs:" />
+						<p:inputText cols="20" value="#{compareSpectraD3JSBean.absoluteMassDeviation}" id="mzabsInput" />
+					</h:panelGrid>
+					<h:panelGrid columns="2">
+						<h:outputLabel id="inputMzppmLabel" value="mzppm:" />
+						<p:inputText cols="20" value="#{compareSpectraD3JSBean.relativeMassDeviation}" id="mzppmInput" />
+					</h:panelGrid>
+					<p:commandButton style="height: 25px; font-size: 0.9em"
+						value="Update Spectra"
+						actionListener="#{compareSpectraD3JSBean.generateSpectrumModelViewListener}"
+						id="showSpectrumView" update="@form" oncomplete="d3.select('svg').remove(); draw(-1,-1)">
+					</p:commandButton>	
+				</h:panelGrid>
+				<script>
+					var margin = {
+						top : 40,
+						right : 50,
+						bottom : 30,
+						left : 70
+					}, width = 960 - margin.left - margin.right, height = 500 - margin.top - margin.bottom;
+
+					function type(d) {
+						d.y = +d.y;
+						return d;
+					}
+					
+					var tip = d3.tip().style("top", "0px").attr('class', 'd3-tip').offset([ 0, 0 ]).html(
+						function(d) {
+							if(d.imagepath != "null") {
+								return '<img height="200" src="' + d.imagepath + '" alt="" /><p></p>'
+									+ '<strong>frag: </strong><span>' + d.fragmass + '</span><p></p>'
+									+ '<strong>m/z: </strong><span>' + d.x + '</span><p></p>'
+									+ '<strong>Int: </strong><span>' + d.y + '</span>';
+							} else {
+								return '<strong>m/z: </strong><span>' + d.x + '</span><p></p><strong>int: </strong><span>' + d.y + '</span>';
+							}
+						}
+					);
+					
+					function draw(minx, maxx) {
+						
+						var formatPercent = d3.format(".0%");
+
+						var x = d3.scale.linear().range([margin.left, width - margin.right]);
+						var y = d3.scale.linear().range([ height / 2, 0 ]);
+						var y2 = d3.scale.linear().range([ height / 2, height ]);
+						
+					    var xAxis = d3.svg.axis().scale(x).orient("bottom");
+
+					    var yAxis = d3.svg.axis().scale(y).orient("left").tickFormat(formatPercent);
+					    var yAxis2 = d3.svg.axis().scale(y2).orient("left").tickFormat(formatPercent);
+					    
+					    var svg = d3.select("#spectrumview").append("svg:svg").attr("width", width + margin.left + margin.right)
+					       .attr("height", height + margin.top + margin.bottom).append("g").attr('pointer-events', 'all')
+					       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+						
+					    var startx = minx;
+					    var endx = maxx;
+					    
+					    d3.tsv("#{compareSpectraD3JSBean.pathPeakLists}", type, function(error, data) {
+						    if(startx &lt; 0) {
+					        	startx = d3.min(data, function(d) { return d.x; });
+					        } 
+					        if(endx &lt; 0) {
+					        	endx = d3.max(data, function(d) { return d.x; });
+					        }
+					        x.domain([startx, endx]);
+					        y.domain([0, d3.max(data, function(d) { return d.y; })]);
+
+					        svg.append("g")
+				                .attr("class", "x axis")
+				                .attr("transform", "translate(0," + (height / 2)+ ")")
+				                .call(xAxis)
+				                .append("text")
+				                .text("m/z")
+				                .attr("x", width + 2);
+					        
+					        tip.direction(function(d) {
+					       		minval = d3.min(data, function(e) { return e.x; });
+					        	maxval = d3.max(data, function(e) { return e.x; });
+								midval = (minval + maxval) / 2;
+								if(d.x &lt; midval) {
+									return "e";
+								} else {
+									return "w";
+								}
+							});
+					        
+					        svg.append("g")
+				                .attr("class", "y axis")
+				                .call(yAxis)
+				                .append("text")
+				                .attr("transform", "rotate(-90)")
+				                .attr("y", 6)
+				                .attr("dy", ".71em")
+				                .style("text-anchor", "end")
+				                .text("Intensity");
+
+					        svg.append("g")
+				                .attr("class", "y axis")
+				                .call(yAxis2);
+					                                        
+					        svg.append("line")
+						        .attr("x1", 0)
+						        .attr("y1", height / 2)
+						        .attr("x2", width)
+						        .attr("y2", height / 2)
+						        .attr("stroke", "black");
+
+					        svg.selectAll(".bar").data(data).enter()
+				                .append("rect").attr("class", "bar")
+				                .style("display", function(d) {
+				                        if((minx &lt; 0 || maxx &lt; 0) || !(d.x &lt; minx || d.x &gt; maxx)) {
+				                                return "inline";
+				                        } else {
+				                                return "none";
+				                        }
+				                })
+				                .style("fill", function(d) {
+				                        return d.color;
+				                }).attr("x", function(d) {
+				                        return x(d.x);
+				                }).attr("width", 2).attr("y",
+				                                function(d) {
+				                                        if(d.type == 1) { 
+				                                        return y(d.y);
+				                                        } else {
+				                                                return height / 2.0;
+				                                        }
+				                            }).attr("height", function(d) {
+				                        return (height / 2.0) - y(d.y);
+				                }).on('mouseover', tip.show).on('mouseout', tip.hide);
+
+					        svg.selectAll(".dot").data(data).enter()
+				                .append("circle").attr("class", "dot")
+				                .attr("r", 3.5).attr("cx", function(d) {
+				                        return x(d.x) + 1;
+				                }).attr("cy", function(d) {
+				                        if(d.type == 1) {
+				                                return y(d.y);
+				                        } else {
+				                                return (y(d.y) - (height / 2.0)) * (-1.0) + (height / 2.0);
+				                        }
+				                }).style("fill", function(d) {
+				                        return "transparent";
+				                }).on('mouseover', tip.show).on('mouseout', tip.hide);
+				                
+
+					    }).row(function(d) {
+					        // for each row of the data, create an object with these properties...
+					        return {
+					            x: +d.x,
+					            y: +d.y,
+					            name: d.name,
+					            color: d.color,
+					            type: +d.type,
+					            imagepath: d.imagepath,
+					            fragmass: d.fragmass
+					        };
+					    });
+
+					    svg.append("svg:image")
+						   	.attr("xlink:href", "#{compareSpectraD3JSBean.pathToPreImage1}")
+						   	.attr('x', 630)
+				            .attr('y', 0)
+				            .attr('width', 200)
+				            .attr('height', 200);
+
+					    svg.append("svg:image")
+						   	.attr("xlink:href", "#{compareSpectraD3JSBean.pathToPreImage2}")
+						   	.attr('x', 630)
+				            .attr('y', 230)
+				            .attr('width', 200)
+				            .attr('height', 200);
+					    
+					    var borderPath = svg.append("rect")
+					        .attr("x", 0)
+					        .attr("y", 0)
+					        .attr("height", height)
+					        .attr("width", width)
+					        .style("stroke", "#E2E2E2")
+					        .style("fill", "transparent")
+					        .style("stroke-width", 1)
+					        .attr("class", "null");
+
+					    var attributesText = d3.select("#attributestext");
+					    var selectionRect = {
+					        element			: null,
+					        previousElement : null,
+					        currentY		: 0,
+					        currentX		: 0,
+					        originX			: 0,
+					        originY			: 0,
+					        setElement: function(ele) {
+					                this.previousElement = this.element;
+					                this.element = ele;
+					        },
+					        getNewAttributes: function() {
+				                var x = this.currentX &lt; this.originX ? this.currentX : this.originX;
+				                var y = this.currentY &lt; this.originY ? this.currentY : this.originY;
+				                var width = Math.abs(this.currentX - this.originX);
+				                var height = Math.abs(this.currentY - this.originY);
+				                return {
+					                x       : x,
+					                y       : y,
+					                width  	: width,
+					                height  : height
+		                		};
+					        },
+					        getCurrentAttributes: function() {
+					            // use plus sign to convert string into number
+				                var x = +this.element.attr("x");
+				                var y = +this.element.attr("y");
+				                var width = +this.element.attr("width");
+				                var height = +this.element.attr("height");
+				                return {
+				                    x1  : x,
+				                	y1	: y,
+				                	x2  : x + width,
+				                	y2  : y + height
+				                };
+					        },
+					        getCurrentAttributesAsText: function() {
+				                var attrs = this.getCurrentAttributes();
+				                return "m/z difference: " + round(Math.abs(x.invert(attrs.x1) - x.invert(attrs.x2)), 5);
+				                //return "x1: " + x.invert(attrs.x1) + " x2: " + attrs.x2 + " y1: " + attrs.y1 + " y2: " + attrs.y2;
+					        },
+					        init: function(newX, newY) {
+				                var rectElement = svg.append("rect")
+				                    .attr({
+				                        rx      : 4,
+				                        ry      : 4,
+				                        x       : 0,
+				                        y       : 0,
+				                        width   : 0,
+				                        height  : 0
+				                    })
+				                    .classed("selection", true);
+					            this.setElement(rectElement);
+				                this.originX = newX;
+				                this.originY = newY;
+				                this.update(newX, newY);
+					        },
+					        update: function(newX, newY) {
+				                this.currentX = newX;
+				                this.currentY = newY;
+				                this.element.attr(this.getNewAttributes());
+					        },
+					        focus: function() {
+					        this.element
+					            .style("stroke", "#DE695B")
+					            .style("stroke-width", "2.5");
+					        },
+					        remove: function() {
+					            this.element.remove();
+					            this.element = null;
+					        },
+					        removePrevious: function() {
+					            if(this.previousElement) {
+					                    this.previousElement.remove();
+					            }
+					        }
+					    };
+
+					    function clicked() {
+					    };
+					    function round(number, precision) {
+					        var factor = Math.pow(10, precision);
+					        var tempNumber = number * factor;
+					        var roundedTempNumber = Math.round(tempNumber);
+					        return roundedTempNumber / factor;
+					    };
+					    function dragStart() {
+					        console.log("dragStart");
+					        var p = d3.mouse(this);
+					        selectionRect.init(p[0], p[1]);
+					        selectionRect.removePrevious();
+					    };
+					    function dragMove() {
+				            console.log("dragMove");
+				            var p = d3.mouse(this);
+					        selectionRect.update(p[0], p[1]);
+					        attributesText.text(selectionRect.getCurrentAttributesAsText());
+					    };
+					    function dragEnd() {
+				            console.log("dragEnd");
+				            var finalAttributes = selectionRect.getCurrentAttributes();
+				            console.dir(finalAttributes);
+				            if(finalAttributes.x2 - finalAttributes.x1 &gt; 1 &amp;&amp; finalAttributes.y2 - finalAttributes.y1 &gt; 1){
+				                console.log("range selected");
+				                // range selected
+				                d3.event.sourceEvent.preventDefault();
+				            	selectionRect.remove();
+				            } else {
+				        		console.log("single point");
+				       	     	// single point selected
+				    	        selectionRect.remove();
+				    	        // trigger click event manually
+				    	        clicked();
+					        }
+				            attributesText.text("");
+				            var curx1 = x.invert(finalAttributes.x1);
+				            var curx2 = x.invert(finalAttributes.x2);
+				            // change values so that curx1 smaller curx2
+				            if(curx1 &gt; curx2) {
+			                    var tmp = curx2;
+			                    curx2 = curx1;
+			                    curx1 = tmp;
+				            }
+				            if(startx &lt; curx1) {
+				            	startx = curx1
+				            }
+				            if(endx &gt; curx2) {
+				            	endx = curx2;
+				            }
+							d3.select("svg").remove();
+							if(Math.abs(startx - endx) &lt; 0.000001) {
+								draw(-1, -1);
+							}
+							else {
+								draw(startx, endx);
+							}
+					    };
+
+					    var dragBehavior = d3.behavior.drag()
+					        .on("drag", dragMove)
+					        .on("dragstart", dragStart)
+					        .on("dragend", dragEnd);
+
+						svg.on("dblclick",function(d){ 
+							d3.select("svg").remove();
+							// redraw full svg 
+							draw(-1, -1);
+						});
+						
+					    svg.call(dragBehavior);	
+					    svg.call(tip);
+					} 
+					
+					draw(-1, -1);
+					
+				</script>
+			</h:form>
+
+		</div>
+
+	</ui:composition>
+
+</h:body>
+
+</html>
