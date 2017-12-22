@@ -129,14 +129,6 @@ public class PostCalculateScoreValuesAndRankFromResultFilePeakLossMultipleThread
 			Settings settings = getSettings(paramFiles[i].getAbsolutePath());
 			settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, resultFiles[resultFileID].getAbsolutePath());
 
-			/*
-			settings.set(VariableNames.PEAK_FINGERPRINT_ANNOTATION_ALPHA_VALUE_NAME, ALPHA_VALUE_PEAK);
-			settings.set(VariableNames.PEAK_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME, BETA_VALUE_PEAK);
-
-			settings.set(VariableNames.LOSS_FINGERPRINT_ANNOTATION_ALPHA_VALUE_NAME, ALPHA_VALUE_LOSS);
-			settings.set(VariableNames.LOSS_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME, BETA_VALUE_LOSS);
-			*/
-			
 			SettingsChecker sc = new SettingsChecker();
 			if (!sc.check(settings)) {
 				System.err.println("Error checking settings for " + id);
@@ -239,8 +231,8 @@ public class PostCalculateScoreValuesAndRankFromResultFilePeakLossMultipleThread
 			File folder = new File(outputfolder + Constants.OS_SPECIFIC_FILE_SEPARATOR + "best_values");
 			if(!folder.exists()) folder.mkdirs();
 			
-			String fileprefix = pseudos[0] + "_" + pseudos[1] + "_" + pseudos[2] + "_" + pseudos[3];
-			fileprefix = fileprefix.replaceAll("\\.", "");
+			String fileprefix = pseudos[kk][0] + "_" + pseudos[kk][1] + "_" + pseudos[kk][2] + "_" + pseudos[kk][3];
+			fileprefix = fileprefix.replaceAll("\\.0E", "e").replaceAll("\\.", "");
 			
 			String path_pos = folder.getAbsolutePath() + Constants.OS_SPECIFIC_FILE_SEPARATOR + "pos" + Constants.OS_SPECIFIC_FILE_SEPARATOR;
 			String path_neg = folder.getAbsolutePath() + Constants.OS_SPECIFIC_FILE_SEPARATOR + "neg" + Constants.OS_SPECIFIC_FILE_SEPARATOR;
