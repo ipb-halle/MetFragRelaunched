@@ -352,6 +352,8 @@ public class PostCalculateScoreValuesAndRankFromResultFilePeakLossMultipleThread
 				this.ispositivequery = true;
 			else
 				this.ispositivequery = false;
+			this.ranks_for_weight = new int[pseudos.length][weights.length];
+			this.pseudos = pseudos;
 		}
 
 		/**
