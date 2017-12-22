@@ -422,7 +422,6 @@ public class PostCalculateScoreValuesAndRankFromResultFilePeakLossMultipleThread
 						this.stdout);
 				
 				this.ranks_for_weight[kk] = grocl.run_simple();
-				candidates = null;
 				this.removeFromCandidateSettings(this.settings, kk);
 			}
 			increaseNumberFinished(this.paramFile);
