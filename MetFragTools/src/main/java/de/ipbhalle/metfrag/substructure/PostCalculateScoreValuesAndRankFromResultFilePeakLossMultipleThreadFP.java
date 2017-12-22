@@ -360,7 +360,6 @@ public class PostCalculateScoreValuesAndRankFromResultFilePeakLossMultipleThread
 				this.ispositivequery = true;
 			else
 				this.ispositivequery = false;
-			this.ranks_for_weight = new int[this.pseudos.length][0];
 		}
 
 		/**
@@ -429,11 +428,27 @@ public class PostCalculateScoreValuesAndRankFromResultFilePeakLossMultipleThread
 						this.stdout);
 				
 				this.ranks_for_weight[kk] = grocl.run_simple();
+				candidates = null;
+				this.removeFromCandidateSettings(this.settings, kk);
 			}
-
 			increaseNumberFinished(this.paramFile);
 		}
 
+		public void removeFromCandidateSettings(Settings settings, int index) {
+			//peak
+			settings.remove(VariableNames.PEAK_FINGERPRINT_DENOMINATOR_VALUE_NAME + "_" + index);
+			settings.remove("PeakMassToSumF" + "_" + index);
+			settings.remove("PeakMassToAlphaProb" + "_" + index);
+			settings.remove("PeakMassToBetaProb" + "_" + index);
+			settings.remove("PeakDenominatorValue" + "_" + index);
+			settings.remove(VariableNames.PEAK_FINGERPRINT_DENOMINATOR_VALUE_NAME + "_" + index);
+			//loss
+			settings.remove("LossMassToSumF" + "_" + index);
+			settings.remove("LossMassToAlphaProb" + "_" + index);
+			settings.remove("LossMassToBetaProb" + "_" + index);
+			settings.remove("LossDenominatorValue" + "_" + index);
+		}
+		
 		public boolean isPositiveQuery() {
 			return this.ispositivequery;
 		}
