@@ -125,7 +125,7 @@ public class PostCalculateScoreValuesFromResultFilePeakThreadFP {
 		File[] paramFiles = _paramfolder.listFiles();
 
 		ArrayList<ProcessThread> threads = new ArrayList<ProcessThread>();
-
+		System.out.println(paramFiles.length + " param files");
 		for (int i = 0; i < paramFiles.length; i++) {
 			String id = paramFiles[i].getName().split("\\.")[0];
 			int resultFileID = -1;
