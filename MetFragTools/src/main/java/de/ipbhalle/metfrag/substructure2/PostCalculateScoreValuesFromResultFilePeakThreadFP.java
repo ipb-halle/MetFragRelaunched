@@ -124,6 +124,15 @@ public class PostCalculateScoreValuesFromResultFilePeakThreadFP {
 		File[] resultFiles = _resfolder.listFiles();
 		File[] paramFiles = _paramfolder.listFiles();
 
+
+		File folder = new File(outputfolder + Constants.OS_SPECIFIC_FILE_SEPARATOR + "scores");
+		if(!folder.exists()) folder.mkdirs();
+		String fileprefix = alpha + "_" + beta;
+		fileprefix = fileprefix.replaceAll("\\.", "");
+		String path = folder.getAbsolutePath() + Constants.OS_SPECIFIC_FILE_SEPARATOR + fileprefix + Constants.OS_SPECIFIC_FILE_SEPARATOR;
+		File filepath = new File(path);
+		if(!filepath.exists()) filepath.mkdirs();
+		
 		ArrayList<ProcessThread> threads = new ArrayList<ProcessThread>();
 		System.out.println(paramFiles.length + " param files");
 		for (int i = 0; i < paramFiles.length; i++) {
@@ -159,7 +168,7 @@ public class PostCalculateScoreValuesFromResultFilePeakThreadFP {
 
 			ProcessThread thread = new PostCalculateScoreValuesFromResultFilePeakThreadFP().new ProcessThread(
 					settings, outputfile, resfolder, paramFiles[i].getAbsolutePath(), outputtype, negScores, 
-					transformScores, scoringPropertyNames, stdout);
+					transformScores, scoringPropertyNames, stdout, path);
 			threads.add(thread);
 		}
 		System.out.println("preparation finished " + threads.size() + " files found");
@@ -175,23 +184,6 @@ public class PostCalculateScoreValuesFromResultFilePeakThreadFP {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-		}
-		
-		File folder = new File(outputfolder + Constants.OS_SPECIFIC_FILE_SEPARATOR + "scores");
-		if(!folder.exists()) folder.mkdirs();
-		String fileprefix = alpha + "_" + beta;
-		fileprefix = fileprefix.replaceAll("\\.", "");
-		
-		String path = folder.getAbsolutePath() + Constants.OS_SPECIFIC_FILE_SEPARATOR + fileprefix + Constants.OS_SPECIFIC_FILE_SEPARATOR;
-		new File(path).mkdirs();
-		
-		CandidateListWriterPSV psvWriter = new CandidateListWriterPSV();
-		for(int i = 0; i < threads.size(); i++) {
-			CandidateList candidates = threads.get(i).getCandidateList();
-			String paramid = threads.get(i).getParamFileName().replaceAll(".*\\/", "").replaceAll("\\.txt", "");
-			String filename = Constants.OS_SPECIFIC_FILE_SEPARATOR + paramid + "_peak.psv";
-			filename = path + filename;
-			psvWriter.write(candidates, filename);
 		}
 	}
 
@@ -271,6 +263,7 @@ public class PostCalculateScoreValuesFromResultFilePeakThreadFP {
 		protected int[] ranks_for_weight;
 		protected boolean ispositivequery;
 		protected CandidateList candidates;
+		protected String outputfolder;
 		
 		/**
 		 * 
@@ -279,7 +272,7 @@ public class PostCalculateScoreValuesFromResultFilePeakThreadFP {
 		 */
 		public ProcessThread(Settings settings, String outputfile, String resultsfolder, String paramFile,
 				String outputtype, boolean negScores, boolean tranformscores, String[] scorenames,
-				boolean stdout) {
+				boolean stdout, String outputfolder) {
 			this.settings = settings;
 			this.outputfile = outputfile;
 			this.resultsfolder = resultsfolder;
@@ -293,6 +286,7 @@ public class PostCalculateScoreValuesFromResultFilePeakThreadFP {
 				this.ispositivequery = true;
 			else
 				this.ispositivequery = false;
+			this.outputfolder = outputfolder;
 		}
 
 		public String getParamFileName() {
@@ -347,6 +341,19 @@ public class PostCalculateScoreValuesFromResultFilePeakThreadFP {
 			}
 			
 			this.candidates = candidates;
+			
+			CandidateListWriterPSV psvWriter = new CandidateListWriterPSV();
+			
+			String paramid = this.getParamFileName().replaceAll(".*\\/", "").replaceAll("\\.txt", "");
+			String filename = Constants.OS_SPECIFIC_FILE_SEPARATOR + paramid + "_peak.psv";
+			filename = this.outputfolder + filename;
+			try {
+				psvWriter.write(candidates, filename);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 			increaseNumberFinished(this.paramFile);
 		}
 
