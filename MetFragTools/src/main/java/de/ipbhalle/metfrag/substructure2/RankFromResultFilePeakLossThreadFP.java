@@ -1,4 +1,4 @@
-package de.ipbhalle.metfrag.substructure;
+package de.ipbhalle.metfrag.substructure2;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -12,9 +12,7 @@ import de.ipbhalle.metfrag.ranking.GetRankOfCandidateList;
 import de.ipbhalle.metfraglib.database.LocalCSVDatabase;
 import de.ipbhalle.metfraglib.database.LocalPSVDatabase;
 import de.ipbhalle.metfraglib.exceptions.MultipleHeadersFoundInInputDatabaseException;
-import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.interfaces.IDatabase;
-import de.ipbhalle.metfraglib.interfaces.IPeakListReader;
 import de.ipbhalle.metfraglib.list.CandidateList;
 import de.ipbhalle.metfraglib.match.MassFingerprintMatch;
 import de.ipbhalle.metfraglib.parameter.Constants;
@@ -23,10 +21,7 @@ import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.settings.MetFragGlobalSettings;
 import de.ipbhalle.metfraglib.settings.Settings;
 
-public class PostCalculateScoreValuesAndRankFromResultFilePeakThreadFP {
-
-	public static double ALPHA_VALUE_PEAK = 0.0001;
-	public static double BETA_VALUE_PEAK = 0.0001;
+public class RankFromResultFilePeakLossThreadFP {
 
 	public static int numberFinished = 0;
 	public static java.util.Hashtable<String, String> argsHash;
@@ -36,9 +31,9 @@ public class PostCalculateScoreValuesAndRankFromResultFilePeakThreadFP {
 		for (String arg : args) {
 			arg = arg.trim();
 			String[] tmp = arg.split("=");
-			if (!tmp[0].equals("parampath") && !tmp[0].equals("resultpath") && !tmp[0].equals("threads")
-					&& !tmp[0].equals("output") && !tmp[0].equals("alpha") && !tmp[0].equals("beta") && !tmp[0].equals("weights")
-					&& !tmp[0].equals("outputtype") && !tmp[0].equals("stdout") && !tmp[0].equals("negscore")
+			if (!tmp[0].equals("parampath") && !tmp[0].equals("resultpathloss") && !tmp[0].equals("resultpathpeak") && !tmp[0].equals("threads")
+					&& !tmp[0].equals("output") 
+					&& !tmp[0].equals("weights") && !tmp[0].equals("outputtype") && !tmp[0].equals("stdout") && !tmp[0].equals("negscore")
 					&& !tmp[0].equals("scorenames") && !tmp[0].equals("transform") && !tmp[0].equals("outputfolder")) {
 				System.err.println("property " + tmp[0] + " not known.");
 				return false;
@@ -54,7 +49,11 @@ public class PostCalculateScoreValuesAndRankFromResultFilePeakThreadFP {
 			System.err.println("no csv defined");
 			return false;
 		}
-		if (!argsHash.containsKey("resultpath")) {
+		if (!argsHash.containsKey("resultpathpeak")) {
+			System.err.println("no csv defined");
+			return false;
+		}
+		if (!argsHash.containsKey("resultpathloss")) {
 			System.err.println("no csv defined");
 			return false;
 		}
@@ -63,14 +62,6 @@ public class PostCalculateScoreValuesAndRankFromResultFilePeakThreadFP {
 			return false;
 		}
 		if (!argsHash.containsKey("output")) {
-			System.err.println("no csv defined");
-			return false;
-		}
-		if (!argsHash.containsKey("alpha")) {
-			System.err.println("no csv defined");
-			return false;
-		}
-		if (!argsHash.containsKey("beta")) {
 			System.err.println("no csv defined");
 			return false;
 		}
@@ -107,10 +98,9 @@ public class PostCalculateScoreValuesAndRankFromResultFilePeakThreadFP {
 		getArgs(args);
 
 		String paramfolder = (String) argsHash.get("parampath");
-		String resfolder = (String) argsHash.get("resultpath");
+		String resfolderpeak = (String) argsHash.get("resultpathpeak");
+		String resfolderloss = (String) argsHash.get("resultpathloss");
 		String outputfile = (String) argsHash.get("output");
-		String alpha = (String) argsHash.get("alpha");
-		String beta = (String) argsHash.get("beta");
 		int numberThreads = Integer.parseInt(argsHash.get("threads"));
 		double[][] weights = readWeights(argsHash.get("weights"));
 		Boolean stdout = Boolean.parseBoolean(argsHash.get("stdout"));
@@ -119,51 +109,56 @@ public class PostCalculateScoreValuesAndRankFromResultFilePeakThreadFP {
 		String[] scoringPropertyNames = argsHash.get("scorenames").split(",");
 		Boolean transformScores = Boolean.parseBoolean(argsHash.get("transform"));
 		String outputfolder = (String) argsHash.get("outputfolder");
-
-		ALPHA_VALUE_PEAK = Double.parseDouble(alpha);
-		BETA_VALUE_PEAK = Double.parseDouble(beta);
-
-		File _resfolder = new File(resfolder);
+		
+		File _resfolderpeak = new File(resfolderpeak);
+		File _resfolderloss = new File(resfolderloss);
 		File _paramfolder = new File(paramfolder);
 
-		File[] resultFiles = _resfolder.listFiles();
+		File[] resultFilesPeak = _resfolderpeak.listFiles();
+		File[] resultFilesLoss = _resfolderloss.listFiles();
 		File[] paramFiles = _paramfolder.listFiles();
 
 		ArrayList<ProcessThread> threads = new ArrayList<ProcessThread>();
 
 		for (int i = 0; i < paramFiles.length; i++) {
 			String id = paramFiles[i].getName().split("\\.")[0];
-			int resultFileID = -1;
-			for (int j = 0; j < resultFiles.length; j++) {
-				if (resultFiles[j].getName().startsWith(id + ".")) {
-					resultFileID = j;
+			int resultFileIDPeak = -1;
+			for (int j = 0; j < resultFilesPeak.length; j++) {
+				if (resultFilesPeak[j].getName().startsWith(id + "_peak.")) {
+					resultFileIDPeak = j;
 					break;
 				}
 			}
-			if (resultFileID == -1) {
-				System.err.println(id + " not found as result.");
+			if (resultFileIDPeak == -1) {
+				System.err.println(id + " not found as peak result.");
+				continue;
+			}
+			int resultFileIDLoss = -1;
+			for (int j = 0; j < resultFilesLoss.length; j++) {
+				if (resultFilesLoss[j].getName().startsWith(id + "_loss.")) {
+					resultFileIDLoss = j;
+					break;
+				}
+			}
+			if (resultFileIDLoss == -1) {
+				System.err.println(id + " not found as loss result.");
 				continue;
 			}
 
 			Settings settings = getSettings(paramFiles[i].getAbsolutePath());
-			settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, resultFiles[resultFileID].getAbsolutePath());
 
-			settings.set(VariableNames.PEAK_FINGERPRINT_ANNOTATION_ALPHA_VALUE_NAME, ALPHA_VALUE_PEAK);
-			settings.set(VariableNames.PEAK_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME, BETA_VALUE_PEAK);
+			settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, resultFilesPeak[resultFileIDPeak].getAbsolutePath());
+			settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME + "_PEAK", resultFilesPeak[resultFileIDPeak].getAbsolutePath());
+			settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME + "_LOSS", resultFilesLoss[resultFileIDLoss].getAbsolutePath());
 
 			SettingsChecker sc = new SettingsChecker();
 			if (!sc.check(settings)) {
 				System.err.println("Error checking settings for " + id);
 				continue;
 			}
-			IPeakListReader peakListReader = (IPeakListReader) Class
-					.forName((String) settings.get(VariableNames.METFRAG_PEAK_LIST_READER_NAME))
-					.getConstructor(Settings.class).newInstance(settings);
 
-			settings.set(VariableNames.PEAK_LIST_NAME, peakListReader.read());
-
-			ProcessThread thread = new PostCalculateScoreValuesAndRankFromResultFilePeakThreadFP().new ProcessThread(
-					settings, outputfile, resfolder, paramFiles[i].getAbsolutePath(), outputtype, negScores, weights,
+			ProcessThread thread = new RankFromResultFilePeakLossThreadFP().new ProcessThread(
+					settings, outputfile, resfolderpeak, resfolderloss, paramFiles[i].getAbsolutePath(), outputtype, negScores, weights,
 					transformScores, scoringPropertyNames, stdout);
 			threads.add(thread);
 		}
@@ -251,8 +246,9 @@ public class PostCalculateScoreValuesAndRankFromResultFilePeakThreadFP {
 		
 		File folder = new File(outputfolder + Constants.OS_SPECIFIC_FILE_SEPARATOR + "best_values");
 		if(!folder.exists()) folder.mkdirs();
-		String fileprefix = alpha + "_" + beta;
+		String fileprefix = resfolderpeak.replaceAll(".*scores\\/", "").replaceAll("\\/.*", "");
 		fileprefix = fileprefix.replaceAll("\\.", "");
+		fileprefix += "_" + resfolderloss.replaceAll(".*scores\\/", "").replaceAll("\\/.*", "").replaceAll("\\.", "");
 		
 		String path_pos = folder.getAbsolutePath() + Constants.OS_SPECIFIC_FILE_SEPARATOR + "pos" + Constants.OS_SPECIFIC_FILE_SEPARATOR;
 		String path_neg = folder.getAbsolutePath() + Constants.OS_SPECIFIC_FILE_SEPARATOR + "neg" + Constants.OS_SPECIFIC_FILE_SEPARATOR;
@@ -279,9 +275,6 @@ public class PostCalculateScoreValuesAndRankFromResultFilePeakThreadFP {
 
 		bwriter_neg1.close();
 		bwriter_neg2.close();
-		
-		//printBestRankingsPos(threads, bestWeightIndexPos);
-		
 	}
 
 	public static double[][] readWeights(String weightsfile) throws IOException {
@@ -306,19 +299,8 @@ public class PostCalculateScoreValuesAndRankFromResultFilePeakThreadFP {
 		return weightmatrix;
 	}
 
-	public static void printBestRankingsPos(ArrayList<ProcessThread> threads, int bestWeightIndex) {
-		for(ProcessThread thread : threads)
-			if(thread.ispositivequery) System.out.println(thread.paramFile.replaceAll(".*/", "") + " " + thread.getRanksForWeight()[bestWeightIndex]);
-	}
-
-	public static void printBestRankingsNeg(ArrayList<ProcessThread> threads, int bestWeightIndex) {
-		for(ProcessThread thread : threads)
-			if(!thread.ispositivequery) System.out.println(thread.paramFile.replaceAll(".*/", "") + " " + thread.getRanksForWeight()[bestWeightIndex]);
-	}
-	
 	public static synchronized void increaseNumberFinished(String name) {
 		numberFinished++;
-	//	System.err.println("finished " + numberFinished + " -> " + name);
 	}
 
 	public static Settings getSettings(String parameterfile) {
@@ -350,7 +332,8 @@ public class PostCalculateScoreValuesAndRankFromResultFilePeakThreadFP {
 	class ProcessThread extends Thread {
 		protected Settings settings;
 		protected String outputfile;
-		protected String resultsfolder;
+		protected String resultsfolderpeak;
+		protected String resultsfolderloss;
 		protected String paramFile;
 		protected String outputtype;
 		protected boolean negScores;
@@ -366,12 +349,13 @@ public class PostCalculateScoreValuesAndRankFromResultFilePeakThreadFP {
 		 * @param settings
 		 * @param outputFolder
 		 */
-		public ProcessThread(Settings settings, String outputfile, String resultsfolder, String paramFile,
+		public ProcessThread(Settings settings, String outputfile, String resultsfolderpeak, String resultsfolderloss, String paramFile,
 				String outputtype, boolean negScores, double[][] weights, boolean tranformscores, String[] scorenames,
 				boolean stdout) {
 			this.settings = settings;
 			this.outputfile = outputfile;
-			this.resultsfolder = resultsfolder;
+			this.resultsfolderpeak = resultsfolderpeak;
+			this.resultsfolderloss = resultsfolderloss;
 			this.paramFile = paramFile;
 			this.outputtype = outputtype;
 			this.negScores = negScores;
@@ -389,10 +373,48 @@ public class PostCalculateScoreValuesAndRankFromResultFilePeakThreadFP {
 		 * 
 		 */
 		public void run() {
+			String dbFilenamepeak = (String) this.settings.get(VariableNames.LOCAL_DATABASE_PATH_NAME + "_PEAK");
+			String dbFilenameloss = (String) this.settings.get(VariableNames.LOCAL_DATABASE_PATH_NAME + "_LOSS");
+			CandidateList candidatespeak = this.getCandidateListFromFile(this.settings, dbFilenamepeak);
+			CandidateList candidatesloss = this.getCandidateListFromFile(this.settings, dbFilenameloss);
+
+			System.out.println(dbFilenamepeak);
+			System.out.println(dbFilenameloss);
+			
+			if(candidatespeak.getNumberElements() != candidatesloss.getNumberElements()) {
+				System.err.println("Exception: candidate list peak and loss differ in size " + candidatespeak.getNumberElements() + " " + candidatesloss.getNumberElements());
+				return;
+			}
+			
+			try {
+				this.addLossScores(candidatespeak, candidatesloss);
+			} catch (Exception e1) {
+				e1.printStackTrace();
+				return;
+			}
+			System.err.println(dbFilenamepeak.replaceAll(".*/", "") + ": Read " + candidatespeak.getNumberElements() + " candidates");
+			
+			String correctInChIKey1 = "";
+			try {
+				correctInChIKey1 = this.getInChIKey();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			GetRankOfCandidateList grocl = new GetRankOfCandidateList(candidatespeak, dbFilenamepeak, correctInChIKey1,
+					this.outputfile, weights, this.outputtype, this.negScores, this.tranformscores, this.scorenames,
+					this.stdout);
+			this.ranks_for_weight = grocl.run_simple();
+
+			increaseNumberFinished(this.paramFile);
+		}
+
+		public CandidateList getCandidateListFromFile(Settings settings, String filename) {
+			settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, filename);
 			IDatabase db = null;
-			String dbFilename = (String) settings.get(VariableNames.LOCAL_DATABASE_PATH_NAME);
-			if (dbFilename.endsWith("psv"))
-				db = new LocalPSVDatabase(this.settings);
+			if (filename.endsWith("psv"))
+				db = new LocalPSVDatabase(settings);
 			else
 				db = new LocalCSVDatabase(settings);
 			ArrayList<String> ids = null;
@@ -416,44 +438,25 @@ public class PostCalculateScoreValuesAndRankFromResultFilePeakThreadFP {
 			if (candidates.getNumberElements() == 0) {
 				System.err.println(
 						"No candidates found in " + (String) this.settings.get(VariableNames.LOCAL_DATABASE_PATH_NAME));
-				return;
+				return null;
 			}
-
-		//	System.err.println(dbFilename.replaceAll(".*/", "") + ": Read " + candidates.getNumberElements() + " candidates");
-			try {
-				this.postProcessScoreParametersPeak(this.settings, candidates);
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-			
-			for (int i = 0; i < candidates.getNumberElements(); i++) {
-				this.settings.set(VariableNames.CANDIDATE_NAME, candidates.getElement(i));
-				this.singlePostCalculatePeak(this.settings, candidates.getElement(i));
-				candidates.getElement(i).removeProperty("PeakMatchList");
-			}
-
-			String correctInChIKey1 = "";
-			try {
-				correctInChIKey1 = this.getInChIKey();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-			GetRankOfCandidateList grocl = new GetRankOfCandidateList(candidates, dbFilename, correctInChIKey1,
-					this.outputfile, weights, this.outputtype, this.negScores, this.tranformscores, this.scorenames,
-					this.stdout);
-			this.ranks_for_weight = grocl.run_simple();
-			
-			increaseNumberFinished(this.paramFile);
+			return candidates;
 		}
-
-		public int getBestRank(int[] ranks, String dbFilename) {
-			int minRank = Integer.MAX_VALUE;
-			for(int i = 0; i < ranks.length; i++) {
-				if(minRank > ranks[i]) minRank = ranks[i];
+		
+		public void addLossScores(CandidateList candidatespeak, CandidateList candidatesloss) throws Exception {
+			for(int i = 0; i < candidatespeak.getNumberElements(); i++) {
+				String idpeak = candidatespeak.getElement(i).getIdentifier();
+				boolean found = false;
+				for(int j = 0; j < candidatesloss.getNumberElements(); j++) {
+					String idloss = candidatesloss.getElement(i).getIdentifier();
+					if(idpeak.equals(idloss)) {
+						found = true;
+						candidatespeak.getElement(i).setProperty("AutomatedLossFingerprintAnnotationScore", candidatesloss.getElement(i).getProperty("AutomatedLossFingerprintAnnotationScore"));
+						break;
+					}
+				}
+				if(!found) throw new Exception(idpeak + " not found in loss candidate list");
 			}
-			return minRank;
 		}
 		
 		public boolean isPositiveQuery() {
@@ -484,108 +487,6 @@ public class PostCalculateScoreValuesAndRankFromResultFilePeakThreadFP {
 			breader.close();
 			return inchikey;
 		}
-
-		/**
-		 * 
-		 * @param settings
-		 * @param candidates
-		 * @throws IOException
-		 */
-		public void postProcessScoreParametersPeak(Settings settings, CandidateList candidates) throws IOException {
-			String samplename = (String) settings.get(VariableNames.SAMPLE_NAME);
-			String filename = this.resultsfolder + Constants.OS_SPECIFIC_FILE_SEPARATOR + samplename + "_data_peak.txt";
-			BufferedReader breader = new BufferedReader(new FileReader(new File(filename)));
-			String line = "";
-			Double sumFingerprintFrequencies = null;
-			Double f_seen = null;
-			Double f_unseen = null;
-			java.util.HashMap<Double, java.util.LinkedList<Double>> massToObservations = new java.util.HashMap<Double, java.util.LinkedList<Double>>();
-			java.util.HashMap<Double, Double> massToBackgroundSize = new java.util.HashMap<Double, Double>();
-			boolean valuesStarted = false;
-			while ((line = breader.readLine()) != null) {
-				line = line.trim();
-				if (valuesStarted) {
-					String[] tmp = line.split("\\s+");
-					Double mass = Double.parseDouble(tmp[0]);
-					java.util.LinkedList<Double> observations = new java.util.LinkedList<Double>();
-					for (int i = 1; i < (tmp.length - 1); i++) {
-						observations.add(Double.parseDouble(tmp[i]));
-					}
-					massToObservations.put(mass, observations);
-					massToBackgroundSize.put(mass, Double.parseDouble(tmp[tmp.length - 1].split(":")[1]));
-				} else if (line.startsWith("sumFingerprintFrequencies"))
-					sumFingerprintFrequencies = Double.parseDouble(line.split("\\s+")[1]);
-				else if (line.startsWith("f_seen"))
-					f_seen = Double.parseDouble(line.split("\\s+")[1]);
-				else if (line.startsWith("f_unseen"))
-					f_unseen = Double.parseDouble(line.split("\\s+")[1]);
-				else if (line.startsWith("PeakToFingerprints"))
-					valuesStarted = true;
-			}
-			breader.close();
-
-			double alpha = (double) settings.get(VariableNames.PEAK_FINGERPRINT_ANNOTATION_ALPHA_VALUE_NAME); // alpha
-			double beta = (double) settings.get(VariableNames.PEAK_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME); // beta
-			// set value for denominator of P(f,m)
-			double denominatorValue = sumFingerprintFrequencies + alpha * f_seen + alpha * f_unseen + beta;
-
-			settings.set(VariableNames.PEAK_FINGERPRINT_DENOMINATOR_VALUE_NAME, denominatorValue);
-
-			double alphaProbability = alpha / denominatorValue; // P(f,m) F_u
-			double betaProbability = beta / denominatorValue; // p(f,m) not
-																// annotated
-			java.util.Iterator<Double> it = massToObservations.keySet().iterator();
-
-			java.util.HashMap<Double, Double> massToSumF = new java.util.HashMap<Double, Double>();
-			java.util.HashMap<Double, Double> massToAlphaProb = new java.util.HashMap<Double, Double>();
-			java.util.HashMap<Double, Double> massToBetaProb = new java.util.HashMap<Double, Double>();
-
-			while (it.hasNext()) {
-				Double mass = it.next();
-				java.util.LinkedList<Double> observations = massToObservations.get(mass);
-				Double bgsize = massToBackgroundSize.get(mass);
-				// sum_f P(f,m)
-				// calculate sum of MF_s (including the alpha count) and the
-				// joint probabilities
-				// at this stage getProbability() returns the absolute counts
-				// from the annotation files
-				double sum_f = 0.0;
-				double sumFsProbabilities = 0.0;
-				for (int ii = 0; ii < observations.size(); ii++) {
-					// sum_f P(f,m) -> for F_s
-					sumFsProbabilities += (observations.get(ii) + alpha) / denominatorValue;
-				}
-
-				// calculate the sum of probabilities for un-observed
-				// fingerprints for the current mass
-				double sumFuProbabilities = alphaProbability * bgsize;
-
-				sum_f += sumFsProbabilities;
-				sum_f += sumFuProbabilities;
-				sum_f += betaProbability;
-
-				massToSumF.put(mass, sum_f);
-				massToAlphaProb.put(mass, alphaProbability / sum_f);
-				massToBetaProb.put(mass, betaProbability / sum_f);
-				
-				//printSum(mass, observations, alpha, betaProbability, sum_f, denominatorValue, bgsize);
-			}
-			settings.set("PeakMassToSumF", massToSumF);
-			settings.set("PeakMassToAlphaProb", massToAlphaProb);
-			settings.set("PeakMassToBetaProb", massToBetaProb);
-			settings.set("PeakDenominatorValue", denominatorValue);
-			return;
-		}
-
-		public void printSum(double mass, java.util.LinkedList<Double> obs, double alpha, double betaProb, double sum_f, double denominatorValue, double bgsize) {
-			double sum = 0.0;
-			for(Double ob : obs) {
-				sum += ((ob + alpha) / denominatorValue) / sum_f;
-				System.out.println("ob " + ((ob + alpha) / denominatorValue));
-			}
-			sum += ((alpha / denominatorValue) / sum_f) * bgsize + betaProb / sum_f;
-			System.out.println(mass + " " + sum + " " + ((alpha / denominatorValue)));
-		}
 		
 		public String getProbTypeString(ArrayList<Double> matchProb, ArrayList<Integer> matchType,
 				ArrayList<Double> matchMasses) {
@@ -614,61 +515,20 @@ public class PostCalculateScoreValuesAndRankFromResultFilePeakThreadFP {
 			}
 			return;
 		}
-
-		public void singlePostCalculatePeak(Settings settings, ICandidate candidate) {
-			double value = 0.0;
-			int matches = 0;
-			java.util.Vector<Double> peakMasses = new java.util.Vector<Double>();
-			java.util.Vector<String> peakProbTypes = new java.util.Vector<String>();
-			this.readMassToProbType((String) candidate.getProperty("AutomatedPeakFingerprintAnnotationScore_Probtypes"),
-					peakMasses, peakProbTypes);
-			ArrayList<Double> matchMasses = new ArrayList<Double>();
-			ArrayList<Double> matchProb = new ArrayList<Double>();
-			ArrayList<Integer> matchType = new ArrayList<Integer>(); // found -
-																		// 1;
-																		// alpha
-																		// - 2;
-																		// beta
-																		// - 3
-			// get foreground fingerprint observations (m_f_observed)
-
-			double alpha = (double) settings.get(VariableNames.PEAK_FINGERPRINT_ANNOTATION_ALPHA_VALUE_NAME); // alpha
-			java.util.HashMap<?, ?> massToSumF = (java.util.HashMap<?, ?>) settings.get("PeakMassToSumF");
-			java.util.HashMap<?, ?> massToAlphaProb = (java.util.HashMap<?, ?>) settings.get("PeakMassToAlphaProb");
-			java.util.HashMap<?, ?> massToBetaProb = (java.util.HashMap<?, ?>) settings.get("PeakMassToBetaProb");
-			Double denominatorValue = (Double) settings.get("PeakDenominatorValue");
-			for (int k = 0; k < peakMasses.size(); k++) {
-				Double mass = peakMasses.get(k);
-				String probType = peakProbTypes.get(k);
-				String[] tmp = probType.split(":");
-				// (fingerprintToMasses.getSize(currentFingerprint));
-				if (tmp.length == 1) {
-					double prob = 0.0;
-					if (tmp[0].equals("2"))
-						prob = (Double) massToAlphaProb.get(mass);
-					else if (tmp[0].equals("3"))
-						prob = (Double) massToBetaProb.get(mass);
-					matchProb.add(prob);
-					matchType.add(Integer.parseInt(tmp[0]));
-					matchMasses.add(mass);
-					value += Math.log(prob);
-				} else {
-					matches++;
-					// (p(m,f) + alpha) / sum_F(p(m,f)) + |F| * alpha
-					double matching_prob = ((Double.parseDouble(tmp[0]) + alpha) / denominatorValue) / (Double) massToSumF.get(mass);
-					// |F|
-					if (matching_prob != 0.0) {
-						value += Math.log(matching_prob);
-						matchProb.add(matching_prob);
-						matchType.add(1);
-						matchMasses.add(mass);
-					}
-				}
+		
+		protected Double findMatchingLossMass(Object[] masses, Double mass) {
+			Double lastMassFound = null;
+			Double lastDevFound = null;
+			for (int i = 0; i < masses.length; i++) {
+				Double currentMass = (Double) masses[i];
+				Double currentDev = Math.abs(mass - currentMass);
+				if (lastDevFound == null || lastDevFound > currentDev) {
+					lastMassFound = currentMass;
+					lastDevFound = currentDev;
+				} else
+					break;
 			}
-
-			candidate.setProperty("AutomatedPeakFingerprintAnnotationScore_Matches", matches);
-			candidate.setProperty("AutomatedPeakFingerprintAnnotationScore", value);
-			candidate.setProperty("AutomatedPeakFingerprintAnnotationScore_Probtypes", getProbTypeString(matchProb, matchType, matchMasses));
+			return lastMassFound;
 		}
 	}
 }

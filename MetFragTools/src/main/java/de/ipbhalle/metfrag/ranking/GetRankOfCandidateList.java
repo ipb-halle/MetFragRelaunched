@@ -325,7 +325,7 @@ public class GetRankOfCandidateList {
 			System.err.println("inchikey1=" + this.correctInChIKey1 + " not found in " + this.csv);
 			return null;
 		}
-
+		
 		// store maximal scores
 		double[] maximumscores = new double[this.scoringPropertyNames.length];
 
@@ -398,6 +398,10 @@ public class GetRankOfCandidateList {
 			this.scores = new ArrayList<double[]>();
 		}
 
+		public ArrayList<double[]> getScores() {
+			return this.scores;
+		}
+		
 		public String getBestIdentifier() {
 			return this.identifiers.get(this.bestIndex);
 		}
