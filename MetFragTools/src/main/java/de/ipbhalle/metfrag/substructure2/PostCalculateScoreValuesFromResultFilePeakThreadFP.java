@@ -162,7 +162,7 @@ public class PostCalculateScoreValuesFromResultFilePeakThreadFP {
 					transformScores, scoringPropertyNames, stdout);
 			threads.add(thread);
 		}
-		System.err.println("preparation finished " + threads.size() + " files found");
+		System.out.println("preparation finished " + threads.size() + " files found");
 
 		ExecutorService executer = Executors.newFixedThreadPool(numberThreads);
 		for (ProcessThread thread : threads) {
@@ -332,7 +332,7 @@ public class PostCalculateScoreValuesFromResultFilePeakThreadFP {
 						"No candidates found in " + (String) this.settings.get(VariableNames.LOCAL_DATABASE_PATH_NAME));
 				return;
 			}
-			System.err.println(
+			System.out.println(
 					dbFilename.replaceAll(".*/", "") + ": Read " + candidates.getNumberElements() + " candidates");
 			try {
 				this.postProcessScoreParametersPeak(this.settings, candidates);

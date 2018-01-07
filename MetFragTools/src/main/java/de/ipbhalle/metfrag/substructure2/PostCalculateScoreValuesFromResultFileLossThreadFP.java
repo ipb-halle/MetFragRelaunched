@@ -325,7 +325,7 @@ public class PostCalculateScoreValuesFromResultFileLossThreadFP {
 				e1.printStackTrace();
 			}
 			if (candidates.getNumberElements() == 0) {
-				System.err.println(
+				System.out.println(
 						"No candidates found in " + (String) this.settings.get(VariableNames.LOCAL_DATABASE_PATH_NAME));
 				return;
 			}
