@@ -162,7 +162,7 @@ public class PostCalculateScoreValuesFromResultFilePeakThreadFP {
 					transformScores, scoringPropertyNames, stdout);
 			threads.add(thread);
 		}
-		System.err.println("preparation finished");
+		System.err.println("preparation finished " + threads.size() + " files found");
 
 		ExecutorService executer = Executors.newFixedThreadPool(numberThreads);
 		for (ProcessThread thread : threads) {
