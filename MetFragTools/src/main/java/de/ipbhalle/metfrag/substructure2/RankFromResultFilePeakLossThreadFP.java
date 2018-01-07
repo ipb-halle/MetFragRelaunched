@@ -377,9 +377,6 @@ public class RankFromResultFilePeakLossThreadFP {
 			String dbFilenameloss = (String) this.settings.get(VariableNames.LOCAL_DATABASE_PATH_NAME + "_LOSS");
 			CandidateList candidatespeak = this.getCandidateListFromFile(this.settings, dbFilenamepeak);
 			CandidateList candidatesloss = this.getCandidateListFromFile(this.settings, dbFilenameloss);
-
-			System.out.println(dbFilenamepeak);
-			System.out.println(dbFilenameloss);
 			
 			if(candidatespeak.getNumberElements() != candidatesloss.getNumberElements()) {
 				System.err.println("Exception: candidate list peak and loss differ in size " + candidatespeak.getNumberElements() + " " + candidatesloss.getNumberElements());
