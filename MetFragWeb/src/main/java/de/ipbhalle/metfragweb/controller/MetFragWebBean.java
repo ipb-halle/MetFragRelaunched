@@ -75,7 +75,7 @@ import de.ipbhalle.metfragweb.validator.SmartsValidator;
 @SessionScoped
 public class MetFragWebBean {
 
-	private final String version = "v2.0.9";
+	private final String version = "v2.0.10";
 	/*
 	 * combines all the settings
 	 */
@@ -86,6 +86,7 @@ public class MetFragWebBean {
 	protected ClusterCompoundsThreadRunner clusterCompoundsThreadRunner;
 	private OrganigramNode selectedNode;
 	private boolean clusterImageTooltipRendered = false;
+	private boolean mergedCandidateResultsByInChIKey1 = true;
 //	protected TreeNode[] selectedClusterNodes;
 //	protected TreeNode selectedContextMenuClusterNode;
 	protected Boolean clusterCompoundsThreadStarted;
@@ -1803,6 +1804,14 @@ public class MetFragWebBean {
 		this.beanSettingsContainer.setMode(mode);
 	}
 
+	public boolean isGroupCandidatesEnabled() {
+		return this.mergedCandidateResultsByInChIKey1;
+	}
+
+	public void setGroupCandidatesEnabled(boolean groupCandidates) {
+		this.mergedCandidateResultsByInChIKey1 = groupCandidates;
+	}
+	
 	public Byte getTreeDepth() {
 		return this.beanSettingsContainer.getTreeDepth();
 	}
@@ -2043,7 +2052,7 @@ public class MetFragWebBean {
 		}
 		
 		this.processCompoundsThreadRunner = new ProcessCompoundsThreadRunner(this.beanSettingsContainer, 
-			this.infoMessages, this.errorMessages, this.getSessionId(), this.getRootSessionFolder());
+			this.infoMessages, this.errorMessages, this.getSessionId(), this.getRootSessionFolder(), this.mergedCandidateResultsByInChIKey1);
 		this.thread = new Thread(this.processCompoundsThreadRunner);
 		this.selectedNode = null;
 		/*

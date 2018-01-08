@@ -785,13 +785,8 @@ public class BeanSettingsContainer {
 						if(this.availableCandidatePartitioningCoefficients.get(k).getLabel().equals(currentKey)) {
 							if(currentKey.equals("CDK")) this.availablePartitioningCoefficients.add(new SelectItem(currentKey));
 							else {
-								try {
-									Double.parseDouble((String)candidates.getElement(0).getProperty(currentKey));
+								if(this.isValidLogValueProperty(currentKey, candidates))
 									this.availablePartitioningCoefficients.add(new SelectItem(currentKey));
-								}
-								catch(Exception e) {
-									continue;
-								}
 							}
 						}
 					}
@@ -799,6 +794,24 @@ public class BeanSettingsContainer {
 			}
 		}
 		else this.availablePartitioningCoefficients = null;
+	}
+	
+	protected boolean isValidLogValueProperty(String key, CandidateList candidates) {
+		double numberCandidatesWithValidValue = 0.0;
+		for(int i = 0; i < candidates.getNumberElements(); i++) {
+			try {
+				Double.parseDouble((String)candidates.getElement(i).getProperty(key));
+				numberCandidatesWithValidValue++;
+			}
+			catch(Exception e) {
+				continue;
+			}
+		}
+		// at least 30 % need to have a valid log value
+		double percentage = numberCandidatesWithValidValue / candidates.getNumberElements();
+		if(percentage >= 0.3)
+			return true;
+		return false;
 	}
 	
 	protected void resetDatabaseParameters() {

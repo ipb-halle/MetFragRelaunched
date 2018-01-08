@@ -34,15 +34,17 @@ public class ProcessCompoundsThreadRunner extends ThreadRunner {
 	protected int renderedMoleculesNextPercentageValue;
 	protected int renderedMoleculesPercentageValue;
 	protected boolean renderingMolecules;
+	protected boolean mergedCandidateResultsByInChIKey1;
 	
 	public ProcessCompoundsThreadRunner(BeanSettingsContainer beanSettingsContainer, 
-			Messages infoMessages, Messages errorMessages, String sessionId, String rootSessionPath) {
+			Messages infoMessages, Messages errorMessages, String sessionId, String rootSessionPath, boolean mergedCandidateResultsByInChIKey1) {
 		super(beanSettingsContainer, infoMessages, errorMessages);
 		this.sessionId = sessionId;
 		this.rootSessionPath = rootSessionPath;
 		this.renderedMoleculesNextPercentageValue = 1;
 		this.renderedMoleculesPercentageValue = 0;
 		this.renderingMolecules = false;
+		this.mergedCandidateResultsByInChIKey1 = mergedCandidateResultsByInChIKey1;
 	}
 	
 	@Override
@@ -257,7 +259,7 @@ public class ProcessCompoundsThreadRunner extends ThreadRunner {
 				mol.setMatchList(matchList);
 			}
 			mol.setNumberPeaksExplained(countExplainedPeaks);
-			if(candidate.getProperties().containsKey(VariableNames.INCHI_KEY_1_NAME) && candidate.getProperty(VariableNames.INCHI_KEY_1_NAME) != null) {
+			if(this.mergedCandidateResultsByInChIKey1 && (candidate.getProperties().containsKey(VariableNames.INCHI_KEY_1_NAME) && candidate.getProperty(VariableNames.INCHI_KEY_1_NAME) != null)) {
 				String currentInChI = (String)candidate.getProperties().get(VariableNames.INCHI_KEY_1_NAME);
 				if(metFragResults.containsKey(currentInChI)) 
 					metFragResults.get(currentInChI).addMolecule(mol);
@@ -267,7 +269,10 @@ public class ProcessCompoundsThreadRunner extends ThreadRunner {
 				}
 			}
 			else {
-				metFragResults.put(String.valueOf(currentKey), new MetFragResult(mol, String.valueOf(currentKey), index));
+				if(candidate.getProperties().containsKey(VariableNames.INCHI_KEY_1_NAME) && candidate.getProperty(VariableNames.INCHI_KEY_1_NAME) != null)
+					metFragResults.put(String.valueOf(currentKey), new MetFragResult(mol, (String)candidate.getProperties().get(VariableNames.INCHI_KEY_1_NAME), index));
+				else	
+					metFragResults.put(String.valueOf(currentKey), new MetFragResult(mol, String.valueOf(currentKey), index));
 				index++;
 				currentKey++;
 			}

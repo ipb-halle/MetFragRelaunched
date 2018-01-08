@@ -77,6 +77,15 @@
 							</p:selectOneMenu>
 						</h:panelGrid>
 						
+						<h:outputLabel id="groupCandidatesLabel" value="Group candidates" />
+						<h:panelGrid columns="2">
+							<p:selectBooleanCheckbox
+								id="groupCandidatesEnabled"
+								value="#{metFragWebBean.groupCandidatesEnabled}">
+								<p:ajax event="valueChange" />
+							</p:selectBooleanCheckbox>
+						</h:panelGrid>
+						
 					</h:panelGrid>
 				</div>
 				<div class="ui-grid-col-6-user">
