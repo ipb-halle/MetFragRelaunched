@@ -9,11 +9,13 @@ public class ScoreSummary {
 	protected double rawValue;
 	protected boolean usedForScoring;
 	protected boolean usedForGraph;
+	protected String info;
 	
-	public ScoreSummary(String name, double value, double rawValue) {
+	public ScoreSummary(String name, double value, double rawValue, String info) {
 		this.name = name;
 		this.value = value;
 		this.rawValue = rawValue;
+		this.info = info;
 		this.usedForGraph = true;
 		this.usedForScoring = true;
 	}
@@ -64,6 +66,14 @@ public class ScoreSummary {
 
 	public void setUsedForGraph(boolean usedForGraph) {
 		this.usedForGraph = usedForGraph;
+	}
+
+	public String getInfo() {
+		return info;
+	}
+
+	public void setInfo(String info) {
+		this.info = info;
 	}
 	
 }
