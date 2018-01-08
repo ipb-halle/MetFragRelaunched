@@ -7,7 +7,7 @@
 	xmlns:f="http://java.sun.com/jsf/core">
 
 <h:body>
-	<p:dialog width="635" dynamic="true" visible="#{metFragWebBean.scoresViewActive}"
+	<p:dialog width="735" dynamic="true" visible="#{metFragWebBean.scoresViewActive}"
 		id="scoresViewDialog" header="Scores View"
 		widgetVar="scoresViewDialog" modal="true" resizable="false"
 		position="center" showEffect="fade">
@@ -24,7 +24,7 @@
 					value="#{metFragWebBean.currentScoreCandidateIdentifier}" />
 			</h:panelGrid>
 			<br/>
-			<p:dataTable var="score" style="width: 600px" value="#{metFragWebBean.candidateScore}" >
+			<p:dataTable var="score" style="width: 700px" value="#{metFragWebBean.candidateScore}" >
 				<p:column id="name" headerText="Name" 
 					width="300" style="text-align: left; word-wrap: break-word; overflow-wrap: break-word;">
 					<h:outputText id="scoreNameCell" value="#{score.name}" />
@@ -36,6 +36,10 @@
 				<p:column id="rawScore" headerText="Raw Value"
 					width="100" style="text-align: center">
 					<h:outputText id="rawScoreCell" value="#{score.roundedRawValue}" />
+				</p:column>
+				<p:column id="infoScore" headerText="Info"
+					width="100" style="text-align: center">
+					<h:outputText id="infoScoreCell" value="#{score.info}" />
 				</p:column>
 			</p:dataTable>
 		</h:form>

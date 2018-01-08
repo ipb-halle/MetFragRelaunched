@@ -220,7 +220,7 @@ public class ProcessCompoundsThreadRunner extends ThreadRunner {
 					score = 0.0;
 					rawScore = 0.0;
 				}
-				scoreSummaries[j] = new ScoreSummary(this.getWeightDisplayName(scoreNames[j]), score, rawScore);
+				scoreSummaries[j] = new ScoreSummary(this.getWeightDisplayName(scoreNames[j]), score, rawScore, "NA");
 				if(!this.isScoreAvailableForScore(scoreNames[j])) scoreSummaries[j].setUsedForScoring(false);
 				if(!this.isScoreAvailableForGraph(scoreNames[j])) scoreSummaries[j].setUsedForGraph(false);
 			}

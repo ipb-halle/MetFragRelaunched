@@ -9,8 +9,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import de.ipbhalle.metfrag.ranking.GetRankOfCandidateList;
-import de.ipbhalle.metfraglib.database.LocalCSVDatabase;
-import de.ipbhalle.metfraglib.database.LocalPSVDatabase;
+import de.ipbhalle.metfraglib.database.LocalZippedPSVDatabase;
 import de.ipbhalle.metfraglib.exceptions.MultipleHeadersFoundInInputDatabaseException;
 import de.ipbhalle.metfraglib.interfaces.IDatabase;
 import de.ipbhalle.metfraglib.list.CandidateList;
@@ -411,9 +410,9 @@ public class RankFromResultFilePeakLossThreadFP {
 			settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, filename);
 			IDatabase db = null;
 			if (filename.endsWith("psv"))
-				db = new LocalPSVDatabase(settings);
+				db = new LocalZippedPSVDatabase(settings);
 			else
-				db = new LocalCSVDatabase(settings);
+				db = new LocalZippedPSVDatabase(settings);
 			ArrayList<String> ids = null;
 			try {
 				ids = db.getCandidateIdentifiers();
