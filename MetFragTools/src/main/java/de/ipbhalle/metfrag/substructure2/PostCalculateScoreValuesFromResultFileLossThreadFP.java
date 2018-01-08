@@ -21,7 +21,7 @@ import de.ipbhalle.metfraglib.parameter.SettingsChecker;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.settings.MetFragGlobalSettings;
 import de.ipbhalle.metfraglib.settings.Settings;
-import de.ipbhalle.metfraglib.writer.CandidateListWriterPSV;
+import de.ipbhalle.metfraglib.writer.CandidateListWriterZippedPSV;
 
 public class PostCalculateScoreValuesFromResultFileLossThreadFP {
 
@@ -125,7 +125,7 @@ public class PostCalculateScoreValuesFromResultFileLossThreadFP {
 		File[] resultFiles = _resfolder.listFiles();
 		File[] paramFiles = _paramfolder.listFiles();
 
-		File folder = new File(outputfolder + Constants.OS_SPECIFIC_FILE_SEPARATOR + "scores");
+		File folder = new File(outputfolder + Constants.OS_SPECIFIC_FILE_SEPARATOR + "scores_loss");
 		if(!folder.exists()) folder.mkdirs();
 		String fileprefix = alpha + "_" + beta;
 		fileprefix = fileprefix.replaceAll("\\.", "");
@@ -340,7 +340,7 @@ public class PostCalculateScoreValuesFromResultFileLossThreadFP {
 
 			this.candidates = candidates;
 			
-			CandidateListWriterPSV psvWriter = new CandidateListWriterPSV();
+			CandidateListWriterZippedPSV psvWriter = new CandidateListWriterZippedPSV();
 			String paramid = this.getParamFileName().replaceAll(".*\\/", "").replaceAll("\\.txt", "");
 			String filename = Constants.OS_SPECIFIC_FILE_SEPARATOR + paramid + "_loss.psv";
 			filename = this.outputfolder + filename;
