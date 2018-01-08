@@ -102,7 +102,9 @@ public class LinearRetentionTimeModel extends AbstractModel {
 				rt_values.add(Double.parseDouble((String)candidate.getProperties().get(VariableNames.RETENTION_TIME_NAME)));
 			}
 			catch(Exception e) {
-				System.err.println("no valid value in " + VariableNames.RETENTION_TIME_TRAINING_FILE_NAME + " in line " + (i + 1) + ": " + (String)candidate.getProperties().get(VariableNames.RETENTION_TIME_NAME));
+				System.err.println("no valid value in " + VariableNames.RETENTION_TIME_TRAINING_FILE_NAME + " in line " + (i + 1) + ": " + 
+						(String)candidate.getProperties().get(VariableNames.RETENTION_TIME_NAME) + " " +
+						(String)candidate.getProperties().get(VariableNames.USER_LOG_P_VALUE_NAME));
 				continue;
 			}
 		}

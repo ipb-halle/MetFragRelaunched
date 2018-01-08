@@ -41,7 +41,7 @@ public class ScoredCandidateList extends CandidateList {
 					scoreValues[ii] = (Double)currentCandidate.getProperty(scoreNames[i]);
 				}
 				catch(java.lang.ClassCastException e) {
-					scoreValues[ii] = Double.parseDouble((String)currentCandidate.getProperty(scoreNames[i]));
+					scoreValues[ii] = Double.parseDouble(this.convertScoreValue((String)currentCandidate.getProperty(scoreNames[i])));
 				}
 				if(scoreValues[ii] == null) throw new ScorePropertyNotDefinedException(scoreNames[i] + " not known or defined for " + currentCandidate.getIdentifier());
 				if(scoreValues[ii] > maximumScore) maximumScore = scoreValues[ii];
@@ -75,6 +75,13 @@ public class ScoredCandidateList extends CandidateList {
 			sortedScoredCandidateList.addElement(this.getElement(i));
 		}
 		return sortedScoredCandidateList;
+	}
+	
+	public String convertScoreValue(String value) {
+		if(value == null) return "0.0";
+		if(value.equals("-")) return "0.0";
+		if(value.equals("NA")) return "0.0";
+		return value;
 	}
 	
 	public int getNumberPeaksUsed() {
