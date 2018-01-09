@@ -533,19 +533,8 @@ public class BeanSettingsContainer {
 					String key = keys.nextElement();
 					if (this.getAvailableParameters().isPreservedCompoundScoreProperty(key))
 						continue;
-					Object value = candidates.getElement(0).getProperty(key);
-					if (value != null) {
-						try {
-							if (value instanceof Double)
-								availableScores.add(new AvailableScore(key));
-							else {
-								Double.parseDouble((String) value);
-								availableScores.add(new AvailableScore(key));
-							}
-						} catch (Exception e) {
-							continue;
-						}
-					}
+					if(this.isValidScoreValueProperty(key, candidates))
+						availableScores.add(new AvailableScore(key));
 				}
 			}
 		}
@@ -811,6 +800,28 @@ public class BeanSettingsContainer {
 		double percentage = numberCandidatesWithValidValue / candidates.getNumberElements();
 		if(percentage >= 0.3)
 			return true;
+		return false;
+	}
+	
+	protected boolean isValidScoreValueProperty(String key, CandidateList candidates) {
+		double numberCandidatesWithValidValue = 0.0;
+		for(int i = 0; i < candidates.getNumberElements(); i++) {
+			Object value = candidates.getElement(i).getProperty(key);
+			if (value != null) {
+				try {
+					if (value instanceof Double) {
+						
+					} else {
+						Double.parseDouble((String) value);
+					}
+				} catch (Exception e) {
+					continue;
+				}
+				numberCandidatesWithValidValue++;
+			}
+		}
+		// at least one candidate needs to have a valid log value
+		if(numberCandidatesWithValidValue >= 1) return true;
 		return false;
 	}
 	
