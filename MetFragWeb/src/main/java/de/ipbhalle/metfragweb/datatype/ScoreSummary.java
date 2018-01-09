@@ -9,15 +9,25 @@ public class ScoreSummary {
 	protected double rawValue;
 	protected boolean usedForScoring;
 	protected boolean usedForGraph;
+	protected boolean databaseScore;
 	protected String info;
 	
-	public ScoreSummary(String name, double value, double rawValue, String info) {
+	public ScoreSummary(String name, double value, double rawValue, String info, boolean databaseScore) {
 		this.name = name;
 		this.value = value;
 		this.rawValue = rawValue;
 		this.info = info;
 		this.usedForGraph = true;
 		this.usedForScoring = true;
+		this.databaseScore = databaseScore;
+	}
+
+	public boolean isDatabaseScore() {
+		return databaseScore;
+	}
+
+	public void setDatabaseScore(boolean databaseScore) {
+		this.databaseScore = databaseScore;
 	}
 
 	public String getName() {

@@ -182,7 +182,9 @@ public class MetFragResult implements Serializable {
 	}
 	
 	public boolean isInChIKeyLinkAvailable() {
-		if(this.inchikey1 != null && this.inchikey1.length() != 0 && (this.root.getDatabase().equals("PubChem") || this.root.getDatabase().equals("ChemSpider")))
+		if(this.inchikey1 != null && this.inchikey1.length() != 0 && 
+				(this.root.getDatabase().equals("PubChem") || this.root.getDatabase().equals("ChemSpider") || 
+				(this.root.getDatabase().equals("LocalSDF") && this.root.getIdentifier().startsWith("DTXSID"))))
 			return true;
 		return false;
 	}

@@ -280,6 +280,10 @@ public class Molecule implements Serializable {
 		
 		for(int i = 0; i < this.scoresSummaries.length; i++) {
 			candidate.setProperty(this.scoresSummaries[i].getName(), String.valueOf(this.scoresSummaries[i].getRawValue()));
+			if(!this.scoresSummaries[i].isDatabaseScore()) {
+				candidate.setProperty(this.scoresSummaries[i].getName() + "_Values", this.scoresSummaries[i].getInfo());
+			}
+				
 		}
 		
 		return candidate;

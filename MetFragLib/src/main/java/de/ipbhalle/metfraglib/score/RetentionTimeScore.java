@@ -86,7 +86,7 @@ public class RetentionTimeScore extends AbstractScore {
 		}
 		else {
 			this.value = MathTools.getNormalDistributionDensity(Math.abs(predictedValue - this.logValue), 0.0, Constants.DEFAULT_RETENTION_TIME_STANDARD_DEVIATION_NORMAL_DISTRIBUTION);
-			this.optimalValues = new double[] {predictedValue, this.logValue, Math.abs(predictedValue - this.logValue)};
+			this.optimalValues = new double[] {MathTools.round(predictedValue), MathTools.round(this.logValue), MathTools.round(Math.abs(predictedValue - this.logValue))};
 		}
 		this.calculationFinished = true;
 	}

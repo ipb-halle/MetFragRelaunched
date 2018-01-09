@@ -211,16 +211,22 @@ public class ProcessCompoundsThreadRunner extends ThreadRunner {
 			for(int j = 0; j < scoreSummaries.length; j++) {
 				double score = 0.0;
 				double rawScore = 0.0;
+				boolean databaseScore = false;
+				String infoScore = "NA";
 				try {
 					score = (Double)candidate.getProperty(scoreNames[j]); 
 					rawScore = score;
 					score /= maxScore[j];
+					if(candidate.getProperties().containsKey(scoreNames[j] + "_Values") && candidate.getProperty(scoreNames[j] + "_Values") != null)
+						infoScore = ((String)candidate.getProperty(scoreNames[j] + "_Values"));
+					if(!candidate.getProperties().containsKey(scoreNames[j] + "_Values") || candidate.getProperty(scoreNames[j] + "_Values") == null)
+						databaseScore = true;
 				}
 				catch(Exception e) {
 					score = 0.0;
 					rawScore = 0.0;
 				}
-				scoreSummaries[j] = new ScoreSummary(this.getWeightDisplayName(scoreNames[j]), score, rawScore, "NA");
+				scoreSummaries[j] = new ScoreSummary(this.getWeightDisplayName(scoreNames[j]), score, rawScore, infoScore, databaseScore);
 				if(!this.isScoreAvailableForScore(scoreNames[j])) scoreSummaries[j].setUsedForScoring(false);
 				if(!this.isScoreAvailableForGraph(scoreNames[j])) scoreSummaries[j].setUsedForGraph(false);
 			}
