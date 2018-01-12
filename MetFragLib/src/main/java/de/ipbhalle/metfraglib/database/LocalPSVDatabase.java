@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import de.ipbhalle.metfraglib.additionals.MathTools;
 import de.ipbhalle.metfraglib.candidate.TopDownPrecursorCandidate;
+import de.ipbhalle.metfraglib.exceptions.AtomTypeNotKnownFromInputListException;
 import de.ipbhalle.metfraglib.exceptions.DatabaseIdentifierNotFoundException;
 import de.ipbhalle.metfraglib.exceptions.MultipleHeadersFoundInInputDatabaseException;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
@@ -150,11 +151,15 @@ public class LocalPSVDatabase extends AbstractDatabase {
 			}
 			java.util.ArrayList<String> identifiers = new java.util.ArrayList<String>();
 			String line = "";
+			String properIdentifierName = VariableNames.IDENTIFIER_NAME;
+			if(!propNameToIndex.containsKey(VariableNames.IDENTIFIER_NAME)) properIdentifierName = VariableNames.IDENTIFIER_DTXSID_NAME;
+			String properInChIName = VariableNames.INCHI_NAME;
+			if(!propNameToIndex.containsKey(VariableNames.INCHI_NAME)) properInChIName = VariableNames.INCHI_ALTERNATIVE_NAME;
 			//int internal_identifier = 0;
 			while ((line = reader.readLine()) != null) {
 				String[] tmp = line.split("\\|");
 				ICandidate precursorCandidate = null;
-				String identifier = tmp[propNameToIndex.get(VariableNames.IDENTIFIER_NAME)].trim();
+				String identifier = tmp[propNameToIndex.get(properIdentifierName)].trim();
 				/*
 				if(identifiers.contains(identifier)) {
 					reader.close();
@@ -164,7 +169,7 @@ public class LocalPSVDatabase extends AbstractDatabase {
 				//identifier = String.valueOf(++internal_identifier);
 				identifiers.add(identifier);
 				try {
-					precursorCandidate = new TopDownPrecursorCandidate(tmp[propNameToIndex.get(VariableNames.INCHI_NAME)].trim(), identifier);
+					precursorCandidate = new TopDownPrecursorCandidate(tmp[propNameToIndex.get(properInChIName)].trim(), identifier);
 				} catch(Exception e) {
 					e.printStackTrace();
 					System.out.println(line);
@@ -174,7 +179,7 @@ public class LocalPSVDatabase extends AbstractDatabase {
 				 * store all read property fields within the candidate container
 				 */
 				for (int k = 0; k < colNames.length; k++) {
-					if (k == propNameToIndex.get(VariableNames.INCHI_NAME) || k == propNameToIndex.get(VariableNames.IDENTIFIER_NAME))
+					if (k == propNameToIndex.get(properInChIName) || k == propNameToIndex.get(properIdentifierName))
 						continue;
 					if (propNameToIndex.get(VariableNames.MONOISOTOPIC_MASS_NAME) != null && k == propNameToIndex.get(VariableNames.MONOISOTOPIC_MASS_NAME))
 						try {
@@ -199,13 +204,25 @@ public class LocalPSVDatabase extends AbstractDatabase {
 							e.printStackTrace();
 						}
 				}
+				this.checkAlternativePropertyNames(precursorCandidate);
+				if(!precursorCandidate.getProperties().containsKey(VariableNames.MONOISOTOPIC_MASS_NAME) || precursorCandidate.getProperty(VariableNames.MONOISOTOPIC_MASS_NAME) == null) {
+					try {
+						precursorCandidate.setProperty(VariableNames.MONOISOTOPIC_MASS_NAME, precursorCandidate.getMolecularFormula().getMonoisotopicMass());
+					} catch (AtomTypeNotKnownFromInputListException e) {
+						continue;
+					}
+				}
+				if(!this.addInChIFromSmiles(precursorCandidate)) continue;
+				if(!this.addSMILESFromInChI(precursorCandidate)) continue;
+				if(!this.addInChIKeyFromSmiles(precursorCandidate)) continue;
+				if(!this.setInChIValues(precursorCandidate)) continue;
 				this.candidates.add(precursorCandidate);
 			}
 		}
 		if (reader != null)
 			reader.close();
 	}
-
+	
 	/**
 	 * 
 	 * @param identifier

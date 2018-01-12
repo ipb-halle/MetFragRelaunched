@@ -128,9 +128,13 @@ public class LocalSDFDatabase extends AbstractDatabase {
 			int index = 1;
 			while (reader.hasNext()) {
 				IAtomContainer molecule = reader.next();
+				String properIdentifierName = VariableNames.IDENTIFIER_NAME;
+				if(!molecule.getProperties().containsKey(VariableNames.IDENTIFIER_NAME) || molecule.getProperty(VariableNames.IDENTIFIER_NAME) == null) 
+					properIdentifierName = VariableNames.IDENTIFIER_DTXSID_NAME;
 				String identifier = molecule.getID();
-				if (molecule.getProperty("Identifier") != null)
-					identifier = (String) molecule.getProperty("Identifier");
+				if (molecule.getProperty(properIdentifierName) != null)
+					identifier = (String) molecule.getProperty(properIdentifierName);
+				
 				molecule = MoleculeFunctions.convertImplicitToExplicitHydrogens(molecule);
 				AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(molecule);
 
@@ -150,14 +154,21 @@ public class LocalSDFDatabase extends AbstractDatabase {
 					if (key != null && molecule.getProperty(key) != null)
 						precursorCandidate.setProperty(key, molecule.getProperty(key));
 				}
+				this.checkAlternativePropertyNames(precursorCandidate);
 				precursorCandidate.setProperty(VariableNames.INCHI_KEY_1_NAME, inchiInfo[1].split("-")[0]);
 				precursorCandidate.setProperty(VariableNames.INCHI_KEY_2_NAME, inchiInfo[1].split("-")[1]);
 				precursorCandidate.setProperty(VariableNames.MOLECULAR_FORMULA_NAME, inchiInfo[0].split("/")[1]);
-				try {
-					precursorCandidate.setProperty(VariableNames.MONOISOTOPIC_MASS_NAME, precursorCandidate.getMolecularFormula().getMonoisotopicMass());
-				} catch (AtomTypeNotKnownFromInputListException e) {
-					continue;
+				if(!precursorCandidate.getProperties().containsKey(VariableNames.MONOISOTOPIC_MASS_NAME) || precursorCandidate.getProperty(VariableNames.MONOISOTOPIC_MASS_NAME) == null) {
+					try {
+						precursorCandidate.setProperty(VariableNames.MONOISOTOPIC_MASS_NAME, precursorCandidate.getMolecularFormula().getMonoisotopicMass());
+					} catch (AtomTypeNotKnownFromInputListException e) {
+						continue;
+					}
 				}
+				if(!this.addInChIFromSmiles(precursorCandidate)) continue;
+				if(!this.addSMILESFromInChI(precursorCandidate)) continue;
+				if(!this.addInChIKeyFromSmiles(precursorCandidate)) continue;
+				if(!this.setInChIValues(precursorCandidate)) continue;
 				this.candidates.add(precursorCandidate);
 				index++;
 			}
@@ -176,4 +187,5 @@ public class LocalSDFDatabase extends AbstractDatabase {
 				return i;
 		return -1;
 	}
+
 }

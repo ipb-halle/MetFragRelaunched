@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import de.ipbhalle.metfraglib.additionals.MathTools;
 import de.ipbhalle.metfraglib.candidate.TopDownPrecursorCandidate;
+import de.ipbhalle.metfraglib.exceptions.AtomTypeNotKnownFromInputListException;
 import de.ipbhalle.metfraglib.exceptions.DatabaseIdentifierNotFoundException;
 import de.ipbhalle.metfraglib.exceptions.MultipleHeadersFoundInInputDatabaseException;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
@@ -151,11 +152,21 @@ public class LocalCSVDatabase extends AbstractDatabase {
 			java.util.Iterator<?> it = parser.getHeaderMap().keySet().iterator();
 			boolean identifierColDefined = false;
 			boolean inchiColDefined = false;
+			String properIdentifierName = VariableNames.IDENTIFIER_NAME;
+			String properInChIName = VariableNames.INCHI_NAME;
 			while(it.hasNext()) {
 				String colname = (String)it.next();
 				propertyNames.add(colname);
 				if(colname.equals(VariableNames.IDENTIFIER_NAME)) identifierColDefined = true;
-				if(colname.equals(VariableNames.INCHI_NAME)) inchiColDefined = true;
+				if(colname.equals(VariableNames.INCHI_NAME) || colname.equals(VariableNames.INCHI_ALTERNATIVE_NAME)) inchiColDefined = true;
+				if(!identifierColDefined && colname.equals(VariableNames.IDENTIFIER_DTXSID_NAME)) {
+					identifierColDefined = true;
+					properIdentifierName = VariableNames.IDENTIFIER_DTXSID_NAME;
+				}
+				if(!inchiColDefined && colname.equals(VariableNames.INCHI_ALTERNATIVE_NAME)) {
+					inchiColDefined = true;
+					properInChIName = VariableNames.INCHI_ALTERNATIVE_NAME;
+				}
 			}
 			
 			if(!identifierColDefined) {
@@ -171,7 +182,7 @@ public class LocalCSVDatabase extends AbstractDatabase {
 				throw new Exception();
 			}
 			for(CSVRecord record : parser) {
-				ICandidate precursorCandidate = new TopDownPrecursorCandidate(record.get(VariableNames.INCHI_NAME), record.get(VariableNames.IDENTIFIER_NAME));
+				ICandidate precursorCandidate = new TopDownPrecursorCandidate(record.get(properInChIName), record.get(properIdentifierName));
 				for(int ii = 0; ii < propertyNames.size(); ii++) {
 					String colname = propertyNames.get(ii);
 					if(!colname.equals(VariableNames.INCHI_NAME) && !colname.equals(VariableNames.IDENTIFIER_NAME)) {
@@ -182,6 +193,18 @@ public class LocalCSVDatabase extends AbstractDatabase {
 						}
 					}	
 				}
+				this.checkAlternativePropertyNames(precursorCandidate);
+				if(!precursorCandidate.getProperties().containsKey(VariableNames.MONOISOTOPIC_MASS_NAME) || precursorCandidate.getProperty(VariableNames.MONOISOTOPIC_MASS_NAME) == null) {
+					try {
+						precursorCandidate.setProperty(VariableNames.MONOISOTOPIC_MASS_NAME, precursorCandidate.getMolecularFormula().getMonoisotopicMass());
+					} catch (AtomTypeNotKnownFromInputListException e) {
+						continue;
+					}
+				}
+				if(!this.addInChIFromSmiles(precursorCandidate)) continue;
+				if(!this.addSMILESFromInChI(precursorCandidate)) continue;
+				if(!this.addInChIKeyFromSmiles(precursorCandidate)) continue;
+				if(!this.setInChIValues(precursorCandidate)) continue;
 				this.candidates.put(precursorCandidate.getIdentifier(), precursorCandidate);
 			}
 			
@@ -192,4 +215,5 @@ public class LocalCSVDatabase extends AbstractDatabase {
 		} 
 		throw new Exception();
 	}
+	
 }

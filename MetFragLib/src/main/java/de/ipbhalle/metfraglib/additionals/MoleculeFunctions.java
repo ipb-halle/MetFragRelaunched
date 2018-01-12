@@ -97,6 +97,12 @@ public class MoleculeFunctions {
 		String[] inchiInfo = getInChIInfoFromAtomContainer(parseSmiles(smiles));
 		return inchiInfo[0];
 	}
+
+	
+	public static String[] getInChIInfoFromSmiles(String smiles) throws CDKException {
+		String[] inchiInfo = getInChIInfoFromAtomContainer(parseSmiles(smiles));
+		return inchiInfo;
+	}
 	
 	public static IAtomContainer parseSmiles(String smiles) throws InvalidSmilesException {
 		SmilesParser sp = new SmilesParser(SilentChemObjectBuilder.getInstance());

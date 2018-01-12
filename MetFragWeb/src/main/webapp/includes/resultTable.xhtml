@@ -173,7 +173,7 @@
 										id="idCell" value="#{metFragResult.identifier}" />
 									<p:link rendered="#{metFragResult.databaseLinkAvailable}"
 										href="#{metFragResult.databaseLink}"
-										value="#{metFragResult.identifier}" />
+										value="#{metFragResult.identifier}" target="_blank" />
 									<p:dataScroller scrollHeight="100px" mode="inline"
 										styleClass="dataScroller"
 										rendered="#{metFragResult.hasMolecules}"
@@ -184,7 +184,7 @@
 											id="idCell" value="#{subResult.identifier}" />
 										<p:link rendered="#{metFragResult.databaseLinkAvailable}"
 											href="#{subResult.databaseLink}"
-											value="#{subResult.identifier}" />
+											value="#{subResult.identifier}" target="_blank" />
 									</p:dataScroller>
 									<br />
 									<br />
@@ -194,7 +194,7 @@
 										value="#{metFragResult.inchikey1}" />
 									<p:link rendered="#{metFragResult.inChIKeyLinkAvailable}"
 										href="#{metFragResult.inChIKeyLink}"
-										value="#{metFragResult.inchikey1}" />
+										value="#{metFragResult.inchikey1}" target="_blank" />
 								</p:column>
 	
 								<p:column id="mass" width="100" headerText="Mass"
