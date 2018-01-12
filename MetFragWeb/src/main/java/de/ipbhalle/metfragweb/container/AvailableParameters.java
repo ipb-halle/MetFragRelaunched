@@ -102,6 +102,7 @@ public class AvailableParameters {
 		this.preservedCompoundScoreProperties.add(VariableNames.IDENTIFIER_NAME);
 		this.preservedCompoundScoreProperties.add(VariableNames.INCHI_KEY_1_NAME);
 		this.preservedCompoundScoreProperties.add(VariableNames.INCHI_KEY_2_NAME);
+		this.preservedCompoundScoreProperties.add(VariableNames.INCHI_KEY_3_NAME);
 		this.preservedCompoundScoreProperties.add(VariableNames.INCHI_NAME);
 		this.preservedCompoundScoreProperties.add(VariableNames.IUPAC_NAME_NAME);
 		this.preservedCompoundScoreProperties.add(VariableNames.MOLECULAR_FORMULA_NAME);
@@ -116,6 +117,11 @@ public class AvailableParameters {
 		this.preservedCompoundScoreProperties.add(VariableNames.EXPLAINED_PEAKS_COLUMN);
 		this.preservedCompoundScoreProperties.add(VariableNames.NUMBER_PEAKS_USED_COLUMN);
 		this.preservedCompoundScoreProperties.add(VariableNames.FORMULAS_OF_PEAKS_EXPLAINED_COLUMN);
+		this.preservedCompoundScoreProperties.add(VariableNames.IDENTIFIER_DTXSID_NAME);
+		this.preservedCompoundScoreProperties.add(VariableNames.INCHI_ALTERNATIVE_NAME);
+		this.preservedCompoundScoreProperties.add("MONOSIOTOPIC MASS");
+		this.preservedCompoundScoreProperties.add("MOL FORMULA");
+		this.preservedCompoundScoreProperties.add("MOLECULAR FORMULA");
 		
 		this.preservedCompoundPartitioningCoefficientProperties = new java.util.Vector<String>();
 		this.preservedCompoundPartitioningCoefficientProperties.add(VariableNames.COMPOUND_NAME_NAME);

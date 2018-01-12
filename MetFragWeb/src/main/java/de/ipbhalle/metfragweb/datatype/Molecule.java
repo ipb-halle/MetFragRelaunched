@@ -180,7 +180,7 @@ public class Molecule implements Serializable {
 		if(databaseName.equals("PubChem") || databaseName.equals("KEGG") 
 				|| databaseName.equals("ChemSpider") || databaseName.equals("MetaCyc")
 				|| databaseName.equals("LipidMaps") || databaseName.equals("LocalHMDB")
-				|| databaseName.equals("LocalChEBI") || (databaseName.equals("LocalSDF") && this.identifier.startsWith("DTXSID"))) return true;
+				|| databaseName.equals("LocalChEBI") || ((databaseName.equals("LocalSDF") || databaseName.equals("LocalCSV") || databaseName.equals("LocalPSV")) && this.identifier.startsWith("DTXSID"))) return true;
 		return false;
 	}
 	
@@ -196,7 +196,7 @@ public class Molecule implements Serializable {
 		else if(databaseName.equals("LipidMaps")) return "http://www.lipidmaps.org/data/LMSDRecord.php?LMID=" + this.identifier;
 		else if(databaseName.equals("LocalHMDB")) return "http://www.hmdb.ca/metabolites/" + this.identifier;
 		else if(databaseName.equals("LocalChEBI")) return "https://www.ebi.ac.uk/chebi/searchId.do?chebiId=" + this.identifier;
-		else if(databaseName.equals("LocalSDF") && this.identifier.startsWith("DTXSID")) return "https://comptox.epa.gov/dashboard/dsstoxdb/results?search=" + this.identifier;
+		else if((databaseName.equals("LocalSDF") || databaseName.equals("LocalCSV") || databaseName.equals("LocalPSV")) && this.identifier.startsWith("DTXSID")) return "https://comptox.epa.gov/dashboard/dsstoxdb/results?search=" + this.identifier;
 		return this.identifier; 
 	}
 	

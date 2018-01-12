@@ -280,7 +280,9 @@ public class VariableNames {
 	public static final String COMPOUND_NAME_NAME				=	"CompoundName";
 	public static final String IUPAC_NAME_NAME				=	"IUPACName";
 	public static final String INCHI_NAME						=	"InChI";
+	public static final String INCHI_ALTERNATIVE_NAME						=	"INCHI STRING";
 	public static final String IDENTIFIER_NAME				=	"Identifier";
+	public static final String IDENTIFIER_DTXSID_NAME				=	"DTXSID";
 	public static final String SMILES_NAME					=	"SMILES";
 	public static final String FINGERPRINT_NAME_NAME				=	"FingerPrint";
 	public static final String DEUTERIUM_COUNT_NAME				=	"DeuteriumCount";
