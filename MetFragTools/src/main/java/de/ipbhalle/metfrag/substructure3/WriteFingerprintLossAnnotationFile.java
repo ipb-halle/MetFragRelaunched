@@ -1,4 +1,4 @@
-package de.ipbhalle.metfrag.substructure;
+package de.ipbhalle.metfrag.substructure3;
 
 import java.io.BufferedWriter;
 import java.io.File;

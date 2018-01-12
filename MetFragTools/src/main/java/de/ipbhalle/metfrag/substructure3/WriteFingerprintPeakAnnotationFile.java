@@ -1,4 +1,4 @@
-package de.ipbhalle.metfrag.substructure;
+package de.ipbhalle.metfrag.substructure3;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -19,7 +19,7 @@ import de.ipbhalle.metfraglib.substructure.FingerprintGroup;
 import de.ipbhalle.metfraglib.substructure.MassToFingerprintGroupList;
 import de.ipbhalle.metfraglib.substructure.MassToFingerprintGroupListCollection;
 
-public class WriteFingerprintLossAnnotationFile {
+public class WriteFingerprintPeakAnnotationFile {
 
 	/*
 	 * write annotation file
@@ -45,7 +45,7 @@ public class WriteFingerprintLossAnnotationFile {
 		}
 		
 		String filename = readParameters.get("filename");
-		
+
 		Integer probabilityType = Integer.parseInt(readParameters.get("probtype"));
 		String output = null;
 		Integer occurThresh = null;
@@ -55,31 +55,25 @@ public class WriteFingerprintLossAnnotationFile {
 		if(readParameters.containsKey("occurThresh")) occurThresh = Integer.parseInt(readParameters.get("occurThresh"));
 		if(readParameters.containsKey("csv")) csv = (String)readParameters.get("csv");
 		if(readParameters.containsKey("fingerprinttype")) fingerprinttype = (String)readParameters.get("fingerprinttype");
-		
+
 		ArrayList<Double> peakMassesSorted = new ArrayList<Double>();
 		ArrayList<String> fingerprintsSorted = new ArrayList<String>();
 		
 		Settings settings = new Settings();
 		settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, filename);
 		IDatabase db = null;
-		if(csv.equals("1")) {
-			db = new LocalCSVDatabase(settings);
-		}
+		if(csv == "1") db = new LocalCSVDatabase(settings);
 		else if (csv.equals("auto")) {
-			if(filename.endsWith("psv")) {
-				db = new LocalPSVDatabase(settings);
-			}
+			if(filename.endsWith("psv")) db = new LocalPSVDatabase(settings);
 			else db = new LocalCSVDatabase(settings);
 		}
 		else db = new LocalPSVDatabase(settings);
-		
 		java.util.ArrayList<String> ids = db.getCandidateIdentifiers();
 		CandidateList candidateList = db.getCandidateByIdentifier(ids);
-		System.out.println(ids.size());
 		//SmilesOfExplPeaks
 		for(int i = 0; i < candidateList.getNumberElements(); i++) {
 			ICandidate candidate = candidateList.getElement(i);
-			String fingerprintsOfExplPeaks = (String)candidate.getProperty("LossFingerprintOfExplPeaks" + fingerprinttype);
+			String fingerprintsOfExplPeaks = (String)candidate.getProperty("FragmentFingerprintOfExplPeaks" + fingerprinttype);
 			if(fingerprintsOfExplPeaks.equals("NA") || fingerprintsOfExplPeaks.length() == 0) continue;
 			fingerprintsOfExplPeaks = fingerprintsOfExplPeaks.trim();
 			
@@ -97,12 +91,19 @@ public class WriteFingerprintLossAnnotationFile {
 					continue;
 				}
 			}
-		}
 
+			String nonExplMasses = (String)candidate.getProperty("NonExplainedMasses");
+			if(!nonExplMasses.equals("NA")) {
+				String[] tmp = nonExplMasses.split(";");
+				for(int k = 0; k < tmp.length; k++) 
+					addSortedFeature(Double.parseDouble(tmp[k]), "0", peakMassesSorted, fingerprintsSorted);
+			}
+		}
+			
 		MassToFingerprintGroupListCollection peakToFingerprintGroupListCollection = new MassToFingerprintGroupListCollection();
 		//print(peakMassesSorted, fingerprintsSorted);
 		System.out.println(peakMassesSorted.size() + " peak fingerprint pairs");
-		
+
 		Integer id = 0;
 		Hashtable<Integer, ArrayList<Double>> grouplistid_to_masses = new Hashtable<Integer, ArrayList<Double>>();
 		for(int i = 0; i < peakMassesSorted.size(); i++) {
@@ -114,7 +115,7 @@ public class WriteFingerprintLossAnnotationFile {
 				peakToFingerprintGroupList.setId(id);
 				FingerprintGroup obj = new FingerprintGroup(0.0, null, null, null);
 				obj.setFingerprint(fingerprintsSorted.get(i));
-				obj.incrementNumberObserved(); 
+				obj.incrementNumberObserved();
 				peakToFingerprintGroupList.addElement(obj);
 				peakToFingerprintGroupListCollection.addElementSorted(peakToFingerprintGroupList);
 				addMass(grouplistid_to_masses, id, currentPeak);
@@ -139,7 +140,7 @@ public class WriteFingerprintLossAnnotationFile {
 		
 		//peakToFingerprintGroupListCollection.updatePeakMass(mzppm, mzabs);
 		peakToFingerprintGroupListCollection.updatePeakMass(grouplistid_to_masses);
-		
+	
 		// test filtering
 		if(occurThresh != null) peakToFingerprintGroupListCollection.filterByOccurence(occurThresh);
 		
@@ -194,6 +195,7 @@ public class WriteFingerprintLossAnnotationFile {
 		}
 		
 		//P ( s | p ) P ( p | s ) P( s, p )_s
+		//SUMMARY "number of different pairs (f,m)" "number of occurences of all (f,m)" 
 		if(probabilityType == 5) {
 			System.out.println("annotating IDs");
 			peakToFingerprintGroupListCollection.updateConditionalProbabilities();
@@ -255,7 +257,7 @@ public class WriteFingerprintLossAnnotationFile {
 		}
 		return count;
 	}
-	
+
 	public static void addMass(Hashtable<Integer, ArrayList<Double>> grouplistid_to_masses, Integer id, double mass) {
 		if(grouplistid_to_masses.containsKey(id) && grouplistid_to_masses.get(id) != null) {
 			grouplistid_to_masses.get(id).add(mass);

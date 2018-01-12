@@ -25,8 +25,6 @@ public class WriteFingerprintPeakAnnotationFile {
 	 * write annotation file
 	 * 
 	 * filename - input file name
-	 * mzppm
-	 * mzabs
 	 * probtype - probability type: 0 - counts; 1 - P ( s | p ); 2 - P ( p | s ); 3 - P ( p , s ) from s; 4 - P ( p , s ) from p; 5 - P ( s | p ) P ( p | s ) P ( p , s )_s P ( p , s )_p
 	 * occurThresh
 	 * output
@@ -39,14 +37,6 @@ public class WriteFingerprintPeakAnnotationFile {
 		java.util.Hashtable<String, String> readParameters = readParameters(args);
 		if(!readParameters.containsKey("filename")) {
 			System.err.println("filename missing");
-			System.exit(1);
-		}
-		if(!readParameters.containsKey("mzppm")) {
-			System.err.println("mzppm missing");
-			System.exit(1);
-		}
-		if(!readParameters.containsKey("mzabs")) {
-			System.err.println("mzabs missing");
 			System.exit(1);
 		}
 		if(!readParameters.containsKey("probtype")) {
