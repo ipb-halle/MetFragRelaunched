@@ -42,7 +42,7 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 			Double adductMass = Constants.getIonisationTypeMassCorrection(Constants.ADDUCT_NOMINAL_MASSES.indexOf((Integer)settings.get(VariableNames.PRECURSOR_ION_MODE_NAME)), (Boolean)settings.get(VariableNames.IS_POSITIVE_ION_MODE_NAME));
 			
 			java.util.ArrayList<Double> massDifferences = this.calculatePeakDifferences(peakList, neutralPrecursorMass, adductMass);
-			java.util.ArrayList<Double> uniqueMassDifferences = calculateUniquePeakDifferences(massDifferences, mzppm, mzabs);
+			java.util.ArrayList<Double> uniqueMassDifferences = this.calculateUniquePeakDifferences(massDifferences, mzppm, mzabs);
 			java.util.LinkedList<Double> lossMassesFound = new java.util.LinkedList<Double>();
 			BufferedReader breader = new BufferedReader(new FileReader(new File(filename)));
 			String line = "";
