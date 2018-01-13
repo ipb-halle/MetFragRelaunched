@@ -271,7 +271,7 @@ public class CandidateListWriterLossFragmentSmilesCompletePSV implements IWriter
 				IFragment fragmentJ = matchJ.getBestMatchedFragment();
 				if(fragmentJ.isRealSubStructure(fragmentI)) {
 					double diff = MathTools.round(peakMassJ - peakMassI);
-					double uncorrectedDiff = uncorrectedPeakMassJ - uncorrectedPeakMassI;
+					double uncorrectedDiff = MathTools.round(uncorrectedPeakMassJ - uncorrectedPeakMassI);
 					IFragment diffFragment = fragmentJ.getDifferenceFragment(precursorMolecule, fragmentI);
 					if(diffFragment == null) continue;
 					
