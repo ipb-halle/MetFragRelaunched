@@ -92,7 +92,7 @@ public class WriteFingerprintPeakAnnotationFile {
 				}
 			}
 
-			String nonExplMasses = (String)candidate.getProperty("NonExplainedMasses");
+			String nonExplMasses = (String)candidate.getProperty("NonExplainedPeaks");
 			if(!nonExplMasses.equals("NA")) {
 				String[] tmp = nonExplMasses.split(";");
 				for(int k = 0; k < tmp.length; k++) 

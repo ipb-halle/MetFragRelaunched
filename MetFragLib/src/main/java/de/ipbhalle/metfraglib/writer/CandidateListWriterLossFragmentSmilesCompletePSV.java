@@ -15,8 +15,10 @@ import de.ipbhalle.metfraglib.interfaces.IFragment;
 import de.ipbhalle.metfraglib.interfaces.IList;
 import de.ipbhalle.metfraglib.interfaces.IMatch;
 import de.ipbhalle.metfraglib.interfaces.IMolecularStructure;
+import de.ipbhalle.metfraglib.interfaces.IPeak;
 import de.ipbhalle.metfraglib.interfaces.IWriter;
 import de.ipbhalle.metfraglib.list.CandidateList;
+import de.ipbhalle.metfraglib.list.DefaultPeakList;
 import de.ipbhalle.metfraglib.list.MatchList;
 import de.ipbhalle.metfraglib.list.ScoredCandidateList;
 import de.ipbhalle.metfraglib.list.SortedScoredCandidateList;
@@ -24,6 +26,7 @@ import de.ipbhalle.metfraglib.molecularformula.ByteMolecularFormula;
 import de.ipbhalle.metfraglib.parameter.ClassNames;
 import de.ipbhalle.metfraglib.parameter.Constants;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
+import de.ipbhalle.metfraglib.peak.TandemMassPeak;
 import de.ipbhalle.metfraglib.settings.Settings;
 
 public class CandidateListWriterLossFragmentSmilesCompletePSV implements IWriter {
@@ -44,6 +47,7 @@ public class CandidateListWriterLossFragmentSmilesCompletePSV implements IWriter
 		}
 		if(candidateList == null) return false;
 		
+		DefaultPeakList peakList = (DefaultPeakList)settings.get(VariableNames.PEAK_LIST_NAME);
 
 		java.io.BufferedWriter bwriter = new BufferedWriter(new FileWriter(file));
 		
@@ -87,11 +91,18 @@ public class CandidateListWriterLossFragmentSmilesCompletePSV implements IWriter
 			heading.append("|");
 			heading.append("LossFingerprintOfExplPeaks" + fpnames[i]);
 		}
-			
+		heading.append("|");
+		heading.append("NonExplainedPeaks");
+		heading.append("|");
+		heading.append("NonExplainedLosses");
+		
 		bwriter.write(heading.toString());
 		bwriter.newLine();
 		
 		FingerprintCollection fingerprintCollection = new FingerprintCollection();
+		int ionmode = (Integer)settings.get(VariableNames.PRECURSOR_ION_MODE_NAME);
+		boolean ispositive = (Boolean)settings.get(VariableNames.IS_POSITIVE_ION_MODE_NAME);
+		java.util.ArrayList<Double> nativeLossMasses = this.calculatePeakDifferences(peakList, (Double)settings.get(VariableNames.PRECURSOR_NEUTRAL_MASS_NAME), Constants.getIonisationTypeMassCorrection(Constants.ADDUCT_NOMINAL_MASSES.indexOf(ionmode), ispositive));
 		
 		for(int i = 0; i < candidateList.getNumberElements(); i++) {
 			StringBuilder line = new StringBuilder();
@@ -106,6 +117,9 @@ public class CandidateListWriterLossFragmentSmilesCompletePSV implements IWriter
 				scoredCandidate.removeProperty("FragmentFingerprintOfExplPeaks" + fpnames[ii]);
 				scoredCandidate.removeProperty("LossFingerprintOfExplPeaks" + fpnames[ii]);
 			}	
+			
+			scoredCandidate.removeProperty("NonExplainedPeaks");
+			scoredCandidate.removeProperty("NonExplainedLosses");
 			
 			if(settings != null) scoredCandidate.setUseSmiles((Boolean)settings.get(VariableNames.USE_SMILES_NAME));
 			scoredCandidate.initialisePrecursorCandidate();
@@ -193,9 +207,10 @@ public class CandidateListWriterLossFragmentSmilesCompletePSV implements IWriter
 				line.append("|");
 				line.append(countExplainedPeaks);
 				
+				java.util.ArrayList<Double> uncorrectedLossMasses = new java.util.ArrayList<Double>();
 				//add loss information
 				if(settings != null) {
-					String[][] lossesInformation = createLossAnnotations(scoredCandidate.getPrecursorMolecule(), scoredCandidate.getMatchList(), settings, correctedMasses, fingerprintCollection);
+					String[][] lossesInformation = createLossAnnotations(scoredCandidate.getPrecursorMolecule(), scoredCandidate.getMatchList(), settings, correctedMasses, fingerprintCollection, uncorrectedLossMasses);
 					for(int ii = 0; ii < fingerprintCollection.getNumberFingerprinters(); ii++) { 
 						line.append("|");
 						line.append(fingerprintOfFragmentsExplainedPeaks[ii].length() == 0 ? "NA" : fingerprintOfFragmentsExplainedPeaks[ii].substring(0, fingerprintOfFragmentsExplainedPeaks[ii].length() - 1));
@@ -203,6 +218,10 @@ public class CandidateListWriterLossFragmentSmilesCompletePSV implements IWriter
 						line.append(lossesInformation[ii][0]);
 					}
 				}
+				line.append("|");
+				line.append(this.getNonExplainedPeakString(peakList, scoredCandidate.getMatchList()));
+				line.append("|");
+				line.append(this.getNonExplainedLossString(uncorrectedLossMasses, nativeLossMasses));
 			}
 			bwriter.write(line.toString());
 			bwriter.newLine();
@@ -217,7 +236,7 @@ public class CandidateListWriterLossFragmentSmilesCompletePSV implements IWriter
 	 * @param settings
 	 * @throws Exception 
 	 */
-	private String[][] createLossAnnotations(IMolecularStructure precursorMolecule, MatchList matchList, Settings settings, double[] correctedMasses, FingerprintCollection fingerprintCollection) throws Exception {
+	private String[][] createLossAnnotations(IMolecularStructure precursorMolecule, MatchList matchList, Settings settings, double[] correctedMasses, FingerprintCollection fingerprintCollection, java.util.ArrayList<Double> uncorrectedMassDiff) throws Exception {
 		java.util.ArrayList<String[]> lossFingerprint = new java.util.ArrayList<String[]>();
 		java.util.ArrayList<Double> lossMassDiff = new java.util.ArrayList<Double>();
 		
@@ -227,27 +246,32 @@ public class CandidateListWriterLossFragmentSmilesCompletePSV implements IWriter
 		
 		double adductMass = Constants.getIonisationTypeMassCorrection(Constants.ADDUCT_NOMINAL_MASSES.indexOf(ionmode), ispositive);
 		double precursorMass = (Double)settings.get(VariableNames.PRECURSOR_NEUTRAL_MASS_NAME);
+		double uncorrectedPrecursorMass = precursorMass;
 		if((Boolean)settings.get(VariableNames.CORRECT_MASSES_FOR_FINGERPRINT_ANNOTATION_NAME))
 			precursorMass = precursorMolecule.getNeutralMonoisotopicMass();
 			
 		double ionmass = MathTools.round(precursorMass + adductMass);
+		double uncorrectedIonmass = MathTools.round(uncorrectedPrecursorMass + adductMass);
 		
 		//check all matches
 		for(int i = 0; i < matchList.getNumberElements(); i++) {
 			IMatch matchI = matchList.getElement(i);
 			IFragment fragmentI = matchI.getBestMatchedFragment();
 			double peakMassI = matchI.getMatchedPeak().getMass();
+			double uncorrectedPeakMassI = peakMassI;
 			if((Boolean)settings.get(VariableNames.CORRECT_MASSES_FOR_FINGERPRINT_ANNOTATION_NAME))
 				peakMassI = correctedMasses[i];
 			//compare with matches with greater mass than the current one
 			for(int j = i + 1; j < matchList.getNumberElements(); j++) {
 				IMatch matchJ = matchList.getElement(j);
 				double peakMassJ = matchJ.getMatchedPeak().getMass();
+				double uncorrectedPeakMassJ = peakMassJ;
 				if((Boolean)settings.get(VariableNames.CORRECT_MASSES_FOR_FINGERPRINT_ANNOTATION_NAME))
 					peakMassJ = correctedMasses[j];
 				IFragment fragmentJ = matchJ.getBestMatchedFragment();
 				if(fragmentJ.isRealSubStructure(fragmentI)) {
 					double diff = MathTools.round(peakMassJ - peakMassI);
+					double uncorrectedDiff = uncorrectedPeakMassJ - uncorrectedPeakMassI;
 					IFragment diffFragment = fragmentJ.getDifferenceFragment(precursorMolecule, fragmentI);
 					if(diffFragment == null) continue;
 					
@@ -255,10 +279,12 @@ public class CandidateListWriterLossFragmentSmilesCompletePSV implements IWriter
 					
 					lossFingerprint.add(fingerprintCollection.getNormalizedFingerprint(con));
 					lossMassDiff.add(diff);
+					uncorrectedMassDiff.add(uncorrectedDiff);
 				}
 			}
 			//do the same for the precursor ion
 			double diff = MathTools.round(ionmass - peakMassI);
+			double uncorrectedDiff = MathTools.round(uncorrectedIonmass - uncorrectedPeakMassI);
 			IFragment diffFragment = fragmentI.getDifferenceFragment(precursorMolecule);
 			if(diffFragment == null) continue;
 			
@@ -266,6 +292,7 @@ public class CandidateListWriterLossFragmentSmilesCompletePSV implements IWriter
 			
 			lossFingerprint.add(fingerprintCollection.getNormalizedFingerprint(con));
 			lossMassDiff.add(diff);
+			uncorrectedMassDiff.add(uncorrectedDiff);
 		}
 
 		StringBuilder[] diffFingerPrints = new StringBuilder[fingerprintCollection.getNumberFingerprinters()];  
@@ -356,6 +383,83 @@ public class CandidateListWriterLossFragmentSmilesCompletePSV implements IWriter
 			e.printStackTrace();
 		}
 		return mass;
+	}
+	
+	private java.util.ArrayList<Double> calculatePeakDifferences(DefaultPeakList peakList, double neutralPrecursorMass, double adductMass) {
+		java.util.ArrayList<Double> peakDifferences = new java.util.ArrayList<Double>();
+		
+		double ionmass = MathTools.round(neutralPrecursorMass + adductMass);
+		// calculate mass differences between mass peaks
+		for(int i = 0; i < peakList.getNumberElements(); i++) {
+			Double currentMass1 = ((TandemMassPeak)peakList.getElement(i)).getMass();
+			if(ionmass <= currentMass1) continue;
+			for(int j = i + 1; j < peakList.getNumberElements(); j++) {
+				Double currentMass2 = ((TandemMassPeak)peakList.getElement(j)).getMass();
+				if(currentMass2 <= currentMass1) continue;
+				double massDifference = MathTools.round(currentMass2 - currentMass1);
+				peakDifferences.add(massDifference);
+			}
+			double diff = MathTools.round(ionmass - currentMass1);
+			peakDifferences.add(diff);
+		}
+
+		java.util.ArrayList<Double> peakDifferencesSorted = new java.util.ArrayList<Double>();
+		for(int i = 0; i < peakDifferences.size(); i++) {
+			int index = 0; 
+			double currentPeakDiff = peakDifferences.get(i);
+			while(index < peakDifferencesSorted.size()) {
+				if(peakDifferencesSorted.get(index) > currentPeakDiff) break;
+				else index++;
+			}
+			peakDifferencesSorted.add(index, MathTools.round(currentPeakDiff));
+		}
+		
+		return peakDifferencesSorted;
+	}
+
+	private String getNonExplainedLossString(java.util.ArrayList<Double> uncorrectedLossMasses, java.util.ArrayList<Double> nativeLossMasses) {
+		StringBuilder nonExplLosses = new StringBuilder();
+		for(int k = 0; k < nativeLossMasses.size(); k++) {
+			if(uncorrectedLossMasses.size() == 0) {
+				nonExplLosses.append(nativeLossMasses.get(k));
+				nonExplLosses.append(";");
+			} else {
+				int index = uncorrectedLossMasses.indexOf(nativeLossMasses.get(k));
+				if(index == -1) {
+					nonExplLosses.append(nativeLossMasses.get(k));
+					nonExplLosses.append(";");
+				} else {
+					uncorrectedLossMasses.remove(index);
+				}
+			}
+		}
+		if(nonExplLosses.length() == 0) return "NA";
+		if(nonExplLosses.charAt(nonExplLosses.length() - 1) == ';') nonExplLosses.deleteCharAt(nonExplLosses.length() - 1);
+		return nonExplLosses.toString();
+	}
+
+	private String getNonExplainedPeakString(DefaultPeakList peaklist, MatchList matchList) {
+		StringBuilder nonExplPeaks = new StringBuilder();
+		for(int k = 0; k < peaklist.getNumberElements(); k++) {
+			if(matchList.getNumberElements() == 0) {
+				nonExplPeaks.append(((IPeak)peaklist.getElement(k)).getMass());
+				nonExplPeaks.append(";");
+			} else if(!this.isContained(((IPeak)peaklist.getElement(k)).getMass(), matchList)) {
+				nonExplPeaks.append(((IPeak)peaklist.getElement(k)).getMass());
+				nonExplPeaks.append(";");
+			}
+		}
+
+		if(nonExplPeaks.length() == 0) return "NA";
+		if(nonExplPeaks.charAt(nonExplPeaks.length() - 1) == ';') nonExplPeaks.deleteCharAt(nonExplPeaks.length() - 1);
+		return nonExplPeaks.toString();
+	}
+
+	private boolean isContained(Double mass, MatchList matchList) {
+		for(int i = 0; i < matchList.getNumberElements(); i++) {
+			if(matchList.getElement(i).getMatchedPeak().getMass().equals(mass)) return true;
+		}
+		return false;
 	}
 	
 	public static void main(String[] args) {

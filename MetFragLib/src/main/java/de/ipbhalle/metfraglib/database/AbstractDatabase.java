@@ -87,13 +87,26 @@ public abstract class AbstractDatabase implements IDatabase {
 
 	public boolean setInChIValues(ICandidate candidate) {
 		if(candidate.getProperties().containsKey(VariableNames.INCHI_KEY_NAME) && candidate.getProperty(VariableNames.INCHI_KEY_NAME) != null) {
-			String[] tmp = ((String)candidate.getProperty(VariableNames.INCHI_KEY_NAME)).split("-");
-			if(candidate.getProperties().containsKey(VariableNames.INCHI_KEY_1_NAME) && candidate.getProperty(VariableNames.INCHI_KEY_1_NAME) != null) 
+			String inchikey = (String)candidate.getProperty(VariableNames.INCHI_KEY_NAME);
+			if(inchikey.length() == 0 || inchikey.equals("NA")) {
+				if(candidate.getProperties().containsKey(VariableNames.INCHI_KEY_1_NAME) && candidate.getProperty(VariableNames.INCHI_KEY_1_NAME) != null &&	
+						candidate.getProperties().containsKey(VariableNames.INCHI_KEY_2_NAME) && candidate.getProperty(VariableNames.INCHI_KEY_2_NAME) != null &&	
+						candidate.getProperties().containsKey(VariableNames.INCHI_KEY_3_NAME) && candidate.getProperty(VariableNames.INCHI_KEY_3_NAME) != null)
+					inchikey = candidate.getProperty(VariableNames.INCHI_KEY_1_NAME) + "-" + candidate.getProperty(VariableNames.INCHI_KEY_2_NAME) + "-" + candidate.getProperty(VariableNames.INCHI_KEY_3_NAME);
+					candidate.setProperty(VariableNames.INCHI_KEY_NAME, inchikey);	
+			} else {
+				String[] tmp = ((String)candidate.getProperty(VariableNames.INCHI_KEY_NAME)).split("-");
 				this.addProperty(VariableNames.INCHI_KEY_1_NAME, tmp[0], candidate);	
-			if(candidate.getProperties().containsKey(VariableNames.INCHI_KEY_2_NAME) && candidate.getProperty(VariableNames.INCHI_KEY_2_NAME) != null) 
 				this.addProperty(VariableNames.INCHI_KEY_2_NAME, tmp[1], candidate);	
-			if(candidate.getProperties().containsKey(VariableNames.INCHI_KEY_3_NAME) && candidate.getProperty(VariableNames.INCHI_KEY_3_NAME) != null) 
-				this.addProperty(VariableNames.INCHI_KEY_3_NAME, tmp[2], candidate);	
+				this.addProperty(VariableNames.INCHI_KEY_3_NAME, tmp[2], candidate);
+			}
+		} else {
+			if(candidate.getProperties().containsKey(VariableNames.INCHI_KEY_1_NAME) && candidate.getProperty(VariableNames.INCHI_KEY_1_NAME) != null &&	
+					candidate.getProperties().containsKey(VariableNames.INCHI_KEY_2_NAME) && candidate.getProperty(VariableNames.INCHI_KEY_2_NAME) != null &&	
+					candidate.getProperties().containsKey(VariableNames.INCHI_KEY_3_NAME) && candidate.getProperty(VariableNames.INCHI_KEY_3_NAME) != null) {
+				String inchikey = (String)candidate.getProperty(VariableNames.INCHI_KEY_1_NAME) + "-" + (String)candidate.getProperty(VariableNames.INCHI_KEY_2_NAME) + "-" + (String)candidate.getProperty(VariableNames.INCHI_KEY_3_NAME);
+				this.addProperty(VariableNames.INCHI_KEY_NAME, inchikey, candidate);	
+			}
 		}
 		return true;
 	}
