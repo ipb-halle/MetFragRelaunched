@@ -118,10 +118,14 @@ public class VariableNames {
 	public static final String PEAK_FINGERPRINT_DENOMINATOR_COUNT_NAME			= "PeakFingerprintDenominatorCount";
 	public static final String PEAK_FINGERPRINT_DENOMINATOR_VALUE_NAME			= "PeakFingerprintDenominatorValue";
 	public static final String PEAK_FINGERPRINT_TUPLE_COUNT_NAME				= "PeakFingerprintTupleCount";
+	public static final String PEAK_FINGERPRINT_MATCHED_TUPLE_COUNT_NAME		= "PeakFingerprintMathedTupleCount";
+	public static final String PEAK_FINGERPRINT_NON_MATCHED_TUPLE_COUNT_NAME	= "PeakFingerprintNonMatchedTupleCount";
 	
 	public static final String LOSS_FINGERPRINT_DENOMINATOR_COUNT_NAME			= "LossFingerprintDenominatorCount";
 	public static final String LOSS_FINGERPRINT_DENOMINATOR_VALUE_NAME			= "LossFingerprintDenominatorValue";
 	public static final String LOSS_FINGERPRINT_TUPLE_COUNT_NAME				= "LossFingerprintTupleCount";
+	public static final String LOSS_FINGERPRINT_MATCHED_TUPLE_COUNT_NAME		= "LossFingerprintMathedTupleCount";
+	public static final String LOSS_FINGERPRINT_NON_MATCHED_TUPLE_COUNT_NAME	= "LossFingerprintNonMatchedTupleCount";
 
 	public static final String PEAK_FINGERPRINT_JOINT_PROBABILITY_ALPHA_NAME	= "PeakFingerprintJointProbabilityAlpha";
 	public static final String PEAK_FINGERPRINT_JOINT_PROBABILITY_BETA_NAME		= "PeakFingerprintJointProbabilityBeta";

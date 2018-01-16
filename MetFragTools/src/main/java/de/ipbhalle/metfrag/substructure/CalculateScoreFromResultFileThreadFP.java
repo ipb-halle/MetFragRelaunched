@@ -289,7 +289,7 @@ public class CalculateScoreFromResultFileThreadFP {
 				}
 				
 				// calculate the sum of probabilities for un-observed fingerprints for the current mass
-				double sumFuProbabilities = alphaProbability * massToFingerprints.getSize(groupList.getPeakmz());
+				double sumFuProbabilities = alphaProbability * massToFingerprints.getSizeOverall(groupList.getPeakmz());
 				
 				sum_f += sumFsProbabilities;
 				sum_f += sumFuProbabilities;

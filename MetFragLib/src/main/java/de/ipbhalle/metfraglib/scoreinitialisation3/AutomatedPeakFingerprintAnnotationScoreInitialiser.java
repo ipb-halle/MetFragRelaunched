@@ -1,4 +1,4 @@
-package de.ipbhalle.metfraglib.scoreinitialisation;
+package de.ipbhalle.metfraglib.scoreinitialisation3;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -9,10 +9,12 @@ import org.openscience.cdk.exception.InvalidSmilesException;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import de.ipbhalle.metfraglib.FastBitArray;
+import de.ipbhalle.metfraglib.additionals.MathTools;
 import de.ipbhalle.metfraglib.fingerprint.Fingerprint;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.interfaces.IFragment;
 import de.ipbhalle.metfraglib.interfaces.IMatch;
+import de.ipbhalle.metfraglib.interfaces.IPeak;
 import de.ipbhalle.metfraglib.interfaces.IScoreInitialiser;
 import de.ipbhalle.metfraglib.list.DefaultPeakList;
 import de.ipbhalle.metfraglib.list.MatchList;
@@ -47,7 +49,8 @@ public class AutomatedPeakFingerprintAnnotationScoreInitialiser implements IScor
 			Double mzabs = (Double)settings.get(VariableNames.ABSOLUTE_MASS_DEVIATION_NAME);
 			BufferedReader breader = new BufferedReader(new FileReader(new File(filename)));
 			String line = "";
-			int numObservationsMerged = 0;
+			int numMatchedObservationsMerged = 0;
+			int numNonMatchedObservationsMerged = 0;
 			java.util.HashMap<Double, MassToFingerprintGroupList> mergedFingerprintGroupLists = new java.util.HashMap<Double, MassToFingerprintGroupList>();
 			while((line = breader.readLine()) != null) {
 				line = line.trim();
@@ -57,12 +60,15 @@ public class AutomatedPeakFingerprintAnnotationScoreInitialiser implements IScor
 					String[] tmp = line.split("\\s+");
 					// sum overall occurrences
 					settings.set(VariableNames.PEAK_FINGERPRINT_DENOMINATOR_COUNT_NAME, Double.parseDouble(tmp[2]));
-					// number different peak pairs
-					settings.set(VariableNames.PEAK_FINGERPRINT_TUPLE_COUNT_NAME, Double.parseDouble(tmp[1]) - numObservationsMerged);
+					// number different peak pairs matched
+					settings.set(VariableNames.PEAK_FINGERPRINT_MATCHED_TUPLE_COUNT_NAME, Double.parseDouble(tmp[1]) - numMatchedObservationsMerged);
+					// number different peak pairs non-matched
+					settings.set(VariableNames.PEAK_FINGERPRINT_NON_MATCHED_TUPLE_COUNT_NAME, Double.parseDouble(tmp[3]) - numNonMatchedObservationsMerged);
 					continue;
 				}
 				String[] tmp = line.split("\\s+");
 				Double peak = Double.parseDouble(tmp[0]);
+				// find matching peak in spectrum
 				Double matchedMass = peakList.getBestMatchingMass(peak, mzppm, mzabs);
 				if(matchedMass != null) {
 					FingerprintGroup[] groups = this.getFingerprintGroup(tmp);
@@ -72,7 +78,8 @@ public class AutomatedPeakFingerprintAnnotationScoreInitialiser implements IScor
 							FingerprintGroup curGroup = currentGroupList.getElementByFingerprint(groups[i].getFingerprint());
 							if(curGroup == null) currentGroupList.addElement(groups[i]);
 							else {
-								numObservationsMerged++;
+								if(curGroup.getFingerprint().getSize() != 1) numMatchedObservationsMerged++;
+								if(curGroup.getFingerprint().getSize() == 1) numNonMatchedObservationsMerged++;
 								curGroup.setNumberObserved(curGroup.getNumberObserved() + groups[i].getNumberObserved());
 								curGroup.setProbability(curGroup.getProbability() + groups[i].getProbability());
 							}
@@ -187,6 +194,14 @@ public class AutomatedPeakFingerprintAnnotationScoreInitialiser implements IScor
 			groupList.calculateSumProbabilites();
 		}
 		return;
+	}
+	
+	protected int matchesToPeak(Double mass, DefaultPeakList peaklist, int peakPointer, double mzabs, double mzppm) {
+		IPeak peak = (IPeak)peaklist.getElement(peakPointer);
+		boolean matches = MathTools.matchMasses(peak.getMass(), mass, mzppm, mzabs);
+		if(matches) return 0;
+		if(mass < peak.getMass()) return -1;
+		return 1;
 	}
 	
 	protected FingerprintGroup[] getFingerprintGroup(String[] splittedLine) {

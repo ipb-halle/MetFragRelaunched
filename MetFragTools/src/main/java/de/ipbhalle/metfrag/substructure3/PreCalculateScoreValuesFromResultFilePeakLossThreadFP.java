@@ -15,16 +15,14 @@ import de.ipbhalle.metfraglib.database.LocalPSVDatabase;
 import de.ipbhalle.metfraglib.exceptions.MultipleHeadersFoundInInputDatabaseException;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.interfaces.IDatabase;
-import de.ipbhalle.metfraglib.interfaces.IPeak;
 import de.ipbhalle.metfraglib.interfaces.IPeakListReader;
 import de.ipbhalle.metfraglib.list.CandidateList;
-import de.ipbhalle.metfraglib.list.DefaultPeakList;
 import de.ipbhalle.metfraglib.match.MassFingerprintMatch;
 import de.ipbhalle.metfraglib.parameter.Constants;
 import de.ipbhalle.metfraglib.parameter.SettingsChecker;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
-import de.ipbhalle.metfraglib.scoreinitialisation.AutomatedLossFingerprintAnnotationScoreInitialiser;
-import de.ipbhalle.metfraglib.scoreinitialisation.AutomatedPeakFingerprintAnnotationScoreInitialiser;
+import de.ipbhalle.metfraglib.scoreinitialisation3.AutomatedLossFingerprintAnnotationScoreInitialiser;
+import de.ipbhalle.metfraglib.scoreinitialisation3.AutomatedPeakFingerprintAnnotationScoreInitialiser;
 import de.ipbhalle.metfraglib.settings.MetFragGlobalSettings;
 import de.ipbhalle.metfraglib.settings.Settings;
 import de.ipbhalle.metfraglib.substructure.MassToFingerprintsHashMap;
@@ -222,8 +220,7 @@ public class PreCalculateScoreValuesFromResultFilePeakLossThreadFP {
 				return;
 			}
 
-			System.out.println(
-					dbFilename.replaceAll(".*/", "") + ": Read " + candidates.getNumberElements() + " candidates");
+			System.out.println(dbFilename.replaceAll(".*/", "") + ": Read " + candidates.getNumberElements() + " candidates");
 
 			AutomatedPeakFingerprintAnnotationScoreInitialiser initPeak = new AutomatedPeakFingerprintAnnotationScoreInitialiser();
 			AutomatedLossFingerprintAnnotationScoreInitialiser initLoss = new AutomatedLossFingerprintAnnotationScoreInitialiser();
@@ -235,8 +232,8 @@ public class PreCalculateScoreValuesFromResultFilePeakLossThreadFP {
 				e.printStackTrace();
 			}
 
-			this.postProcessScoreParametersPeak(this.settings, candidates);
-			this.postProcessScoreParametersLoss(this.settings, candidates);
+			postProcessScoreParametersPeak(this.settings, candidates);
+			postProcessScoreParametersLoss(this.settings, candidates);
 
 			for (int i = 0; i < candidates.getNumberElements(); i++) {
 				this.settings.set(VariableNames.CANDIDATE_NAME, candidates.getElement(i));
@@ -266,42 +263,37 @@ public class PreCalculateScoreValuesFromResultFilePeakLossThreadFP {
 			MassToFingerprintsHashMap peakMassToFingerprints = new MassToFingerprintsHashMap();
 			MassToFingerprintGroupListCollection peakToFingerprintGroupListCollection = (MassToFingerprintGroupListCollection) settings
 					.get(VariableNames.PEAK_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME);
-		
-			DefaultPeakList peaklist = (DefaultPeakList)settings.get(VariableNames.PEAK_LIST_NAME);
-			
+
 			for (int k = 0; k < candidates.getNumberElements(); k++) {
 				/*
 				 * check whether the single run was successful
 				 */
 				ICandidate currentCandidate = candidates.getElement(k);
-				
-				String explPeaks = (String)currentCandidate.getProperty("ExplPeaks");
-				String[] explPeaksArray = explPeaks.split(";");
-				Double[] explPeaksMasses = null;
-				if(!explPeaks.equals("NA")) explPeaksMasses = getDoubleArrayFromPeakList(explPeaksArray);
-				StringBuilder nonExplPeaks = new StringBuilder();
-				for(int kk = 0; kk < peaklist.getNumberElements(); kk++) {
-					if(explPeaks.equals("NA")) {
-						nonExplPeaks.append(((IPeak)peaklist.getElement(kk)).getMass());
-						nonExplPeaks.append(":0;");
-					} else if(!isContained(((IPeak)peaklist.getElement(kk)).getMass(), explPeaksMasses)) {
-						nonExplPeaks.append(((IPeak)peaklist.getElement(kk)).getMass());
-						nonExplPeaks.append(":0;");
-					}
-				}
-				String nonExplPeaksString = nonExplPeaks.toString();
-				if(nonExplPeaksString.length() == 0) nonExplPeaksString = "NA";
-				if(nonExplPeaksString.endsWith(";")) nonExplPeaksString = nonExplPeaksString.substring(0, nonExplPeaksString.length() - 1);
-				
 				String fps = "";
 				try {
-					fps = (String)currentCandidate.getProperty("FragmentFingerprintOfExplPeaks" + this.fingerprintType);
-					if (fps.equals("NA") && nonExplPeaksString.equals("NA")) {
+					fps = (String) currentCandidate.getProperty("FragmentFingerprintOfExplPeaks" + this.fingerprintType);
+					String nonExplainedPeaks = (String) currentCandidate.getProperty("NonExplainedPeaks");
+					// add non explained peaks to match list
+					if(!nonExplainedPeaks.equals("NA")) {
+						StringBuilder fpsBuilder = new StringBuilder();
+						if(!fps.equals("NA")) fpsBuilder.append(fps);
+						String[] tmp = nonExplainedPeaks.split(";");
+						if(tmp.length >= 1) {
+							if(fpsBuilder.length() != 0) fpsBuilder.append(";");
+							fpsBuilder.append(tmp[0]);
+							fpsBuilder.append(":0");
+						}
+						for(int l = 1; l < tmp.length; l++) {
+							fpsBuilder.append(";");
+							fpsBuilder.append(tmp[l]);
+							fpsBuilder.append(":0");
+						}
+						if(fpsBuilder.length() != 0) fps = fpsBuilder.toString();
+					}
+					if (fps.equals("NA")) {
 						currentCandidate.setProperty("PeakMatchList", new ArrayList<MassFingerprintMatch>());
 						continue;
 					}
-					if(fps.equals("NA")) fps = nonExplPeaksString;
-					else if(!nonExplPeaksString.equals("NA")) fps += ";" + nonExplPeaksString;
 				} catch (Exception e) {
 					System.err.println((String) settings.get(VariableNames.LOCAL_DATABASE_PATH_NAME)
 							+ ": Error at candidate " + k);
@@ -319,8 +311,7 @@ public class PreCalculateScoreValuesFromResultFilePeakLossThreadFP {
 				currentCandidate.setProperty("PeakMatchList", matchlist);
 				for (int j = 0; j < matchlist.size(); j++) {
 					MassFingerprintMatch match = matchlist.get(j);
-					MassToFingerprintGroupList peakToFingerprintGroupList = peakToFingerprintGroupListCollection
-							.getElementByPeak(match.getMass());
+					MassToFingerprintGroupList peakToFingerprintGroupList = peakToFingerprintGroupListCollection.getElementByPeak(match.getMass());
 					if (peakToFingerprintGroupList == null)
 						continue;
 					FastBitArray currentFingerprint = new FastBitArray(match.getFingerprint());
@@ -338,19 +329,20 @@ public class PreCalculateScoreValuesFromResultFilePeakLossThreadFP {
 					}
 				}
 			}
-
-			double f_seen = (double) settings.get(VariableNames.PEAK_FINGERPRINT_TUPLE_COUNT_NAME); // f_s
-			double f_unseen = peakMassToFingerprints.getOverallSize(); // f_u
-			double sumFingerprintFrequencies = (double) settings
-					.get(VariableNames.PEAK_FINGERPRINT_DENOMINATOR_COUNT_NAME); // \sum_N
-																					// \sum_Ln
+			
+			double f_seen_matched = (double) settings.get(VariableNames.PEAK_FINGERPRINT_MATCHED_TUPLE_COUNT_NAME); // f_s
+			double f_seen_non_matched = (double) settings.get(VariableNames.PEAK_FINGERPRINT_NON_MATCHED_TUPLE_COUNT_NAME); // f_s
+			double f_unseen_matched = peakMassToFingerprints.getOverallMatchedSize(); // f_u
+			double f_unseen_non_matched = peakMassToFingerprints.getOverallNonMatchedSize(); // f_u
+			double sumFingerprintFrequencies = (double) settings.get(VariableNames.PEAK_FINGERPRINT_DENOMINATOR_COUNT_NAME); // \sum_N
 																					// 1
-
 			// set value for denominator of P(f,m)
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.append("sumFingerprintFrequencies " + sumFingerprintFrequencies + "\n");
-			stringBuilder.append("f_seen " + f_seen + "\n");
-			stringBuilder.append("f_unseen " + f_unseen + "\n");
+			stringBuilder.append("f_seen_matched " + f_seen_matched + "\n");
+			stringBuilder.append("f_unseen_matched " + f_unseen_matched + "\n");
+			stringBuilder.append("f_seen_non_matched " + f_seen_non_matched + "\n");
+			stringBuilder.append("f_unseen_non_matched " + f_unseen_non_matched + "\n");
 			// annotated
 			stringBuilder.append("PeakToFingerprints\n");
 			for (int i = 0; i < peakToFingerprintGroupListCollection.getNumberElements(); i++) {
@@ -363,11 +355,12 @@ public class PreCalculateScoreValuesFromResultFilePeakLossThreadFP {
 				// from the annotation files
 				for (int ii = 0; ii < groupList.getNumberElements(); ii++) {
 					// first calculate P(f,m)
-					stringBuilder.append(" " + groupList.getElement(ii).getProbability());
+					if(groupList.getElement(ii).getFingerprint().getSize() != 1) stringBuilder.append(" " + groupList.getElement(ii).getProbability());
+					else stringBuilder.append(" " + -1.0 * groupList.getElement(ii).getProbability());
 				}
 				// calculate the sum of probabilities for un-observed
 				// fingerprints for the current mass
-				stringBuilder.append(" bgsize:" + peakMassToFingerprints.getSize(groupList.getPeakmz()));
+				stringBuilder.append(" bgsize:" + peakMassToFingerprints.getSizeMatched(groupList.getPeakmz()) + " bgsize:" + peakMassToFingerprints.getSizeNonMatched(groupList.getPeakmz()));
 				stringBuilder.append("\n");
 			}
 			try {
@@ -394,6 +387,23 @@ public class PreCalculateScoreValuesFromResultFilePeakLossThreadFP {
 				 */
 				ICandidate currentCandidate = candidates.getElement(k);
 				String fps = (String) currentCandidate.getProperty("LossFingerprintOfExplPeaks" + this.fingerprintType);
+				String nonExplainedLosses = (String) currentCandidate.getProperty("NonExplainedLosses");
+				// add non explained peaks to match list
+				if(!nonExplainedLosses.equals("NA")) {
+					StringBuilder fpsBuilder = new StringBuilder();
+					if(!fps.equals("NA")) fpsBuilder.append(fps);
+					String[] tmp = nonExplainedLosses.split(";");
+					if(tmp.length >= 1) {
+						if(fpsBuilder.length() != 0) fpsBuilder.append(";");
+						fpsBuilder.append(tmp[0]);
+						fpsBuilder.append(":0");
+					}
+					for(int l = 1; l < tmp.length; l++) {
+						fpsBuilder.append(tmp[l]);
+						fpsBuilder.append(":0");
+					}
+					if(fpsBuilder.length() != 0) fps = fpsBuilder.toString();
+				}
 				if (fps.equals("NA")) {
 					currentCandidate.setProperty("LossMatchList", new ArrayList<MassFingerprintMatch>());
 					continue;
@@ -435,26 +445,25 @@ public class PreCalculateScoreValuesFromResultFilePeakLossThreadFP {
 				currentCandidate.setProperty("LossMatchList", matchlist);
 			}
 
-			double f_seen = (double) settings.get(VariableNames.LOSS_FINGERPRINT_TUPLE_COUNT_NAME); // f_s
-			double f_unseen = lossMassToFingerprints.getOverallSize(); // f_u
-			double sumFingerprintFrequencies = (double) settings
-					.get(VariableNames.LOSS_FINGERPRINT_DENOMINATOR_COUNT_NAME); // \sum_N
+			double f_seen_matched = (double) settings.get(VariableNames.LOSS_FINGERPRINT_MATCHED_TUPLE_COUNT_NAME); // f_s
+			double f_seen_non_matched = (double) settings.get(VariableNames.LOSS_FINGERPRINT_NON_MATCHED_TUPLE_COUNT_NAME); // f_s
+			double f_unseen_matched = lossMassToFingerprints.getOverallMatchedSize(); // f_u
+			double f_unseen_non_matched = lossMassToFingerprints.getOverallNonMatchedSize(); // f_u
+			double sumFingerprintFrequencies = (double) settings.get(VariableNames.LOSS_FINGERPRINT_DENOMINATOR_COUNT_NAME); // \sum_N
 																					// \sum_Ln
 																					// 1
 			// set value for denominator of P(f,m)
-
-			// annotated
-
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.append("sumFingerprintFrequencies " + sumFingerprintFrequencies + "\n");
-			stringBuilder.append("f_seen " + f_seen + "\n");
-			stringBuilder.append("f_unseen " + f_unseen + "\n");
+			stringBuilder.append("f_seen_matched " + f_seen_matched + "\n");
+			stringBuilder.append("f_unseen_matched " + f_unseen_matched + "\n");
+			stringBuilder.append("f_seen_non_matched " + f_seen_non_matched + "\n");
+			stringBuilder.append("f_unseen_non_matched " + f_unseen_non_matched + "\n");
 
 			stringBuilder.append("LossToFingerprints\n");
 			for (int i = 0; i < lossToFingerprintGroupListCollection.getNumberElements(); i++) {
 				MassToFingerprintGroupList groupList = lossToFingerprintGroupListCollection.getElement(i);
 				stringBuilder.append(groupList.getPeakmz());
-
 				// sum_f P(f,m)
 				// calculate sum of MF_s (including the alpha count) and the
 				// joint probabilities
@@ -462,13 +471,14 @@ public class PreCalculateScoreValuesFromResultFilePeakLossThreadFP {
 				// from the annotation files
 				for (int ii = 0; ii < groupList.getNumberElements(); ii++) {
 					// first calculate P(f,m)
-					stringBuilder.append(" " + groupList.getElement(ii).getProbability());
+					if(groupList.getElement(ii).getFingerprint().getSize() != 1) stringBuilder.append(" " + groupList.getElement(ii).getProbability());
+					else stringBuilder.append(" " + -1.0 * groupList.getElement(ii).getProbability());
 					// sum_f P(f,m) -> for F_s
 				}
 
 				// calculate the sum of probabilities for un-observed
 				// fingerprints for the current mass
-				stringBuilder.append(" bgsize:" + lossMassToFingerprints.getSize(groupList.getPeakmz()));
+				stringBuilder.append(" bgsize:" + lossMassToFingerprints.getSizeMatched(groupList.getPeakmz()) + " bgsize:" + lossMassToFingerprints.getSizeNonMatched(groupList.getPeakmz()));
 				stringBuilder.append("\n");
 			}
 			try {
@@ -499,37 +509,6 @@ public class PreCalculateScoreValuesFromResultFilePeakLossThreadFP {
 			return string;
 		}
 
-		public Double[] getDoubleArrayFromPeakList(String[] explPeaks) {
-			Double[] peaks = new Double[explPeaks.length];
-			for(int i = 0; i < explPeaks.length; i++) {
-				peaks[i] = Double.parseDouble(explPeaks[i].split("_")[0]);
-			}
-			return peaks;
-		}
-		
-		public boolean isContained(Double mass, Double[] explPeakMasses) {
-			for(int i = 0; i < explPeakMasses.length; i++) {
-				if(explPeakMasses[i].equals(mass)) return true;
-			}
-			return false;
-		}
-		
-		public String removeNonAnnotatedPeaks(String fps) {
-			if(fps.equals("NA")) return fps;
-			String[] tmp = fps.split(";");
-			StringBuilder cleanedFps = new StringBuilder();
-			for(int i = 0; i < tmp.length; i++) {
-				if(!tmp[i].endsWith(":3")) {
-					cleanedFps.append(tmp[i]);
-					cleanedFps.append(";");
-				}
-			}
-			String returnValue = cleanedFps.toString();
-			if(returnValue.endsWith(";")) returnValue = returnValue.substring(0, returnValue.length() - 1);
-			if(returnValue.length() == 0) return "NA";
-			return returnValue;
-		}
-		
 		public void singlePostCalculatePeak(Settings settings, ICandidate candidate) {
 			// this.value = 0.0;
 			MassToFingerprintGroupListCollection peakToFingerprintGroupListCollection = (MassToFingerprintGroupListCollection) settings
@@ -547,7 +526,7 @@ public class PreCalculateScoreValuesFromResultFilePeakLossThreadFP {
 				// (fingerprintToMasses.getSize(currentFingerprint));
 				if (currentMatch == null) {
 					matchProbTypes.append(currentMass);
-					matchProbTypes.append(":3");
+					matchProbTypes.append(":4");
 				} else {
 					FastBitArray currentFingerprint = new FastBitArray(currentMatch.getFingerprint());
 					// ToDo: at this stage try to check all fragments not only
@@ -559,10 +538,12 @@ public class PreCalculateScoreValuesFromResultFilePeakLossThreadFP {
 						matchProbTypes.append(currentMass);
 						matchProbTypes.append(":");
 						matchProbTypes.append(matching_prob);
-						matchProbTypes.append(":1");
+						if(currentFingerprint.getSize() != 1) matchProbTypes.append(":1");
+						else matchProbTypes.append(":3");
 					} else {
 						matchProbTypes.append(currentMass);
-						matchProbTypes.append(":2");
+						if(currentFingerprint.getSize() != 1) matchProbTypes.append(":2"); 
+						else matchProbTypes.append(":4");
 					}
 				}
 				if (i != (peakToFingerprintGroupListCollection.getNumberElements() - 1))
@@ -572,6 +553,11 @@ public class PreCalculateScoreValuesFromResultFilePeakLossThreadFP {
 			candidate.setProperty("AutomatedPeakFingerprintAnnotationScore_Probtypes", matchProbTypes.toString());
 		}
 
+		/**
+		 * 
+		 * @param settings
+		 * @param candidate
+		 */
 		public void singlePostCalculateLoss(Settings settings, ICandidate candidate) {
 			MassToFingerprintGroupListCollection lossToFingerprintGroupListCollection = (MassToFingerprintGroupListCollection) settings
 					.get(VariableNames.LOSS_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME);
@@ -586,6 +572,7 @@ public class PreCalculateScoreValuesFromResultFilePeakLossThreadFP {
 			for (int i = 0; i < matchlist.size(); i++) {
 				// match with mass of the spectrum
 				MassFingerprintMatch currentMatch = (MassFingerprintMatch) matchlist.get(i);
+				//System.out.println("cur " + currentMatch.getMass());
 				int foundLossMassIndex = lossMassesFound.indexOf(currentMatch.getMass());
 				if (foundLossMassIndex == -1)
 					continue;
@@ -599,10 +586,12 @@ public class PreCalculateScoreValuesFromResultFilePeakLossThreadFP {
 					matchProbTypes.append(currentMatch.getMass());
 					matchProbTypes.append(":");
 					matchProbTypes.append(matching_prob);
-					matchProbTypes.append(":1");
+					if(currentFingerprint.getSize() != 1) matchProbTypes.append(":1");
+					else matchProbTypes.append(":3");
 				} else {
 					matchProbTypes.append(currentMatch.getMass());
-					matchProbTypes.append(":2");
+					if(currentFingerprint.getSize() != 1) matchProbTypes.append(":2"); 
+					else matchProbTypes.append(":4");
 				}
 				matchProbTypes.append(";");
 			}
@@ -611,7 +600,7 @@ public class PreCalculateScoreValuesFromResultFilePeakLossThreadFP {
 				if (matchProbTypes.length() != 0 && matchProbTypes.charAt(matchProbTypes.length() - 1) != ';')
 					matchProbTypes.append(";");
 				matchProbTypes.append(currentMass);
-				matchProbTypes.append(":3");
+				matchProbTypes.append(":4");
 			}
 
 			candidate.removeProperty("LossMatchList");

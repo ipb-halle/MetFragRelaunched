@@ -369,7 +369,7 @@ public class CalculateScoreFromResultFilePeakLossThreadFP {
 				}
 				
 				// calculate the sum of probabilities for un-observed fingerprints for the current mass
-				double sumFuProbabilities = alphaProbability * peakMassToFingerprints.getSize(groupList.getPeakmz());
+				double sumFuProbabilities = alphaProbability * peakMassToFingerprints.getSizeOverall(groupList.getPeakmz());
 				
 				sum_f += sumFsProbabilities;
 				sum_f += sumFuProbabilities;
@@ -471,7 +471,7 @@ public class CalculateScoreFromResultFilePeakLossThreadFP {
 				}
 				
 				// calculate the sum of probabilities for un-observed fingerprints for the current mass
-				double sumFuProbabilities = alphaProbability * lossMassToFingerprints.getSize(groupList.getPeakmz());
+				double sumFuProbabilities = alphaProbability * lossMassToFingerprints.getSizeOverall(groupList.getPeakmz());
 				
 				sum_f += sumFsProbabilities;
 				sum_f += sumFuProbabilities;
