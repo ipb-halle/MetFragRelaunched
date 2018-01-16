@@ -1,4 +1,4 @@
-package de.ipbhalle.metfraglib.scoreinitialisation;
+package de.ipbhalle.metfraglib.scoreinitialisation3;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -46,7 +46,8 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 			java.util.LinkedList<Double> lossMassesFound = new java.util.LinkedList<Double>();
 			BufferedReader breader = new BufferedReader(new FileReader(new File(filename)));
 			String line = "";
-			int numObservationsMerged = 0;
+			int numMatchedObservationsMerged = 0;
+			int numNonMatchedObservationsMerged = 0;
 			java.util.HashMap<Double, MassToFingerprintGroupList> mergedFingerprintGroupLists = new java.util.HashMap<Double, MassToFingerprintGroupList>();
 			while((line = breader.readLine()) != null) {
 				line = line.trim();
@@ -54,8 +55,12 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 				if(line.startsWith("#")) continue;
 				if(line.startsWith("SUMMARY")) {
 					String[] tmp = line.split("\\s+");
+					// sum overall occurrences
 					settings.set(VariableNames.LOSS_FINGERPRINT_DENOMINATOR_COUNT_NAME, Double.parseDouble(tmp[2]));
-					settings.set(VariableNames.LOSS_FINGERPRINT_TUPLE_COUNT_NAME, Double.parseDouble(tmp[1]) - numObservationsMerged);
+					// number different peak pairs matched
+					settings.set(VariableNames.LOSS_FINGERPRINT_MATCHED_TUPLE_COUNT_NAME, Double.parseDouble(tmp[1]) - numMatchedObservationsMerged);
+					// number different peak pairs non-matched
+					settings.set(VariableNames.LOSS_FINGERPRINT_NON_MATCHED_TUPLE_COUNT_NAME, Double.parseDouble(tmp[3]) - numNonMatchedObservationsMerged);
 					continue;
 				}
 				String[] tmp = line.split("\\s+");
@@ -69,7 +74,8 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 							FingerprintGroup curGroup = currentGroupList.getElementByFingerprint(groups[i].getFingerprint());
 							if(curGroup == null) currentGroupList.addElement(groups[i]);
 							else {
-								numObservationsMerged++;
+								if(curGroup.getFingerprint().getSize() != 1) numMatchedObservationsMerged++;
+								if(curGroup.getFingerprint().getSize() == 1) numNonMatchedObservationsMerged++;
 								curGroup.setNumberObserved(curGroup.getNumberObserved() + groups[i].getNumberObserved());
 								curGroup.setProbability(curGroup.getProbability() + groups[i].getProbability());
 							}
@@ -230,14 +236,14 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 		for(int i = 0; i < massArrayList.size(); i++) 
 		{
 			double currentMass = massArrayList.get(i);
-			if(currentMass - dev <= mass && mass <= currentMass + dev) {
+			if((currentMass - dev) <= mass && mass <= (currentMass + dev)) {
 				double currentDev = Math.abs(currentMass - mass);
 				if(currentDev < bestDev) {
 					bestPeakIndex = i;
 					bestDev = currentDev;
 				}
 			}
-			
+			else if(currentMass > mass) break;
 		}
 		if(bestPeakIndex != -1) return massArrayList.get(bestPeakIndex);
 		else return null;

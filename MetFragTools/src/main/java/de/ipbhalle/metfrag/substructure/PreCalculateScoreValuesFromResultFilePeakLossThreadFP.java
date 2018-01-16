@@ -343,7 +343,7 @@ public class PreCalculateScoreValuesFromResultFilePeakLossThreadFP {
 				}
 				// calculate the sum of probabilities for un-observed
 				// fingerprints for the current mass
-				stringBuilder.append(" bgsize:" + peakMassToFingerprints.getSize(groupList.getPeakmz()));
+				stringBuilder.append(" bgsize:" + peakMassToFingerprints.getSizeOverall(groupList.getPeakmz()));
 				stringBuilder.append("\n");
 			}
 			try {
@@ -444,7 +444,7 @@ public class PreCalculateScoreValuesFromResultFilePeakLossThreadFP {
 
 				// calculate the sum of probabilities for un-observed
 				// fingerprints for the current mass
-				stringBuilder.append(" bgsize:" + lossMassToFingerprints.getSize(groupList.getPeakmz()));
+				stringBuilder.append(" bgsize:" + lossMassToFingerprints.getSizeOverall(groupList.getPeakmz()));
 				stringBuilder.append("\n");
 			}
 			try {

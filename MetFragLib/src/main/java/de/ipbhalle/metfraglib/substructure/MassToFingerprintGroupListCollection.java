@@ -102,6 +102,7 @@ public class MassToFingerprintGroupListCollection extends DefaultList {
 		MassToFingerprintGroupList bestMatch = null;
 		for(int i = 0; i < this.list.size(); i++) {
 			MassToFingerprintGroupList peakToFingerprintGroupList = (MassToFingerprintGroupList)this.list.get(i);
+			//System.out.println("match " + peakToFingerprintGroupList.getPeakmz());
 			double currentDev = Math.abs(peakToFingerprintGroupList.getPeakmz() - mzValue);
 			if(currentDev <= dev) {
 				if(currentDev < minDev) {

@@ -49,10 +49,29 @@ public class MassToFingerprintsHashMap {
 		return this.containsFingerprint(fingerprint, this.massesToFingerprints.get(mass));
 	}
 	
-	public int getSize(Double mass) {
+	public int getSizeOverall(Double mass) {
 		LinkedList<FastBitArray> fingerprints = this.massesToFingerprints.get(mass);
 		if(fingerprints == null) return 0;
 		return fingerprints.size();
+	}
+
+	public int getSizeMatched(Double mass) {
+		LinkedList<FastBitArray> fingerprints = this.massesToFingerprints.get(mass);
+		if(fingerprints == null) return 0;
+		int count = 0;
+		for(int i = 0; i < fingerprints.size(); i++) {
+			if(fingerprints.get(i).getSize() != 1) count++;
+		}
+		return count;
+	}
+
+	public int getSizeNonMatched(Double mass) {
+		LinkedList<FastBitArray> fingerprints = this.massesToFingerprints.get(mass);
+		if(fingerprints == null) return 0;
+		int count = 0;
+		for(int i = 0; i < fingerprints.size(); i++) 
+			if(fingerprints.get(i).getSize() == 1) count++;
+		return count;
 	}
 	
 	public int getOverallSize() {
@@ -60,6 +79,34 @@ public class MassToFingerprintsHashMap {
 		java.util.Iterator<Double> it = this.massesToFingerprints.keySet().iterator();
 		while(it.hasNext()) {
 			size += this.massesToFingerprints.get(it.next()).size();
+		}
+		return size;
+	}
+
+	public int getOverallMatchedSize() {
+		int size = 0;
+		java.util.Iterator<Double> it = this.massesToFingerprints.keySet().iterator();
+		while(it.hasNext()) {
+			LinkedList<FastBitArray> bitArrays = this.massesToFingerprints.get(it.next());
+			java.util.Iterator<FastBitArray> it2 = bitArrays.iterator();
+			while(it2.hasNext()) {
+				FastBitArray bitArray = it2.next();
+				if(bitArray.getSize() != 1) size++;
+			}
+		}
+		return size;
+	}
+
+	public int getOverallNonMatchedSize() {
+		int size = 0;
+		java.util.Iterator<Double> it = this.massesToFingerprints.keySet().iterator();
+		while(it.hasNext()) {
+			LinkedList<FastBitArray> bitArrays = this.massesToFingerprints.get(it.next());
+			java.util.Iterator<FastBitArray> it2 = bitArrays.iterator();
+			while(it2.hasNext()) {
+				FastBitArray bitArray = it2.next();
+				if(bitArray.getSize() == 1) size++;
+			}
 		}
 		return size;
 	}

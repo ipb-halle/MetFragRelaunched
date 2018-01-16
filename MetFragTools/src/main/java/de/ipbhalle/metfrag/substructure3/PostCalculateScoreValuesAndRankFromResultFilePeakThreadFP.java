@@ -119,7 +119,7 @@ public class PostCalculateScoreValuesAndRankFromResultFilePeakThreadFP {
 		String[] scoringPropertyNames = argsHash.get("scorenames").split(",");
 		Boolean transformScores = Boolean.parseBoolean(argsHash.get("transform"));
 		String outputfolder = (String) argsHash.get("outputfolder");
-
+		
 		ALPHA_VALUE_PEAK = Double.parseDouble(alpha);
 		BETA_VALUE_PEAK = Double.parseDouble(beta);
 
@@ -497,10 +497,13 @@ public class PostCalculateScoreValuesAndRankFromResultFilePeakThreadFP {
 			BufferedReader breader = new BufferedReader(new FileReader(new File(filename)));
 			String line = "";
 			Double sumFingerprintFrequencies = null;
-			Double f_seen = null;
-			Double f_unseen = null;
+			Double f_seen_matched = null;
+			Double f_unseen_matched = null;
+			Double f_seen_non_matched = null;
+			Double f_unseen_non_matched = null;
 			java.util.HashMap<Double, java.util.LinkedList<Double>> massToObservations = new java.util.HashMap<Double, java.util.LinkedList<Double>>();
-			java.util.HashMap<Double, Double> massToBackgroundSize = new java.util.HashMap<Double, Double>();
+			java.util.HashMap<Double, Double> massToBackgroundSizeMatched = new java.util.HashMap<Double, Double>();
+			java.util.HashMap<Double, Double> massToBackgroundSizeNonMatched = new java.util.HashMap<Double, Double>();
 			boolean valuesStarted = false;
 			while ((line = breader.readLine()) != null) {
 				line = line.trim();
@@ -508,17 +511,22 @@ public class PostCalculateScoreValuesAndRankFromResultFilePeakThreadFP {
 					String[] tmp = line.split("\\s+");
 					Double mass = Double.parseDouble(tmp[0]);
 					java.util.LinkedList<Double> observations = new java.util.LinkedList<Double>();
-					for (int i = 1; i < (tmp.length - 1); i++) {
+					for (int i = 1; i < (tmp.length - 2); i++) {
 						observations.add(Double.parseDouble(tmp[i]));
 					}
 					massToObservations.put(mass, observations);
-					massToBackgroundSize.put(mass, Double.parseDouble(tmp[tmp.length - 1].split(":")[1]));
+					massToBackgroundSizeMatched.put(mass, Double.parseDouble(tmp[tmp.length - 2].split(":")[1]));
+					massToBackgroundSizeNonMatched.put(mass, Double.parseDouble(tmp[tmp.length - 1].split(":")[1]));
 				} else if (line.startsWith("sumFingerprintFrequencies"))
 					sumFingerprintFrequencies = Double.parseDouble(line.split("\\s+")[1]);
-				else if (line.startsWith("f_seen"))
-					f_seen = Double.parseDouble(line.split("\\s+")[1]);
-				else if (line.startsWith("f_unseen"))
-					f_unseen = Double.parseDouble(line.split("\\s+")[1]);
+				else if (line.startsWith("f_seen_matched"))
+					f_seen_matched = Double.parseDouble(line.split("\\s+")[1]);
+				else if (line.startsWith("f_unseen_matched"))
+					f_unseen_matched = Double.parseDouble(line.split("\\s+")[1]);
+				else if (line.startsWith("f_seen_non_matched"))
+					f_seen_non_matched = Double.parseDouble(line.split("\\s+")[1]);
+				else if (line.startsWith("f_unseen_non_matched"))
+					f_unseen_non_matched = Double.parseDouble(line.split("\\s+")[1]);
 				else if (line.startsWith("PeakToFingerprints"))
 					valuesStarted = true;
 			}
@@ -527,7 +535,7 @@ public class PostCalculateScoreValuesAndRankFromResultFilePeakThreadFP {
 			double alpha = (double) settings.get(VariableNames.PEAK_FINGERPRINT_ANNOTATION_ALPHA_VALUE_NAME); // alpha
 			double beta = (double) settings.get(VariableNames.PEAK_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME); // beta
 			// set value for denominator of P(f,m)
-			double denominatorValue = sumFingerprintFrequencies + alpha * f_seen + alpha * f_unseen + beta;
+			double denominatorValue = sumFingerprintFrequencies + alpha * (f_seen_matched + f_unseen_matched) + beta * (f_seen_non_matched + f_unseen_non_matched);
 
 			settings.set(VariableNames.PEAK_FINGERPRINT_DENOMINATOR_VALUE_NAME, denominatorValue);
 
@@ -543,7 +551,8 @@ public class PostCalculateScoreValuesAndRankFromResultFilePeakThreadFP {
 			while (it.hasNext()) {
 				Double mass = it.next();
 				java.util.LinkedList<Double> observations = massToObservations.get(mass);
-				Double bgsize = massToBackgroundSize.get(mass);
+				Double bgsizeMatched = massToBackgroundSizeMatched.get(mass);
+				Double bgsizeNonMatched = massToBackgroundSizeNonMatched.get(mass);
 				// sum_f P(f,m)
 				// calculate sum of MF_s (including the alpha count) and the
 				// joint probabilities
@@ -553,16 +562,17 @@ public class PostCalculateScoreValuesAndRankFromResultFilePeakThreadFP {
 				double sumFsProbabilities = 0.0;
 				for (int ii = 0; ii < observations.size(); ii++) {
 					// sum_f P(f,m) -> for F_s
-					sumFsProbabilities += (observations.get(ii) + alpha) / denominatorValue;
+					if(observations.get(ii) > 0) sumFsProbabilities += (observations.get(ii) + alpha) / denominatorValue;
+					else sumFsProbabilities += (-1.0 * observations.get(ii) + beta) / denominatorValue;
 				}
 
 				// calculate the sum of probabilities for un-observed
 				// fingerprints for the current mass
-				double sumFuProbabilities = alphaProbability * bgsize;
+				double sumFuProbabilities = alphaProbability * bgsizeMatched;
+				sumFuProbabilities += betaProbability * bgsizeNonMatched;
 
 				sum_f += sumFsProbabilities;
 				sum_f += sumFuProbabilities;
-				sum_f += betaProbability;
 
 				massToSumF.put(mass, sum_f);
 				massToAlphaProb.put(mass, alphaProbability / sum_f);
@@ -587,8 +597,7 @@ public class PostCalculateScoreValuesAndRankFromResultFilePeakThreadFP {
 			System.out.println(mass + " " + sum + " " + ((alpha / denominatorValue)));
 		}
 		
-		public String getProbTypeString(ArrayList<Double> matchProb, ArrayList<Integer> matchType,
-				ArrayList<Double> matchMasses) {
+		public String getProbTypeString(ArrayList<Double> matchProb, ArrayList<Integer> matchType, ArrayList<Double> matchMasses) {
 			String string = "NA";
 			if (matchProb.size() >= 1) {
 				string = matchType.get(0) + ":" + matchProb.get(0) + ":" + matchMasses.get(0);
@@ -599,13 +608,11 @@ public class PostCalculateScoreValuesAndRankFromResultFilePeakThreadFP {
 			return string;
 		}
 
-		protected void readMassToProbType(String line, java.util.Vector<Double> masses,
-				java.util.Vector<String> probtypes) {
-			if (line.equals("NA"))
-				return;
+		protected void readMassToProbType(String line, java.util.Vector<Double> masses, java.util.Vector<String> probtypes) {
+			if (line.equals("NA")) return;
 			String[] tmp1 = line.split(";");
 			for (int i = 0; i < tmp1.length; i++) {
-				String[] tmp2 = tmp1[i].split(":");
+				String[] tmp2 = tmp1[i].split(":"); // 18.01057:3.0:1 or 0.65667:4
 				String probType = tmp2[1];
 				if (tmp2.length == 3)
 					probType += ":" + tmp2[2];
@@ -624,15 +631,18 @@ public class PostCalculateScoreValuesAndRankFromResultFilePeakThreadFP {
 					peakMasses, peakProbTypes);
 			ArrayList<Double> matchMasses = new ArrayList<Double>();
 			ArrayList<Double> matchProb = new ArrayList<Double>();
-			ArrayList<Integer> matchType = new ArrayList<Integer>(); // found -
+			ArrayList<Integer> matchType = new ArrayList<Integer>(); 	// alpha seen -
 																		// 1;
-																		// alpha
+																		// alpha unseen
 																		// - 2;
-																		// beta
+																		// beta seen
 																		// - 3
+																		// beta unseen
+																		// - 4
 			// get foreground fingerprint observations (m_f_observed)
 
 			double alpha = (double) settings.get(VariableNames.PEAK_FINGERPRINT_ANNOTATION_ALPHA_VALUE_NAME); // alpha
+			double beta = (double) settings.get(VariableNames.PEAK_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME); // beta
 			java.util.HashMap<?, ?> massToSumF = (java.util.HashMap<?, ?>) settings.get("PeakMassToSumF");
 			java.util.HashMap<?, ?> massToAlphaProb = (java.util.HashMap<?, ?>) settings.get("PeakMassToAlphaProb");
 			java.util.HashMap<?, ?> massToBetaProb = (java.util.HashMap<?, ?>) settings.get("PeakMassToBetaProb");
@@ -641,12 +651,11 @@ public class PostCalculateScoreValuesAndRankFromResultFilePeakThreadFP {
 				Double mass = peakMasses.get(k);
 				String probType = peakProbTypes.get(k);
 				String[] tmp = probType.split(":");
-				// (fingerprintToMasses.getSize(currentFingerprint));
 				if (tmp.length == 1) {
 					double prob = 0.0;
 					if (tmp[0].equals("2"))
 						prob = (Double) massToAlphaProb.get(mass);
-					else if (tmp[0].equals("3"))
+					else if (tmp[0].equals("4"))
 						prob = (Double) massToBetaProb.get(mass);
 					matchProb.add(prob);
 					matchType.add(Integer.parseInt(tmp[0]));
@@ -654,13 +663,18 @@ public class PostCalculateScoreValuesAndRankFromResultFilePeakThreadFP {
 					value += Math.log(prob);
 				} else {
 					matches++;
-					// (p(m,f) + alpha) / sum_F(p(m,f)) + |F| * alpha
-					double matching_prob = ((Double.parseDouble(tmp[0]) + alpha) / denominatorValue) / (Double) massToSumF.get(mass);
+					double matching_prob = 0.0;
+					if(tmp[1].equals("1")) {
+						// (p(m,f) + alpha) / sum_F(p(m,f)) + |F| * alpha
+						matching_prob = ((Double.parseDouble(tmp[0]) + alpha) / denominatorValue) / (Double) massToSumF.get(mass);
+					} else if(tmp[1].equals("3")) {
+						matching_prob = ((Double.parseDouble(tmp[0]) + beta) / denominatorValue) / (Double) massToSumF.get(mass);
+					}
 					// |F|
 					if (matching_prob != 0.0) {
 						value += Math.log(matching_prob);
 						matchProb.add(matching_prob);
-						matchType.add(1);
+						matchType.add(Integer.parseInt(tmp[1]));
 						matchMasses.add(mass);
 					}
 				}
