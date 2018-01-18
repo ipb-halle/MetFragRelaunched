@@ -96,7 +96,7 @@ public class WriteFingerprintLossAnnotationFile {
 					continue;
 				}
 			}
-			
+
 			String nonExplMasses = (String)candidate.getProperty("NonExplainedLosses");
 			if(!nonExplMasses.equals("NA")) {
 				String[] tmp = nonExplMasses.split(";");
