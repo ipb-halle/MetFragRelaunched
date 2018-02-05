@@ -50,7 +50,7 @@ public class LocalMetChemDatabase extends LocalPostgresDatabase {
 				candidate.setProperty(VariableNames.INCHI_KEY_1_NAME, rs.getString(this.INCHIKEY1_COLUMN_NAME));
 				candidate.setProperty(VariableNames.INCHI_KEY_2_NAME, rs.getString(this.INCHIKEY2_COLUMN_NAME));
 				candidate.setProperty(VariableNames.INCHI_KEY_3_NAME, rs.getString(this.INCHIKEY3_COLUMN_NAME));
-				candidate.setProperty(VariableNames.MOLECULAR_FORMULA_NAME, rs.getString(this.INCHI_COLUMN_NAME).split("/")[1]);
+				candidate.setProperty(VariableNames.MOLECULAR_FORMULA_NAME, rs.getString(this.FORMULA_COLUMN_NAME).replaceAll("[\\+\\-][0-9]*", ""));
 				candidate.setProperty(VariableNames.MONOISOTOPIC_MASS_NAME, rs.getDouble(this.MASS_COLUMN_NAME));
 				candidate.setProperty(VariableNames.SMILES_NAME, rs.getString(this.SMILES_COLUMN_NAME));
 				candidate.setProperty(VariableNames.COMPOUND_NAME_NAME, "NA");
