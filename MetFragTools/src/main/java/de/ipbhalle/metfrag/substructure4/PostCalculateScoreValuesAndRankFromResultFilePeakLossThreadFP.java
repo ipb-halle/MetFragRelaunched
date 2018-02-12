@@ -2,6 +2,7 @@ package de.ipbhalle.metfrag.substructure4;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import de.ipbhalle.metfrag.ranking.GetRankOfCandidateList;
+import de.ipbhalle.metfrag.ranking.GetRankOfCandidateMultipleThreadCSV;
 import de.ipbhalle.metfraglib.database.LocalCSVDatabase;
 import de.ipbhalle.metfraglib.database.LocalPSVDatabase;
 import de.ipbhalle.metfraglib.exceptions.MultipleHeadersFoundInInputDatabaseException;
@@ -32,6 +34,7 @@ public class PostCalculateScoreValuesAndRankFromResultFilePeakLossThreadFP {
 
 	public static int numberFinished = 0;
 	public static java.util.Hashtable<String, String> argsHash;
+	public static String filter = ""; // pos or neg
 
 	public static boolean getArgs(String[] args) {
 		argsHash = new java.util.Hashtable<String, String>();
@@ -42,7 +45,7 @@ public class PostCalculateScoreValuesAndRankFromResultFilePeakLossThreadFP {
 					&& !tmp[0].equals("output") && !tmp[0].equals("alphaPeak") && !tmp[0].equals("betaPeak")
 					&& !tmp[0].equals("alphaLoss") && !tmp[0].equals("betaLoss") && !tmp[0].equals("weights")
 					&& !tmp[0].equals("outputtype") && !tmp[0].equals("stdout") && !tmp[0].equals("negscore")
-					&& !tmp[0].equals("scorenames") && !tmp[0].equals("transform") && !tmp[0].equals("outputfolder")) {
+					&& !tmp[0].equals("scorenames") && !tmp[0].equals("transform") && !tmp[0].equals("outputfolder") && !tmp[0].equals("filter")) {
 				System.err.println("property " + tmp[0] + " not known.");
 				return false;
 			}
@@ -111,6 +114,9 @@ public class PostCalculateScoreValuesAndRankFromResultFilePeakLossThreadFP {
 		if (!argsHash.containsKey("transform")) {
 			argsHash.put("transform", "false");
 		}
+		if (!argsHash.containsKey("filter")) {
+			argsHash.put("filter", "");
+		}
 		return true;
 	}
 
@@ -132,7 +138,8 @@ public class PostCalculateScoreValuesAndRankFromResultFilePeakLossThreadFP {
 		String[] scoringPropertyNames = argsHash.get("scorenames").split(",");
 		Boolean transformScores = Boolean.parseBoolean(argsHash.get("transform"));
 		String outputfolder = (String) argsHash.get("outputfolder");
-
+		String filter = (String) argsHash.get("filter");
+		
 		ALPHA_VALUE_PEAK = Double.parseDouble(alphaPeak);
 		BETA_VALUE_PEAK = Double.parseDouble(betaPeak);
 
@@ -143,12 +150,25 @@ public class PostCalculateScoreValuesAndRankFromResultFilePeakLossThreadFP {
 		File _paramfolder = new File(paramfolder);
 
 		File[] resultFiles = _resfolder.listFiles();
-		File[] paramFiles = _paramfolder.listFiles();
-
+		File[] paramFiles = null;
+		
+		if (filter.equals(""))
+			paramFiles = _paramfolder.listFiles();
+		else {
+			if(filter.equals("pos")) {
+				FileFilter fileFilter = new GetRankOfCandidateMultipleThreadCSV().new FileExtensionFilter("-01.txt");
+				paramFiles = _paramfolder.listFiles(fileFilter);
+			} else if(filter.equals("neg")) {
+				FileFilter fileFilter = new GetRankOfCandidateMultipleThreadCSV().new FileExtensionFilter("-02.txt");
+				paramFiles = _paramfolder.listFiles(fileFilter);
+			}
+		}
+		
 		ArrayList<ProcessThread> threads = new ArrayList<ProcessThread>();
 
 		for (int i = 0; i < paramFiles.length; i++) {
 			String id = paramFiles[i].getName().split("\\.")[0];
+			
 			int resultFileID = -1;
 			for (int j = 0; j < resultFiles.length; j++) {
 				if (resultFiles[j].getName().startsWith(id + ".")) {
@@ -275,29 +295,34 @@ public class PostCalculateScoreValuesAndRankFromResultFilePeakLossThreadFP {
 		
 		String path_pos = folder.getAbsolutePath() + Constants.OS_SPECIFIC_FILE_SEPARATOR + "pos" + Constants.OS_SPECIFIC_FILE_SEPARATOR;
 		String path_neg = folder.getAbsolutePath() + Constants.OS_SPECIFIC_FILE_SEPARATOR + "neg" + Constants.OS_SPECIFIC_FILE_SEPARATOR;
-		new File(path_pos).mkdirs();
-		new File(path_neg).mkdirs();
+		if(filter.equals("pos") || filter.equals("")) new File(path_pos).mkdirs();
+		if(filter.equals("neg") || filter.equals("")) new File(path_neg).mkdirs();
 		
-		java.io.BufferedWriter bwriter_pos1 = new java.io.BufferedWriter(new java.io.FileWriter(new File(path_pos + Constants.OS_SPECIFIC_FILE_SEPARATOR + fileprefix + "_weights.txt")));
-		java.io.BufferedWriter bwriter_pos2 = new java.io.BufferedWriter(new java.io.FileWriter(new File(path_pos + Constants.OS_SPECIFIC_FILE_SEPARATOR + fileprefix + "_tops.txt")));
-		java.io.BufferedWriter bwriter_neg1 = new java.io.BufferedWriter(new java.io.FileWriter(new File(path_neg + Constants.OS_SPECIFIC_FILE_SEPARATOR + fileprefix + "_weights.txt")));
-		java.io.BufferedWriter bwriter_neg2 = new java.io.BufferedWriter(new java.io.FileWriter(new File(path_neg + Constants.OS_SPECIFIC_FILE_SEPARATOR + fileprefix + "_tops.txt")));
+		java.io.BufferedWriter bwriter_pos1 = null;
+		java.io.BufferedWriter bwriter_pos2 = null;
+		java.io.BufferedWriter bwriter_neg1 = null;
+		java.io.BufferedWriter bwriter_neg2 = null;
 		
-		bwriter_pos1.write(bestWeightStringPos);
-		bwriter_pos1.newLine();
-		bwriter_pos2.write(bestRankingsStringPos);
-		bwriter_pos2.newLine();
+		if(filter.equals("pos") || filter.equals("")) bwriter_pos1 = new java.io.BufferedWriter(new java.io.FileWriter(new File(path_pos + Constants.OS_SPECIFIC_FILE_SEPARATOR + fileprefix + "_weights.txt")));
+		if(filter.equals("pos") || filter.equals("")) bwriter_pos2 = new java.io.BufferedWriter(new java.io.FileWriter(new File(path_pos + Constants.OS_SPECIFIC_FILE_SEPARATOR + fileprefix + "_tops.txt")));
+		if(filter.equals("neg") || filter.equals("")) bwriter_neg1 = new java.io.BufferedWriter(new java.io.FileWriter(new File(path_neg + Constants.OS_SPECIFIC_FILE_SEPARATOR + fileprefix + "_weights.txt")));
+		if(filter.equals("neg") || filter.equals("")) bwriter_neg2 = new java.io.BufferedWriter(new java.io.FileWriter(new File(path_neg + Constants.OS_SPECIFIC_FILE_SEPARATOR + fileprefix + "_tops.txt")));
 		
-		bwriter_pos1.close();
-		bwriter_pos2.close();
+		if(bwriter_pos1 != null) bwriter_pos1.write(bestWeightStringPos);
+		if(bwriter_pos1 != null) bwriter_pos1.newLine();
+		if(bwriter_pos2 != null) bwriter_pos2.write(bestRankingsStringPos);
+		if(bwriter_pos2 != null) bwriter_pos2.newLine();
 		
-		bwriter_neg1.write(bestWeightStringNeg);
-		bwriter_neg1.newLine();
-		bwriter_neg2.write(bestRankingsStringNeg);
-		bwriter_neg2.newLine();
+		if(bwriter_pos1 != null) bwriter_pos1.close();
+		if(bwriter_pos2 != null) bwriter_pos2.close();
+		
+		if(bwriter_neg1 != null) bwriter_neg1.write(bestWeightStringNeg);
+		if(bwriter_neg1 != null) bwriter_neg1.newLine();
+		if(bwriter_neg2 != null) bwriter_neg2.write(bestRankingsStringNeg);
+		if(bwriter_neg2 != null) bwriter_neg2.newLine();
 
-		bwriter_neg1.close();
-		bwriter_neg2.close();
+		if(bwriter_neg1 != null) bwriter_neg1.close();
+		if(bwriter_neg2 != null) bwriter_neg2.close();
 	}
 
 	public static double[][] readWeights(String weightsfile) throws IOException {
