@@ -515,7 +515,7 @@ public class PostCalculateScoreValuesAndRankFromResultFilePeakLossThreadFPMultip
 		/**
 		 * 
 		 * @param settings
-		 * @param candidates
+		 j* @param candidates
 		 * @throws IOException
 		 */
 		public void postProcessScoreParametersPeak(Settings settings, CandidateList candidates) throws IOException {

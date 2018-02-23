@@ -75,7 +75,7 @@ import de.ipbhalle.metfragweb.validator.SmartsValidator;
 @SessionScoped
 public class MetFragWebBean {
 
-	private final String version = "v2.0.14";
+	private final String version = "v2.0.15";
 	/*
 	 * combines all the settings
 	 */
@@ -2628,7 +2628,7 @@ public class MetFragWebBean {
 	public org.primefaces.model.StreamedContent generateCandidateDownloadFile() {
 		org.primefaces.model.StreamedContent resource = new org.primefaces.model.DefaultStreamedContent(System.in, "application/vnd.ms-excel", "MetFragWeb_Candidate.xls" );
 		try {
-			resource = this.beanSettingsContainer.getUserOutputDataHandler().generatedCandidateDownloadFile(this.currentScoreCandidate);
+			resource = this.beanSettingsContainer.getUserOutputDataHandler().generatedCandidateDownloadFile(this.currentScoreCandidate, this.beanSettingsContainer.getMetFragSettings());
 		} catch (Exception e1) {
 			e1.printStackTrace();
 			return resource;
