@@ -27,6 +27,16 @@ import de.ipbhalle.metfraglib.settings.Settings;
 
 public class PostCalculateScoreValuesAndRankFromResultFilePeakLossThreadFPMultiple {
 
+	// parampath=/home/chrisr/Documents/PhD/MetFrag/fingerprint_learning/casmi2016/runs/training_part2 
+	// resultpath=/home/chrisr/Documents/PhD/MetFrag/fingerprint_learning/casmi2016/runs/precalc
+	// threads=8 weights=/home/chrisr/Documents/PhD/MetFrag/fingerprint_learning/casmi2016/weights_3d.txt 
+	// pseudofile=/home/chrisr/Documents/PhD/MetFrag/fingerprint_learning/casmi2016/pseudocounts.txt 
+	// numpseudocounts=1
+	// scorenames=FragmenterScore,AutomatedPeakFingerprintAnnotationScore,AutomatedLossFingerprintAnnotationScore 
+	// negscore=true 
+	// stdout=true 
+	// outputfolder=/home/chrisr/Documents/PhD/MetFrag/fingerprint_learning/casmi2016/runs/output
+	//
 	public static double ALPHA_VALUE_PEAK = 0.0001;
 	public static double BETA_VALUE_PEAK = 0.0001;
 	public static double ALPHA_VALUE_LOSS = 0.0001;
@@ -111,15 +121,11 @@ public class PostCalculateScoreValuesAndRankFromResultFilePeakLossThreadFPMultip
 	}
 
 	public static void main(String[] args) throws Exception {
-		getArgs(args);
+		if(!getArgs(args)) return;
 
 		String paramfolder = (String) argsHash.get("parampath");
 		String resfolder = (String) argsHash.get("resultpath");
 		String outputfile = (String) argsHash.get("output");
-		String alphaPeak = (String) argsHash.get("alphaPeak");
-		String betaPeak = (String) argsHash.get("betaPeak");
-		String alphaLoss = (String) argsHash.get("alphaLoss");
-		String betaLoss = (String) argsHash.get("betaLoss");
 		int numberThreads = Integer.parseInt(argsHash.get("threads"));
 		double[][] weights = readWeights(argsHash.get("weights"));
 		Boolean stdout = Boolean.parseBoolean(argsHash.get("stdout"));
@@ -454,7 +460,9 @@ public class PostCalculateScoreValuesAndRankFromResultFilePeakLossThreadFPMultip
 					dbFilename.replaceAll(".*/", "") + ": Read " + candidates.getNumberElements() + " candidates");
 			try {
 				this.postProcessScoreParametersPeak(this.settings, candidates);
+				System.out.println("peak finished");
 				this.postProcessScoreParametersLoss(this.settings, candidates);
+				System.out.println("loss finished");
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
@@ -462,10 +470,16 @@ public class PostCalculateScoreValuesAndRankFromResultFilePeakLossThreadFPMultip
 			for (int i = 0; i < candidates.getNumberElements(); i++) {
 				this.settings.set(VariableNames.CANDIDATE_NAME, candidates.getElement(i));
 				this.singlePostCalculatePeak(this.settings, candidates.getElement(i));
-				this.singlePostCalculateLoss(this.settings, candidates.getElement(i));
 				candidates.getElement(i).removeProperty("PeakMatchList");
+			}
+			System.out.println("peak finished");
+			
+			for (int i = 0; i < candidates.getNumberElements(); i++) {
+				this.settings.set(VariableNames.CANDIDATE_NAME, candidates.getElement(i));
+				this.singlePostCalculateLoss(this.settings, candidates.getElement(i));
 				candidates.getElement(i).removeProperty("LossMatchList");
 			}
+			System.out.println("loss finished");
 
 			String correctInChIKey1 = "";
 			try {
@@ -474,12 +488,12 @@ public class PostCalculateScoreValuesAndRankFromResultFilePeakLossThreadFPMultip
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
+			/*
 			GetRankOfCandidateList grocl = new GetRankOfCandidateList(candidates, dbFilename, correctInChIKey1,
 					this.outputfile, weights, this.outputtype, this.negScores, this.tranformscores, this.scorenames,
 					this.stdout);
 			this.ranks_for_weight = grocl.run_simple();
-
+			*/
 			increaseNumberFinished(this.paramFile);
 		}
 
@@ -515,7 +529,7 @@ public class PostCalculateScoreValuesAndRankFromResultFilePeakLossThreadFPMultip
 		/**
 		 * 
 		 * @param settings
-		 j* @param candidates
+		 * @param candidates
 		 * @throws IOException
 		 */
 		public void postProcessScoreParametersPeak(Settings settings, CandidateList candidates) throws IOException {
@@ -613,7 +627,7 @@ public class PostCalculateScoreValuesAndRankFromResultFilePeakLossThreadFPMultip
 				settings.set("PeakMassToSumF_" + i, massToSumF);
 				settings.set("PeakMassToAlphaProb_" + i, massToAlphaProb);
 				settings.set("PeakMassToBetaProb_" + i, massToBetaProb);
-				settings.set("PeakDenominatorValue" + i, denominatorValue);
+				settings.set("PeakDenominatorValue_" + i, denominatorValue);
 			}
 			return;
 		}
@@ -711,7 +725,7 @@ public class PostCalculateScoreValuesAndRankFromResultFilePeakLossThreadFPMultip
 				settings.set("LossMassToSumF_" + i, massToSumF);
 				settings.set("LossMassToAlphaProb_" + i, massToAlphaProb);
 				settings.set("LossMassToBetaProb_" + i, massToBetaProb);
-				settings.set("LossDenominatorValue" + i, denominatorValue);
+				settings.set("LossDenominatorValue_" + i, denominatorValue);
 			}
 			return;
 		}
