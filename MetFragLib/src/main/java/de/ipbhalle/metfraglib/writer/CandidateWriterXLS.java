@@ -38,12 +38,12 @@ import de.ipbhalle.metfraglib.settings.Settings;
 public class CandidateWriterXLS implements IWriter {
 
 	public boolean write(IList list, String filename, String path, Settings settings) throws Exception {
-		return this.write(list, filename, path);
+		return this.writeFile(new File(path + Constants.OS_SPECIFIC_FILE_SEPARATOR + filename + ".xls"), 
+				list, settings);
 	}
 	
 	@Override
 	public boolean writeFile(File xlsFile, IList list, Settings settings) throws Exception {
-
 		CandidateList candidateList = null;
 		boolean isScoredCandidate = false;
 		if (list instanceof ScoredCandidateList
