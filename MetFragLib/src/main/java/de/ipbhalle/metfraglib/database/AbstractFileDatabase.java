@@ -53,6 +53,17 @@ public abstract class AbstractFileDatabase extends AbstractDatabase {
 		return identifiers;
 	}
 	
+	public java.util.ArrayList<String> getCandidateIdentifiers(String[] identifiers) throws Exception {
+		java.util.ArrayList<String> identifiersAsArrayList = new java.util.ArrayList<String>();
+		for(String identifier : identifiers) {
+			for(int i = 0; i < this.candidates.size(); i++) {
+				if(this.candidates.get(i).getIdentifier().matches(identifier + "\\|[0-9]+"))
+				identifiersAsArrayList.add(this.candidates.get(i).getIdentifier());	
+			}
+		}
+		return identifiersAsArrayList;
+	}
+	
 	public CandidateList getCandidateByIdentifier(ArrayList<String> identifiers) {
 		CandidateList candidateList = new CandidateList();
 		for (int i = 0; i < identifiers.size(); i++) {
@@ -89,7 +100,6 @@ public abstract class AbstractFileDatabase extends AbstractDatabase {
 			throw new DatabaseIdentifierNotFoundException(identifier);
 		return this.candidates.get(index);
 	}
-
 
 	public ArrayList<String> getCandidateIdentifiers(String molecularFormula) throws Exception {
 		if (this.candidates == null)
@@ -140,4 +150,5 @@ public abstract class AbstractFileDatabase extends AbstractDatabase {
 		}
 		return -1;
 	}
+	
 }
