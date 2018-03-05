@@ -52,6 +52,7 @@ public class UserOutputDataHandler {
 		ICandidate candidate = new PrecursorCandidate(root.getInChI(), root.getIdentifier());
 		candidate.setProperty(VariableNames.MONOISOTOPIC_MASS_NAME, String.valueOf(root.getMass()));
 		candidate.setProperty(VariableNames.MOLECULAR_FORMULA_NAME, root.getFormula());
+		candidate.setProperty(VariableNames.SMILES_NAME, root.getSMILES());
 		candidate.setMatchList(root.getMatchList());
 		if(root.getName().length() != 0) candidate.setProperty(VariableNames.COMPOUND_NAME_NAME, root.getName());
 		ScoreSummary[] scoreSummary = root.getScoreSummary();

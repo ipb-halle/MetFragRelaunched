@@ -308,11 +308,11 @@ public class InChIGenerator {
             IBond.Order bo = bond.getOrder();
             if (!ignore && bond.getFlag(CDKConstants.ISAROMATIC)) {
             	order = INCHI_BOND_TYPE.ALTERN;
-            } else if (bo == CDKConstants.BONDORDER_SINGLE) {
+            } else if (bo == IBond.Order.SINGLE) {
                 order = INCHI_BOND_TYPE.SINGLE;
-            } else if (bo == CDKConstants.BONDORDER_DOUBLE) {
+            } else if (bo == IBond.Order.DOUBLE) {
                 order = INCHI_BOND_TYPE.DOUBLE;
-            } else if (bo == CDKConstants.BONDORDER_TRIPLE) {
+            } else if (bo == IBond.Order.TRIPLE) {
                 order = INCHI_BOND_TYPE.TRIPLE;
             } else {
                 throw new CDKException("Failed to generate InChI: Unsupported bond type");

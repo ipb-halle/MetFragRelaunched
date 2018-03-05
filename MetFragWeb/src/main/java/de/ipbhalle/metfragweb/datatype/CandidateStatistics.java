@@ -47,13 +47,13 @@ public class CandidateStatistics {
 		}
 		this.scoreDistributionModel.setMouseoverHighlight(false);
 		this.scoreDistributionModel.setShowDatatip(false);
-		this.scoreDistributionModelPointLabels = "['" + results.get(0).getIdentifier() + "'";
+		this.scoreDistributionModelPointLabels = "['" + results.get(0).getOriginalIdentifier() + "'";
 		series1.set(1, results.get(0).getScore());
 		for(int k = 0; k < this.showScoreGraphs.length; k++) 
 			scores[k].set(1, results.get(0).getRoot().getSingleScore(this.showScoreGraphs[k]));
 		for(int i = 1; i < results.size(); i++) {
 			series1.set((i + 1), results.get(i).getScore());
-			this.scoreDistributionModelPointLabels += ",'" + results.get(i).getIdentifier() + "'";
+			this.scoreDistributionModelPointLabels += ",'" + results.get(i).getOriginalIdentifier() + "'";
 			for(int k = 0; k < this.showScoreGraphs.length; k++) 
 				scores[k].set((i + 1), results.get(i).getRoot().getSingleScore(this.showScoreGraphs[k]));
 		}

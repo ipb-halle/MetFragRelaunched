@@ -96,9 +96,9 @@ public abstract class AbstractDatabase implements IDatabase {
 					candidate.setProperty(VariableNames.INCHI_KEY_NAME, inchikey);	
 			} else {
 				String[] tmp = ((String)candidate.getProperty(VariableNames.INCHI_KEY_NAME)).split("-");
-				this.addProperty(VariableNames.INCHI_KEY_1_NAME, tmp[0], candidate);	
-				this.addProperty(VariableNames.INCHI_KEY_2_NAME, tmp[1], candidate);	
-				this.addProperty(VariableNames.INCHI_KEY_3_NAME, tmp[2], candidate);
+				if(tmp.length >= 1) this.addProperty(VariableNames.INCHI_KEY_1_NAME, tmp[0], candidate);	
+				if(tmp.length >= 2) this.addProperty(VariableNames.INCHI_KEY_2_NAME, tmp[1], candidate);	
+				if(tmp.length >= 3) this.addProperty(VariableNames.INCHI_KEY_3_NAME, tmp[2], candidate);
 			}
 		} else {
 			if(candidate.getProperties().containsKey(VariableNames.INCHI_KEY_1_NAME) && candidate.getProperty(VariableNames.INCHI_KEY_1_NAME) != null &&	

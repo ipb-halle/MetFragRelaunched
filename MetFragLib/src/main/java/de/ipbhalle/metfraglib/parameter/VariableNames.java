@@ -275,23 +275,30 @@ public class VariableNames {
 	/*
 	 * candidate property names
 	 */
-	public static final String INCHI_KEY_1_NAME				=	"InChIKey1";
-	public static final String INCHI_KEY_2_NAME				=	"InChIKey2";
-	public static final String INCHI_KEY_3_NAME				=	"InChIKey3";
+	public static final String INCHI_KEY_1_NAME					=	"InChIKey1";
+	public static final String INCHI_KEY_2_NAME					=	"InChIKey2";
+	public static final String INCHI_KEY_3_NAME					=	"InChIKey3";
 	public static final String INCHI_KEY_NAME					=	"InChIKey";
+	public static final String INCHI_KEY_NAME_2					=	"INCHIKEY_DTXCID";
 	public static final String MOLECULAR_FORMULA_NAME			=	"MolecularFormula";
+	public static final String MOLECULAR_FORMULA_NAME_2			=	"FORMULA_INDIVIDUAL_COMPONENT";
 	public static final String MONOISOTOPIC_MASS_NAME			=	"MonoisotopicMass";
+	public static final String MONOISOTOPIC_MASS_NAME_2			=	"MONOISOTOPIC_MASS_DTXCID";
 	public static final String COMPOUND_NAME_NAME				=	"CompoundName";
-	public static final String IUPAC_NAME_NAME				=	"IUPACName";
+	public static final String COMPOUND_NAME_NAME_2				=	"PREFERRED_NAME_DTXSID";
+	public static final String IUPAC_NAME_NAME					=	"IUPACName";
 	public static final String INCHI_NAME						=	"InChI";
-	public static final String INCHI_ALTERNATIVE_NAME						=	"INCHI STRING";
-	public static final String IDENTIFIER_NAME				=	"Identifier";
-	public static final String IDENTIFIER_DTXSID_NAME				=	"DTXSID";
-	public static final String SMILES_NAME					=	"SMILES";
-	public static final String FINGERPRINT_NAME_NAME				=	"FingerPrint";
+	public static final String INCHI_NAME_2						=	"INCHI_STRING_DTXCID";
+	public static final String INCHI_ALTERNATIVE_NAME			=	"INCHI STRING";
+	public static final String IDENTIFIER_NAME					=	"Identifier";
+	public static final String IDENTIFIER_NAME_2				=	"DTXSID";
+	public static final String IDENTIFIER_NAME_3				=	"MAPPED_DTXSID";
+	public static final String SMILES_NAME						=	"SMILES";
+	public static final String SMILES_NAME_2					=	"SMILES_INDIVIDUAL_COMPONENT";
+	public static final String FINGERPRINT_NAME_NAME			=	"FingerPrint";
 	public static final String DEUTERIUM_COUNT_NAME				=	"DeuteriumCount";
-	public static final String VARIABLE_DEUTERIUM_COUNT_NAME		=	"AromaticDeuteriums";
-	public static final String ENABLE_DEUTERIUM_NAME				=	"EnableDeuterium";
+	public static final String VARIABLE_DEUTERIUM_COUNT_NAME	=	"AromaticDeuteriums";
+	public static final String ENABLE_DEUTERIUM_NAME			=	"EnableDeuterium";
 	public static final String RETENTION_TIME_NAME				=	"RetentionTime";
 	public static final String USER_LOG_P_VALUE_NAME				=	"ExternalPartitioningCoefficientColumnName";
 	//forident

@@ -4,6 +4,8 @@ import de.ipbhalle.metfraglib.settings.Settings;
 
 public interface IScore {
 
+	public boolean isCandidatePropertyScore();
+	
 	public Double getValue();
 	
 	public void setValue(double value);

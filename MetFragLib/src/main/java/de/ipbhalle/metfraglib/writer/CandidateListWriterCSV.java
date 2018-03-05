@@ -56,6 +56,7 @@ public class CandidateListWriterCSV implements IWriter {
 		for(int i = 0; i < candidateList.getNumberElements(); i++) {
 			int countExplainedPeaks = 0;
 			ICandidate scoredCandidate = candidateList.getElement(i);
+			String origIdentifier = ((String)scoredCandidate.getProperty(VariableNames.IDENTIFIER_NAME)).replaceAll("\\|[0-9]+", "");
 			if(settings != null) scoredCandidate.setUseSmiles((Boolean)settings.get(VariableNames.USE_SMILES_NAME));
 			try {
 				scoredCandidate.initialisePrecursorCandidate();
@@ -115,7 +116,10 @@ public class CandidateListWriterCSV implements IWriter {
 			}
 			java.util.List<Object> entries = new java.util.ArrayList<Object>();
 			for(int ii = 0; ii < header.size(); ii++) {
-				entries.add(checkEmptyProperty(scoredCandidate.getProperty((String)header.get(ii))));
+				if(header.get(ii).equals(VariableNames.IDENTIFIER_NAME))
+					entries.add(origIdentifier);
+				else
+					entries.add(checkEmptyProperty(scoredCandidate.getProperty((String)header.get(ii))));
 			}
 			csvFilePrinter.printRecord(entries);
 		}

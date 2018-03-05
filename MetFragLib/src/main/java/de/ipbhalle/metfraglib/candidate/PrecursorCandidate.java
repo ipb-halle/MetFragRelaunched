@@ -34,6 +34,10 @@ public class PrecursorCandidate implements ICandidate {
 		this.properties.put(VariableNames.SMILES_NAME, smiles);
 	}
 	
+	public boolean hasDefinedProperty(String propertyName) {
+		return this.properties.containsKey(propertyName) && this.properties.get(propertyName) != null ? true : false;
+	}
+	
 	public void setProperty(String key, Object value) {
 		this.properties.put(key, value);
 	}

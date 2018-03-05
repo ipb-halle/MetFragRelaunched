@@ -2,8 +2,6 @@ package de.ipbhalle.metfraglib.additionals;
 
 import net.sf.jniinchi.INCHI_RET;
 
-import org.openscience.cdk.Atom;
-import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.aromaticity.Aromaticity;
 import org.openscience.cdk.aromaticity.ElectronDonation;
 import org.openscience.cdk.exception.CDKException;
@@ -19,7 +17,9 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
+import org.openscience.cdk.silent.Atom;
 import org.openscience.cdk.silent.SilentChemObjectBuilder;
+import org.openscience.cdk.smiles.SmiFlavor;
 import org.openscience.cdk.smiles.SmilesGenerator;
 import org.openscience.cdk.smiles.SmilesParser;
 import org.openscience.cdk.tools.CDKHydrogenAdder;
@@ -37,7 +37,7 @@ import de.ipbhalle.metfraglib.precursor.HDTopDownBitArrayPrecursor;
 public class MoleculeFunctions {
 
 	public static String generateSmiles(IAtomContainer molecule) {
-		SmilesGenerator sg = new SmilesGenerator();
+		SmilesGenerator sg = new SmilesGenerator(SmiFlavor.Generic);
 		String smiles = null;
 		try {
 			smiles = sg.create(molecule);
@@ -201,7 +201,7 @@ public class MoleculeFunctions {
 	 */
 	public static IAtomContainer getAtomContainerFromInChI(String inchi) throws Exception {
 		InChIGeneratorFactory inchiFactory = InChIGeneratorFactory.getInstance();
-		InChIToStructure its = inchiFactory.getInChIToStructure(inchi, DefaultChemObjectBuilder.getInstance());
+		InChIToStructure its = inchiFactory.getInChIToStructure(inchi, SilentChemObjectBuilder.getInstance());
 		if(its == null) {
 			throw new Exception("InChI problem: " + inchi);
 		}
@@ -394,7 +394,7 @@ public class MoleculeFunctions {
 		
 		IAtomContainer mol = precursor.getStructureAsIAtomContainer().clone();
 		prepareAtomContainer(mol, false);
-		IChemObjectBuilder builder = DefaultChemObjectBuilder.getInstance();
+		IChemObjectBuilder builder = SilentChemObjectBuilder.getInstance();
 		IAtomContainer fragmentStructure = builder.newInstance(IAtomContainer.class);
 		if(atomsFastBitArray.cardinality() == 1) {
 			int firstSetBit = atomsFastBitArray.getFirstSetBit();

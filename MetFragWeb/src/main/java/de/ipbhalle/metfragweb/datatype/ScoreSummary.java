@@ -11,8 +11,9 @@ public class ScoreSummary {
 	protected boolean usedForGraph;
 	protected boolean databaseScore;
 	protected String info;
+	protected boolean isAvailable;
 	
-	public ScoreSummary(String name, double value, double rawValue, String info, boolean databaseScore) {
+	public ScoreSummary(String name, double value, double rawValue, String info, boolean databaseScore, boolean isAvailable) {
 		this.name = name;
 		this.value = value;
 		this.rawValue = rawValue;
@@ -20,6 +21,7 @@ public class ScoreSummary {
 		this.usedForGraph = true;
 		this.usedForScoring = true;
 		this.databaseScore = databaseScore;
+		this.isAvailable = isAvailable;
 	}
 
 	public boolean isDatabaseScore() {
@@ -36,6 +38,14 @@ public class ScoreSummary {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public boolean isAvailable() {
+		return isAvailable;
+	}
+
+	public void setAvailable(boolean isAvailable) {
+		this.isAvailable = isAvailable;
 	}
 
 	public double getRoundedValue() {

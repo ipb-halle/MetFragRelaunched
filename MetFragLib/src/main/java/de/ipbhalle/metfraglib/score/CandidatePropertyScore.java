@@ -18,6 +18,10 @@ public class CandidatePropertyScore extends AbstractScore {
 		
 	}
 
+	public boolean isCandidatePropertyScore() {
+		return true;
+	}
+	
 	public void setOptimalValues(double[] values) {
 		this.optimalValues[0] = values[0];
 	}

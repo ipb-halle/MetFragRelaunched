@@ -73,7 +73,7 @@ public class CandidateWriterXLS implements IWriter {
 		WritableCellFormat arial10format = new WritableCellFormat(arial10font);
 
 		sheet1.addCell(new Label(0, 0, VariableNames.IDENTIFIER_NAME, arial10formatBold));
-		sheet1.addCell(new Label(1, 0, candidate.getIdentifier(), arial10format));
+		sheet1.addCell(new Label(1, 0, candidate.getIdentifier().replaceAll("\\|[0-9]+", ""), arial10format));
 		
 		java.util.Hashtable<String, Object> properties = candidate.getProperties();
 		

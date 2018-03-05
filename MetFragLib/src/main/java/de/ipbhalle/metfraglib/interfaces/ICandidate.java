@@ -71,4 +71,6 @@ public interface ICandidate {
 
 	public boolean isUseSmiles();
 	
+	public boolean hasDefinedProperty(String propertyName);
+	
 }

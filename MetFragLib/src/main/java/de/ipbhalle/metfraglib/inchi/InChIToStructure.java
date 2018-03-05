@@ -217,11 +217,11 @@ protected JniInchiInputInchi input;
             
             INCHI_BOND_TYPE type = iBo.getBondType();
             if (type == INCHI_BOND_TYPE.SINGLE) {
-                cBo.setOrder(CDKConstants.BONDORDER_SINGLE);
+                cBo.setOrder(IBond.Order.SINGLE);
             } else if (type == INCHI_BOND_TYPE.DOUBLE) {
-                cBo.setOrder(CDKConstants.BONDORDER_DOUBLE);
+                cBo.setOrder(IBond.Order.DOUBLE);
             } else if (type == INCHI_BOND_TYPE.TRIPLE) {
-                cBo.setOrder(CDKConstants.BONDORDER_TRIPLE);
+                cBo.setOrder(IBond.Order.TRIPLE);
             } else if (type == INCHI_BOND_TYPE.ALTERN) {
                 cBo.setFlag(CDKConstants.ISAROMATIC, true);
             } else {
