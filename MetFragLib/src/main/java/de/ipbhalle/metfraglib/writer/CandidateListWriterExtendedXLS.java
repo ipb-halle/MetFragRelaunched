@@ -189,8 +189,7 @@ public class CandidateListWriterExtendedXLS implements IWriter {
 					numberCells++;
 				}
 				sheet1.addCell(new Label(labels.get(propName) + columnWidthAdd,
-						(i * rowHeightAdd) + 1, String.valueOf(properties
-								.get(propName))));
+						(i * rowHeightAdd) + 1, String.valueOf(properties.get(propName))));
 			}
 
 		}

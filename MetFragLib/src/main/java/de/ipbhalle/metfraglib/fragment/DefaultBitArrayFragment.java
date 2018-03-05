@@ -6,6 +6,7 @@ import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
+import org.openscience.cdk.smiles.SmiFlavor;
 import org.openscience.cdk.smiles.SmilesGenerator;
 
 import de.ipbhalle.metfraglib.FastBitArray;
@@ -292,7 +293,7 @@ public class DefaultBitArrayFragment extends AbstractFragment {
 	public String getSmiles(IMolecularStructure precursorMolecule) {
 		IAtomContainer molecule = this.getStructureAsIAtomContainer(precursorMolecule);
 	
-		SmilesGenerator sg = new SmilesGenerator();
+		SmilesGenerator sg = new SmilesGenerator(SmiFlavor.Generic);
 		String smiles = null;
 		try {
 			smiles = sg.create(molecule);
@@ -304,7 +305,7 @@ public class DefaultBitArrayFragment extends AbstractFragment {
 
 	public String getAromaticSmiles(IMolecularStructure precursorMolecule) {
 		IAtomContainer molecule = this.getStructureAsAromaticIAtomContainer(precursorMolecule);
-		SmilesGenerator sg = SmilesGenerator.generic().aromatic();
+		SmilesGenerator sg = new SmilesGenerator(SmiFlavor.UseAromaticSymbols);
 		String smiles = null;
 		try {
 			smiles = sg.create(molecule);

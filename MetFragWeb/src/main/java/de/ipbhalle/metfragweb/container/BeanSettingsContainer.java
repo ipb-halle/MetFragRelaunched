@@ -34,6 +34,7 @@ import de.ipbhalle.metfragweb.helper.ProcessCompoundsThreadRunner;
 import de.ipbhalle.metfragweb.helper.SettingsInitialiser;
 import de.ipbhalle.metfragweb.helper.UserInputDataHandler;
 import de.ipbhalle.metfragweb.helper.UserOutputDataHandler;
+import edu.emory.mathcs.backport.java.util.Collections;
 import de.ipbhalle.metfraglib.peak.TandemMassPeak;
 import de.ipbhalle.metfraglib.peaklistreader.StringTandemMassPeakListReader;
 
@@ -533,11 +534,13 @@ public class BeanSettingsContainer {
 					String key = keys.nextElement();
 					if (this.getAvailableParameters().isPreservedCompoundScoreProperty(key))
 						continue;
-					if(this.isValidScoreValueProperty(key, candidates))
+					if(this.isValidScoreValueProperty(key, candidates)) {
 						availableScores.add(new AvailableScore(key));
+					}
 				}
 			}
 		}
+		Collections.sort(availableScores);
 		this.setAvailableDatabaseScores(availableScores);
 	}
 	
@@ -781,6 +784,12 @@ public class BeanSettingsContainer {
 					}
 				}
 			}
+			Collections.sort(this.availablePartitioningCoefficients, new java.util.Comparator<SelectItem>() {
+			    @Override
+			    public int compare(SelectItem left, SelectItem right) {
+			    	return ((String)left.getValue()).compareTo((String)right.getValue());
+			    }
+			});
 		}
 		else this.availablePartitioningCoefficients = null;
 	}
@@ -863,8 +872,6 @@ public class BeanSettingsContainer {
 		/*
 		 * init the new combinedMetFragProcess
 		 */
-		
-		System.out.println("retrieveCompounds");
 		
 		this.combinedMetFragProcess = new CombinedMetFragProcess(this.getMetFragSettings());
 		try {

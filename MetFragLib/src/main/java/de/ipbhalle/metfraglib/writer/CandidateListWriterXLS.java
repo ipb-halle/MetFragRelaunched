@@ -177,9 +177,9 @@ public class CandidateListWriterXLS implements IWriter {
 				try {
 					String prop = String.valueOf(properties.get(propName));
 					if(prop.trim().length() == 0) prop = "NA";
+					if(propName.equals(VariableNames.IDENTIFIER_NAME)) prop = prop.replaceAll("\\|[0-9]+", "");
 					sheet.addCell(new Label(labels.get(propName)
-							+ columnWidthAdd, (i * rowHeightAdd) + 1, String
-							.valueOf(properties.get(propName))));
+							+ columnWidthAdd, (i * rowHeightAdd) + 1, prop));
 				} catch (RowsExceededException e) {
 					e.printStackTrace();
 				} catch (WriteException e) {

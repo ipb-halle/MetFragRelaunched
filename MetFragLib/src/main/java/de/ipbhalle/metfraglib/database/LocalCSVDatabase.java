@@ -3,18 +3,13 @@ package de.ipbhalle.metfraglib.database;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 
-import de.ipbhalle.metfraglib.additionals.MathTools;
 import de.ipbhalle.metfraglib.candidate.TopDownPrecursorCandidate;
 import de.ipbhalle.metfraglib.exceptions.AtomTypeNotKnownFromInputListException;
-import de.ipbhalle.metfraglib.exceptions.DatabaseIdentifierNotFoundException;
 import de.ipbhalle.metfraglib.exceptions.MultipleHeadersFoundInInputDatabaseException;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
-import de.ipbhalle.metfraglib.list.CandidateList;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.settings.Settings;
-import de.ipbhalle.metfraglib.process.ProcessingStatus;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -28,121 +23,19 @@ import org.apache.commons.csv.CSVRecord;
  * @author chrisr
  * 
  */
-public class LocalCSVDatabase extends AbstractDatabase {
-
-	private java.util.HashMap<String, ICandidate> candidates;
+public class LocalCSVDatabase extends AbstractFileDatabase {
 
 	public LocalCSVDatabase(Settings settings) {
 		super(settings);
 	}
-
-	public java.util.ArrayList<String> getCandidateIdentifiers() throws MultipleHeadersFoundInInputDatabaseException, Exception {
-		if(this.settings.containsKey(VariableNames.PROCESS_STATUS_OBJECT_NAME) && this.settings.get(VariableNames.PROCESS_STATUS_OBJECT_NAME) != null)
-			((ProcessingStatus)this.settings.get(VariableNames.PROCESS_STATUS_OBJECT_NAME)).setRetrievingStatusString("Retrieving Candidates");
-		if (this.candidates == null) {
-			this.readCandidatesFromFile();
-		}
-		if (this.settings.get(VariableNames.PRECURSOR_DATABASE_IDS_NAME) != null)
-			return this.getCandidateIdentifiers((String[]) settings.get(VariableNames.PRECURSOR_DATABASE_IDS_NAME));
-		if (this.settings.get(VariableNames.PRECURSOR_MOLECULAR_FORMULA_NAME) != null)
-			return this.getCandidateIdentifiers((String) settings.get(VariableNames.PRECURSOR_MOLECULAR_FORMULA_NAME));
-		if (this.settings.get(VariableNames.DATABASE_RELATIVE_MASS_DEVIATION_NAME) != null)
-			return this.getCandidateIdentifiers((Double) settings.get(VariableNames.PRECURSOR_NEUTRAL_MASS_NAME), (Double) settings.get(VariableNames.DATABASE_RELATIVE_MASS_DEVIATION_NAME));
-		ArrayList<String> identifiers = new ArrayList<String>();
-		java.util.Iterator<String> it = candidates.keySet().iterator();
-		while (it.hasNext()) {
-			identifiers.add(it.next());
-		}
-		return identifiers;
-	}
-
-	public ArrayList<String> getCandidateIdentifiers(double monoisotopicMass, double relativeMassDeviation) throws MultipleHeadersFoundInInputDatabaseException, Exception {
-		if (this.candidates == null)
-			this.readCandidatesFromFile();
-		ArrayList<String> identifiers = new ArrayList<String>();
-		double mzabs = MathTools.calculateAbsoluteDeviation(monoisotopicMass, relativeMassDeviation);
-		double lowerLimit = monoisotopicMass - mzabs;
-		double upperLimit = monoisotopicMass + mzabs;
-		
-		java.util.Iterator<String> keyIt = this.candidates.keySet().iterator();
-		while(keyIt.hasNext()) {
-			String currentKey = keyIt.next();
-			double currentMonoisotopicMass = (Double) this.candidates.get(currentKey).getProperty(VariableNames.MONOISOTOPIC_MASS_NAME);
-			if (lowerLimit <= currentMonoisotopicMass && currentMonoisotopicMass <= upperLimit)
-				identifiers.add(this.candidates.get(currentKey).getIdentifier());
-		}
-		return identifiers;
-	}
-
-	public ArrayList<String> getCandidateIdentifiers(String molecularFormula) throws Exception {
-		if (this.candidates == null)
-			try {
-				this.readCandidatesFromFile();
-			} catch (MultipleHeadersFoundInInputDatabaseException e) {
-				e.printStackTrace();
-			}
-		ArrayList<String> identifiers = new ArrayList<String>();
-		java.util.Iterator<String> keyIt = this.candidates.keySet().iterator();
-		while(keyIt.hasNext()) {
-			String currentKey = keyIt.next();
-			if (molecularFormula.equals(this.candidates.get(currentKey).getProperty(VariableNames.MOLECULAR_FORMULA_NAME)))
-				identifiers.add(this.candidates.get(currentKey).getIdentifier());
-		}
-		return identifiers;
-	}
-
-	public ArrayList<String> getCandidateIdentifiers(ArrayList<String> identifiers) throws MultipleHeadersFoundInInputDatabaseException, Exception {
-		if (this.candidates == null)
-			this.readCandidatesFromFile();
-		ArrayList<String> verifiedIdentifiers = new ArrayList<String>();
-		for (int i = 0; i < identifiers.size(); i++) {
-			try {
-				this.getCandidateByIdentifier(identifiers.get(i));
-			} catch (DatabaseIdentifierNotFoundException e) {
-				logger.warn("Candidate identifier " + identifiers.get(i) + " not found.");
-				continue;
-			}
-			verifiedIdentifiers.add(identifiers.get(i));
-		}
-		return verifiedIdentifiers;
-
-	}
-
-	public ICandidate getCandidateByIdentifier(String identifier) throws DatabaseIdentifierNotFoundException {
-		ICandidate candidate = null;
-		try {
-			candidate = this.candidates.get(identifier);
-			if(candidate == null) throw new DatabaseIdentifierNotFoundException(identifier);
-		} catch(Exception e) {
-			throw new DatabaseIdentifierNotFoundException(identifier);
-		}
-		return candidate;
-	}
-
-	public CandidateList getCandidateByIdentifier(ArrayList<String> identifiers) {
-		CandidateList candidateList = new CandidateList();
-		for (int i = 0; i < identifiers.size(); i++) {
-			ICandidate candidate = null;
-			try {
-				candidate = this.getCandidateByIdentifier(identifiers.get(i));
-			} catch (DatabaseIdentifierNotFoundException e) {
-				logger.warn("Candidate identifier " + identifiers.get(i) + " not found.");
-			}
-			if (candidate != null)
-				candidateList.addElement(candidate);
-		}
-		return candidateList;
-	}
-
-	public void nullify() {}
 
 	/**
 	 * @throws MultipleHeadersFoundInInputDatabaseException
 	 * @throws IOException
 	 * 
 	 */
-	private void readCandidatesFromFile() throws MultipleHeadersFoundInInputDatabaseException, Exception {
-		this.candidates = new java.util.HashMap<String, ICandidate>();
+	protected void readCandidatesFromFile() throws Exception {
+		this.candidates = new java.util.ArrayList<ICandidate>();
 		java.io.File f = new java.io.File((String) this.settings.get(VariableNames.LOCAL_DATABASE_PATH_NAME));
 		java.util.List<String> propertyNames = new java.util.ArrayList<String>();
 		BufferedReader reader = null;
@@ -150,62 +43,101 @@ public class LocalCSVDatabase extends AbstractDatabase {
 			reader = new BufferedReader(new FileReader(f));
 			CSVParser parser = new CSVParser(reader, CSVFormat.EXCEL.withHeader());
 			java.util.Iterator<?> it = parser.getHeaderMap().keySet().iterator();
-			boolean identifierColDefined = false;
-			boolean inchiColDefined = false;
-			String properIdentifierName = VariableNames.IDENTIFIER_NAME;
-			String properInChIName = VariableNames.INCHI_NAME;
+			
+			java.util.HashMap<String, String> nameToInputName = new java.util.HashMap<String, String>();
+			nameToInputName.put(VariableNames.IDENTIFIER_NAME_3, VariableNames.IDENTIFIER_NAME);
+			nameToInputName.put(VariableNames.IDENTIFIER_NAME_2, VariableNames.IDENTIFIER_NAME);
+			nameToInputName.put(VariableNames.IDENTIFIER_NAME, VariableNames.IDENTIFIER_NAME);
+			nameToInputName.put(VariableNames.MONOISOTOPIC_MASS_NAME_2, VariableNames.MONOISOTOPIC_MASS_NAME);
+			nameToInputName.put(VariableNames.MONOISOTOPIC_MASS_NAME, VariableNames.MONOISOTOPIC_MASS_NAME);
+			nameToInputName.put(VariableNames.INCHI_NAME_2, VariableNames.INCHI_NAME);
+			nameToInputName.put(VariableNames.INCHI_NAME, VariableNames.INCHI_NAME);
+			nameToInputName.put(VariableNames.MOLECULAR_FORMULA_NAME_2, VariableNames.MOLECULAR_FORMULA_NAME);
+			nameToInputName.put(VariableNames.MOLECULAR_FORMULA_NAME, VariableNames.MOLECULAR_FORMULA_NAME);
+			nameToInputName.put(VariableNames.SMILES_NAME_2, VariableNames.SMILES_NAME);
+			nameToInputName.put(VariableNames.SMILES_NAME, VariableNames.SMILES_NAME);
+			nameToInputName.put(VariableNames.INCHI_KEY_NAME_2, VariableNames.INCHI_KEY_NAME);
+			nameToInputName.put(VariableNames.INCHI_KEY_NAME, VariableNames.INCHI_KEY_NAME);
+			nameToInputName.put(VariableNames.COMPOUND_NAME_NAME_2, VariableNames.COMPOUND_NAME_NAME);
+			nameToInputName.put(VariableNames.COMPOUND_NAME_NAME, VariableNames.COMPOUND_NAME_NAME);
+			
+			String[] possibleIdentifierNames = {VariableNames.IDENTIFIER_NAME_3, VariableNames.IDENTIFIER_NAME_2, VariableNames.IDENTIFIER_NAME};
+			String[] possibleInChINames = {VariableNames.INCHI_NAME_2, VariableNames.INCHI_NAME};
+			
+			java.util.HashMap<String, Boolean> nameToWasFound = new java.util.HashMap<String, Boolean>();
+			java.util.Iterator<String> keys = nameToInputName.keySet().iterator();
+			while(keys.hasNext())
+				nameToWasFound.put(keys.next(), new Boolean(false));
+			
 			while(it.hasNext()) {
 				String colname = (String)it.next();
 				propertyNames.add(colname);
-				if(colname.equals(VariableNames.IDENTIFIER_NAME)) identifierColDefined = true;
-				if(colname.equals(VariableNames.INCHI_NAME) || colname.equals(VariableNames.INCHI_ALTERNATIVE_NAME)) inchiColDefined = true;
-				if(!identifierColDefined && colname.equals(VariableNames.IDENTIFIER_DTXSID_NAME)) {
-					identifierColDefined = true;
-					properIdentifierName = VariableNames.IDENTIFIER_DTXSID_NAME;
-				}
-				if(!inchiColDefined && colname.equals(VariableNames.INCHI_ALTERNATIVE_NAME)) {
-					inchiColDefined = true;
-					properInChIName = VariableNames.INCHI_ALTERNATIVE_NAME;
-				}
+				if(nameToInputName.containsKey(colname)) nameToWasFound.put(colname, new Boolean(true));
 			}
 			
-			if(!identifierColDefined) {
+			String properIdentifierName = "";
+			String properInChIName = "";
+			for(String name : possibleIdentifierNames) {
+				if(nameToWasFound.get(name)) {
+					properIdentifierName = name;
+					break;
+				}
+			}
+			for(String name : possibleInChINames) {
+				if(nameToWasFound.get(name)) {
+					properInChIName = name;
+					break;
+				}
+			}
+					
+			if(properIdentifierName.equals("")) {
 				logger.error("Error: No Identifier column defined.");
 				parser.close();
 				reader.close();
 				throw new Exception();
 			}
-			if(!inchiColDefined) {
+			if(possibleInChINames.equals("")) {
 				logger.error("Error: No InChI column defined.");
 				parser.close();
 				reader.close();
 				throw new Exception();
 			}
+			int index = 0;
 			for(CSVRecord record : parser) {
-				ICandidate precursorCandidate = new TopDownPrecursorCandidate(record.get(properInChIName), record.get(properIdentifierName));
+				index++;
+				String identifier = record.get(properIdentifierName);
+				if(identifier == null) continue;
+				identifier = identifier.trim();
+				if(identifier.equals("-") || identifier.equals("NO_MATCH")) continue;
+				ICandidate precursorCandidate = new TopDownPrecursorCandidate(record.get(properInChIName), identifier + "|" + index);
+				keys = nameToWasFound.keySet().iterator();
+				for(String curKey : this.preparedPropertyNames) {
+					if(nameToWasFound.get(curKey)) {
+						String inputName = nameToInputName.get(curKey);
+						if(!precursorCandidate.hasDefinedProperty(inputName)) precursorCandidate.setProperty(inputName, record.get(curKey));
+					}
+				}
 				for(int ii = 0; ii < propertyNames.size(); ii++) {
 					String colname = propertyNames.get(ii);
-					if(!colname.equals(VariableNames.INCHI_NAME) && !colname.equals(VariableNames.IDENTIFIER_NAME)) {
-						if(colname.equals(VariableNames.MONOISOTOPIC_MASS_NAME))
-							precursorCandidate.setProperty(VariableNames.MONOISOTOPIC_MASS_NAME, Double.parseDouble(record.get(VariableNames.MONOISOTOPIC_MASS_NAME)));
-						else {
-							precursorCandidate.setProperty(colname, record.get(colname));
-						}
-					}	
+					if(!precursorCandidate.hasDefinedProperty(colname)) {
+						precursorCandidate.setProperty(colname, record.get(colname));
+					}
 				}
-				this.checkAlternativePropertyNames(precursorCandidate);
-				if(!precursorCandidate.getProperties().containsKey(VariableNames.MONOISOTOPIC_MASS_NAME) || precursorCandidate.getProperty(VariableNames.MONOISOTOPIC_MASS_NAME) == null) {
+				
+				if(!precursorCandidate.hasDefinedProperty(VariableNames.MONOISOTOPIC_MASS_NAME)) {
 					try {
 						precursorCandidate.setProperty(VariableNames.MONOISOTOPIC_MASS_NAME, precursorCandidate.getMolecularFormula().getMonoisotopicMass());
 					} catch (AtomTypeNotKnownFromInputListException e) {
 						continue;
 					}
+				} else {
+					precursorCandidate.setProperty(VariableNames.MONOISOTOPIC_MASS_NAME, Double.parseDouble((String)precursorCandidate.getProperty(VariableNames.MONOISOTOPIC_MASS_NAME)));
 				}
 				if(!this.addInChIFromSmiles(precursorCandidate)) continue;
 				if(!this.addSMILESFromInChI(precursorCandidate)) continue;
 				if(!this.addInChIKeyFromSmiles(precursorCandidate)) continue;
 				if(!this.setInChIValues(precursorCandidate)) continue;
-				this.candidates.put(precursorCandidate.getIdentifier(), precursorCandidate);
+				this.candidates.add(precursorCandidate);
 			}
 			
 			parser.close();
@@ -214,6 +146,13 @@ public class LocalCSVDatabase extends AbstractDatabase {
 			return;
 		} 
 		throw new Exception();
+	}
+	
+	public static void main(String[] args) throws Exception {
+		Settings settings = new Settings();
+		settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, "/home/cruttkie/Documents/PhD/MetFrag/debugs/emma/msready/ChemistryDashboard-Batch-Search_2018-02-23_07_30_43_Worksheet3.csv");
+		LocalCSVDatabase db = new LocalCSVDatabase(settings);
+		System.out.println(db.getCandidateIdentifiers().size());	
 	}
 	
 }

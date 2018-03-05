@@ -172,8 +172,7 @@ public class CandidateListWriterExtendedFragmentsXLS implements IWriter {
 						sheet2.addImage(wi);
 					}
 				}
-				sheet2.addCell(new Label(4, (i * rowHeightAdd) + 1,
-						candidateList.getElement(i).getIdentifier() + ""));
+				sheet2.addCell(new Label(4, (i * rowHeightAdd) + 1, ((String)candidateList.getElement(i).getIdentifier()).replaceAll("\\|[0-9]+", "")));
 			}
 
 		}

@@ -11,7 +11,7 @@ import java.net.URL;
 import org.openscience.cdk.ChemFile;
 import org.openscience.cdk.ChemObject;
 import org.openscience.cdk.interfaces.IAtomContainer;
-import org.openscience.cdk.io.MDLReader;
+import org.openscience.cdk.io.MDLV2000Reader;
 import org.openscience.cdk.tools.manipulator.ChemFileManipulator;
 
 import de.ipbhalle.metfraglib.additionals.MathTools;
@@ -126,7 +126,7 @@ public class OnlineKeggDatabase extends AbstractDatabase {
 		} 
 		java.util.List<IAtomContainer> containersList;
 		
-		MDLReader reader = new MDLReader(new java.io.StringReader(sb.toString()));
+		MDLV2000Reader reader = new MDLV2000Reader(new java.io.StringReader(sb.toString()));
         ChemFile chemFile = null;
         try {
         	chemFile = (ChemFile)reader.read((ChemObject)new ChemFile());

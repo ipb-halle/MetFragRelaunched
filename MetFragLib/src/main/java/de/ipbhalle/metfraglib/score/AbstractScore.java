@@ -26,6 +26,10 @@ public abstract class AbstractScore implements IScore {
 		this.usesPiecewiseCalculation = false;
 	}
 	
+	public boolean isCandidatePropertyScore() {
+		return false;
+	}
+	
 	public boolean hasInterimResults() {
 		return this.hasInterimResults;
 	}

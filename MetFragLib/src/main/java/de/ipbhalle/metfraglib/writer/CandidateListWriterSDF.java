@@ -141,8 +141,9 @@ public class CandidateListWriterSDF implements IWriter {
 					.keys();
 			while (keys.hasMoreElements()) {
 				String key = keys.nextElement();
-				candidateAtomContainer.setProperty(key,
-						checkEmptyProperty(candidate.getProperty(key)));
+				String propertyValue = (String)checkEmptyProperty(candidate.getProperty(key));
+				if(key.equals(VariableNames.IDENTIFIER_NAME)) propertyValue = propertyValue.replaceAll("\\|[0-9]+", "");
+				candidateAtomContainer.setProperty(key, propertyValue);
 			}
 			candidateAtomContainer.setProperty("NumberPeaksUsed",
 					numberOfPeaksUsed);

@@ -21,6 +21,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomContainerSet;
 import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.io.SDFWriter;
+import org.openscience.cdk.smiles.SmiFlavor;
 import org.openscience.cdk.smiles.SmilesGenerator;
 import org.openscience.cdk.tools.CDKHydrogenAdder;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
@@ -62,7 +63,7 @@ public class SDFDeuteriumGeneration {
 		 */
 
 		IAtomContainerSet set = new AtomContainerSet();
-		SmilesGenerator sg = new SmilesGenerator();
+		SmilesGenerator sg = new SmilesGenerator(SmiFlavor.Generic);
 
 		CDKHydrogenAdder adder = CDKHydrogenAdder.getInstance(DefaultChemObjectBuilder.getInstance());
 		for (int j = 0; j < inchis.size(); j++) {
@@ -381,7 +382,7 @@ public class SDFDeuteriumGeneration {
 			while(it.hasNext()) {
 				IBond bond = it.next();
 				for(int k = 0; k < bond.getAtomCount(); k++)
-					aromaticAtoms.set(molecule.getAtomNumber(bond.getAtom(k)));
+					aromaticAtoms.set(molecule.indexOf(bond.getAtom(k)));
 			}
 		} catch (CDKException e) {
 			e.printStackTrace();

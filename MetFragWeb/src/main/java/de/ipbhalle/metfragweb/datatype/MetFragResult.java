@@ -131,6 +131,10 @@ public class MetFragResult implements Serializable {
 		return this.root.getIdentifier();
 	}
 
+	public String getOriginalIdentifier() {
+		return this.root.getOriginalIdentifier();
+	}
+
 	public java.util.List<String> getIdentifiers() {
 		return this.identifiers;
 	}

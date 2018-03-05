@@ -53,8 +53,8 @@ public class CalculateAtomStatistics {
 				java.util.Iterator<IBond> it = aromaticBonds.iterator();
 				while(it.hasNext()) {
 					IBond bond = it.next();
-					int atom1 = mol.getAtomNumber(bond.getAtom(0));
-					int atom2 = mol.getAtomNumber(bond.getAtom(1));
+					int atom1 = mol.indexOf(bond.getAtom(0));
+					int atom2 = mol.indexOf(bond.getAtom(1));
 					if(!aromaticsAtomIds.contains(atom1)) aromaticsAtomIds.add(atom1);
 					if(!aromaticsAtomIds.contains(atom2)) aromaticsAtomIds.add(atom2);
 				}

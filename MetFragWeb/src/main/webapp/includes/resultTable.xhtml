@@ -124,7 +124,7 @@
 									<h:panelGrid columns="2" style="border: none;"
 										columnClasses="resultImageFirst,resultImageSecond">
 										<h:panelGroup>
-											<h:graphicImage alt="#{metFragResult.identifier}" width="100%"
+											<h:graphicImage alt="#{metFragResult.originalIdentifier}" width="100%"
 												id="imageCellNames" value="#{metFragResult.imageAddress}" cache="false" />
 											<br />
 											<h:outputText
@@ -148,7 +148,7 @@
 									<h:panelGrid columns="2" style="border: none;"
 										columnClasses="resultImageFirst,resultImageSecond">
 										<h:panelGroup>
-											<h:graphicImage alt="#{metFragResult.identifier}"
+											<h:graphicImage alt="#{metFragResult.originalIdentifier}"
 												id="imageCell" value="#{metFragResult.imageAddress}"
 												width="100%" cache="false" />
 										</h:panelGroup>
@@ -170,10 +170,10 @@
 							</f:facet> -->
 									<h:outputText
 										rendered="#{not metFragResult.databaseLinkAvailable}"
-										id="idCell" value="#{metFragResult.identifier}" />
+										id="idCell" value="#{metFragResult.originalIdentifier}" />
 									<p:link rendered="#{metFragResult.databaseLinkAvailable}"
 										href="#{metFragResult.databaseLink}"
-										value="#{metFragResult.identifier}" target="_blank" />
+										value="#{metFragResult.originalIdentifier}" target="_blank" />
 									<p:dataScroller scrollHeight="100px" mode="inline"
 										styleClass="dataScroller"
 										rendered="#{metFragResult.hasMolecules}"
@@ -181,10 +181,10 @@
 										chunkSize="10">
 										<h:outputText
 											rendered="#{not metFragResult.databaseLinkAvailable}"
-											id="idCell" value="#{subResult.identifier}" />
+											id="idCell" value="#{subResult.originalIdentifier}" />
 										<p:link rendered="#{metFragResult.databaseLinkAvailable}"
 											href="#{subResult.databaseLink}"
-											value="#{subResult.identifier}" target="_blank" />
+											value="#{subResult.originalIdentifier}" target="_blank" />
 									</p:dataScroller>
 									<br />
 									<br />

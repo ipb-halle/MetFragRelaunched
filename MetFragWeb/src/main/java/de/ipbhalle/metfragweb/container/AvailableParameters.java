@@ -99,16 +99,25 @@ public class AvailableParameters {
 	protected void initialisePreservedCompoundProperties() {
 		this.preservedCompoundScoreProperties = new java.util.Vector<String>();
 		this.preservedCompoundScoreProperties.add(VariableNames.COMPOUND_NAME_NAME);
+		this.preservedCompoundScoreProperties.add(VariableNames.COMPOUND_NAME_NAME_2);
 		this.preservedCompoundScoreProperties.add(VariableNames.IDENTIFIER_NAME);
+		this.preservedCompoundScoreProperties.add(VariableNames.IDENTIFIER_NAME_2);
+		this.preservedCompoundScoreProperties.add(VariableNames.IDENTIFIER_NAME_3);
+		this.preservedCompoundScoreProperties.add(VariableNames.INCHI_KEY_NAME);
+		this.preservedCompoundScoreProperties.add(VariableNames.INCHI_KEY_NAME_2);
 		this.preservedCompoundScoreProperties.add(VariableNames.INCHI_KEY_1_NAME);
 		this.preservedCompoundScoreProperties.add(VariableNames.INCHI_KEY_2_NAME);
 		this.preservedCompoundScoreProperties.add(VariableNames.INCHI_KEY_3_NAME);
 		this.preservedCompoundScoreProperties.add(VariableNames.INCHI_NAME);
+		this.preservedCompoundScoreProperties.add(VariableNames.INCHI_NAME_2);
 		this.preservedCompoundScoreProperties.add(VariableNames.IUPAC_NAME_NAME);
 		this.preservedCompoundScoreProperties.add(VariableNames.MOLECULAR_FORMULA_NAME);
+		this.preservedCompoundScoreProperties.add(VariableNames.MOLECULAR_FORMULA_NAME_2);
 		this.preservedCompoundScoreProperties.add(VariableNames.MONOISOTOPIC_MASS_NAME);
+		this.preservedCompoundScoreProperties.add(VariableNames.MONOISOTOPIC_MASS_NAME_2);
 		this.preservedCompoundScoreProperties.add(VariableNames.PUBCHEM_XLOGP_NAME);
 		this.preservedCompoundScoreProperties.add(VariableNames.SMILES_NAME);
+		this.preservedCompoundScoreProperties.add(VariableNames.SMILES_NAME_2);
 		this.preservedCompoundScoreProperties.add(VariableNames.MAXIMUM_TREE_DEPTH_NAME);
 		this.preservedCompoundScoreProperties.add(VariableNames.CHEMSPIDER_ALOGP_NAME);
 		this.preservedCompoundScoreProperties.add(VariableNames.CHEMSPIDER_XLOGP_NAME);
@@ -117,7 +126,6 @@ public class AvailableParameters {
 		this.preservedCompoundScoreProperties.add(VariableNames.EXPLAINED_PEAKS_COLUMN);
 		this.preservedCompoundScoreProperties.add(VariableNames.NUMBER_PEAKS_USED_COLUMN);
 		this.preservedCompoundScoreProperties.add(VariableNames.FORMULAS_OF_PEAKS_EXPLAINED_COLUMN);
-		this.preservedCompoundScoreProperties.add(VariableNames.IDENTIFIER_DTXSID_NAME);
 		this.preservedCompoundScoreProperties.add(VariableNames.INCHI_ALTERNATIVE_NAME);
 		this.preservedCompoundScoreProperties.add("MONOSIOTOPIC MASS");
 		this.preservedCompoundScoreProperties.add("MOL FORMULA");
@@ -125,13 +133,22 @@ public class AvailableParameters {
 		
 		this.preservedCompoundPartitioningCoefficientProperties = new java.util.Vector<String>();
 		this.preservedCompoundPartitioningCoefficientProperties.add(VariableNames.COMPOUND_NAME_NAME);
+		this.preservedCompoundPartitioningCoefficientProperties.add(VariableNames.COMPOUND_NAME_NAME_2);
 		this.preservedCompoundPartitioningCoefficientProperties.add(VariableNames.IDENTIFIER_NAME);
+		this.preservedCompoundPartitioningCoefficientProperties.add(VariableNames.IDENTIFIER_NAME_2);
+		this.preservedCompoundPartitioningCoefficientProperties.add(VariableNames.IDENTIFIER_NAME_3);
 		this.preservedCompoundPartitioningCoefficientProperties.add(VariableNames.INCHI_KEY_1_NAME);
 		this.preservedCompoundPartitioningCoefficientProperties.add(VariableNames.INCHI_KEY_2_NAME);
+		this.preservedCompoundPartitioningCoefficientProperties.add(VariableNames.INCHI_KEY_3_NAME);
+		this.preservedCompoundPartitioningCoefficientProperties.add(VariableNames.INCHI_KEY_NAME);
+		this.preservedCompoundPartitioningCoefficientProperties.add(VariableNames.INCHI_KEY_NAME_2);
 		this.preservedCompoundPartitioningCoefficientProperties.add(VariableNames.IUPAC_NAME_NAME);
 		this.preservedCompoundPartitioningCoefficientProperties.add(VariableNames.MOLECULAR_FORMULA_NAME);
+		this.preservedCompoundPartitioningCoefficientProperties.add(VariableNames.MOLECULAR_FORMULA_NAME_2);
 		this.preservedCompoundPartitioningCoefficientProperties.add(VariableNames.MONOISOTOPIC_MASS_NAME);
+		this.preservedCompoundPartitioningCoefficientProperties.add(VariableNames.MONOISOTOPIC_MASS_NAME_2);
 		this.preservedCompoundPartitioningCoefficientProperties.add(VariableNames.SMILES_NAME);
+		this.preservedCompoundPartitioningCoefficientProperties.add(VariableNames.SMILES_NAME_2);
 		this.preservedCompoundPartitioningCoefficientProperties.add(VariableNames.MAXIMUM_TREE_DEPTH_NAME);
 		this.preservedCompoundPartitioningCoefficientProperties.add(VariableNames.CHEMSPIDER_ALOGP_NAME);
 		this.preservedCompoundPartitioningCoefficientProperties.add(VariableNames.CHEMSPIDER_XLOGP_NAME);

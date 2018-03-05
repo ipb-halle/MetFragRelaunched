@@ -20,6 +20,7 @@ import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.graph.Cycles;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
+import org.openscience.cdk.smiles.SmiFlavor;
 import org.openscience.cdk.smiles.SmilesGenerator;
 import org.openscience.cdk.tautomers.InChITautomerGenerator;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
@@ -114,7 +115,7 @@ public class InChIDeuteriumGeneration {
 					AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(con);
 					
 					java.util.List<IAtomContainer> tautos = tg.getTautomers(con);
-					SmilesGenerator sg = new SmilesGenerator();
+					SmilesGenerator sg = new SmilesGenerator(SmiFlavor.Generic);
 					for(IAtomContainer tautomer : tautos) {
 						System.out.println(sg.create(tautomer));
 					}
@@ -396,7 +397,7 @@ public class InChIDeuteriumGeneration {
 			while(it.hasNext()) {
 				IBond bond = it.next();
 				for(int k = 0; k < bond.getAtomCount(); k++)
-					aromaticAtoms.set(molecule.getAtomNumber(bond.getAtom(k)));
+					aromaticAtoms.set(molecule.indexOf(bond.getAtom(k)));
 			}
 		} catch (CDKException e) {
 			e.printStackTrace();

@@ -71,7 +71,7 @@ public class BitArrayPrecursor extends DefaultPrecursor {
 			java.util.List<IAtom> connectedAtoms = this.precursorMolecule.getConnectedAtomsList(this.precursorMolecule.getAtom(i));
 			short[] connectedAtomIndeces = new short[connectedAtoms.size()];
 			for(int k = 0; k < connectedAtoms.size(); k++)
-				connectedAtomIndeces[k] = (short)this.precursorMolecule.getAtomNumber(connectedAtoms.get(k));
+				connectedAtomIndeces[k] = (short)this.precursorMolecule.indexOf(connectedAtoms.get(k));
 			this.atomIndexToConnectedAtomIndeces.add(i, connectedAtomIndeces);
 		}
 	}
@@ -101,8 +101,8 @@ public class BitArrayPrecursor extends DefaultPrecursor {
 		this.bondIndexToConnectedAtomIndeces = new short[this.getNonHydrogenBondCount()][2];
 		
 		for(int i = 0; i < this.getNonHydrogenBondCount(); i++) {
-			this.bondIndexToConnectedAtomIndeces[i][0] = (short)this.precursorMolecule.getAtomNumber(this.precursorMolecule.getBond(i).getAtom(0));
-			this.bondIndexToConnectedAtomIndeces[i][1] = (short)this.precursorMolecule.getAtomNumber(this.precursorMolecule.getBond(i).getAtom(1));
+			this.bondIndexToConnectedAtomIndeces[i][0] = (short)this.precursorMolecule.indexOf(this.precursorMolecule.getBond(i).getAtom(0));
+			this.bondIndexToConnectedAtomIndeces[i][1] = (short)this.precursorMolecule.indexOf(this.precursorMolecule.getBond(i).getAtom(1));
 		}
 	}
 
@@ -124,7 +124,7 @@ public class BitArrayPrecursor extends DefaultPrecursor {
 			java.util.Iterator<IBond> it = aromaticBonds.iterator();
 			while(it.hasNext()) {
 				IBond currentBond = it.next();
-				this.aromaticBonds.set(this.precursorMolecule.getBondNumber(currentBond), true);
+				this.aromaticBonds.set(this.precursorMolecule.indexOf(currentBond), true);
 			}
 		}
 	}
@@ -144,7 +144,7 @@ public class BitArrayPrecursor extends DefaultPrecursor {
 		for (int i = 0; i < ringSet.getAtomContainerCount(); i++) {
 			int[] indexes = new int[ringSet.getAtomContainer(i).getBondCount()];
 			for (int j = 0; j < ringSet.getAtomContainer(i).getBondCount(); j++) {
-				indexes[j] = this.precursorMolecule.getBondNumber(ringSet
+				indexes[j] = this.precursorMolecule.indexOf(ringSet
 						.getAtomContainer(i).getBond(j));
 			}
 			for (int j = 0; j < indexes.length; j++)
@@ -155,17 +155,27 @@ public class BitArrayPrecursor extends DefaultPrecursor {
 	/**
 	 * initialise 1D atom adjacency list
 	 */
+	/*
 	protected void initialiseAtomAdjacencyList() {
 		this.atomAdjacencyList = new short[getIndex(this.getNonHydrogenAtomCount() - 2, this.getNonHydrogenAtomCount() - 1) + 1];
 		for(int i = 0; i < this.getNonHydrogenAtomCount(); i++) {
 			java.util.List<IAtom> connectedAtoms = this.precursorMolecule.getConnectedAtomsList(this.precursorMolecule.getAtom(i));
 			for(int k = 0; k < connectedAtoms.size(); k++) {
-				int atomNumber = this.precursorMolecule.getAtomNumber(connectedAtoms.get(k));
-				int bondNumber = this.precursorMolecule.getBondNumber(this.precursorMolecule.getAtom(i), connectedAtoms.get(k));
+				int atomNumber = this.precursorMolecule.indexOf(connectedAtoms.get(k));
+				int bondNumber = this.precursorMolecule.indexOf(this.precursorMolecule.getAtom(i), connectedAtoms.get(k));
 				this.atomAdjacencyList[getIndex(i, atomNumber)] = (short)(bondNumber + 1);
 			}
 		}
+	}*/
+	
+	protected void initialiseAtomAdjacencyList() {
+		this.atomAdjacencyList = new short[getIndex(this.getNonHydrogenAtomCount() - 2, this.getNonHydrogenAtomCount() - 1) + 1];
+		for(int i = 0; i < this.getNonHydrogenBondCount(); i++) {
+			java.util.Iterator<IAtom> atoms = this.precursorMolecule.getBond(i).atoms().iterator();
+			this.atomAdjacencyList[getIndex(this.precursorMolecule.indexOf(atoms.next()), this.precursorMolecule.indexOf(atoms.next()))] = (short)(i + 1);
+		}
 	}
+	
 	
 	/**
 	 * 

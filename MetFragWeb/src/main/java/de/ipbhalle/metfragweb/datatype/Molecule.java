@@ -127,6 +127,10 @@ public class Molecule implements Serializable {
 		return identifier;
 	}
 
+	public String getOriginalIdentifier() {
+		return identifier.replaceAll("\\|[0-9]+", "");
+	}
+
 	public void setIdentifier(String identifier) {
 		this.identifier = identifier;
 	}
@@ -189,14 +193,14 @@ public class Molecule implements Serializable {
 	}
 	
 	public String getDatabaseLink() {
-		if(databaseName.equals("PubChem")) return "https://pubchem.ncbi.nlm.nih.gov/compound/" + this.identifier;
-		else if(databaseName.equals("KEGG")) return "http://www.kegg.jp/dbget-bin/www_bget?cpd:" + this.identifier;
-		else if(databaseName.equals("ChemSpider")) return "http://www.chemspider.com/Chemical-Structure." + this.identifier + ".html";
-		else if(databaseName.equals("MetaCyc")) return "http://metacyc.org/META/NEW-IMAGE?type=COMPOUND&object=" + this.identifier;
-		else if(databaseName.equals("LipidMaps")) return "http://www.lipidmaps.org/data/LMSDRecord.php?LMID=" + this.identifier;
-		else if(databaseName.equals("LocalHMDB")) return "http://www.hmdb.ca/metabolites/" + this.identifier;
-		else if(databaseName.equals("LocalChEBI")) return "https://www.ebi.ac.uk/chebi/searchId.do?chebiId=" + this.identifier;
-		else if((databaseName.equals("LocalSDF") || databaseName.equals("LocalCSV") || databaseName.equals("LocalPSV")) && this.identifier.startsWith("DTXSID")) return "https://comptox.epa.gov/dashboard/dsstoxdb/results?search=" + this.identifier;
+		if(databaseName.equals("PubChem")) return "https://pubchem.ncbi.nlm.nih.gov/compound/" + this.getOriginalIdentifier();
+		else if(databaseName.equals("KEGG")) return "http://www.kegg.jp/dbget-bin/www_bget?cpd:" + this.getOriginalIdentifier();
+		else if(databaseName.equals("ChemSpider")) return "http://www.chemspider.com/Chemical-Structure." + this.getOriginalIdentifier() + ".html";
+		else if(databaseName.equals("MetaCyc")) return "http://metacyc.org/META/NEW-IMAGE?type=COMPOUND&object=" + this.getOriginalIdentifier();
+		else if(databaseName.equals("LipidMaps")) return "http://www.lipidmaps.org/data/LMSDRecord.php?LMID=" + this.getOriginalIdentifier();
+		else if(databaseName.equals("LocalHMDB")) return "http://www.hmdb.ca/metabolites/" + this.getOriginalIdentifier();
+		else if(databaseName.equals("LocalChEBI")) return "https://www.ebi.ac.uk/chebi/searchId.do?chebiId=" + this.getOriginalIdentifier();
+		else if((databaseName.equals("LocalSDF") || databaseName.equals("LocalCSV") || databaseName.equals("LocalPSV")) && this.identifier.startsWith("DTXSID")) return "https://comptox.epa.gov/dashboard/dsstoxdb/results?search=" + this.getOriginalIdentifier();
 		return this.identifier; 
 	}
 	
@@ -220,7 +224,11 @@ public class Molecule implements Serializable {
 	public boolean equals(Object mol) {
 		return this.identifier.equals(((Molecule)mol).getIdentifier());
 	}
-	
+
+	public String getSMILES() {
+		return this.smiles;
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -279,7 +287,9 @@ public class Molecule implements Serializable {
 		candidate.setMatchList(this.matchList);
 		
 		for(int i = 0; i < this.scoresSummaries.length; i++) {
-			candidate.setProperty(this.scoresSummaries[i].getName(), String.valueOf(this.scoresSummaries[i].getRawValue()));
+			String scoreValue = "NA";
+			if(this.scoresSummaries[i].isAvailable()) scoreValue = String.valueOf(this.scoresSummaries[i].getRawValue());
+			candidate.setProperty(this.scoresSummaries[i].getName(), scoreValue);
 			if(!this.scoresSummaries[i].isDatabaseScore()) {
 				candidate.setProperty(this.scoresSummaries[i].getName() + "_Values", this.scoresSummaries[i].getInfo());
 			}

@@ -2,7 +2,7 @@ package de.ipbhalle.metfragweb.datatype;
 
 import java.io.Serializable;
 
-public class AvailableScore implements Serializable{
+public class AvailableScore implements Serializable, Comparable<AvailableScore> {
 
 	/**
 	 * 
@@ -48,6 +48,10 @@ public class AvailableScore implements Serializable{
 		this.isSelected = isSelected;
 	}
 
+	@Override
+	public int compareTo(AvailableScore o) {
+		return this.label.compareTo(o.getLabel());
+	}
 
 
 }

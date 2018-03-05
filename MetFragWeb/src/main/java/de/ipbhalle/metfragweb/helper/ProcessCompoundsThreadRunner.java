@@ -209,24 +209,26 @@ public class ProcessCompoundsThreadRunner extends ThreadRunner {
 			}
 			ScoreSummary[] scoreSummaries = new ScoreSummary[scoreNames.length];
 			for(int j = 0; j < scoreSummaries.length; j++) {
-				double score = 0.0;
-				double rawScore = 0.0;
+				Double score = 0.0;
+				Double rawScore = 0.0;
 				boolean databaseScore = false;
+				boolean isAvailable = true;
 				String infoScore = "NA";
 				try {
+					if(!candidate.getProperties().containsKey(scoreNames[j] + "_Values") || candidate.getProperty(scoreNames[j] + "_Values") == null)
+						databaseScore = true;
+					if(candidate.getProperties().containsKey(scoreNames[j] + "_Values") && candidate.getProperty(scoreNames[j] + "_Values") != null)
+						infoScore = ((String)candidate.getProperty(scoreNames[j] + "_Values"));
 					score = (Double)candidate.getProperty(scoreNames[j]); 
 					rawScore = score;
 					score /= maxScore[j];
-					if(candidate.getProperties().containsKey(scoreNames[j] + "_Values") && candidate.getProperty(scoreNames[j] + "_Values") != null)
-						infoScore = ((String)candidate.getProperty(scoreNames[j] + "_Values"));
-					if(!candidate.getProperties().containsKey(scoreNames[j] + "_Values") || candidate.getProperty(scoreNames[j] + "_Values") == null)
-						databaseScore = true;
 				}
 				catch(Exception e) {
 					score = 0.0;
 					rawScore = 0.0;
+					isAvailable = false;
 				}
-				scoreSummaries[j] = new ScoreSummary(this.getWeightDisplayName(scoreNames[j]), score, rawScore, infoScore, databaseScore);
+				scoreSummaries[j] = new ScoreSummary(this.getWeightDisplayName(scoreNames[j]), score, rawScore, infoScore, databaseScore, isAvailable);
 				if(!this.isScoreAvailableForScore(scoreNames[j])) scoreSummaries[j].setUsedForScoring(false);
 				if(!this.isScoreAvailableForGraph(scoreNames[j])) scoreSummaries[j].setUsedForGraph(false);
 			}

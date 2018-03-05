@@ -29,10 +29,10 @@ public class CheckMolecularFormula_Test {
 	
 	@Test
 	public void testMonoisotopicMasses() {
-		assertEquals("Mass C12H20 mismatch", 164.1565, this.molForm1.getMonoisotopicMass(), 0.0001);
-		assertEquals("Mass C15H12O5 mismatch", 272.0684, this.molForm2.getMonoisotopicMass(), 0.0001);
-		assertEquals("Mass C9H11Cl3NO3PS mismatch", 348.9262, this.molForm3.getMonoisotopicMass(), 0.0001);
-		assertEquals("Mass C42H69Cl2N5O10 mismatch", 873.4421, this.molForm4.getMonoisotopicMass(), 0.0001);
+		assertEquals("Mass C12H20 mismatch", 164.1566, this.molForm1.getMonoisotopicMass(), 0.0001);
+		assertEquals("Mass C15H12O5 mismatch", 272.06851, this.molForm2.getMonoisotopicMass(), 0.0001);
+		assertEquals("Mass C9H11Cl3NO3PS mismatch", 348.92631, this.molForm3.getMonoisotopicMass(), 0.0001);
+		assertEquals("Mass C42H69Cl2N5O10 mismatch", 873.44242, this.molForm4.getMonoisotopicMass(), 0.0001);
 	}
 	
 	@Test(expected=AtomTypeNotKnownFromInputListException.class)
