@@ -92,6 +92,7 @@ public class MetFragWebBean {
 	protected Boolean clusterCompoundsThreadStarted;
 	
 	protected Messages errorMessages;
+	protected Messages warningMessages;
 	protected Messages infoMessages;
 
 	protected List<Weight> weights;
@@ -163,6 +164,7 @@ public class MetFragWebBean {
 		this.filteredMetFragResultsContainer = new MetFragResultsContainer();
 		this.errorMessages = new Messages();
 		this.infoMessages = new Messages();
+		this.warningMessages = new Messages();
 		this.beanSettingsContainer = new BeanSettingsContainer(this.getRootSessionFolder());
 		this.fragmentsModel = new LineChartModel();
 		this.explainedPeaksFilter = new Integer[0];
@@ -267,6 +269,7 @@ public class MetFragWebBean {
 		this.errorMessages.removeKey("updateParametersError");
 		this.errorMessages.removeKey("buttonDownloadCompoundsError");
 		this.infoMessages.removeKey("updateParametersInfo");
+		this.warningMessages.removeKey("databaseWarning");
 		//do the work
 		this.init();
 		this.beanSettingsContainer.getUserInputDataHandler().handleParametersZipFile(event.getFile(), this.infoMessages, 
@@ -360,6 +363,9 @@ public class MetFragWebBean {
 		this.filteredMetFragResultsContainer = new MetFragResultsContainer();
 		this.errorMessages = new Messages();
 		this.infoMessages = new Messages();
+		this.warningMessages = new Messages();
+		if(database.equals("ChemSpider")) this.warningMessages.setMessage("databaseWarning", "ChemSpider uses an online query which slows down the candidate retrieval.");
+		else if(database.equals("LocalSDF")) this.warningMessages.setMessage("databaseWarning", "Molecules with aromatic bond order type (4) are discarded as not yet supported by CDK.");
 		this.processedPeaklistObject = null;
 		this.beanSettingsContainer.setDatabase(database);
 		this.candidateStatistics.setShowPointLabels(false);
@@ -2913,7 +2919,15 @@ public class MetFragWebBean {
 	public boolean isInfoMessage(String id) {
 		return this.infoMessages.containsKey(id);
 	}
-	
+
+	public String getWarningMessage(String id) {
+		return this.warningMessages.getMessage(id);
+	}
+
+	public boolean isWarningMessage(String id) {
+		return this.warningMessages.containsKey(id);
+	}
+
 	/**
 	 * response to idle monitor when session is over
 	 */

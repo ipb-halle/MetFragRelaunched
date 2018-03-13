@@ -90,11 +90,12 @@ public class LocalPropertyFileDatabase extends AbstractFileDatabase {
 			int index = 0;
 			for(CSVRecord record : parser) {
 				index++;
-				String identifier = record.get(properIdentifierName);
+				String identifier = String.valueOf(index);  
+				if(record.isMapped(properIdentifierName)) identifier = record.get(properIdentifierName) + "|" + index;
 				if(identifier == null) continue;
 				identifier = identifier.trim();
 				if(identifier.equals("-") || identifier.equals("NO_MATCH")) continue;
-				ICandidate precursorCandidate = new TopDownPrecursorCandidate(record.get(properInChIName), identifier + "|" + index);
+				ICandidate precursorCandidate = new TopDownPrecursorCandidate(record.get(properInChIName), identifier);
 				keys = nameToWasFound.keySet().iterator();
 				for(String curKey : this.preparedPropertyNames) {
 					if(nameToWasFound.get(curKey)) {
@@ -111,7 +112,7 @@ public class LocalPropertyFileDatabase extends AbstractFileDatabase {
 				
 				if(!precursorCandidate.hasDefinedProperty(VariableNames.MONOISOTOPIC_MASS_NAME)) {
 					try {
-						precursorCandidate.setProperty(VariableNames.MONOISOTOPIC_MASS_NAME, precursorCandidate.getMolecularFormula().getMonoisotopicMass());
+						if(precursorCandidate.hasDefinedProperty(VariableNames.MOLECULAR_FORMULA_NAME)) precursorCandidate.setProperty(VariableNames.MONOISOTOPIC_MASS_NAME, precursorCandidate.getMolecularFormula().getMonoisotopicMass());
 					} catch (AtomTypeNotKnownFromInputListException e) {
 						continue;
 					}
@@ -127,6 +128,14 @@ public class LocalPropertyFileDatabase extends AbstractFileDatabase {
 			return;
 		}
 		throw new Exception();
+	}
+
+	public static void main(String[] args) throws Exception {
+		Settings settings = new Settings();
+		settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, "/home/cruttkie/Documents/PhD/MetFrag/debugs/emma/msready/v2.0.16-msready/Eawag_rt_inchi.csv");
+		//settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, "/tmp/test2.sdf");
+		LocalPropertyFileDatabase db = new LocalPropertyFileDatabase(settings);
+		System.out.println(db.getCandidateIdentifiers().size());
 	}
 	
 }

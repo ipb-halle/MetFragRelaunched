@@ -52,12 +52,16 @@ public class LocalSDFDatabase extends AbstractFileDatabase {
 			
 			String[] possibleIdentifierNames = {VariableNames.IDENTIFIER_NAME_3, VariableNames.IDENTIFIER_NAME_2, VariableNames.IDENTIFIER_NAME};
 			
-			IteratingSDFReader reader = new IteratingSDFReader(new java.io.FileReader(f), DefaultChemObjectBuilder.getInstance());
+			IteratingSDFReader reader = new IteratingSDFReader(new java.io.FileReader(f), DefaultChemObjectBuilder.getInstance(), true);
+			java.util.LinkedHashSet<String> properties = new java.util.LinkedHashSet<String>();
+			
 			int index = 0;
 			while (reader.hasNext()) {
 				IAtomContainer molecule = reader.next();
+				MoleculeFunctions.prepareAtomContainer(molecule, false);
 				if(molecule.getAtomCount() == 0) continue;
 				index++;
+				molecule.removeProperty("cdk:Title");
 				java.util.Map<Object, Object> props =  molecule.getProperties();
 				String identifier = String.valueOf(index);
 				for(String identifierName : possibleIdentifierNames) {
@@ -68,7 +72,6 @@ public class LocalSDFDatabase extends AbstractFileDatabase {
 				}
 				molecule = MoleculeFunctions.convertImplicitToExplicitHydrogens(molecule);
 				AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(molecule);
-
 				String[] inchiInfo = MoleculeFunctions.getInChIInfoFromAtomContainer(molecule);
 				ICandidate precursorCandidate = new TopDownPrecursorCandidate(inchiInfo[0], identifier);
 				
@@ -84,13 +87,14 @@ public class LocalSDFDatabase extends AbstractFileDatabase {
 				while (it.hasNext()) {
 					String key = (String) it.next();
 					if(!precursorCandidate.hasDefinedProperty(key)) precursorCandidate.setProperty(key, props.get(key));
+					properties.add(key);
 				}
 				
 				if(!precursorCandidate.hasDefinedProperty(VariableNames.INCHI_KEY_1_NAME)) precursorCandidate.setProperty(VariableNames.INCHI_KEY_1_NAME, inchiInfo[1].split("-")[0]);
 				if(!precursorCandidate.hasDefinedProperty(VariableNames.INCHI_KEY_2_NAME)) precursorCandidate.setProperty(VariableNames.INCHI_KEY_2_NAME, inchiInfo[1].split("-")[1]);
 				if(!precursorCandidate.hasDefinedProperty(VariableNames.MOLECULAR_FORMULA_NAME)) precursorCandidate.setProperty(VariableNames.MOLECULAR_FORMULA_NAME, inchiInfo[0].split("/")[1]);
 				if(!precursorCandidate.hasDefinedProperty(VariableNames.SMILES_NAME)) precursorCandidate.setProperty(VariableNames.SMILES_NAME, MoleculeFunctions.generateSmiles(molecule));
-				
+
 				if(!precursorCandidate.hasDefinedProperty(VariableNames.MONOISOTOPIC_MASS_NAME)) {
 					try {
 						precursorCandidate.setProperty(VariableNames.MONOISOTOPIC_MASS_NAME, precursorCandidate.getMolecularFormula().getMonoisotopicMass());
@@ -105,6 +109,16 @@ public class LocalSDFDatabase extends AbstractFileDatabase {
 				if(!this.setInChIValues(precursorCandidate)) continue;
 				this.candidates.add(precursorCandidate);
 			}
+
+			for(int i = 0; i < this.candidates.size(); i++) {
+				java.util.Iterator<String> keys = properties.iterator();
+				while(keys.hasNext()) {
+					String curKey = keys.next();
+					if(!this.candidates.get(i).hasDefinedProperty(curKey)) this.candidates.get(i).setProperty(curKey, "-");
+					if(((String)this.candidates.get(i).getProperty(curKey)).equals("")) this.candidates.get(i).setProperty(curKey, "-");
+				}
+			}
+			
 			reader.close();
 			f.delete();
 		}
@@ -135,10 +149,13 @@ public class LocalSDFDatabase extends AbstractFileDatabase {
 	
 	public static void main(String[] args) throws Exception {
 		Settings settings = new Settings();
-		settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, "/home/cruttkie/Documents/PhD/MetFrag/debugs/emma/msready/Chemical1_v2000_noNoMATCH.sdf");
-		settings.set(VariableNames.MOLECULAR_FORMULA_NAME, "C7H12ClN5");
+		settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, "/home/cruttkie/Documents/PhD/MetFrag/debugs/emma/msready/v2.0.16-msready/MetFragWeb_Parameters_sdf_2/ChemistryDashboard-Batch-Search_2018-03-03_09_08_54.sdf");
+		//settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, "/tmp/test2.sdf");
 		LocalSDFDatabase db = new LocalSDFDatabase(settings);
 		System.out.println(db.getCandidateIdentifiers().size());
+		
+		System.out.println(db.getCandidateByIdentifier(db.getCandidateIdentifiers().get(0)).getProperty(VariableNames.MOLECULAR_FORMULA_NAME));
+		
 	}
 	
 }

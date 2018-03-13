@@ -61,7 +61,7 @@ public class DefaultPrecursor implements IMolecularStructure {
 	public int getNumNodeDegreeOne() {
 		int numDegreeOne = 0;
 		for(int i = 0; i < this.precursorMolecule.getAtomCount(); i++) {
-			numDegreeOne += this.precursorMolecule.getConnectedAtomsCount(this.precursorMolecule.getAtom(i)) == 1 ? 1 : 0;
+			numDegreeOne += this.precursorMolecule.getConnectedBondsCount(this.precursorMolecule.getAtom(i)) == 1 ? 1 : 0;
 		}
 		return numDegreeOne;
 	}
@@ -69,7 +69,7 @@ public class DefaultPrecursor implements IMolecularStructure {
 	public double getMeanNodeDegree() {
 		double meanDegree = 0.0;
 		for(int i = 0; i < this.precursorMolecule.getAtomCount(); i++) {
-			meanDegree += this.precursorMolecule.getConnectedAtomsCount(this.precursorMolecule.getAtom(i));
+			meanDegree += this.precursorMolecule.getConnectedBondsCount(this.precursorMolecule.getAtom(i));
 		}
 		meanDegree /= this.precursorMolecule.getAtomCount();
 		return meanDegree;
