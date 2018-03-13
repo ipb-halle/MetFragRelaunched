@@ -387,6 +387,53 @@ html,body {
 	padding: 0 0 0 0;
 }
 
+.ui-messages-warning-detail-user {
+	margin-left: -5px;
+	margin-right: 5px;
+}
+
+.ui-messages-warning-icon-user {
+	height: 24px;
+	width: 24px;
+	/*
+	background: transparent
+		url("/MetFragWeb/javax.faces.resource/messages/messages.png.xhtml?ln=primefaces&v=4_0_0_141104&v=5.3")
+		no-repeat scroll 0% 0%;
+	background-color: transparent;
+	background-image:
+		url("/MetFragWeb/javax.faces.resource/messages/messages.png.xhtml?ln=primefaces&v=4_0_0_141104&v=5.3");
+	*/
+	background-image: url("#{resource['images/icons/messages.png']}");
+	background-color: transparent;
+	background-repeat: no-repeat;
+	background-attachment: scroll;
+	background-position: 0px -484px;
+	background-clip: border-box;
+	background-origin: padding-box;
+	background-size: auto auto;
+	display: block;
+	float: left;
+	margin-top: -8.5px;
+	margin-right: 0px;
+	margin-bottom: 0px;
+	margin-left: 0px;
+	padding: 0px;
+	padding-top: 0px;
+	padding-right: 0px;
+	padding-bottom: 0px;
+	padding-left: 0px;
+	position: relative;
+}
+
+.ui-messages-warning-user {
+	font-size: 0.9em;
+	color: #c09853;
+	background-color: #fcf8e3;
+	border-color: #fcf8e3;
+	margin: -9px 0 -9px 0;
+	padding: 0 0 0 0;
+}
+
 .firstColumnDatabaseButtons {
 	width: 50%;
 	max-width: 50%;

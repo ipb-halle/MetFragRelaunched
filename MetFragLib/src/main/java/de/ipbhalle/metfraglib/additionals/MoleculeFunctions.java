@@ -312,7 +312,7 @@ public class MoleculeFunctions {
 			currentAtom.setImplicitHydrogenCount(numberHydrogens);
 		}
 		for(IAtom atom : hydrogenAtoms) {
-			molecule.removeAtomAndConnectedElectronContainers(atom);
+			molecule.removeAtom(atom);
 		}
 	}
 	
@@ -377,7 +377,7 @@ public class MoleculeFunctions {
 			currentAtom.setImplicitHydrogenCount(numberHydrogens);
 		}
 		for(IAtom atom : hydrogenAtoms) {
-			molecule.removeAtomAndConnectedElectronContainers(atom);
+			molecule.removeAtom(atom);
 		}
 		return molecule;
 	}
