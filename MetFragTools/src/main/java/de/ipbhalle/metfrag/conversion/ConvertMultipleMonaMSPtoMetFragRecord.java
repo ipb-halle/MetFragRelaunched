@@ -242,6 +242,7 @@ public class ConvertMultipleMonaMSPtoMetFragRecord {
 			else if(line.startsWith("InChIKey:")) entry.inchikey = line.split("\\s+")[1].trim();
 			else if(line.startsWith("Formula:")) entry.formula = line.split("\\s+")[1].trim();
 			else if(line.startsWith("PrecursorMZ:")) entry.ionizedmass = line.split("\\s+")[1].trim();
+			else if(line.startsWith("ExactMass:")) entry.mass = line.split("\\s+")[1].trim();
 			else if(line.startsWith("Comments:")) {
 				line = line.replaceFirst("Comments:\\s+", "");
 				String[] tmp = line.split("\"\\s+\"");
@@ -249,6 +250,7 @@ public class ConvertMultipleMonaMSPtoMetFragRecord {
 					String cur = tmp[k].replaceAll("\"", "");
 					if(cur.startsWith("precursor type=")) {
 						entry.ionmode = cur.split("=")[1].trim();
+						entry.ionmode = correctIonMode(entry.ionmode);
 						if(!de.ipbhalle.metfraglib.parameter.Constants.ADDUCT_TYPES.contains(entry.ionmode)) {
 							goToNextEmptyLine(breader);
 							return null;
@@ -312,10 +314,23 @@ public class ConvertMultipleMonaMSPtoMetFragRecord {
 				}
 				
 				return entry;
+				
 			}
 		}
 		endOfFile = true;
 		return null;
+	}
+	
+	public static String correctIonMode(String mode) {
+		if(de.ipbhalle.metfraglib.parameter.Constants.ADDUCT_TYPES.contains(mode)) return mode;
+		if(mode.contains("[")) {
+			if(de.ipbhalle.metfraglib.parameter.Constants.ADDUCT_TYPES.contains(mode + "+")) return mode + "+";
+			if(de.ipbhalle.metfraglib.parameter.Constants.ADDUCT_TYPES.contains(mode + "-")) return mode + "-";
+		}
+		if(mode.endsWith("+") || mode.endsWith("-")) mode = mode.substring(0, mode.length() - 1);
+		if(de.ipbhalle.metfraglib.parameter.Constants.ADDUCT_TYPES.contains("[" + mode + "]+")) return "[" + mode + "]+";
+		if(de.ipbhalle.metfraglib.parameter.Constants.ADDUCT_TYPES.contains("[" + mode + "]-")) return "[" + mode + "]-";
+		return mode;
 	}
 	
 	public static void goToNextEmptyLine(BufferedReader breader) {
@@ -456,6 +471,7 @@ public class ConvertMultipleMonaMSPtoMetFragRecord {
 			lines += "UseSmiles = True\n";
 			lines += "LocalDatabasePath = /scratch/cruttkie/fingerprint_training/casmi/results/candidates/" + this.sampleName + ".psv\n";
 			lines += "IonizedPrecursorMass = " + this.ionizedmass + "\n";
+			lines += "NeutralPrecursorMass = " + this.mass + "\n";
 			lines += "NeutralPrecursorMolecularFormula = " + this.formula + "\n";
 			String ionType = this.ionmode;
 			lines += "PrecursorIonType = " + ionType + "\n";
