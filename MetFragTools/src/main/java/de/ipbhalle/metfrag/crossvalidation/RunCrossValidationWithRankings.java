@@ -580,7 +580,7 @@ public class RunCrossValidationWithRankings {
 		BufferedWriter bwriter;
 		try {
 			bwriter = new BufferedWriter(new FileWriter(new File(output_file)));
-			bwriter.write("query foldnum rank bc wc tc rrp mfonly bcmfonly");
+			bwriter.write("query foldnum rank bc wc tc rrp mfonly bcmfonly avgrank");
 			bwriter.newLine();
 			for(int i = 0; i < query_names.length; i++) {
 				bwriter.write(query_names[i] + " " + folds[i] + " " + rankings_testing[i] + " " + better_cands_testing[i] 
