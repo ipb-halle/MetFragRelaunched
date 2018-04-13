@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.concurrent.ExecutionException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -35,12 +37,14 @@ public class MetFragRestController {
 	private Logger logger = Logger.getLogger(MetFragRestController.class);
 	private static final String RESULTS_FOLDER = System.getProperty("java.io.tmpdir");
 	private static final String STATUS_FILE_NAME = "status.txt";
+	private static final String HOST_FILE_NAME = "host.txt";
 
 	@RequestMapping("/process")
 	@ResponseBody
 	public String process(@RequestBody ProcessArguments args)
 			throws InterruptedException, ExecutionException, IOException {
 		File resFolder = Files.createTempDir();
+		String processid = resFolder.getName();
 		String returnMsg = "";
 		try {
 			MetFragGlobalSettings settings = args.getSettingsObject(resFolder);
@@ -51,7 +55,8 @@ public class MetFragRestController {
 			}
 			logger.info("Storing in " + settings.get(VariableNames.STORE_RESULTS_PATH_NAME));
 			CombinedMetFragProcess mp = new CombinedMetFragProcess(settings);
-			this.writeStatus("RUNNING", resFolder.getName());
+			this.writeStatus("RUNNING", processid);
+			this.writeHost(processid);
 			new Thread(() -> {
 				System.out.println("staring run");
 				try {
@@ -60,19 +65,18 @@ public class MetFragRestController {
 					e.printStackTrace();
 					return;
 				}
-			}, "MyThread-" + (String) settings.get(VariableNames.SAMPLE_NAME)).start();
-			returnMsg = (String) settings.get(VariableNames.SAMPLE_NAME);
-			// return (String)settings.get(VariableNames.SAMPLE_NAME);
+			}, "MyThread-" + processid).start();
+			returnMsg = processid;
 		} catch (ParameterNotKnownException e) {
 			e.printStackTrace();
-			this.writeStatus("ERROR", resFolder.getName());
+			this.writeStatus("ERROR", processid);
 			return "Error: Parameter not known";
 		} catch (IOException e) {
 			e.printStackTrace();
 			return "Error: Could not write status";
 		} catch (Exception e) {
 			e.printStackTrace();
-			this.writeStatus("ERROR", resFolder.getName());
+			this.writeStatus("ERROR", processid);
 			return "Error: Unknown error";
 		}
 		return returnMsg;
@@ -85,6 +89,18 @@ public class MetFragRestController {
 				|| (statusfile.exists() && statusfile.canWrite())) {
 			BufferedWriter bwriter = new BufferedWriter(new FileWriter(statusfile));
 			bwriter.write(status);
+			bwriter.newLine();
+			bwriter.close();
+		}
+	}
+
+	private void writeHost(String processid) throws IOException {
+		File hostfile = new File(
+				this.getResultFolderName(processid) + Constants.OS_SPECIFIC_FILE_SEPARATOR + HOST_FILE_NAME);
+		if ((!hostfile.exists() && new File(this.getResultFolderName(processid)).canWrite())
+				|| (hostfile.exists() && hostfile.canWrite())) {
+			BufferedWriter bwriter = new BufferedWriter(new FileWriter(hostfile));
+			bwriter.write(this.getServerName());
 			bwriter.newLine();
 			bwriter.close();
 		}
@@ -107,6 +123,23 @@ public class MetFragRestController {
     	return "ERROR - could not read status";
     }
 
+	private String readHost(String processid) {
+    	File hostfile = new File(this.getResultFolderName(processid) + Constants.OS_SPECIFIC_FILE_SEPARATOR + HOST_FILE_NAME);
+    	if(hostfile.canRead()) {
+    		String host = "";
+    		try {
+				BufferedReader breader = new BufferedReader(new FileReader(hostfile));
+				host = breader.readLine();
+				breader.close();
+	    		return host;
+			} catch (IOException e) {
+				e.printStackTrace();
+				return "ERROR - could not read host";
+			}
+    	}
+    	return "ERROR - could not read host";
+    }
+
 	private String getResultFileName(String processid) {
 		return this.getResultFolderName(processid) + Constants.OS_SPECIFIC_FILE_SEPARATOR + processid + ".csv";
 	}
@@ -121,7 +154,16 @@ public class MetFragRestController {
 			throws InterruptedException, ExecutionException {
 		if (args == null || args.getProcessid() == null)
 			return "Error: No processid given.";
-		return this.readStatus(args.getProcessid());
+		return this.getServerName() + " " + this.readStatus(args.getProcessid());
+	}
+
+	@RequestMapping("/host")
+	@ResponseBody
+	public String host(@RequestBody StatusArguments args)
+			throws InterruptedException, ExecutionException {
+		if (args == null || args.getProcessid() == null)
+			return "Error: No processid given.";
+		return this.readHost(args.getProcessid());
 	}
 
 	@RequestMapping("/fetch")
@@ -170,6 +212,17 @@ public class MetFragRestController {
 	    }        
 	}
 
+	public String getServerName() {
+        String hostname = "";
+        try {
+        	hostname = InetAddress.getLocalHost().getHostName();
+        } catch (UnknownHostException e) {
+        	e.printStackTrace();
+        	return "";
+        }
+        return hostname;
+	}
+	
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(MetFragRestController.class, args);
 	}
