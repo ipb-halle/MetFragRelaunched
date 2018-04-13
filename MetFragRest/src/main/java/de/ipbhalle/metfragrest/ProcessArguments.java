@@ -21,6 +21,15 @@ public class ProcessArguments {
 	private String precursoriontype;
 	private String peakliststring;
 	private String metfragdatabasetype;
+	private String maximumtreedepth;
+	private String samplename;
+	// local database
+	private String localmetchemdatabase; 
+	private String localmetchemdatabaseportnumber; 
+	private String localmetchemdatabaseserverip;
+	private String localmetchemdatabaseuser; 
+	private String localmetchemdatabasepassword;
+	private String localmetchemdatabaselibrary;
 	
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
@@ -34,7 +43,17 @@ public class ProcessArguments {
 		if(precursorionmode != null) builder.append("precursorionmode=" + precursorionmode + "\n");
 		if(precursoriontype != null) builder.append("precursoriontype=" + precursoriontype + "\n");								
 		if(peakliststring != null) builder.append("peakliststring=" + peakliststring + "\n");									
-		if(metfragdatabasetype != null) builder.append("metfragdatabasetype=" + metfragdatabasetype + "\n");							
+		if(metfragdatabasetype != null) builder.append("metfragdatabasetype=" + metfragdatabasetype + "\n");
+		if(maximumtreedepth != null) builder.append("maximumtreedepth=" + maximumtreedepth + "\n");
+		if(samplename != null) builder.append("samplename=" + samplename + "\n");
+		// local database
+		if(localmetchemdatabase != null) builder.append("localmetchemdatabase=" + localmetchemdatabase + "\n");					
+		if(localmetchemdatabaseportnumber != null) builder.append("localmetchemdatabaseportnumber=" + localmetchemdatabaseportnumber + "\n");					
+		if(localmetchemdatabaseserverip != null) builder.append("localmetchemdatabaseserverip=" + localmetchemdatabaseserverip + "\n");					
+		if(localmetchemdatabaseuser != null) builder.append("localmetchemdatabaseuser=" + localmetchemdatabaseuser + "\n");					
+		if(localmetchemdatabasepassword != null) builder.append("localmetchemdatabasepassword=" + localmetchemdatabasepassword + "\n");		
+		if(localmetchemdatabaselibrary != null) builder.append("localmetchemdatabaselibrary=" + localmetchemdatabaselibrary + "\n");		
+		
 		return builder.toString();
 	}
 	
@@ -62,6 +81,24 @@ public class ProcessArguments {
 			settings.set(VariableNames.PEAK_LIST_STRING_NAME, ParameterDataTypes.getParameter(peakliststring, VariableNames.PEAK_LIST_STRING_NAME));
 		if(metfragdatabasetype != null)
 			settings.set(VariableNames.METFRAG_DATABASE_TYPE_NAME, ParameterDataTypes.getParameter(metfragdatabasetype, VariableNames.METFRAG_DATABASE_TYPE_NAME));
+		if(maximumtreedepth != null)
+			settings.set(VariableNames.MAXIMUM_TREE_DEPTH_NAME, ParameterDataTypes.getParameter(maximumtreedepth, VariableNames.MAXIMUM_TREE_DEPTH_NAME));
+		if(samplename != null)
+			settings.set(VariableNames.SAMPLE_NAME, ParameterDataTypes.getParameter(samplename, VariableNames.SAMPLE_NAME));
+		// local database 
+		if(localmetchemdatabase != null)
+			settings.set(VariableNames.LOCAL_METCHEM_DATABASE_NAME, ParameterDataTypes.getParameter(localmetchemdatabase, VariableNames.LOCAL_METCHEM_DATABASE_NAME));
+		if(localmetchemdatabaseportnumber != null)
+			settings.set(VariableNames.LOCAL_METCHEM_DATABASE_PORT_NUMBER_NAME, ParameterDataTypes.getParameter(localmetchemdatabaseportnumber, VariableNames.LOCAL_METCHEM_DATABASE_PORT_NUMBER_NAME));
+		if(localmetchemdatabaseserverip != null)
+			settings.set(VariableNames.LOCAL_METCHEM_DATABASE_SERVER_IP_NAME, ParameterDataTypes.getParameter(localmetchemdatabaseserverip, VariableNames.LOCAL_METCHEM_DATABASE_SERVER_IP_NAME));
+		if(localmetchemdatabaseuser != null)
+			settings.set(VariableNames.LOCAL_METCHEM_DATABASE_USER_NAME, ParameterDataTypes.getParameter(localmetchemdatabaseuser, VariableNames.LOCAL_METCHEM_DATABASE_USER_NAME));
+		if(localmetchemdatabasepassword != null)
+			settings.set(VariableNames.LOCAL_METCHEM_DATABASE_PASSWORD_NAME, ParameterDataTypes.getParameter(localmetchemdatabasepassword, VariableNames.LOCAL_METCHEM_DATABASE_PASSWORD_NAME));
+		if(localmetchemdatabaselibrary != null)
+			settings.set(VariableNames.LOCAL_METCHEM_DATABASE_LIBRARY_NAME, ParameterDataTypes.getParameter(localmetchemdatabaselibrary, VariableNames.LOCAL_METCHEM_DATABASE_LIBRARY_NAME));
+		
 		
 		this.addAdditionalParameters(settings, resFolder);
 		return settings;
@@ -70,7 +107,7 @@ public class ProcessArguments {
 	private void addAdditionalParameters(MetFragGlobalSettings settings, File resFolder) {
 		settings.set(VariableNames.METFRAG_PEAK_LIST_READER_NAME, FilteredStringTandemMassPeakListReader.class.getName());
 		settings.set(VariableNames.STORE_RESULTS_PATH_NAME, resFolder.getAbsolutePath());
-		settings.set(VariableNames.SAMPLE_NAME, resFolder.getName());
+		if(!settings.containsKey(VariableNames.SAMPLE_NAME)) settings.set(VariableNames.SAMPLE_NAME, resFolder.getName());
 		settings.set(VariableNames.METFRAG_CANDIDATE_WRITER_NAME, new String[] {"CSV"});
 	}
 	
@@ -160,6 +197,70 @@ public class ProcessArguments {
 
 	public void setMetfragdatabasetype(String metfragdatabasetype) {
 		this.metfragdatabasetype = metfragdatabasetype;
+	}
+
+	public String getLocalmetchemdatabase() {
+		return localmetchemdatabase;
+	}
+
+	public void setLocalmetchemdatabase(String localmetchemdatabase) {
+		this.localmetchemdatabase = localmetchemdatabase;
+	}
+
+	public String getLocalmetchemdatabaseportnumber() {
+		return localmetchemdatabaseportnumber;
+	}
+
+	public void setLocalmetchemdatabaseportnumber(String localmetchemdatabaseportnumber) {
+		this.localmetchemdatabaseportnumber = localmetchemdatabaseportnumber;
+	}
+
+	public String getLocalmetchemdatabaseserverip() {
+		return localmetchemdatabaseserverip;
+	}
+
+	public void setLocalmetchemdatabaseserverip(String localmetchemdatabaseserverip) {
+		this.localmetchemdatabaseserverip = localmetchemdatabaseserverip;
+	}
+
+	public String getLocalmetchemdatabaseuser() {
+		return localmetchemdatabaseuser;
+	}
+
+	public void setLocalmetchemdatabaseuser(String localmetchemdatabaseuser) {
+		this.localmetchemdatabaseuser = localmetchemdatabaseuser;
+	}
+
+	public String getLocalmetchemdatabasepassword() {
+		return localmetchemdatabasepassword;
+	}
+
+	public void setLocalmetchemdatabasepassword(String localmetchemdatabasepassword) {
+		this.localmetchemdatabasepassword = localmetchemdatabasepassword;
+	}
+
+	public String getLocalmetchemdatabaselibrary() {
+		return localmetchemdatabaselibrary;
+	}
+
+	public void setLocalmetchemdatabaselibrary(String localmetchemdatabaselibrary) {
+		this.localmetchemdatabaselibrary = localmetchemdatabaselibrary;
+	}
+
+	public String getMaximumtreedepth() {
+		return maximumtreedepth;
+	}
+
+	public void setMaximumtreedepth(String maximumtreedepth) {
+		this.maximumtreedepth = maximumtreedepth;
+	}
+
+	public String getSamplename() {
+		return samplename;
+	}
+
+	public void setSamplename(String samplename) {
+		this.samplename = samplename;
 	}
 	
 }
