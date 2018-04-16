@@ -273,4 +273,14 @@ public class AvailableParameters {
 	public java.util.List<SelectItem> getSubstructureInformationSmarts() {
 		return this.substructureInformationSmarts;
 	}
+	
+	public void print() {
+		for(int i = 0; i < this.preservedCompoundScoreProperties.size(); i++)
+			System.out.print("\"" + this.preservedCompoundScoreProperties.get(i) + "\", ");
+	}
+	
+	public static void main(String[] args) {
+		AvailableParameters a = new AvailableParameters();
+		a.print();
+	}
 }
