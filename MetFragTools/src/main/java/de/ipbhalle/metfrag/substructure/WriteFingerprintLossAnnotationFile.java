@@ -58,6 +58,10 @@ public class WriteFingerprintLossAnnotationFile {
 		
 		ArrayList<Double> peakMassesSorted = new ArrayList<Double>();
 		ArrayList<String> fingerprintsSorted = new ArrayList<String>();
+
+		StringBuilder nonExplainedPeaksString = new StringBuilder();
+		ArrayList<Double> nonExplainedPeaks = new ArrayList<Double>();
+		ArrayList<Integer> peakMassCounts = new ArrayList<Integer>();
 		
 		Settings settings = new Settings();
 		settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, filename);
@@ -75,7 +79,6 @@ public class WriteFingerprintLossAnnotationFile {
 		
 		java.util.ArrayList<String> ids = db.getCandidateIdentifiers();
 		CandidateList candidateList = db.getCandidateByIdentifier(ids);
-		System.out.println(ids.size());
 		//SmilesOfExplPeaks
 		for(int i = 0; i < candidateList.getNumberElements(); i++) {
 			ICandidate candidate = candidateList.getElement(i);
@@ -97,11 +100,40 @@ public class WriteFingerprintLossAnnotationFile {
 					continue;
 				}
 			}
+
+			String nonExplMasses = (String)candidate.getProperty("NonExplainedLosses");
+			if(!nonExplMasses.equals("NA")) {
+				String[] tmp = nonExplMasses.split(";");
+				for(int k = 0; k < tmp.length; k++) {
+					double mass = Double.parseDouble(tmp[k]);
+					if(mass > 2) {
+						addMassSorted(mass, peakMassCounts, nonExplainedPeaks);
+					}
+				}
+			}
+			
 		}
 
+		if(nonExplainedPeaks.size() == 0) nonExplainedPeaksString.append("NA");
+		else {
+			nonExplainedPeaksString.append(nonExplainedPeaks.get(0));
+			if(peakMassCounts.get(0) > 1) {
+				nonExplainedPeaksString.append(":");
+				nonExplainedPeaksString.append(peakMassCounts.get(0));
+			}
+			for(int i = 1; i < nonExplainedPeaks.size(); i++) {
+				nonExplainedPeaksString.append(";");
+				nonExplainedPeaksString.append(nonExplainedPeaks.get(i));
+				if(peakMassCounts.get(i) > 1) {
+					nonExplainedPeaksString.append(":");
+					nonExplainedPeaksString.append(peakMassCounts.get(i));
+				}
+			}
+		}
+		
 		MassToFingerprintGroupListCollection peakToFingerprintGroupListCollection = new MassToFingerprintGroupListCollection();
 		//print(peakMassesSorted, fingerprintsSorted);
-		System.out.println(peakMassesSorted.size() + " peak fingerprint pairs");
+		System.out.println(peakMassesSorted.size() + " loss fingerprint pairs");
 		
 		Integer id = 0;
 		Hashtable<Integer, ArrayList<Double>> grouplistid_to_masses = new Hashtable<Integer, ArrayList<Double>>();
@@ -205,8 +237,10 @@ public class WriteFingerprintLossAnnotationFile {
 			if(output == null) peakToFingerprintGroupListCollection.print();
 			else {
 				BufferedWriter bwriter = new BufferedWriter(new FileWriter(new File(output + "_1")));
+				bwriter.write(nonExplainedPeaksString.toString());
+				bwriter.newLine();
 				bwriter.write(peakToFingerprintGroupListCollection.toString());
-				bwriter.write("SUMMARY " + getNumberElements(peakToFingerprintGroupListCollection) + " " + getNumberOccurences(peakToFingerprintGroupListCollection));
+				bwriter.write("SUMMARY " + getNumberMatchedElements(peakToFingerprintGroupListCollection) + " " + getNumberOccurences(peakToFingerprintGroupListCollection) + " " + getNumberNonMatchedElements(peakToFingerprintGroupListCollection) + " " + getNumberElements(peakToFingerprintGroupListCollection));
 				bwriter.newLine();
 				bwriter.close();
 			}
@@ -216,8 +250,10 @@ public class WriteFingerprintLossAnnotationFile {
 			if(output == null) peakToFingerprintGroupListCollection.print();
 			else {
 				BufferedWriter bwriter = new BufferedWriter(new FileWriter(new File(output + "_2")));
+				bwriter.write(nonExplainedPeaksString.toString());
+				bwriter.newLine();
 				bwriter.write(peakToFingerprintGroupListCollection.toString());
-				bwriter.write("SUMMARY " + getNumberElements(peakToFingerprintGroupListCollection) + " " + getNumberOccurences(peakToFingerprintGroupListCollection));
+				bwriter.write("SUMMARY " + getNumberMatchedElements(peakToFingerprintGroupListCollection) + " " + getNumberOccurences(peakToFingerprintGroupListCollection) + " " + getNumberNonMatchedElements(peakToFingerprintGroupListCollection) + " " + getNumberElements(peakToFingerprintGroupListCollection));
 				bwriter.newLine();
 				bwriter.close();
 			}
@@ -227,8 +263,10 @@ public class WriteFingerprintLossAnnotationFile {
 			if(output == null) peakToFingerprintGroupListCollection.print();
 			else {
 				BufferedWriter bwriter = new BufferedWriter(new FileWriter(new File(output + "_3")));
+				bwriter.write(nonExplainedPeaksString.toString());
+				bwriter.newLine();
 				bwriter.write(peakToFingerprintGroupListCollection.toString());
-				bwriter.write("SUMMARY " + getNumberElements(peakToFingerprintGroupListCollection) + " " + getNumberOccurences(peakToFingerprintGroupListCollection));
+				bwriter.write("SUMMARY " + getNumberMatchedElements(peakToFingerprintGroupListCollection) + " " + getNumberOccurences(peakToFingerprintGroupListCollection) + " " + getNumberNonMatchedElements(peakToFingerprintGroupListCollection) + " " + getNumberElements(peakToFingerprintGroupListCollection));
 				bwriter.newLine();
 				bwriter.close();
 			}
@@ -239,8 +277,10 @@ public class WriteFingerprintLossAnnotationFile {
 			else {
 				System.out.println("writing to output");
 				BufferedWriter bwriter = new BufferedWriter(new FileWriter(new File(output)));
+				bwriter.write(nonExplainedPeaksString.toString());
+				bwriter.newLine();
 				bwriter.write(peakToFingerprintGroupListCollection.toString());
-				bwriter.write("SUMMARY " + getNumberElements(peakToFingerprintGroupListCollection) + " " + getNumberOccurences(peakToFingerprintGroupListCollection));
+				bwriter.write("SUMMARY " + getNumberMatchedElements(peakToFingerprintGroupListCollection) + " " + getNumberOccurences(peakToFingerprintGroupListCollection) + " " + getNumberNonMatchedElements(peakToFingerprintGroupListCollection) + " " + getNumberElements(peakToFingerprintGroupListCollection));
 				bwriter.newLine();
 				bwriter.close();
 			}
@@ -255,7 +295,41 @@ public class WriteFingerprintLossAnnotationFile {
 		}
 		return count;
 	}
+
+	public static int getNumberMatchedElements(MassToFingerprintGroupListCollection peakToFingerprintGroupListCollections) {
+		int count = 0;
+		for(int i = 0; i < peakToFingerprintGroupListCollections.getNumberElements(); i++) {
+			MassToFingerprintGroupList groupList = peakToFingerprintGroupListCollections.getElement(i);
+			for(int k = 0; k < groupList.getNumberElements(); k++) 
+				if(groupList.getElement(k).getFingerprint().getSize() != 1) count ++;
+		}
+		return count;
+	}
 	
+	public static void addMassSorted(Double mass, ArrayList<Integer> counts, ArrayList<Double> masses) {
+		int index = 0;
+		while(index < masses.size()) {
+			int comp = Double.compare(mass, masses.get(index));
+			if(comp > 0) index++;
+			else if(comp == 0) {
+				counts.set(index, counts.get(index) + 1);
+				return;
+			} else break;
+		}
+		masses.add(index, mass);
+		counts.add(index, 1);
+	}
+	
+	public static int getNumberNonMatchedElements(MassToFingerprintGroupListCollection peakToFingerprintGroupListCollections) {
+		int count = 0;
+		for(int i = 0; i < peakToFingerprintGroupListCollections.getNumberElements(); i++) {
+			MassToFingerprintGroupList groupList = peakToFingerprintGroupListCollections.getElement(i);
+			for(int k = 0; k < groupList.getNumberElements(); k++) 
+				if(groupList.getElement(k).getFingerprint().getSize() == 1) count ++;
+		}
+		return count;
+	}
+
 	public static void addMass(Hashtable<Integer, ArrayList<Double>> grouplistid_to_masses, Integer id, double mass) {
 		if(grouplistid_to_masses.containsKey(id) && grouplistid_to_masses.get(id) != null) {
 			grouplistid_to_masses.get(id).add(mass);

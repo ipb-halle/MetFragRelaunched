@@ -48,7 +48,7 @@ public class AutomatedPeakFingerprintAnnotationScore extends AbstractScore {
 		// get foreground fingerprint observations (m_f_observed)
 		java.util.ArrayList<Double> matchMasses = new java.util.ArrayList<Double>();
 		java.util.ArrayList<Double> matchProb = new java.util.ArrayList<Double>();
-		java.util.ArrayList<Integer> matchType = new java.util.ArrayList<Integer>(); // found - 1; alpha - 2; beta - 3
+		java.util.ArrayList<Integer> matchType = new java.util.ArrayList<Integer>(); // alpha seen - 1; alpha unseen - 2; beta seen - 3; beta unseen - 4
 		// get foreground fingerprint observations (m_f_observed)
 		for(int i = 0; i < peakToFingerprintGroupListCollection.getNumberElements(); i++) {
 			// get f_m_observed

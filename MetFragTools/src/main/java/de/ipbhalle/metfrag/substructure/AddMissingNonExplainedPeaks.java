@@ -1,4 +1,4 @@
-package de.ipbhalle.metfrag.substructure4;
+package de.ipbhalle.metfrag.substructure;
 
 import java.io.File;
 import java.util.ArrayList;
