@@ -57,7 +57,7 @@ public class AutomatedPeakFingerprintAnnotationScore extends AbstractScore {
 			MassFingerprintMatch currentMatch = getMatchByMass(peakMatchList, currentMass);
 			if(currentMatch == null) {
 				matchProb.add(peakToFingerprintGroupList.getBetaProb());
-				matchType.add(3);
+				matchType.add(4);
 				matchMasses.add(currentMass);
 				this.value += Math.log(peakToFingerprintGroupList.getBetaProb());
 			} else {
@@ -70,23 +70,29 @@ public class AutomatedPeakFingerprintAnnotationScore extends AbstractScore {
 					matches++;
 					this.value += Math.log(matching_prob);
 					matchProb.add(matching_prob);
-					matchType.add(1);
 					matchMasses.add(currentMass);
+					if(currentFingerprint.getSize() != 1) matchType.add(1);
+					else matchType.add(3);
 				}
 				else {
-					this.value += Math.log(peakToFingerprintGroupList.getAlphaProb());
-					matchProb.add(peakToFingerprintGroupList.getAlphaProb());
-					matchType.add(2);
 					matchMasses.add(currentMass);
+					if(currentFingerprint.getSize() != 1) {
+						this.value += Math.log(peakToFingerprintGroupList.getAlphaProb());
+						matchProb.add(peakToFingerprintGroupList.getAlphaProb());
+						matchType.add(2);
+					}
+					else {
+						this.value += Math.log(peakToFingerprintGroupList.getBetaProb());
+						matchProb.add(peakToFingerprintGroupList.getBetaProb());
+						matchType.add(4);
+					}
 				}
 			}
 		}
 		if(peakToFingerprintGroupListCollection.getNumberElements() == 0) this.value = 0.0;
-
 		this.candidate.setProperty("AutomatedPeakFingerprintAnnotationScore_Matches", matches);
 		this.candidate.setProperty("AutomatedPeakFingerprintAnnotationScore", this.value);
 		this.candidate.setProperty("AutomatedPeakFingerprintAnnotationScore_Probtypes", this.getProbTypeString(matchProb, matchType, matchMasses));
-		
 		this.candidate.removeProperty("PeakMatchList");
  	}
 	

@@ -83,7 +83,7 @@ public class PreCalculateScoreValuesFromResultFilePeakLossThreadFP {
 
 		int numberThreads = Integer.parseInt(argsHash.get("threads"));
 		String fingerprinttype = (String) argsHash.get("fingerprinttype");
-
+		
 		File _resfolder = new File(resfolder);
 		File _paramfolder = new File(paramfolder);
 
@@ -311,7 +311,6 @@ public class PreCalculateScoreValuesFromResultFilePeakLossThreadFP {
 					MassFingerprintMatch match = new MassFingerprintMatch(Double.parseDouble(tmp1[0]), MoleculeFunctions.stringToFastBitArray(tmp1[1]));
 					matchlist.add(match);
 				}
-
 				currentCandidate.setProperty("PeakMatchList", matchlist);
 				for (int j = 0; j < matchlist.size(); j++) {
 					MassFingerprintMatch match = matchlist.get(j);
@@ -336,9 +335,7 @@ public class PreCalculateScoreValuesFromResultFilePeakLossThreadFP {
 			double f_unseen_matched = peakMassToFingerprints.getOverallMatchedSize(); // f_u
 			double f_unseen_non_matched = peakMassToFingerprints.getOverallNonMatchedSize(); // f_u
 			double sumFingerprintFrequencies = (double) settings.get(VariableNames.PEAK_FINGERPRINT_DENOMINATOR_COUNT_NAME); // \sum_N
-
-			System.out.println(f_unseen_matched);
-			System.out.println(f_unseen_non_matched);													// 1
+													// 1
 			// set value for denominator of P(f,m)
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.append("sumFingerprintFrequencies " + sumFingerprintFrequencies + "\n");
@@ -402,6 +399,7 @@ public class PreCalculateScoreValuesFromResultFilePeakLossThreadFP {
 						fpsBuilder.append(":0");
 					}
 					for(int l = 1; l < tmp.length; l++) {
+						fpsBuilder.append(";");
 						fpsBuilder.append(tmp[l]);
 						fpsBuilder.append(":0");
 					}
@@ -522,8 +520,7 @@ public class PreCalculateScoreValuesFromResultFilePeakLossThreadFP {
 			StringBuilder matchProbTypes = new StringBuilder();
 			for (int i = 0; i < peakToFingerprintGroupListCollection.getNumberElements(); i++) {
 				// get f_m_observed
-				MassToFingerprintGroupList peakToFingerprintGroupList = peakToFingerprintGroupListCollection
-						.getElement(i);
+				MassToFingerprintGroupList peakToFingerprintGroupList = peakToFingerprintGroupListCollection.getElement(i);
 				Double currentMass = peakToFingerprintGroupList.getPeakmz();
 				MassFingerprintMatch currentMatch = getMatchByMass(matchlist, currentMass);
 				// (fingerprintToMasses.getSize(currentFingerprint));
