@@ -500,8 +500,7 @@ public class PostCalculateScoreValuesFromResultFilePeakLossThreadFP {
 			int matches = 0;
 			java.util.Vector<Double> peakMasses = new java.util.Vector<Double>();
 			java.util.Vector<String> peakProbTypes = new java.util.Vector<String>();
-			this.readMassToProbType((String) candidate.getProperty("AutomatedPeakFingerprintAnnotationScore_Probtypes"),
-					peakMasses, peakProbTypes);
+			this.readMassToProbType((String) candidate.getProperty("AutomatedPeakFingerprintAnnotationScore_Probtypes"), peakMasses, peakProbTypes);
 			ArrayList<Double> matchMasses = new ArrayList<Double>();
 			ArrayList<Double> matchProb = new ArrayList<Double>();
 			ArrayList<Integer> matchType = new ArrayList<Integer>(); 	// alpha seen -
@@ -552,7 +551,6 @@ public class PostCalculateScoreValuesFromResultFilePeakLossThreadFP {
 					}
 				}
 			}
-
 			candidate.setProperty("AutomatedPeakFingerprintAnnotationScore_Matches", matches);
 			candidate.setProperty("AutomatedPeakFingerprintAnnotationScore", value);
 			candidate.setProperty("AutomatedPeakFingerprintAnnotationScore_Probtypes", getProbTypeString(matchProb, matchType, matchMasses));
@@ -620,11 +618,9 @@ public class PostCalculateScoreValuesFromResultFilePeakLossThreadFP {
 					}
 				}
 			}
-
 			candidate.setProperty("AutomatedLossFingerprintAnnotationScore_Matches", matches);
 			candidate.setProperty("AutomatedLossFingerprintAnnotationScore", value);
-			candidate.setProperty("AutomatedLossFingerprintAnnotationScore_Probtypes",
-					getProbTypeString(matchProb, matchType, matchMasses));
+			candidate.setProperty("AutomatedLossFingerprintAnnotationScore_Probtypes", getProbTypeString(matchProb, matchType, matchMasses));
 		}
 		
 		protected Double findMatchingLossMass(Object[] masses, Double mass) {

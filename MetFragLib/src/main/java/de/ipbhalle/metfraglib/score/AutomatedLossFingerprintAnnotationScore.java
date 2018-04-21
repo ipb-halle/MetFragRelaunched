@@ -67,25 +67,24 @@ public class AutomatedLossFingerprintAnnotationScore extends AbstractScore {
 				matches++;
 				this.value += Math.log(matching_prob);
 				matchProb.add(matching_prob);
-				matchType.add(1);
+				if(currentFingerprint.getSize() != 1) matchType.add(1);
+				else matchType.add(3);
 				matchMasses.add(currentMatch.getMass());
 			}
 			else {
-				this.value += Math.log(lossToFingerprintGroupList.getAlphaProb());
-				matchProb.add(lossToFingerprintGroupList.getAlphaProb());
-				matchType.add(2);
 				matchMasses.add(currentMatch.getMass());
+				if(currentFingerprint.getSize() != 1) {
+					this.value += Math.log(lossToFingerprintGroupList.getAlphaProb());
+					matchProb.add(lossToFingerprintGroupList.getAlphaProb());
+					matchType.add(2);
+				}
+				else {
+					this.value += Math.log(lossToFingerprintGroupList.getBetaProb());
+					matchProb.add(lossToFingerprintGroupList.getBetaProb());
+					matchType.add(4);
+				}
 			}
 		}
-		for(int i = 0; i < lossMassesFound.size(); i++) {
-			Double currentMass = (Double)lossMassesFound.get(i);
-			MassToFingerprintGroupList lossToFingerprintGroupList = lossToFingerprintGroupListCollection.getElementByPeak(currentMass, mzppm, mzabs);
-			matchProb.add(lossToFingerprintGroupList.getBetaProb());
-			matchType.add(3);
-			matchMasses.add(currentMass);
-			this.value += Math.log(lossToFingerprintGroupList.getBetaProb());
-		}
-		
 		if(lossToFingerprintGroupListCollection.getNumberElements() == 0) this.value = 0.0;
 		
 		this.candidate.setProperty("AutomatedLossFingerprintAnnotationScore_Matches", matches);

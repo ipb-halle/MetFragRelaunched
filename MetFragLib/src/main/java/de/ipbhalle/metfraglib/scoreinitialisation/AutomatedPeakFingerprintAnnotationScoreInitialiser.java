@@ -184,8 +184,8 @@ public class AutomatedPeakFingerprintAnnotationScoreInitialiser implements IScor
 						currentFingerprint = new FastBitArray("0");
 					}
 					MassToFingerprintGroupList peakToFingerprintGroupList = peakToFingerprintGroupListCollection.getElementByPeak(mass);
-					peakMatchlist.add(new MassFingerprintMatch(mass, currentFingerprint));
 					if(peakToFingerprintGroupList == null) continue;
+					peakMatchlist.add(new MassFingerprintMatch(mass, currentFingerprint));
 					// check whether fingerprint was observed for current peak mass in the training data
 					if (!peakToFingerprintGroupList.containsFingerprint(currentFingerprint)) {
 						// if not add the fingerprint to background by addFingerprint function

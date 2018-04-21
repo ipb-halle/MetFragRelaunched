@@ -162,6 +162,7 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 				ICandidate candidate = scmfp.getScoredPrecursorCandidates()[0];
 				java.util.ArrayList<MassFingerprintMatch> lossMatchlist = new java.util.ArrayList<MassFingerprintMatch>();
 				MatchList matchlist = candidate.getMatchList();
+				
 				if(matchlist == null || matchlist.getNumberElements() == 0) {
 					candidate.setProperty("LossMatchList", lossMatchlist);
 					continue;
@@ -194,7 +195,7 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 					IAtomContainer con = fingerprint.getNormalizedAtomContainer(candidate.getPrecursorMolecule(), diffFragment);
 					lossMatchlist.add(new MassFingerprintMatch(diff, fingerprint.getNormalizedFastBitArrayFingerprint(con)));
 				}
-				candidate.setProperty("LossMatchList", lossMatchlist);
+				//java.util.LinkedList<Double> nonExplainedLosses = this.getNonExplainedLoss(peakList, matchlist);
 				for(int j = 0; j < lossMatchlist.size(); j++) {
 					MassFingerprintMatch lossMatch = lossMatchlist.get(j);
 					MassToFingerprintGroupList lossToFingerprintGroupList = lossToFingerprintGroupListCollection.getElementByPeak(lossMatch.getMass(), mzppm, mzabs);
@@ -208,18 +209,22 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 						lossMassToFingerprints.addFingerprint(lossMatch.getMass(), currentFingerprint);
 					}
 				}
+				java.util.LinkedList<?> lossMassesFound = (java.util.LinkedList<?>)settings.get(VariableNames.LOSS_MASSES_FOUND_NAME);
+				this.addNonExplainedLosses(lossMassesFound, lossMatchlist);
+				candidate.setProperty("LossMatchList", lossMatchlist);
 			}
 		}
-		
 		double alpha = (double)settings.get(VariableNames.LOSS_FINGERPRINT_ANNOTATION_ALPHA_VALUE_NAME);					// alpha
 		double beta = (double)settings.get(VariableNames.LOSS_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME);						// beta
 		
-		double f_seen = (double)settings.get(VariableNames.LOSS_FINGERPRINT_TUPLE_COUNT_NAME);								// f_s
-		double f_unseen = lossMassToFingerprints.getOverallSize();																// f_u
-		double sumFingerprintFrequencies = (double)settings.get(VariableNames.LOSS_FINGERPRINT_DENOMINATOR_COUNT_NAME);		// \sum_N \sum_Ln 1
+		double f_seen_matched = (double) settings.get(VariableNames.LOSS_FINGERPRINT_MATCHED_TUPLE_COUNT_NAME); // f_s
+		double f_seen_non_matched = (double) settings.get(VariableNames.LOSS_FINGERPRINT_NON_MATCHED_TUPLE_COUNT_NAME); // f_s
+		double f_unseen_matched = lossMassToFingerprints.getOverallMatchedSize(); // f_u
+		double f_unseen_non_matched = lossMassToFingerprints.getOverallNonMatchedSize(); // f_u
+		double sumFingerprintFrequencies = (double) settings.get(VariableNames.LOSS_FINGERPRINT_DENOMINATOR_COUNT_NAME); // \sum_N
 		
 		// set value for denominator of P(f,m)
-		double denominatorValue = sumFingerprintFrequencies + alpha * f_seen + alpha * f_unseen + beta;
+		double denominatorValue = sumFingerprintFrequencies + alpha * (f_seen_matched + f_unseen_matched) + beta * (f_seen_non_matched + f_unseen_non_matched);
 
 		settings.set(VariableNames.LOSS_FINGERPRINT_DENOMINATOR_VALUE_NAME, denominatorValue);
 		
@@ -236,18 +241,21 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 			double sumFsProbabilities = 0.0;
 			for(int ii = 0; ii < groupList.getNumberElements(); ii++) {
 				// first calculate P(f,m)
-				groupList.getElement(ii).setJointProbability((groupList.getElement(ii).getProbability() + alpha) / denominatorValue);
+				if(groupList.getElement(ii).getFingerprint().getSize() != 1) 
+					groupList.getElement(ii).setJointProbability((groupList.getElement(ii).getProbability() + alpha) / denominatorValue);
+				else 
+					groupList.getElement(ii).setJointProbability((groupList.getElement(ii).getProbability() + beta) / denominatorValue);
 				// sum_f P(f,m) -> for F_s
 				sumFsProbabilities += groupList.getElement(ii).getJointProbability();
 			}
 			
 			// calculate the sum of probabilities for un-observed fingerprints for the current mass
-			double sumFuProbabilities = alphaProbability * lossMassToFingerprints.getSizeOverall(groupList.getPeakmz());
+			double sumFuProbabilities = alphaProbability * lossMassToFingerprints.getSizeMatched(groupList.getPeakmz());
+			sumFuProbabilities += betaProbability * lossMassToFingerprints.getSizeNonMatched(groupList.getPeakmz());
 			
 			sum_f += sumFsProbabilities;
 			sum_f += sumFuProbabilities;
-			sum_f += betaProbability;
-		
+			
 			for(int ii = 0; ii < groupList.getNumberElements(); ii++) {
 				// second calculate P(f|m)
 				groupList.getElement(ii).setConditionalProbability_sp(groupList.getElement(ii).getJointProbability() / sum_f);
@@ -356,6 +364,25 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 			peakDifferencesCombined.add(MathTools.round(massSum / (double)massesAdded));
 		}
 		return peakDifferencesCombined;
+	}
+	
+	private void addNonExplainedLosses(java.util.LinkedList<?> lossMassesFound, java.util.ArrayList<MassFingerprintMatch> lossMatchlist) {
+		java.util.LinkedList<Double> nonExplainedLosses = new java.util.LinkedList<Double>();
+		boolean[] found = new boolean[lossMatchlist.size()];
+		for(Object elem : lossMassesFound) {
+			boolean thisfound = false;
+			for(int i = 0; i < lossMatchlist.size(); i++) {
+				if((lossMatchlist.get(i).getMass().equals((Double)elem)) && !found[i]) {
+					found[i] = true;
+					thisfound = true;
+					break;
+				}
+			}
+			if(!thisfound) nonExplainedLosses.add((Double)elem);
+		}
+		for(Double elem : nonExplainedLosses) {
+			lossMatchlist.add(new MassFingerprintMatch(elem, new FastBitArray("0")));
+		}
 	}
 	
 }
