@@ -12,6 +12,7 @@
     <module>MetFragWeb</module>
     <module>MetFragR</module>
     <module>MetFragTools</module>
+    <module>jpa</module>
   </modules>
   <dependencyManagement>
   	<dependencies>

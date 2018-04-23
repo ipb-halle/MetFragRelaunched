@@ -41,42 +41,42 @@ public class AutomatedLossFingerprintAnnotationScore extends AbstractScore {
 	public void singlePostCalculate() {
 		this.value = 0.0;
 		MassToFingerprintGroupListCollection lossToFingerprintGroupListCollection = (MassToFingerprintGroupListCollection)this.settings.get(VariableNames.LOSS_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME);
-		java.util.LinkedList<?> lossMassesFound = (java.util.LinkedList<?>)((java.util.LinkedList<?>)this.settings.get(VariableNames.LOSS_MASSES_FOUND_NAME)).clone();
+		// all losses found in peak list
+		java.util.LinkedList<?> lossMassesFoundInPeakList = (java.util.LinkedList<?>)((java.util.LinkedList<?>)this.settings.get(VariableNames.LOSS_MASSES_FOUND_PEAKLIST_NAME)).clone();
 		int matches = 0;
 		Double mzppm = (Double)settings.get(VariableNames.RELATIVE_MASS_DEVIATION_NAME);
 		Double mzabs = (Double)settings.get(VariableNames.ABSOLUTE_MASS_DEVIATION_NAME);
-		java.util.ArrayList<?> matchlist = (java.util.ArrayList<?>)this.candidate.getProperty("LossMatchList");
+		// get match list of the current candidate
+		java.util.ArrayList<?> lossMatchlist = (java.util.ArrayList<?>)this.candidate.getProperty("LossMatchList");
 		java.util.ArrayList<Double> matchMasses = new java.util.ArrayList<Double>();
 		java.util.ArrayList<Double> matchProb = new java.util.ArrayList<Double>();
-		java.util.ArrayList<Integer> matchType = new java.util.ArrayList<Integer>(); // found - 1; alpha - 2; beta - 3
+		java.util.ArrayList<Integer> matchType = new java.util.ArrayList<Integer>(); // found - 1; non-found - 2 (fp="0"); alpha - 3; beta - 4
 		// get foreground fingerprint observations (m_f_observed)
-		for(int i = 0; i < matchlist.size(); i++) {
+		for(int i = 0; i < lossMatchlist.size(); i++) {
 			// get f_m_observed
-			MassFingerprintMatch currentMatch = (MassFingerprintMatch)matchlist.get(i);
-			int foundLossMassIndex = lossMassesFound.indexOf(currentMatch.getMass());
-			if(foundLossMassIndex == -1) continue;
-			lossMassesFound.remove(foundLossMassIndex);
+			MassFingerprintMatch currentMatch = (MassFingerprintMatch)lossMatchlist.get(i);
+			lossMassesFoundInPeakList.remove(lossMassesFoundInPeakList.indexOf(currentMatch.getMass()));
 			MassToFingerprintGroupList lossToFingerprintGroupList = lossToFingerprintGroupListCollection.getElementByPeak(currentMatch.getMass(), mzppm, mzabs);
 			//MassFingerprintMatch currentMatch = this.getMatchByMass(matchlist, currentMass);
 			FastBitArray currentFingerprint = new FastBitArray(currentMatch.getFingerprint());
 			// ToDo: at this stage try to check all fragments not only the best one
 			// (p(m,f) + alpha) / sum_F(p(m,f)) + |F| * alpha
 			double matching_prob = lossToFingerprintGroupList.getMatchingProbability(currentFingerprint);
-			// |F|
-			if(matching_prob != 0.0) {
+			if(matching_prob != 0.0) { // if probability of current fingerprint is non-zero, it was observed in the training
 				matches++;
 				this.value += Math.log(matching_prob);
 				matchProb.add(matching_prob);
-				if(currentFingerprint.getSize() != 1) matchType.add(1);
-				else matchType.add(3);
-				matchMasses.add(currentMatch.getMass());
+				if(currentFingerprint.getSize() != 1) matchType.add(1); // if valid fingerprint
+				else matchType.add(2); // if size of fingerprint is 1 then it's the dummy fingerprint
+				matchMasses.add(currentMatch.getMass()); 
 			}
 			else {
+				// if not type 1 or type 2
 				matchMasses.add(currentMatch.getMass());
 				if(currentFingerprint.getSize() != 1) {
 					this.value += Math.log(lossToFingerprintGroupList.getAlphaProb());
 					matchProb.add(lossToFingerprintGroupList.getAlphaProb());
-					matchType.add(2);
+					matchType.add(3);
 				}
 				else {
 					this.value += Math.log(lossToFingerprintGroupList.getBetaProb());
@@ -90,7 +90,6 @@ public class AutomatedLossFingerprintAnnotationScore extends AbstractScore {
 		this.candidate.setProperty("AutomatedLossFingerprintAnnotationScore_Matches", matches);
 		this.candidate.setProperty("AutomatedLossFingerprintAnnotationScore", this.value);
 		this.candidate.setProperty("AutomatedLossFingerprintAnnotationScore_Probtypes", this.getProbTypeString(matchProb, matchType, matchMasses));
-		
 		this.candidate.removeProperty("LossMatchList");
 	}
 
