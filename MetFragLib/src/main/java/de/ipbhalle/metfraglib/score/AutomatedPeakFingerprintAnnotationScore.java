@@ -6,6 +6,7 @@ import de.ipbhalle.metfraglib.interfaces.IMatch;
 import de.ipbhalle.metfraglib.match.MassFingerprintMatch;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.settings.Settings;
+import de.ipbhalle.metfraglib.substructure.FingerprintGroup;
 import de.ipbhalle.metfraglib.substructure.MassToFingerprintGroupList;
 import de.ipbhalle.metfraglib.substructure.MassToFingerprintGroupListCollection;
 
@@ -48,7 +49,7 @@ public class AutomatedPeakFingerprintAnnotationScore extends AbstractScore {
 		// get foreground fingerprint observations (m_f_observed)
 		java.util.ArrayList<Double> matchMasses = new java.util.ArrayList<Double>();
 		java.util.ArrayList<Double> matchProb = new java.util.ArrayList<Double>();
-		java.util.ArrayList<Integer> matchType = new java.util.ArrayList<Integer>(); // alpha seen - 1; alpha unseen - 2; beta seen - 3; beta unseen - 4
+		java.util.ArrayList<Integer> matchType = new java.util.ArrayList<Integer>(); // found - 1; non-found - 2 (fp="0"); alpha - 3; beta - 4
 		// get foreground fingerprint observations (m_f_observed)
 		for(int i = 0; i < peakToFingerprintGroupListCollection.getNumberElements(); i++) {
 			// get f_m_observed
@@ -56,10 +57,17 @@ public class AutomatedPeakFingerprintAnnotationScore extends AbstractScore {
 			Double currentMass = peakToFingerprintGroupList.getPeakmz();
 			MassFingerprintMatch currentMatch = getMatchByMass(peakMatchList, currentMass);
 			if(currentMatch == null) {
-				matchProb.add(peakToFingerprintGroupList.getBetaProb());
-				matchType.add(4);
+				FingerprintGroup fg = peakToFingerprintGroupList.getElementByFingerprint(new FastBitArray("0"));
+				if(fg == null) {
+					matchProb.add(peakToFingerprintGroupList.getBetaProb());
+					matchType.add(4);
+					this.value += Math.log(peakToFingerprintGroupList.getBetaProb());
+				} else {
+					matchProb.add(fg.getProbability());
+					matchType.add(2);
+					this.value += Math.log(fg.getProbability());
+				}
 				matchMasses.add(currentMass);
-				this.value += Math.log(peakToFingerprintGroupList.getBetaProb());
 			} else {
 				FastBitArray currentFingerprint = new FastBitArray(currentMatch.getFingerprint());
 				// ToDo: at this stage try to check all fragments not only the best one
@@ -67,25 +75,20 @@ public class AutomatedPeakFingerprintAnnotationScore extends AbstractScore {
 				double matching_prob = peakToFingerprintGroupList.getMatchingProbability(currentFingerprint);
 				// |F|
 				if(matching_prob != 0.0) {
-					matches++;
 					this.value += Math.log(matching_prob);
 					matchProb.add(matching_prob);
 					matchMasses.add(currentMass);
-					if(currentFingerprint.getSize() != 1) matchType.add(1);
-					else matchType.add(3);
+					if(currentFingerprint.getSize() != 1) {
+						matches++;
+						matchType.add(1);
+					}
+					else matchType.add(2);
 				}
 				else {
 					matchMasses.add(currentMass);
-					if(currentFingerprint.getSize() != 1) {
-						this.value += Math.log(peakToFingerprintGroupList.getAlphaProb());
-						matchProb.add(peakToFingerprintGroupList.getAlphaProb());
-						matchType.add(2);
-					}
-					else {
-						this.value += Math.log(peakToFingerprintGroupList.getBetaProb());
-						matchProb.add(peakToFingerprintGroupList.getBetaProb());
-						matchType.add(4);
-					}
+					this.value += Math.log(peakToFingerprintGroupList.getAlphaProb());
+					matchProb.add(peakToFingerprintGroupList.getAlphaProb());
+					matchType.add(3);
 				}
 			}
 		}

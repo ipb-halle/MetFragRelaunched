@@ -49,35 +49,43 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 			int numMatchedObservationsMerged = 0;
 			java.util.HashMap<Double, MassToFingerprintGroupList> mergedFingerprintGroupLists = new java.util.HashMap<Double, MassToFingerprintGroupList>();
 			
+
+			// first add non-matched masses with dummy fingerprint "0"
+			// these masses are present in the first line of the annotation file: mass[:counts]
 			String nonMatchedMassesString = breader.readLine().trim();
 			int numNonMatchElements = 0;
 			int numNonMatchOccurrences = 0;
 			if(!nonMatchedMassesString.equals("NA")) {
-				String[] tmp = nonMatchedMassesString.split(";");
+				String[] tmp = nonMatchedMassesString.split(";"); // masses are separated by ";"
 				numNonMatchElements = tmp.length;
-				for(int k = 0; k < tmp.length; k++) {
-					String[] tmp2 = tmp[k].split(":");
+				for(int k = 0; k < tmp.length; k++) { // run over all masses
+					String[] tmp2 = tmp[k].split(":");	// split by ":" to separate mass[:counts]
 					int count = 1;
-					Double newMass = Double.parseDouble(tmp2[0]);
-					if(tmp2.length == 2) count = Integer.parseInt(tmp2[1]);
-					numNonMatchOccurrences += count;
+					Double newMass = Double.parseDouble(tmp2[0]);  // create mass value 
+					if(tmp2.length == 2) count = Integer.parseInt(tmp2[1]);  // if count is present use count else use 1 (default)
+					numNonMatchOccurrences += count;	// save number non-matched occurences
 					
+					// check whether the newMass is also present in our found peak list losses
 					Double matchedMass = this.containsMass(newMass, uniqueMassDifferences, mzabs, mzppm);
+					// if not present and already larger than largest peak mass stop here
 					if(matchedMass == null && newMass > peakList.getMaximumMassValue()) break;
-					if(matchedMass != null) {
+					if(matchedMass != null) { // if loss is present in our peak list add it to the annotation list
+						// prepare new element
 						FingerprintGroup group = new FingerprintGroup(1.0);
 						group.setNumberObserved(count);
 						group.setFingerprint("0");
-						if(mergedFingerprintGroupLists.containsKey(matchedMass)) {
+						if(mergedFingerprintGroupLists.containsKey(matchedMass)) { // check if the mass was already inserted 
 							MassToFingerprintGroupList currentGroupList = mergedFingerprintGroupLists.get(matchedMass);
 							FingerprintGroup curGroup = currentGroupList.getElementByFingerprint(group.getFingerprint());
-							if(curGroup == null) currentGroupList.addElement(group.getFingerprint());
-							else {
+							// check if fingerprint was already inserted 
+							if(curGroup == null) currentGroupList.addElement(group); // if not simply add it
+							else { // if already present decrease number observed elements (as already observed) 
 								numNonMatchElements--;
+								// adapt values
 								curGroup.setNumberObserved(curGroup.getNumberObserved() + group.getNumberObserved());
 								curGroup.setProbability(curGroup.getProbability() + group.getProbability());
 							}
-						} else {
+						} else { // if mass not yet present simply add it
 							MassToFingerprintGroupList currentGroupList = new MassToFingerprintGroupList(matchedMass);
 							currentGroupList.addElement(group);
 							mergedFingerprintGroupLists.put(matchedMass, currentGroupList);
@@ -85,6 +93,7 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 					}
 				}
 			}
+			// now add loss-fingerprint assignments which were annotated in the training
 			while((line = breader.readLine()) != null) {
 				line = line.trim();
 				if(line.length() == 0) continue;
@@ -101,21 +110,25 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 				}
 				String[] tmp = line.split("\\s+");
 				Double loss = Double.parseDouble(tmp[0]);
+				// check whether the current loss in our annotation is also present in the peak list
 				Double matchedMass = this.containsMass(loss, uniqueMassDifferences, mzabs, mzppm);
-				if(matchedMass != null) {
-					FingerprintGroup[] groups = this.getFingerprintGroup(tmp);
-					if(mergedFingerprintGroupLists.containsKey(matchedMass)) {
+				if(matchedMass != null) { // if yes we need to consider it
+					FingerprintGroup[] groups = this.getFingerprintGroup(tmp); // create fingerprint groups from annotation entry
+					if(mergedFingerprintGroupLists.containsKey(matchedMass)) { // check whether mass is already present
 						MassToFingerprintGroupList currentGroupList = mergedFingerprintGroupLists.get(matchedMass);
 						for(int i = 0; i < groups.length; i++) {
+							// check if fingerprint is already inserted
 							FingerprintGroup curGroup = currentGroupList.getElementByFingerprint(groups[i].getFingerprint());
-							if(curGroup == null) currentGroupList.addElement(groups[i]);
+							if(curGroup == null) currentGroupList.addElement(groups[i]); // if not simply add it
 							else {
+								// otherwise increase the number of matched observations to adapt number of unique tupels
 								if(curGroup.getFingerprint().getSize() != 1) numMatchedObservationsMerged++;
+								// adapt loss-fingerprint assignment values
 								curGroup.setNumberObserved(curGroup.getNumberObserved() + groups[i].getNumberObserved());
 								curGroup.setProbability(curGroup.getProbability() + groups[i].getProbability());
 							}
 						}
-					} else {
+					} else { // if mass not yet present simply add it
 						MassToFingerprintGroupList currentGroupList = new MassToFingerprintGroupList(matchedMass);
 						for(int i = 0; i < groups.length; i++)
 							currentGroupList.addElement(groups[i]);
@@ -127,12 +140,13 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 			while(it.hasNext()) {
 				lossToFingerprintGroupListCollection.addElementSorted(mergedFingerprintGroupLists.get(it.next()));
 			}
+			// store all mass differences (losses) found in the peak list
 			for(int i = 0; i < massDifferences.size(); i++) {
 				if(lossToFingerprintGroupListCollection.getElementByPeak(massDifferences.get(i), mzppm, mzabs) != null)
 					lossMassesFound.add(massDifferences.get(i));
 			}
 			breader.close();
-			settings.set(VariableNames.LOSS_MASSES_FOUND_NAME, lossMassesFound);
+			settings.set(VariableNames.LOSS_MASSES_FOUND_PEAKLIST_NAME, lossMassesFound);
 			settings.set(VariableNames.LOSS_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME, lossToFingerprintGroupListCollection);
 		}
 	}
@@ -140,7 +154,7 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 	public void postProcessScoreParameters(Settings settings) throws AtomTypeNotKnownFromInputListException, Exception {
 		CombinedSingleCandidateMetFragProcess[] processes = (CombinedSingleCandidateMetFragProcess[])settings.get(VariableNames.METFRAG_PROCESSES_NAME);
 		
-		MassToFingerprintsHashMap lossMassToFingerprints = new MassToFingerprintsHashMap();
+		MassToFingerprintsHashMap lossMassToFingerprints = new MassToFingerprintsHashMap(); // fingerprints not seen in training
 		MassToFingerprintGroupListCollection lossToFingerprintGroupListCollection = (MassToFingerprintGroupListCollection)settings.get(VariableNames.LOSS_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME);
 		Double mzppm = (Double)settings.get(VariableNames.RELATIVE_MASS_DEVIATION_NAME);
 		Double mzabs = (Double)settings.get(VariableNames.ABSOLUTE_MASS_DEVIATION_NAME);
@@ -199,7 +213,7 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 				for(int j = 0; j < lossMatchlist.size(); j++) {
 					MassFingerprintMatch lossMatch = lossMatchlist.get(j);
 					MassToFingerprintGroupList lossToFingerprintGroupList = lossToFingerprintGroupListCollection.getElementByPeak(lossMatch.getMass(), mzppm, mzabs);
-					if(lossToFingerprintGroupList == null) continue;
+					if(lossToFingerprintGroupList == null) continue; // if not loss not in our annotation list, there's no need to consider it
 					//lossMatch.setMass(lossToFingerprintGroupList.getPeakmz());
 					FastBitArray currentFingerprint = lossMatch.getFingerprint();
 					// check whether fingerprint was observed for current peak mass in the training data
@@ -209,11 +223,14 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 						lossMassToFingerprints.addFingerprint(lossMatch.getMass(), currentFingerprint);
 					}
 				}
-				java.util.LinkedList<?> lossMassesFound = (java.util.LinkedList<?>)settings.get(VariableNames.LOSS_MASSES_FOUND_NAME);
-				this.addNonExplainedLosses(lossMassesFound, lossMatchlist);
+				java.util.LinkedList<?> lossMassesFoundInPeakList = (java.util.LinkedList<?>)settings.get(VariableNames.LOSS_MASSES_FOUND_PEAKLIST_NAME);
+				// important! now add all losses not assigned by that candidates
+				// this is to equalize all loss match lists in length over all candidates
+				this.addNonExplainedLosses(lossMassesFoundInPeakList, lossMatchlist);
 				candidate.setProperty("LossMatchList", lossMatchlist);
 			}
 		}
+		
 		double alpha = (double)settings.get(VariableNames.LOSS_FINGERPRINT_ANNOTATION_ALPHA_VALUE_NAME);					// alpha
 		double beta = (double)settings.get(VariableNames.LOSS_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME);						// beta
 		
@@ -251,8 +268,10 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 			
 			// calculate the sum of probabilities for un-observed fingerprints for the current mass
 			double sumFuProbabilities = alphaProbability * lossMassToFingerprints.getSizeMatched(groupList.getPeakmz());
-			sumFuProbabilities += betaProbability * lossMassToFingerprints.getSizeNonMatched(groupList.getPeakmz());
-			
+			// not needed as it's defined by fingerprint = "0"
+			// sumFuProbabilities += betaProbability * lossMassToFingerprints.getSizeNonMatched(groupList.getPeakmz());
+			sumFuProbabilities += betaProbability;
+					
 			sum_f += sumFsProbabilities;
 			sum_f += sumFuProbabilities;
 			
@@ -260,7 +279,6 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 				// second calculate P(f|m)
 				groupList.getElement(ii).setConditionalProbability_sp(groupList.getElement(ii).getJointProbability() / sum_f);
 			}
-			
 			groupList.setAlphaProb(alphaProbability / sum_f);
 			groupList.setBetaProb(betaProbability / sum_f);
 			groupList.setProbabilityToConditionalProbability_sp();
@@ -366,10 +384,10 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 		return peakDifferencesCombined;
 	}
 	
-	private void addNonExplainedLosses(java.util.LinkedList<?> lossMassesFound, java.util.ArrayList<MassFingerprintMatch> lossMatchlist) {
+	private void addNonExplainedLosses(java.util.LinkedList<?> lossMassesFoundInPeakList, java.util.ArrayList<MassFingerprintMatch> lossMatchlist) {
 		java.util.LinkedList<Double> nonExplainedLosses = new java.util.LinkedList<Double>();
 		boolean[] found = new boolean[lossMatchlist.size()];
-		for(Object elem : lossMassesFound) {
+		for(Object elem : lossMassesFoundInPeakList) {
 			boolean thisfound = false;
 			for(int i = 0; i < lossMatchlist.size(); i++) {
 				if((lossMatchlist.get(i).getMass().equals((Double)elem)) && !found[i]) {

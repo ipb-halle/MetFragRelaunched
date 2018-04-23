@@ -341,7 +341,7 @@ public class PostCalculateScoreValuesFromResultFilePeakLossThreadFP {
 				Double mass = it.next();
 				java.util.LinkedList<Double> observations = massToObservations.get(mass);
 				Double bgsizeMatched = massToBackgroundSizeMatched.get(mass);
-				Double bgsizeNonMatched = massToBackgroundSizeNonMatched.get(mass);
+				//Double bgsizeNonMatched = massToBackgroundSizeNonMatched.get(mass);
 				// sum_f P(f,m)
 				// calculate sum of MF_s (including the alpha count) and the
 				// joint probabilities
@@ -358,15 +358,15 @@ public class PostCalculateScoreValuesFromResultFilePeakLossThreadFP {
 				// calculate the sum of probabilities for un-observed
 				// fingerprints for the current mass
 				double sumFuProbabilities = alphaProbability * bgsizeMatched;
-				sumFuProbabilities += betaProbability * bgsizeNonMatched;
-
+				//sumFuProbabilities += betaProbability * bgsizeNonMatched;
+				sumFuProbabilities += betaProbability;
+				
 				sum_f += sumFsProbabilities;
 				sum_f += sumFuProbabilities;
 
 				massToSumF.put(mass, sum_f);
 				massToAlphaProb.put(mass, alphaProbability / sum_f);
 				massToBetaProb.put(mass, betaProbability / sum_f);
-				
 				//printSum(mass, observations, alpha, betaProbability, sum_f, denominatorValue, bgsize);
 			}
 			settings.set("PeakMassToSumF", massToSumF);
@@ -438,7 +438,7 @@ public class PostCalculateScoreValuesFromResultFilePeakLossThreadFP {
 				Double mass = it.next();
 				java.util.LinkedList<Double> observations = massToObservations.get(mass);
 				Double bgsizeMatched = massToBackgroundSizeMatched.get(mass);
-				Double bgsizeNonMatched = massToBackgroundSizeNonMatched.get(mass);
+				//Double bgsizeNonMatched = massToBackgroundSizeNonMatched.get(mass);
 				// sum_f P(f,m)
 				// calculate sum of MF_s (including the alpha count) and the
 				// joint probabilities
@@ -455,7 +455,8 @@ public class PostCalculateScoreValuesFromResultFilePeakLossThreadFP {
 				// calculate the sum of probabilities for un-observed
 				// fingerprints for the current mass
 				double sumFuProbabilities = alphaProbability * bgsizeMatched;
-				sumFuProbabilities += betaProbability * bgsizeNonMatched;
+				//sumFuProbabilities += betaProbability * bgsizeNonMatched;
+				sumFuProbabilities += betaProbability;
 
 				sum_f += sumFsProbabilities;
 				sum_f += sumFuProbabilities;
@@ -503,14 +504,7 @@ public class PostCalculateScoreValuesFromResultFilePeakLossThreadFP {
 			this.readMassToProbType((String) candidate.getProperty("AutomatedPeakFingerprintAnnotationScore_Probtypes"), peakMasses, peakProbTypes);
 			ArrayList<Double> matchMasses = new ArrayList<Double>();
 			ArrayList<Double> matchProb = new ArrayList<Double>();
-			ArrayList<Integer> matchType = new ArrayList<Integer>(); 	// alpha seen -
-																		// 1;
-																		// alpha unseen
-																		// - 2;
-																		// beta seen
-																		// - 3
-																		// beta unseen
-																		// - 4
+			ArrayList<Integer> matchType = new ArrayList<Integer>(); //	found - 1; non-found - 2 (fp="0"); alpha - 3; beta - 4
 			// get foreground fingerprint observations (m_f_observed)
 
 			double alpha = (double) settings.get(VariableNames.PEAK_FINGERPRINT_ANNOTATION_ALPHA_VALUE_NAME); // alpha
@@ -525,7 +519,7 @@ public class PostCalculateScoreValuesFromResultFilePeakLossThreadFP {
 				String[] tmp = probType.split(":");
 				if (tmp.length == 1) {
 					double prob = 0.0;
-					if (tmp[0].equals("2"))
+					if (tmp[0].equals("3"))
 						prob = (Double) massToAlphaProb.get(mass);
 					else if (tmp[0].equals("4"))
 						prob = (Double) massToBetaProb.get(mass);
@@ -539,7 +533,7 @@ public class PostCalculateScoreValuesFromResultFilePeakLossThreadFP {
 					if(tmp[1].equals("1")) {
 						// (p(m,f) + alpha) / sum_F(p(m,f)) + |F| * alpha
 						matching_prob = ((Double.parseDouble(tmp[0]) + alpha) / denominatorValue) / (Double) massToSumF.get(mass);
-					} else if(tmp[1].equals("3")) {
+					} else if(tmp[1].equals("2")) {
 						matching_prob = ((Double.parseDouble(tmp[0]) + beta) / denominatorValue) / (Double) massToSumF.get(mass);
 					}
 					// |F|
@@ -565,14 +559,7 @@ public class PostCalculateScoreValuesFromResultFilePeakLossThreadFP {
 					lossMasses, lossProbTypes);
 			ArrayList<Double> matchMasses = new ArrayList<Double>();
 			ArrayList<Double> matchProb = new ArrayList<Double>();
-			ArrayList<Integer> matchType = new ArrayList<Integer>(); 	// alpha seen -
-																		// 1;
-																		// alpha unseen
-																		// - 2;
-																		// beta seen
-																		// - 3
-																		// beta unseen
-																		// - 4
+			ArrayList<Integer> matchType = new ArrayList<Integer>(); 	//	found - 1; non-found - 2 (fp="0"); alpha - 3; beta - 4
 			// get foreground fingerprint observations (m_f_observed)
 
 			double alpha = (double) settings.get(VariableNames.LOSS_FINGERPRINT_ANNOTATION_ALPHA_VALUE_NAME); // alpha
@@ -591,7 +578,7 @@ public class PostCalculateScoreValuesFromResultFilePeakLossThreadFP {
 				// (fingerprintToMasses.getSize(currentFingerprint));
 				if (tmp.length == 1) {
 					double prob = 0.0;
-					if (tmp[0].equals("2"))
+					if (tmp[0].equals("3"))
 						prob = (Double) massToAlphaProb.get(matchingMass);
 					else if (tmp[0].equals("4"))
 						prob = (Double) massToBetaProb.get(matchingMass);
@@ -606,7 +593,7 @@ public class PostCalculateScoreValuesFromResultFilePeakLossThreadFP {
 					if(tmp[1].equals("1")) {
 						// (p(m,f) + alpha) / sum_F(p(m,f)) + |F| * alpha
 						matching_prob = ((Double.parseDouble(tmp[0]) + alpha) / denominatorValue) / (Double) massToSumF.get(matchingMass);
-					} else if(tmp[1].equals("3")) {
+					} else if(tmp[1].equals("2")) {
 						matching_prob = ((Double.parseDouble(tmp[0]) + beta) / denominatorValue) / (Double) massToSumF.get(matchingMass);
 					}
 					// |F|

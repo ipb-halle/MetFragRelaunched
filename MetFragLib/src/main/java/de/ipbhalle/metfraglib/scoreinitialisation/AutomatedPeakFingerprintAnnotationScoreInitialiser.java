@@ -73,7 +73,7 @@ public class AutomatedPeakFingerprintAnnotationScoreInitialiser implements IScor
 						if(mergedFingerprintGroupLists.containsKey(matchedMass)) {
 							MassToFingerprintGroupList currentGroupList = mergedFingerprintGroupLists.get(matchedMass);
 							FingerprintGroup curGroup = currentGroupList.getElementByFingerprint(group.getFingerprint());
-							if(curGroup == null) currentGroupList.addElement(group.getFingerprint());
+							if(curGroup == null) currentGroupList.addElement(group);
 							else {
 								numNonMatchElements--;
 								curGroup.setNumberObserved(curGroup.getNumberObserved() + group.getNumberObserved());
@@ -233,7 +233,7 @@ public class AutomatedPeakFingerprintAnnotationScoreInitialiser implements IScor
 			
 			// calculate the sum of probabilities for un-observed fingerprints for the current mass
 			double sumFuProbabilities = alphaProbability * peakMassToFingerprints.getSizeMatched(groupList.getPeakmz());
-			sumFuProbabilities += betaProbability * peakMassToFingerprints.getSizeNonMatched(groupList.getPeakmz());
+			sumFuProbabilities += betaProbability;
 			
 			sum_f += sumFsProbabilities;
 			sum_f += sumFuProbabilities;

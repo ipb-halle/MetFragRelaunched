@@ -133,8 +133,8 @@ public class VariableNames {
 	public static final String LOSS_FINGERPRINT_JOINT_PROBABILITY_ALPHA_NAME	= "LossFingerprintJointProbabilityAlpha";
 	public static final String LOSS_FINGERPRINT_JOINT_PROBABILITY_BETA_NAME		= "LossFingerprintJointProbabilityBeta";
 	
-	public static final String LOSS_MASSES_FOUND_NAME									= "LossMassesFound";
-	public static final String PEAK_MASSES_FOUND_NAME									= "PeakMassesFound";
+	public static final String LOSS_MASSES_FOUND_PEAKLIST_NAME									= "LossMassesPeaklistFound";
+	public static final String PEAK_MASSES_FOUND_PEAKLIST_NAME									= "PeakMassesPeaklistFound";
 	
 	public static final String METFRAG_PROCESSES_NAME							= "MetFragProcesses";
 	
