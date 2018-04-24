@@ -353,11 +353,11 @@ public class MetFragWebBean {
 		this.beanSettingsContainer.setCompoundsRetrieved(compoundsRetrieved);
 	}
 	
-	public String getDatabase() {
+	public Object getDatabase() {
 		return this.beanSettingsContainer.getDatabase();
 	}
 
-	public void setDatabase(String database) {
+	public void setDatabase(Object database) {
 		if(this.beanSettingsContainer.getDatabase().equals(database) && this.beanSettingsContainer.isDatabaseInitialise()) return;
 		this.metFragResultsContainer = new MetFragResultsContainer();
 		this.filteredMetFragResultsContainer = new MetFragResultsContainer();

@@ -26,6 +26,7 @@ import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.process.CombinedMetFragProcess;
 import de.ipbhalle.metfraglib.process.ProcessingStatus;
 import de.ipbhalle.metfraglib.settings.MetFragGlobalSettings;
+import de.ipbhalle.metfragweb.datatype.AdditionalFileDatabase;
 import de.ipbhalle.metfragweb.datatype.AvailableScore;
 import de.ipbhalle.metfragweb.datatype.SuspectListFileContainer;
 import de.ipbhalle.metfragweb.datatype.UploadedSuspectListFile;
@@ -70,7 +71,7 @@ public class BeanSettingsContainer {
 	 * database search parameters
 	 */
 	protected boolean isDatabaseInitialise = false;
-	protected String database = "KEGG";
+	protected Object database = "KEGG";
 	protected String formula = "";
 	protected String identifiers = "";
 	protected boolean includeReferences = false;
@@ -213,6 +214,7 @@ public class BeanSettingsContainer {
 		 * read settings from external file
 		 */
 		this.metFragSettingsFile = this.readDatabaseConfigFromFile();
+		this.availableParameters.initAddititionalDatabases(this.metFragSettingsFile);
 
 		//init filters
 		this.initFilterEnabled();
@@ -389,11 +391,11 @@ public class BeanSettingsContainer {
 	/*
 	 * database search settings
 	 */
-	public String getDatabase() {
-		return database;
+	public Object getDatabase() {
+		return this.database;
 	}
 	
-	public void setDatabase(String database) {
+	public void setDatabase(Object database) {
 		if(this.database.equals(database) && this.isDatabaseInitialise) return;
 		this.resetDatabaseParameters();
 		if(this.availableParameters.isNeedLocalFile(database)) {
@@ -1198,7 +1200,8 @@ public class BeanSettingsContainer {
 	 * overall settings processing
 	 */
 	private void prepareDatabaseSettings() throws ParameterNotKnownException {
-		String database = this.database;
+		System.out.println("prepareDatabaseSettings");
+		Object database = this.database;
 		String metchemLibrary = "";
 		if(!this.metChemDatabaseDefined) {
 			if(database.equals("PubChem")) {
@@ -1238,9 +1241,14 @@ public class BeanSettingsContainer {
 			}
 			this.getMetFragSettings().set(VariableNames.LOCAL_METCHEM_DATABASE_LIBRARY_NAME, metchemLibrary);
 		}
-		this.getMetFragSettings().set(VariableNames.METFRAG_DATABASE_TYPE_NAME, database);
-		System.out.println("prepareDatabaseSettings " + this.getMetFragSettings().get(VariableNames.LOCAL_METCHEM_DATABASE_LIBRARY_NAME) + " " 
-				+ this.getMetFragSettings().get(VariableNames.METFRAG_DATABASE_TYPE_NAME));
+		// if database is from type AdditionalFileDatabase
+		if(database instanceof AdditionalFileDatabase) {
+			System.out.println("AdditionalFileDatabase selected");
+			this.getMetFragSettings().set(VariableNames.METFRAG_DATABASE_TYPE_NAME, ((AdditionalFileDatabase)database).getType());
+			this.getMetFragSettings().set(VariableNames.LOCAL_DATABASE_PATH_NAME, ((AdditionalFileDatabase)database).getFilename());
+		} else { // else it's from type string
+			this.getMetFragSettings().set(VariableNames.METFRAG_DATABASE_TYPE_NAME, database);
+		}
 		this.getMetFragSettings().set(VariableNames.PRECURSOR_NEUTRAL_MASS_NAME, Double.parseDouble(this.getNeutralMonoisotopicMass()));
 		if(this.isFormulaSearchAvailable()) 
 			this.getMetFragSettings().set(VariableNames.PRECURSOR_MOLECULAR_FORMULA_NAME, this.getFormula() == null || this.getFormula().trim().length() == 0 ? null : this.getFormula().trim());
