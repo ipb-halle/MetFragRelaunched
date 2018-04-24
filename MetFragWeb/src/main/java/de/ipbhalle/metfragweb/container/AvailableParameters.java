@@ -8,6 +8,8 @@ import javax.faces.model.SelectItemGroup;
 import de.ipbhalle.metfraglib.parameter.ClassNames;
 import de.ipbhalle.metfraglib.parameter.Constants;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
+import de.ipbhalle.metfraglib.settings.Settings;
+import de.ipbhalle.metfragweb.datatype.AdditionalFileDatabase;
 import de.ipbhalle.metfragweb.datatype.AvailableScore;
 
 public class AvailableParameters {
@@ -227,7 +229,7 @@ public class AvailableParameters {
 		};
 		SelectItemGroup g1 = new SelectItemGroup("Server Databases");
         g1.setSelectItems(serverdbs);
-		SelectItemGroup g2 = new SelectItemGroup("File Databases");
+		SelectItemGroup g2 = new SelectItemGroup("Upload Database");
         g2.setSelectItems(filedbs);
 	
 		this.databases = new java.util.ArrayList<SelectItem>();
@@ -250,7 +252,46 @@ public class AvailableParameters {
 		this.databaseNeedsLocalFile.put("LocalSDF", true);
 	}
 	
-	public boolean isNeedLocalFile(String databasename) {
+	public void initAddititionalDatabases(Settings settings) {
+		if(!settings.containsKey(VariableNames.LOCAL_DATABASES_FOLDER_FOR_WEB) || settings.get(VariableNames.LOCAL_DATABASES_FOLDER_FOR_WEB) == null) return;
+		String foldername = (String)settings.get(VariableNames.LOCAL_DATABASES_FOLDER_FOR_WEB);
+		java.io.File folder = new java.io.File(foldername);
+		if(!folder.exists()) return;
+		if(!folder.isDirectory()) return;
+		if(!folder.canRead()) return;
+		java.io.File[] files = folder.listFiles();
+		java.util.List<AdditionalFileDatabase> additionalDatabases = new java.util.LinkedList<AdditionalFileDatabase>();
+		// read all files in database folder and add them
+		long id = 0;
+		for(java.io.File currentFile : files) {
+			if(!currentFile.isFile()) continue;
+			if(!currentFile.canRead()) continue;
+			String label = currentFile.getName().replaceAll("(.*)\\..*", "$1");
+			String type = "";
+			// check for database type
+			if(currentFile.getName().endsWith("sdf") || currentFile.getName().endsWith("SDF"))
+				type = "LocalSDF";
+			else if(currentFile.getName().endsWith("csv") || currentFile.getName().endsWith("CSV")) 
+				type = "LocalCSV";
+			else if(currentFile.getName().endsWith("psv") || currentFile.getName().endsWith("PSV")) 
+				type = "LocalPSV";
+			if(type.equals("")) continue;
+			additionalDatabases.add(new AdditionalFileDatabase(++id, currentFile.getAbsolutePath(), type, label));
+		}
+		if(additionalDatabases.size() == 0) return;
+		// generate items for database group
+		SelectItem[] filedbs = new SelectItem[additionalDatabases.size()];
+		for(int i = 0; i < additionalDatabases.size(); i++)
+			filedbs[i] = new SelectItem(additionalDatabases.get(i), additionalDatabases.get(i).getLabel());
+		// generate group
+		SelectItemGroup g = new SelectItemGroup("Local Databases");
+        g.setSelectItems(filedbs);
+        // add group to item list
+        this.databases.add(g);
+	}
+	
+	public boolean isNeedLocalFile(Object databasename) {
+		if(databasename instanceof de.ipbhalle.metfragweb.datatype.AdditionalFileDatabase) return false;
 		return this.databaseNeedsLocalFile.get(databasename);
 	}
 	
