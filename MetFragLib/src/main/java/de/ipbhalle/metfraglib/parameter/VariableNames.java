@@ -80,6 +80,7 @@ public class VariableNames {
 	public static final String SUSPECTLIST_SCORE_LIST_NAME 						= "SuspectListScoreList";
 	
 	public static final String CHEMSPIDER_TOKEN_NAME					= 	"ChemSpiderToken";
+	public static final String CHEMSPIDER_REST_TOKEN_NAME				= 	"ChemSpiderRestToken";
 	
 	/*
 	 * file containing values for model prediction

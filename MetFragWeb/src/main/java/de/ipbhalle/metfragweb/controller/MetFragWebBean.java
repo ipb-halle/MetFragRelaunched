@@ -364,7 +364,7 @@ public class MetFragWebBean {
 		this.errorMessages = new Messages();
 		this.infoMessages = new Messages();
 		this.warningMessages = new Messages();
-		if(database.equals("ChemSpider")) this.warningMessages.setMessage("databaseWarning", "ChemSpider uses an online query which slows down the candidate retrieval.");
+		if(database.equals("ChemSpider") || database.equals("ChemSpiderRest")) this.warningMessages.setMessage("databaseWarning", "ChemSpider uses an online query which slows down the candidate retrieval.");
 		else if(database.equals("LocalSDF")) this.warningMessages.setMessage("databaseWarning", "Molecules with aromatic bond order type (4) are discarded as not yet supported by CDK.");
 		this.processedPeaklistObject = null;
 		this.beanSettingsContainer.setDatabase(database);
@@ -1061,8 +1061,6 @@ public class MetFragWebBean {
 		else this.beanSettingsContainer.setSubstructureInformationFilterExpression("not " + this.beanSettingsContainer.getSelectedInformationSmarts());
 	}
 	
-	
-	
 	//suspect list filter
 	public SuspectListFileContainer getSuspectListFilterFileContainer() {
 		return this.beanSettingsContainer.getSuspectListFilterFileContainer();
@@ -1608,6 +1606,14 @@ public class MetFragWebBean {
 		}
 	}
 	
+	public void setSelectedAvailableDatabaseScores(List<String> selectedAvailableDatabaseScores) {
+		this.beanSettingsContainer.setSelectedAvailableDatabaseScores(selectedAvailableDatabaseScores);
+	}
+	
+	public List<String> getSelectedAvailableDatabaseScores() {
+		return this.beanSettingsContainer.getSelectedAvailableDatabaseScores();
+	}
+	
 	public boolean isAvailableDatabaseScoresExist() {
 		if (!this.beanSettingsContainer.isCompoundsRetrieved())
 			return false;
@@ -1622,6 +1628,16 @@ public class MetFragWebBean {
 		return this.beanSettingsContainer.getAvailableDatabaseScores();
 	}
 	
+	public int getAvailableDatabaseScoresSize() {
+		return this.beanSettingsContainer.getAvailableDatabaseScores().size();
+	}
+	
+	public String getAvailableDatabaseScoresMenuLabel() {
+		if(this.beanSettingsContainer.getSelectedAvailableDatabaseScores() == null) 
+			return "0 of " + this.getAvailableDatabaseScoresSize() + " item(s) selected";
+		return this.beanSettingsContainer.getSelectedAvailableDatabaseScores().size() + " of " + this.getAvailableDatabaseScoresSize() + " item(s) selected";
+	}
+
 	//checking init
 	private void initScoreSettings() {
 		// SMARTS inclusion score

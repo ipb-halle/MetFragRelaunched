@@ -12,7 +12,7 @@
 		xmlns:p="http://primefaces.org/ui">
 		<h:panelGroup id="scoreSettingsPanel"
 			rendered="#{metFragWebBean.numberCompoundsRetrieved > 0}">
-			<h:outputText value="MetFrag Scoring Terms:"
+			<h:outputText value="MetFrag Scoring Terms"
 				style="font-weight: bold; padding-bottom: 10px" />
 			<br />
 			<h:panelGrid columns="2" width="80%" style="vertical-align:top;"
@@ -352,10 +352,22 @@
 			<br />
 			<h:panelGrid columns="1">
 				<h:panelGroup layout="block" style="padding-top: 10px;">
-					<h:outputText value="Database Scoring Terms:"
+					<h:outputText value="Database Scoring Terms"
 						style="font-weight: bold"
 						rendered="#{metFragWebBean.availableDatabaseScoresExist}" />
 				</h:panelGroup>
+				<h:panelGroup layout="block" style="padding-left: 2px; padding-top: 5px">
+					<h:panelGrid columns="2" rendered="#{metFragWebBean.availableDatabaseScoresExist}">
+						<p:selectCheckboxMenu id="availableDatabaseScoresMenu" value="#{metFragWebBean.selectedAvailableDatabaseScores}" 
+							label="Select Item(s)" filter="true" filterMatchMode="startsWith">
+	            			<f:selectItems value="#{metFragWebBean.availableDatabaseScores}" />
+	            			<p:ajax event="toggleSelect" update="availableDatabaseScoresMenuLabel" />
+	            			<p:ajax update="availableDatabaseScoresMenuLabel" />
+	        			</p:selectCheckboxMenu>
+	        			<h:outputText style="padding-left: 10px" id="availableDatabaseScoresMenuLabel" value="#{metFragWebBean.availableDatabaseScoresMenuLabel}" />
+	        		</h:panelGrid>
+        		</h:panelGroup>
+				<!-- 
 				<h:panelGroup layout="block" style="padding-left: 2px;">
 					<h:dataTable styleClass="availableScoreTable"
 						id="availableDatabaseScoresTable"
@@ -368,10 +380,11 @@
 							</p:selectBooleanCheckbox>
 						</h:column>
 						<h:column>
-					#{availableScore.label}
-				</h:column>
+							#{availableScore.label}
+						</h:column>
 					</h:dataTable>
 				</h:panelGroup>
+				 -->
 			</h:panelGrid>
 
 			<ui:insert name="scorePrimeTooltips">

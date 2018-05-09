@@ -120,6 +120,7 @@ public class UserOutputDataHandler {
 				this.beanSettingsContainer.getMetFragSettings().remove(VariableNames.LOCAL_METCHEM_DATABASE_LIBRARY_NAME);
 			}
 			this.beanSettingsContainer.getMetFragSettings().remove(VariableNames.PEAK_LIST_STRING_NAME);
+			this.beanSettingsContainer.getMetFragSettings().remove(VariableNames.LOCAL_DATABASES_FOLDER_FOR_WEB);
 			
 			// setting missing values
 			this.beanSettingsContainer.getMetFragSettings().set(VariableNames.SAMPLE_NAME, "MetFragWeb_Sample");
@@ -130,10 +131,17 @@ public class UserOutputDataHandler {
 				this.beanSettingsContainer.getMetFragSettings().set(VariableNames.CHEMSPIDER_TOKEN_NAME, "");
 			else 
 				this.beanSettingsContainer.getMetFragSettings().remove(VariableNames.CHEMSPIDER_TOKEN_NAME);
+			
+			if(this.beanSettingsContainer.getDatabase().equals("ChemSpiderRest")) 
+				this.beanSettingsContainer.getMetFragSettings().set(VariableNames.CHEMSPIDER_REST_TOKEN_NAME, "");
+			else 
+				this.beanSettingsContainer.getMetFragSettings().remove(VariableNames.CHEMSPIDER_REST_TOKEN_NAME);
 			// in case local database is defined, set the parameter to the
 			// candidates
 			if (this.beanSettingsContainer.isLocalDatabaseDefined()) {
 				this.beanSettingsContainer.getMetFragSettings().set(VariableNames.LOCAL_DATABASE_PATH_NAME, new java.io.File(this.beanSettingsContainer.getCandidateFilePath()).getName());
+			} else if(this.beanSettingsContainer.getMetFragSettings().containsKey(VariableNames.LOCAL_DATABASE_PATH_NAME) && this.beanSettingsContainer.getMetFragSettings().get(VariableNames.LOCAL_DATABASE_PATH_NAME) != null) {
+				this.beanSettingsContainer.getMetFragSettings().set(VariableNames.LOCAL_DATABASE_PATH_NAME, new java.io.File((String)this.beanSettingsContainer.getMetFragSettings().get(VariableNames.LOCAL_DATABASE_PATH_NAME)).getName());
 			}
 
 			byte[] buffer = new byte[1024];

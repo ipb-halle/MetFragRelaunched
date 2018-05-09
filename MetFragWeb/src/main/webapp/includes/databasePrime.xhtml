@@ -21,7 +21,7 @@
 						<h:outputLabel value="Database:" id="selectDatabaseLabel"/>
 						<h:panelGrid columns="3">
 							<p:selectOneMenu id="selectDatabase"
-								value="#{metFragWebBean.database}" converter="omnifaces.SelectItemsConverter">
+								value="#{metFragWebBean.database}" converter="omnifaces.SelectItemsConverter" style="width: 150px;">
 								<f:selectItems value="#{metFragWebBean.availableDatabases}" />
 								<p:ajax update="mainForm:mainAccordion" />
 							</p:selectOneMenu>

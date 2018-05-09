@@ -303,6 +303,7 @@ public class DefaultBitArrayFragment extends AbstractFragment {
 		return smiles;
 	}
 
+	/**
 	public String getAromaticSmiles(IMolecularStructure precursorMolecule) {
 		IAtomContainer molecule = this.getStructureAsAromaticIAtomContainer(precursorMolecule);
 		SmilesGenerator sg = new SmilesGenerator(SmiFlavor.UseAromaticSymbols);
@@ -343,6 +344,7 @@ public class DefaultBitArrayFragment extends AbstractFragment {
 		
 		return fragmentStructure;
 	}
+	**/
 	
 	public IAtomContainer getStructureAsIAtomContainer(IMolecularStructure precursorMolecule) {
 		IChemObjectBuilder builder = DefaultChemObjectBuilder.getInstance();

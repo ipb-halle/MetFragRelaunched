@@ -133,7 +133,12 @@ public class LocalPSVDatabase extends AbstractFileDatabase {
 				if(!this.addSMILESFromInChI(precursorCandidate)) continue;
 				if(!this.addInChIKeyFromSmiles(precursorCandidate)) continue;
 				if(!this.setInChIValues(precursorCandidate)) continue;
-				this.candidates.add(precursorCandidate);
+				
+
+				if(this.checkFilter(precursorCandidate)) {
+					this.identifiers.add(precursorCandidate.getIdentifier());
+					this.candidates.add(precursorCandidate);
+				}
 			}
 		}
 		if (reader != null)

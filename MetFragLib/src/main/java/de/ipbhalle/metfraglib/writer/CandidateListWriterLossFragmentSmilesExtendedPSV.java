@@ -113,7 +113,8 @@ public class CandidateListWriterLossFragmentSmilesExtendedPSV implements IWriter
 					fingerprintOfFragmentsExplainedPeaks += ";";
 					
 					smilesOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + fpsm[1] + ";";
-					aromaticSmilesOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + frag.getAromaticSmiles(scoredCandidate.getPrecursorMolecule()) + ";";
+					//aromaticSmilesOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + frag.getAromaticSmiles(scoredCandidate.getPrecursorMolecule()) + ";";
+					aromaticSmilesOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + frag.getSmiles(scoredCandidate.getPrecursorMolecule()) + ";";
 				}
 				if(sumFormulasOfFragmentsExplainedPeaks.length() != 0) sumFormulasOfFragmentsExplainedPeaks = sumFormulasOfFragmentsExplainedPeaks.substring(0, sumFormulasOfFragmentsExplainedPeaks.length() - 1);
 				if(peaksExplained.length() != 0) peaksExplained = peaksExplained.substring(0, peaksExplained.length() - 1);
@@ -230,7 +231,8 @@ public class CandidateListWriterLossFragmentSmilesExtendedPSV implements IWriter
 					
 					lossFingerprint.add(MoleculeFunctions.fingerPrintToString(TanimotoSimilarity.calculateFingerPrint(con)));
 					lossSmiles.add(preparedSmiles);
-					lossSmarts.add(diffFragment.getAromaticSmiles(precursorMolecule));
+					//lossSmarts.add(diffFragment.getAromaticSmiles(precursorMolecule));
+					lossSmarts.add(diffFragment.getSmiles(precursorMolecule));
 					lossMassDiff.add(diff);
 				}
 			}
@@ -253,7 +255,8 @@ public class CandidateListWriterLossFragmentSmilesExtendedPSV implements IWriter
 			
 			lossFingerprint.add(MoleculeFunctions.fingerPrintToString(TanimotoSimilarity.calculateFingerPrint(con)));
 			lossSmiles.add(preparedSmiles);
-			lossSmarts.add(diffFragment.getAromaticSmiles(precursorMolecule));
+			//lossSmarts.add(diffFragment.getAromaticSmiles(precursorMolecule));
+			lossSmarts.add(diffFragment.getSmiles(precursorMolecule));
 			lossMassDiff.add(diff);
 		}
 
