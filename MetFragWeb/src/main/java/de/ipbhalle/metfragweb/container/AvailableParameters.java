@@ -215,6 +215,7 @@ public class AvailableParameters {
 			new SelectItem("PubChem", "PubChem"), 
 			new SelectItem("KEGG", "KEGG"), 
 			new SelectItem("ChemSpider", "ChemSpider"),
+			new SelectItem("ChemSpiderRest", "ChemSpider (REST)"),
 			new SelectItem("MetaCyc", "MetaCyc"),
 			new SelectItem("FOR-IDENT", "FOR-IDENT"),
 			new SelectItem("LipidMaps", "LipidMaps"),
@@ -240,6 +241,7 @@ public class AvailableParameters {
 		this.databaseNeedsLocalFile.put("PubChem", false);
 		this.databaseNeedsLocalFile.put("KEGG", false);
 		this.databaseNeedsLocalFile.put("ChemSpider", false);
+		this.databaseNeedsLocalFile.put("ChemSpiderRest", false);
 		this.databaseNeedsLocalFile.put("MetaCyc", false);
 		this.databaseNeedsLocalFile.put("FOR-IDENT", false);
 		this.databaseNeedsLocalFile.put("LipidMaps", false);

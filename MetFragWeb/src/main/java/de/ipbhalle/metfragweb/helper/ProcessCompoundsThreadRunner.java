@@ -244,7 +244,7 @@ public class ProcessCompoundsThreadRunner extends ThreadRunner {
 					scoreSummaries, candidate.getInChI(), (String)candidate.getProperty(VariableNames.SMILES_NAME),
 					(Boolean)this.beanSettingsContainer.getMetFragSettings().get(VariableNames.USE_SMILES_NAME));
 			if(simScoreIndex != null) mol.setSimScoreIndex(simScoreIndex);
-			mol.setDatabaseName(this.beanSettingsContainer.getDatabase().toString());
+			mol.setDatabaseName(this.beanSettingsContainer.getDatabase());
 			if(candidate.getProperties().containsKey(VariableNames.COMPOUND_NAME_NAME)) {
 				mol.setName((String)candidate.getProperty(VariableNames.COMPOUND_NAME_NAME));
 				if(!this.metFragResultsContainer.isCompoundNameAvailable()) this.metFragResultsContainer.setCompoundNameAvailable(true);

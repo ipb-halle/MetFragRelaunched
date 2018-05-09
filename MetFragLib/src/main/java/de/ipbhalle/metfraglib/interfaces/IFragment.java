@@ -25,7 +25,7 @@ public interface IFragment {
 	 * 
 	 * @return
 	 */
-	public String getAromaticSmiles(IMolecularStructure precursorMolecule);
+	//public String getAromaticSmiles(IMolecularStructure precursorMolecule);
 	
 	/**
 	 * get neutral monoisotopic mass of precursor

@@ -30,6 +30,7 @@ import de.ipbhalle.metfraglib.database.LocalPubChemDatabase;
 import de.ipbhalle.metfraglib.database.LocalPropertyFileDatabase;
 import de.ipbhalle.metfraglib.database.LocalSDFDatabase;
 import de.ipbhalle.metfraglib.database.OnlineChemSpiderDatabase;
+import de.ipbhalle.metfraglib.database.OnlineChemSpiderRestDatabase;
 import de.ipbhalle.metfraglib.database.OnlineExtendedPubChemDatabase;
 import de.ipbhalle.metfraglib.database.OnlineForIdentDatabase;
 import de.ipbhalle.metfraglib.database.OnlineKeggDatabase;
@@ -180,6 +181,7 @@ public class ClassNames {
 		databaseNameToClassName.put("PubChem", OnlinePubChemDatabase.class.getName());
 		databaseNameToClassName.put("ExtendedPubChem", OnlineExtendedPubChemDatabase.class.getName());
 		databaseNameToClassName.put("ChemSpider", OnlineChemSpiderDatabase.class.getName());
+		databaseNameToClassName.put("ChemSpiderRest", OnlineChemSpiderRestDatabase.class.getName());
 		databaseNameToClassName.put("LocalPSV", LocalPSVDatabase.class.getName());
 		databaseNameToClassName.put("LocalCSV", LocalCSVDatabase.class.getName());
 		databaseNameToClassName.put("LocalProperty", LocalPropertyFileDatabase.class.getName());

@@ -135,6 +135,7 @@ public class BeanSettingsContainer {
 	protected List<SelectItem> availablePartitioningCoefficients;
 	
 	protected List<AvailableScore> availableDatabaseScores;
+	protected List<String> selectedAvailableDatabaseScores;
 	protected SuspectListFileContainer suspectListScoreFileContainer;
 
 	protected boolean forIdentSuspectListScoreEnabled = false;
@@ -821,7 +822,7 @@ public class BeanSettingsContainer {
 			if (value != null) {
 				try {
 					if (value instanceof Double) {
-						
+				
 					} else {
 						Double.parseDouble((String) value);
 					}
@@ -979,6 +980,18 @@ public class BeanSettingsContainer {
 		this.availableDatabaseScores = availableDatabaseScores;
 	}
 
+	public List<String> getSelectedAvailableDatabaseScores() {
+		return this.selectedAvailableDatabaseScores;
+	}
+
+	public void setSelectedAvailableDatabaseScores(java.util.List<String> selectedAvailableDatabaseScores) {
+		this.selectedAvailableDatabaseScores = selectedAvailableDatabaseScores;
+	}
+
+	public void resetSelectedAvailableDatabaseScores() {
+		this.selectedAvailableDatabaseScores = new java.util.ArrayList<String>();
+	}
+	
 	//retention time scores
 	public String getRetentionTimeScoreTrainingFileName() {
 		if(this.retentionTimeScoreTrainingFilePath == null || this.retentionTimeScoreTrainingFilePath.equals(""))
@@ -1360,7 +1373,7 @@ public class BeanSettingsContainer {
 	}
 
 	private void prepareCompoundScoreSettings() throws Exception {
-		java.util.Vector<String> compoundScores = new java.util.Vector<String>();
+		java.util.ArrayList<String> compoundScores = new java.util.ArrayList<String>();
 		//fragmenter score
 		if(this.scoreEnabledMap.get("fragmenterScore") && this.scoreValidMap.get("fragmenterScore")) {
 			compoundScores.add(VariableNames.METFRAG_FRAGMENTER_SCORE_NAME);
@@ -1436,9 +1449,15 @@ public class BeanSettingsContainer {
 			this.metFragSettings.remove(VariableNames.USER_LOG_P_VALUE_NAME);
 		}
 		//database scores
-		if(this.availableDatabaseScores != null)
+		/*if(this.availableDatabaseScores != null) {
 			for(int i = 0; i < this.availableDatabaseScores.size(); i++)
 				if(this.availableDatabaseScores.get(i).isSelected()) compoundScores.add(this.availableDatabaseScores.get(i).getLabel());
+		}*/
+		if(this.selectedAvailableDatabaseScores != null) {
+			for(int i = 0; i < this.selectedAvailableDatabaseScores.size(); i++) {
+				compoundScores.add(this.selectedAvailableDatabaseScores.get(i).toString());
+			}
+		}
 		//set the sim score
 		if(this.scoreEnabledMap.get("simScore") && this.scoreValidMap.get("simScore")) {
 			compoundScores.add("SimScore");

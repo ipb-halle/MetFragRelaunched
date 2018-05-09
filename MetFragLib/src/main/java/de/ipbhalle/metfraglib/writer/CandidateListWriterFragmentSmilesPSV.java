@@ -74,7 +74,8 @@ public class CandidateListWriterFragmentSmilesPSV implements IWriter {
 					
 					sumFormulasOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + formula + ";";
 					smilesOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + scoredCandidate.getMatchList().getElement(ii).getBestMatchedFragment().getSmiles(scoredCandidate.getPrecursorMolecule()) + ";";
-					aromaticSmilesOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + scoredCandidate.getMatchList().getElement(ii).getBestMatchedFragment().getAromaticSmiles(scoredCandidate.getPrecursorMolecule()) + ";";
+					//aromaticSmilesOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + scoredCandidate.getMatchList().getElement(ii).getBestMatchedFragment().getAromaticSmiles(scoredCandidate.getPrecursorMolecule()) + ";";
+					aromaticSmilesOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + scoredCandidate.getMatchList().getElement(ii).getBestMatchedFragment().getSmiles(scoredCandidate.getPrecursorMolecule()) + ";";
 				}
 				if(sumFormulasOfFragmentsExplainedPeaks.length() != 0) sumFormulasOfFragmentsExplainedPeaks = sumFormulasOfFragmentsExplainedPeaks.substring(0, sumFormulasOfFragmentsExplainedPeaks.length() - 1);
 				if(peaksExplained.length() != 0) peaksExplained = peaksExplained.substring(0, peaksExplained.length() - 1);

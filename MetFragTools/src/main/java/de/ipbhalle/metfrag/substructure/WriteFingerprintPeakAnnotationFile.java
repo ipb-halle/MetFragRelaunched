@@ -30,6 +30,7 @@ public class WriteFingerprintPeakAnnotationFile {
 	 * output
 	 * csv
 	 * fingerprinttype
+	 * includeNonExplained
 	 * 
 	 */
 	
@@ -51,17 +52,25 @@ public class WriteFingerprintPeakAnnotationFile {
 		Integer occurThresh = null;
 		String csv = "";
 		String fingerprinttype = "";
+		String includeNonExplainedString = "";
 		if(readParameters.containsKey("output")) output = readParameters.get("output");
 		if(readParameters.containsKey("occurThresh")) occurThresh = Integer.parseInt(readParameters.get("occurThresh"));
 		if(readParameters.containsKey("csv")) csv = (String)readParameters.get("csv");
 		if(readParameters.containsKey("fingerprinttype")) fingerprinttype = (String)readParameters.get("fingerprinttype");
-
+		if(readParameters.containsKey("includeNonExplained")) includeNonExplainedString = (String)readParameters.get("includeNonExplained");
+		
 		ArrayList<Double> peakMassesSorted = new ArrayList<Double>();
 		ArrayList<String> fingerprintsSorted = new ArrayList<String>();
 		
 		StringBuilder nonExplainedPeaksString = new StringBuilder();
 		ArrayList<Double> nonExplainedPeaks = new ArrayList<Double>();
 		ArrayList<Integer> peakMassCounts = new ArrayList<Integer>();
+		
+		boolean includeNonExplained = true;
+		if(includeNonExplainedString.equals("F") || includeNonExplainedString.equals("f")
+				|| includeNonExplainedString.equals("False") || includeNonExplainedString.equals("false")
+				|| includeNonExplainedString.equals("FALSE"))
+			includeNonExplained = false;
 		
 		Settings settings = new Settings();
 		settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, filename);
@@ -108,7 +117,7 @@ public class WriteFingerprintPeakAnnotationFile {
 			}
 		}
 
-		if(nonExplainedPeaks.size() == 0) nonExplainedPeaksString.append("NA");
+		if(nonExplainedPeaks.size() == 0 || !includeNonExplained) nonExplainedPeaksString.append("NA");
 		else {
 			nonExplainedPeaksString.append(nonExplainedPeaks.get(0));
 			if(peakMassCounts.get(0) > 1) {

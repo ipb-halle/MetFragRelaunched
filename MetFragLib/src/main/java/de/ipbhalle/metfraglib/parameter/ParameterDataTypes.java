@@ -15,6 +15,7 @@ public class ParameterDataTypes {
 	static {
 		parameterDatatypes.put(	VariableNames.ABSOLUTE_MASS_DEVIATION_NAME, 							"Double"	);
 		parameterDatatypes.put(	VariableNames.CHEMSPIDER_TOKEN_NAME, 									"String"	);
+		parameterDatatypes.put(	VariableNames.CHEMSPIDER_REST_TOKEN_NAME, 								"String"	);
 		parameterDatatypes.put(	VariableNames.CONSIDER_HYDROGEN_SHIFTS_NAME, 							"Boolean"	);
 		parameterDatatypes.put(	VariableNames.DATABASE_RELATIVE_MASS_DEVIATION_NAME, 					"Double"	);
 		parameterDatatypes.put(	VariableNames.IS_POSITIVE_ION_MODE_NAME, 								"Boolean"	);

@@ -190,6 +190,7 @@ public class SettingsChecker {
 		Object DatabaseSearchRelativeMassDeviation = settings.get(VariableNames.DATABASE_RELATIVE_MASS_DEVIATION_NAME);
 		Object LocalDatabasePath = settings.get(VariableNames.LOCAL_DATABASE_PATH_NAME);
 		Object ChemSpiderToken = settings.get(VariableNames.CHEMSPIDER_TOKEN_NAME);
+		Object ChemSpiderRestToken = settings.get(VariableNames.CHEMSPIDER_REST_TOKEN_NAME);
 		
 		Object MaxCandidateLimitToStop = settings.get(VariableNames.MAXIMUM_CANDIDATE_LIMIT_TO_STOP_NAME);
 	
@@ -231,6 +232,10 @@ public class SettingsChecker {
 			}
 			if(databaseName.equals("ChemSpider") && ChemSpiderToken == null) {
 				this.logger.error(VariableNames.CHEMSPIDER_TOKEN_NAME + " is not defined!");
+				checkPositive = false;
+			}
+			if(databaseName.equals("ChemSpiderRest") && ChemSpiderRestToken == null) {
+				this.logger.error(VariableNames.CHEMSPIDER_REST_TOKEN_NAME + " is not defined!");
 				checkPositive = false;
 			}
 			boolean isLocalDatabase = false;

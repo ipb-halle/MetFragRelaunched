@@ -67,6 +67,18 @@
 	max-width: 400px;
 }
 
+.ui-datatable.ui-widget.ui-datatable-scrollable.resultsTable div.ui-datatable-scrollable-body {
+	height: auto;
+    max-height: 600px;
+    overflow-y: scroll;
+}
+
+.ui-datatable.ui-widget.ui-datatable-scrollable.blankTable div.ui-datatable-scrollable-body {
+    height: auto;
+    max-height: 200px;
+    overflow-y: scroll;
+}
+
 .ui-tooltip .ui-tooltip-text {
 	background-color: #fff !important; 
 	background-image: none !important;

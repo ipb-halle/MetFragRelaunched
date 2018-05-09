@@ -119,7 +119,10 @@ public class LocalPropertyFileDatabase extends AbstractFileDatabase {
 				} else {
 					precursorCandidate.setProperty(VariableNames.MONOISOTOPIC_MASS_NAME, Double.parseDouble((String)precursorCandidate.getProperty(VariableNames.MONOISOTOPIC_MASS_NAME)));
 				}
-				this.candidates.add(precursorCandidate);
+				if(this.checkFilter(precursorCandidate)) {
+					this.identifiers.add(precursorCandidate.getIdentifier());
+					this.candidates.add(precursorCandidate);
+				}
 			}
 			
 			parser.close();

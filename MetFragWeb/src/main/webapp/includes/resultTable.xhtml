@@ -19,7 +19,7 @@
 				<p:dataTable rendered="#{metFragWebBean.renderWeights}"
 					widgetVar="weightsTable" id="weightsSliderTable" paginator="false"
 					value="#{metFragWebBean.weights}" var="weight" disabled="true"
-					style="width: 500px; border: none;" styleClass="blankTable">
+					style="width: 500px; border: none;" styleClass="blankTable" scrollable="true" >
 					<f:facet name="header">
 		        				Weights
 		    				</f:facet>
@@ -108,7 +108,7 @@
 								widgetVar="MetFragResultsTable"
 								value="#{metFragWebBean.filteredMetFragResults}" var="metFragResult" rows="10"
 								styleClass="resultsTable" rowIndexVar="rowIndex"
-								scrollable="true" scrollHeight="600" paginator="true"
+								scrollable="true" paginator="true"
 								first="#{metFragWebBean.selectedCandidate}">
 								<!--<p:column style="width:16px">
 							<p:rowToggler rendered="#{metFragResult.hasMolecules}" />

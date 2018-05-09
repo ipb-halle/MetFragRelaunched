@@ -42,7 +42,7 @@ public class Molecule implements Serializable {
 	protected MatchList matchList;
 	
 	protected HorizontalBarChartModel horizontalBarModel;
-	protected String databaseName;
+	protected Object database;
 	protected Integer simScoreIndex;
 	
 	public Molecule(String identifier) {
@@ -180,32 +180,40 @@ public class Molecule implements Serializable {
 	}
 	
 	public boolean isDatabaseLinkAvailable() {
-		if(databaseName == null) return false;
-		if(databaseName.equals("PubChem") || databaseName.equals("KEGG") 
-				|| databaseName.equals("ChemSpider") || databaseName.equals("MetaCyc")
-				|| databaseName.equals("LipidMaps") || databaseName.equals("LocalHMDB")
-				|| databaseName.equals("LocalChEBI") || ((databaseName.equals("LocalSDF") || databaseName.equals("LocalCSV") || databaseName.equals("LocalPSV")) && this.identifier.startsWith("DTXSID"))) return true;
+		if(database == null) return false;
+		if(database instanceof AdditionalFileDatabase) {
+			if(this.identifier.startsWith("DTXSID")) return true;
+		} else {
+			if(database.equals("PubChem") || database.equals("KEGG") 
+				|| database.equals("ChemSpider") || database.equals("MetaCyc") || database.equals("ChemSpiderRest")
+				|| database.equals("LipidMaps") || database.equals("LocalHMDB")
+				|| database.equals("LocalChEBI") || ((database.equals("LocalSDF") || database.equals("LocalCSV") || database.equals("LocalPSV")) && this.identifier.startsWith("DTXSID"))) return true;
+		}
 		return false;
 	}
 	
-	public String getDatabase() {
-		return databaseName;
+	public Object getDatabase() {
+		return database;
 	}
 	
 	public String getDatabaseLink() {
-		if(databaseName.equals("PubChem")) return "https://pubchem.ncbi.nlm.nih.gov/compound/" + this.getOriginalIdentifier();
-		else if(databaseName.equals("KEGG")) return "http://www.kegg.jp/dbget-bin/www_bget?cpd:" + this.getOriginalIdentifier();
-		else if(databaseName.equals("ChemSpider")) return "http://www.chemspider.com/Chemical-Structure." + this.getOriginalIdentifier() + ".html";
-		else if(databaseName.equals("MetaCyc")) return "http://metacyc.org/META/NEW-IMAGE?type=COMPOUND&object=" + this.getOriginalIdentifier();
-		else if(databaseName.equals("LipidMaps")) return "http://www.lipidmaps.org/data/LMSDRecord.php?LMID=" + this.getOriginalIdentifier();
-		else if(databaseName.equals("LocalHMDB")) return "http://www.hmdb.ca/metabolites/" + this.getOriginalIdentifier();
-		else if(databaseName.equals("LocalChEBI")) return "https://www.ebi.ac.uk/chebi/searchId.do?chebiId=" + this.getOriginalIdentifier();
-		else if((databaseName.equals("LocalSDF") || databaseName.equals("LocalCSV") || databaseName.equals("LocalPSV")) && this.identifier.startsWith("DTXSID")) return "https://comptox.epa.gov/dashboard/dsstoxdb/results?search=" + this.getOriginalIdentifier();
-		return this.identifier; 
+		if(database instanceof AdditionalFileDatabase) {
+			if(this.identifier.startsWith("DTXSID")) return "https://comptox.epa.gov/dashboard/dsstoxdb/results?search=" + this.getOriginalIdentifier();
+		} else {
+			if(database.equals("PubChem")) return "https://pubchem.ncbi.nlm.nih.gov/compound/" + this.getOriginalIdentifier();
+			else if(database.equals("KEGG")) return "http://www.kegg.jp/dbget-bin/www_bget?cpd:" + this.getOriginalIdentifier();
+			else if(database.equals("ChemSpider") || database.equals("ChemSpiderRest")) return "http://www.chemspider.com/Chemical-Structure." + this.getOriginalIdentifier() + ".html";
+			else if(database.equals("MetaCyc")) return "http://metacyc.org/META/NEW-IMAGE?type=COMPOUND&object=" + this.getOriginalIdentifier();
+			else if(database.equals("LipidMaps")) return "http://www.lipidmaps.org/data/LMSDRecord.php?LMID=" + this.getOriginalIdentifier();
+			else if(database.equals("LocalHMDB")) return "http://www.hmdb.ca/metabolites/" + this.getOriginalIdentifier();
+			else if(database.equals("LocalChEBI")) return "https://www.ebi.ac.uk/chebi/searchId.do?chebiId=" + this.getOriginalIdentifier();
+			else if((database.equals("LocalSDF") || database.equals("LocalCSV") || database.equals("LocalPSV")) && this.identifier.startsWith("DTXSID")) return "https://comptox.epa.gov/dashboard/dsstoxdb/results?search=" + this.getOriginalIdentifier();
+		}
+		return this.identifier;
 	}
 	
-	public void setDatabaseName(String databaseName) {
-		this.databaseName = databaseName;
+	public void setDatabaseName(Object database) {
+		this.database = database;
 	}
 	
 	public void setImageAddress(String imageAddress) {
