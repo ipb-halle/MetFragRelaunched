@@ -170,8 +170,9 @@ public class AutomatedPeakFingerprintAnnotationScoreInitialiser implements IScor
 						mass = match.getMatchedPeak().getMass();
 						IFragment frag = match.getBestMatchedFragment();
 						try {
-							IAtomContainer con = fingerprint.getNormalizedAtomContainer(candidate.getPrecursorMolecule(), frag);
-							currentFingerprint = fingerprint.getNormalizedFastBitArrayFingerprint(con);
+							IAtomContainer conPre = fingerprint.getNormalizedAtomContainer(candidate.getPrecursorMolecule(), frag);
+							//IAtomContainer con = MoleculeFunctions.convertImplicitToExplicitHydrogens(conPre);
+							currentFingerprint = fingerprint.getNormalizedFastBitArrayFingerprint(conPre);
 						} catch (InvalidSmilesException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();

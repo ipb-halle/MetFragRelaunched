@@ -215,7 +215,7 @@ public class AvailableParameters {
 			new SelectItem("PubChem", "PubChem"), 
 			new SelectItem("KEGG", "KEGG"), 
 			new SelectItem("ChemSpider", "ChemSpider"),
-			new SelectItem("ChemSpiderRest", "ChemSpider (REST)"),
+			//new SelectItem("ChemSpiderRest", "ChemSpider (REST)"),
 			new SelectItem("MetaCyc", "MetaCyc"),
 			new SelectItem("FOR-IDENT", "FOR-IDENT"),
 			new SelectItem("LipidMaps", "LipidMaps"),
