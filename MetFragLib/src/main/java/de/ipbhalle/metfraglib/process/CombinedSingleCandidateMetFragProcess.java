@@ -105,13 +105,13 @@ public class CombinedSingleCandidateMetFragProcess implements Runnable {
 		 */
 		this.fas.calculate();
 		//removing score assignment and shifted to CombinedMetFragProcess after postCalculating scores
-		this.fas.assignInteremScoresResults();
+		this.fas.assignInterimScoresResults();
 		//set the reference to the scored candidate(s)
 		this.scoredPrecursorCandidates = this.fas.getCandidates();
 		if(logger.isTraceEnabled()) {
 			logger.trace("\t\tcleaning candidates");
 		}
-		
+
 		if(logger.isDebugEnabled()) {
 			logger.debug(this.scoredPrecursorCandidates[0].getIdentifier() + " finished");
 		}
@@ -130,6 +130,10 @@ public class CombinedSingleCandidateMetFragProcess implements Runnable {
 	
 	public void assignScores() {
 		this.fas.assignScores();
+	}
+
+	public void assignInterimScoresResults() {
+		this.fas.assignInterimScoresResults();
 	}
 	
 	public AbstractFragmenterAssignerScorer getFragmenterAssignerScorer() {

@@ -144,14 +144,14 @@ public abstract class AbstractFragmenterAssignerScorer implements IFragmenterAss
 		}
 	}
 	
-	public void assignInteremScoresResults() {
+	public void assignInterimScoresResults() {
 			/*
 			 * generate the result as scored candidate and set the scores as candidate property
 			 */
 			String[] score_types = (String[])this.settings.get(VariableNames.METFRAG_SCORE_TYPES_NAME);
 			for(int i = 0; i < score_types.length; i++) {
 				if(scoreCollection.getScore(i).getValue() != null) {
-					if(scoreCollection.getScore(i).hasInterimResults() && !scoreCollection.getScore(i).isCandidatePropertyScore()) { 
+					if(scoreCollection.getScore(i).hasInterimResults() && !scoreCollection.getScore(i).isCandidatePropertyScore()) {
 						this.candidates[0].setProperty(score_types[i] + "_Values", scoreCollection.getScore(i).getOptimalValuesToString());
 					}
 				}

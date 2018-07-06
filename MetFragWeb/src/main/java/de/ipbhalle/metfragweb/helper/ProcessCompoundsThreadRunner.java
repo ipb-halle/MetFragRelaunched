@@ -112,6 +112,9 @@ public class ProcessCompoundsThreadRunner extends ThreadRunner {
 		 */
 		String[] scoreNames = (String[])this.beanSettingsContainer.getMetFragSettings().get(VariableNames.METFRAG_SCORE_TYPES_NAME);
 		double[] maxScore = new double[scoreNames.length]; 
+		boolean[] negScore = new boolean[scoreNames.length]; 
+		for(int i = 0; i < maxScore.length; i++) 
+			maxScore[i] = Integer.MIN_VALUE;
 		java.util.Vector<String> additionalScoreNames = new java.util.Vector<String>();
 
 		this.metFragResultsContainer = new MetFragResultsContainer();
@@ -169,6 +172,13 @@ public class ProcessCompoundsThreadRunner extends ThreadRunner {
 			}
 		for(int j = 0; j < maxScore.length; j++) 
 			if(maxScore[j] == 0 || !enableScoreScalling[j]) maxScore[j] = 1.0;
+		for(int j = 0; j < maxScore.length; j++) {
+			if(maxScore[j] < 0) {
+				maxScore[j] = 1.0 / Math.abs(maxScore[j]);
+				negScore[j] = true;
+			}
+		}
+		
 		//generate necessary folders
 		java.io.File imageFolderCandidates = new java.io.File(this.rootSessionPath + Constants.OS_SPECIFIC_FILE_SEPARATOR + "images/candidates");
 		java.io.File imageFolderFragments = new java.io.File(this.rootSessionPath + Constants.OS_SPECIFIC_FILE_SEPARATOR + "images/fragments");
@@ -221,7 +231,8 @@ public class ProcessCompoundsThreadRunner extends ThreadRunner {
 						infoScore = ((String)candidate.getProperty(scoreNames[j] + "_Values"));
 					score = (Double)candidate.getProperty(scoreNames[j]); 
 					rawScore = score;
-					score /= maxScore[j];
+					if(!negScore[j]) score /= maxScore[j];
+					else score = (1.0 / Math.abs(score)) / maxScore[j];
 				}
 				catch(Exception e) {
 					score = 0.0;
@@ -342,6 +353,10 @@ public class ProcessCompoundsThreadRunner extends ThreadRunner {
 			return "SubstructureExclusionScore";
 		else if(realName.equals("MatchSpectrumCosineSimilarityScore"))
 			return "SimScore";
+		else if(realName.equals("AutomatedPeakFingerprintAnnotationScore"))
+			return "PeakStatScore";
+		else if(realName.equals("AutomatedLossFingerprintAnnotationScore"))
+			return "LossStatScore";
 		return realName;
 	}
 	

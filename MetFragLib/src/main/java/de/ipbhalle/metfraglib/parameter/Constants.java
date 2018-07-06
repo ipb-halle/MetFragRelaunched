@@ -181,7 +181,7 @@ public class Constants {
 	public static final Integer				DEFAULT_PRECURSOR_ION_TYPE 									= 	1;
 	public static final Boolean				DEFAULT_PROCESS_CANDIDATES 									= 	true;
 	public static final Boolean				DEFAULT_USE_SMILES	 										= 	false;
-	public static final String				DEFAULT_FINGERPRINT_TYPE	 								= 	"MACCSFingerprinter";
+	public static final String				DEFAULT_FINGERPRINT_TYPE	 								= 	"LingoFingerprinter";
 
 	public static final Integer 			DEFAULT_STRUCTURE_IMAGE_WIDTH 								= 	200;
 	public static final Integer 			DEFAULT_STRUCTURE_IMAGE_HEIGHT 								= 	200;
@@ -242,11 +242,17 @@ public class Constants {
 	public static final String 				DEFAULT_LOCAL_DATABASE_PASSWORD				=	null;
 	public static final String 				DEFAULT_LOCAL_DATABASE_PORT_NUMBER			=	null;
 
-	public static final Double 				DEFAULT_PEAK_FINGERPRINT_ANNOTATION_ALPHA_VALUE		=	0.001;
-	public static final Double 				DEFAULT_PEAK_FINGERPRINT_ANNOTATION_BETA_VALUE		=	0.001;
+	public static final Double 				DEFAULT_PEAK_FINGERPRINT_ANNOTATION_ALPHA_POS_VALUE		=	0.0005;
+	public static final Double 				DEFAULT_PEAK_FINGERPRINT_ANNOTATION_BETA_POS_VALUE		=	0.0025;
 	
-	public static final Double 				DEFAULT_LOSS_FINGERPRINT_ANNOTATION_ALPHA_VALUE		=	0.001;
-	public static final Double 				DEFAULT_LOSS_FINGERPRINT_ANNOTATION_BETA_VALUE		=	0.001;
+	public static final Double 				DEFAULT_LOSS_FINGERPRINT_ANNOTATION_ALPHA_POS_VALUE		=	0.0001;
+	public static final Double 				DEFAULT_LOSS_FINGERPRINT_ANNOTATION_BETA_POS_VALUE		=	0.0025;
+
+	public static final Double 				DEFAULT_PEAK_FINGERPRINT_ANNOTATION_ALPHA_NEG_VALUE		=	0.0125;
+	public static final Double 				DEFAULT_PEAK_FINGERPRINT_ANNOTATION_BETA_NEG_VALUE		=	0.0025;
+	
+	public static final Double 				DEFAULT_LOSS_FINGERPRINT_ANNOTATION_ALPHA_NEG_VALUE		=	0.00002;
+	public static final Double 				DEFAULT_LOSS_FINGERPRINT_ANNOTATION_BETA_NEG_VALUE		=	0.0005;
 	
 	public static final String 				DEFAULT_LOCAL_METCHEM_DATABASE_LIBRARY_NAME		= 	"pubchem";
 	public static final Boolean				DEFAULT_CORRECT_MASSES_FOR_FINGERPRINT_ANNOTATION_NAME	=	false;

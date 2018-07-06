@@ -18,7 +18,7 @@ public class AutomatedLossFingerprintAnnotationScore extends AbstractScore {
 		this.optimalValues = new double[1];
 		this.optimalValues[0] = 0.0;
 		this.candidate = (ICandidate)settings.get(VariableNames.CANDIDATE_NAME);
-		this.hasInterimResults = false;
+		this.hasInterimResults = true;
 	}
 	
 	public void calculate() {
@@ -121,6 +121,11 @@ public class AutomatedLossFingerprintAnnotationScore extends AbstractScore {
 				return match;
 		}
 		return null;
+	}
+
+	@Override
+	public String getOptimalValuesToString() {
+		return this.candidate.hasDefinedProperty("AutomatedLossFingerprintAnnotationScore_Probtypes") ? (String)this.candidate.getProperty("AutomatedLossFingerprintAnnotationScore_Probtypes") : "NA";
 	}
 	
 	@Override

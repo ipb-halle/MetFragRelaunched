@@ -19,6 +19,7 @@ import de.ipbhalle.metfraglib.interfaces.IScoreInitialiser;
 import de.ipbhalle.metfraglib.list.DefaultPeakList;
 import de.ipbhalle.metfraglib.list.MatchList;
 import de.ipbhalle.metfraglib.match.MassFingerprintMatch;
+import de.ipbhalle.metfraglib.parameter.Constants;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.process.CombinedSingleCandidateMetFragProcess;
 import de.ipbhalle.metfraglib.settings.Settings;
@@ -43,15 +44,24 @@ public class AutomatedPeakFingerprintAnnotationScoreInitialiser implements IScor
 	public void initScoreParameters(Settings settings) throws Exception {
 		if(!settings.containsKey(VariableNames.PEAK_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME) || settings.get(VariableNames.PEAK_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME) == null) {
 			MassToFingerprintGroupListCollection peakToFingerprintGroupListCollection = new MassToFingerprintGroupListCollection();
-			String filename = (String)settings.get(VariableNames.FINGERPRINT_PEAK_ANNOTATION_FILE_NAME);
 			DefaultPeakList peakList = (DefaultPeakList)settings.get(VariableNames.PEAK_LIST_NAME);
 			Double mzppm = (Double)settings.get(VariableNames.RELATIVE_MASS_DEVIATION_NAME);
 			Double mzabs = (Double)settings.get(VariableNames.ABSOLUTE_MASS_DEVIATION_NAME);
-			BufferedReader breader = new BufferedReader(new FileReader(new File(filename)));
+			BufferedReader breader = null;
+			java.io.InputStream is = null;
+			if(settings.containsKey(VariableNames.FINGERPRINT_PEAK_ANNOTATION_FILE_NAME) && settings.get(VariableNames.FINGERPRINT_PEAK_ANNOTATION_FILE_NAME) != null) {
+				breader = new BufferedReader(new FileReader(new File((String)settings.get(VariableNames.FINGERPRINT_PEAK_ANNOTATION_FILE_NAME))));
+			} else {
+				String filename = "peak_annotations_neg.txt";
+				if((Boolean)settings.get(VariableNames.IS_POSITIVE_ION_MODE_NAME)) filename = "peak_annotations_pos.txt";
+				is = AutomatedPeakFingerprintAnnotationScoreInitialiser.class.getResourceAsStream("/" + filename);
+				breader = new java.io.BufferedReader(new java.io.InputStreamReader(is));
+			}
 			String line = "";
 			int numMatchedObservationsMerged = 0;
 			java.util.HashMap<Double, MassToFingerprintGroupList> mergedFingerprintGroupLists = new java.util.HashMap<Double, MassToFingerprintGroupList>();
-			
+
+			this.setPseudoCountValues(settings);
 			String nonMatchedMassesString = breader.readLine().trim();
 			int numNonMatchElements = 0;
 			int numNonMatchOccurrences = 0;
@@ -156,12 +166,11 @@ public class AutomatedPeakFingerprintAnnotationScoreInitialiser implements IScor
 				java.util.LinkedList<Double> nonExplainedPeaks = this.getNonExplainedPeaks(peakList, matchlist);
 				
 				java.util.ArrayList<MassFingerprintMatch> peakMatchlist = new java.util.ArrayList<MassFingerprintMatch>();
-				if(matchlist == null || matchlist.getNumberElements() == 0) {
-					candidate.setProperty("PeakMatchList", peakMatchlist);
-					continue;
-				}
+				
+				int numberMatchedPeaks = matchlist == null ? 0 : matchlist.getNumberElements();
+				
 				candidate.initialisePrecursorCandidate();
-				for(int j = 0; j < matchlist.getNumberElements() + nonExplainedPeaks.size(); j++) {
+				for(int j = 0; j < numberMatchedPeaks + nonExplainedPeaks.size(); j++) {
 					FastBitArray currentFingerprint = null;
 					Double mass = null;
 					// check if it's a valid match (peak-fragment assignment)
@@ -309,4 +318,17 @@ public class AutomatedPeakFingerprintAnnotationScoreInitialiser implements IScor
 		}
 		return false;
 	}
+	
+	private void setPseudoCountValues(Settings settings) {
+		boolean ionmode = (Boolean)settings.get(VariableNames.IS_POSITIVE_ION_MODE_NAME);
+		// peak alpha
+		if(!settings.containsKey(VariableNames.PEAK_FINGERPRINT_ANNOTATION_ALPHA_VALUE_NAME) || settings.get(VariableNames.PEAK_FINGERPRINT_ANNOTATION_ALPHA_VALUE_NAME) == null)
+			if(ionmode) settings.set(VariableNames.PEAK_FINGERPRINT_ANNOTATION_ALPHA_VALUE_NAME, Constants.DEFAULT_PEAK_FINGERPRINT_ANNOTATION_ALPHA_POS_VALUE);
+			else settings.set(VariableNames.PEAK_FINGERPRINT_ANNOTATION_ALPHA_VALUE_NAME, Constants.DEFAULT_PEAK_FINGERPRINT_ANNOTATION_ALPHA_NEG_VALUE);
+		// peak beta
+		if(!settings.containsKey(VariableNames.PEAK_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME) || settings.get(VariableNames.PEAK_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME) == null)
+			if(ionmode) settings.set(VariableNames.PEAK_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME, Constants.DEFAULT_PEAK_FINGERPRINT_ANNOTATION_BETA_POS_VALUE);
+			else settings.set(VariableNames.PEAK_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME, Constants.DEFAULT_PEAK_FINGERPRINT_ANNOTATION_BETA_NEG_VALUE);
+	}
+	
 }

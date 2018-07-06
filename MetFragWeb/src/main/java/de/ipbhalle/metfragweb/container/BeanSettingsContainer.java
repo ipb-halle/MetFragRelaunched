@@ -251,6 +251,7 @@ public class BeanSettingsContainer {
 		this.scoreEnabledMap.put("suspectListsScore", false);
 		this.scoreEnabledMap.put("spectralSimilarity", false);
 		this.scoreEnabledMap.put("exactSpectralSimilarity", false);
+		this.scoreEnabledMap.put("statistical", false);
 	}
 
 	protected void initScoreNames() {
@@ -262,6 +263,7 @@ public class BeanSettingsContainer {
 		this.scoreNamesMap.put("fragmenterScore", "Fragmenter Score");
 		this.scoreNamesMap.put("spectralSimilarity", "Spectral Similarity");
 		this.scoreNamesMap.put("exactSpectralSimilarity", "Exact Spectral Similarity");
+		this.scoreNamesMap.put("statistical", "Statistical Scoring");
 	}
 
 	protected void initScoreValid() {
@@ -274,6 +276,7 @@ public class BeanSettingsContainer {
 		this.scoreValidMap.put("simScore", true);
 		this.scoreValidMap.put("spectralSimilarity", true);
 		this.scoreValidMap.put("exactSpectralSimilarity", true);
+		this.scoreValidMap.put("statistical", true);
 	}
 	
 	protected void initFilterEnabled() {
@@ -1403,6 +1406,11 @@ public class BeanSettingsContainer {
 		//exact spectral similarity
 		if(this.scoreEnabledMap.get("exactSpectralSimilarity") && this.scoreValidMap.get("exactSpectralSimilarity")) {
 			compoundScores.add("OfflineIndividualMoNAScore");
+		}
+		//statistical scoring
+		if(this.scoreEnabledMap.get("statistical") && this.scoreValidMap.get("statistical")) {
+			compoundScores.add("AutomatedPeakFingerprintAnnotationScore");
+			compoundScores.add("AutomatedLossFingerprintAnnotationScore");
 		}
 		//suspect list inclusion score
 		if(this.scoreEnabledMap.get("suspectListsScore") && this.scoreValidMap.get("suspectListsScore")) {

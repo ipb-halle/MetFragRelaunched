@@ -193,7 +193,7 @@ public class CompareSpectraD3JSBean {
 		fas.setCandidate(precursorCandidate);
 		fas.initialise();
 		fas.calculate();
-		fas.assignInteremScoresResults();
+		fas.assignInterimScoresResults();
 		ICandidate scoredCandidate = fas.getCandidates()[0];
 		// generate fragments
 		java.io.File imageFolderFragments = new java.io.File(

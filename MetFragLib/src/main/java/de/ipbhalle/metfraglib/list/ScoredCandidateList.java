@@ -39,6 +39,7 @@ public class ScoredCandidateList extends CandidateList {
 				 */
 				try {
 					scoreValues[ii] = (Double)currentCandidate.getProperty(scoreNames[i]);
+				//	System.out.println(currentCandidate.getProperty("InChIKey1") + " " + scoreNames[i] + " " + scoreValues[ii]);
 				}
 				catch(java.lang.ClassCastException e) {
 					scoreValues[ii] = Double.parseDouble(this.convertScoreValue((String)currentCandidate.getProperty(scoreNames[i])));
@@ -51,12 +52,15 @@ public class ScoredCandidateList extends CandidateList {
 				negativeValues = true;
 				maximumScore = 1.0 / Math.abs(maximumScore);
 			}
+			
 			for(int ii = 0; ii < normalisedValues[0].length; ii++) {
 				if(maximumScore != 0.0) {
 					normalisedValues[i][ii] = scoreValues[ii];
 					if(scaleValue) {
 						if(!negativeValues) normalisedValues[i][ii] /= maximumScore;
-						else normalisedValues[i][ii] = (1.0 / Math.abs(normalisedValues[i][ii])) / maximumScore;
+						else {
+							normalisedValues[i][ii] = (1.0 / Math.abs(normalisedValues[i][ii])) / maximumScore;
+						}
 					}
 				}
 			}
@@ -70,7 +74,7 @@ public class ScoredCandidateList extends CandidateList {
 			Double combinedNormalisedValue = new Double(0);
 			for(int ii = 0; ii < normalisedValues.length; ii++) {
 				combinedNormalisedValue += normalisedValues[ii][i] * weights[ii];
-			}
+			} 
 			this.getElement(i).setProperty(VariableNames.FINAL_SCORE_COLUMN_NAME, combinedNormalisedValue);
 			sortedScoredCandidateList.addElement(this.getElement(i));
 		}

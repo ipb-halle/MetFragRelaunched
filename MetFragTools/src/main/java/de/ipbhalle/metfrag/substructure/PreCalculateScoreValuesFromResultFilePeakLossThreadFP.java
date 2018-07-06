@@ -223,7 +223,7 @@ public class PreCalculateScoreValuesFromResultFilePeakLossThreadFP {
 			}
 
 			System.out.println(dbFilename.replaceAll(".*/", "") + ": Read " + candidates.getNumberElements() + " candidates");
-
+			
 			AutomatedPeakFingerprintAnnotationScoreInitialiser initPeak = new AutomatedPeakFingerprintAnnotationScoreInitialiser();
 			AutomatedLossFingerprintAnnotationScoreInitialiser initLoss = new AutomatedLossFingerprintAnnotationScoreInitialiser();
 			try {
@@ -549,8 +549,13 @@ public class PreCalculateScoreValuesFromResultFilePeakLossThreadFP {
 						if(currentFingerprint.getSize() != 1) matchProbTypes.append(":1");
 						else matchProbTypes.append(":2");
 					} else {
-						matchProbTypes.append(currentMass);
-						matchProbTypes.append(":3"); 
+						if(currentFingerprint.equals(new FastBitArray("0")) && peakToFingerprintGroupList.getElementByFingerprint(currentFingerprint) == null) {
+							matchProbTypes.append(currentMass);
+							matchProbTypes.append(":4");
+						} else {
+							matchProbTypes.append(currentMass);
+							matchProbTypes.append(":3");
+						}
 					}
 				}
 				if (i != (peakToFingerprintGroupListCollection.getNumberElements() - 1))
