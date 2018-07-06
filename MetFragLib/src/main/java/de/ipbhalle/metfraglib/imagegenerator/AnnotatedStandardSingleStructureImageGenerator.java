@@ -30,6 +30,10 @@ public class AnnotatedStandardSingleStructureImageGenerator extends StandardSing
 	private boolean annotateBonds = true;
 	private int atomIndexStart = 0;
 	private int bondIndexStart = 0;
+
+	public AnnotatedStandardSingleStructureImageGenerator() {
+		super(new Font("Verdana", Font.BOLD, 18));
+	}
 	
 	public AnnotatedStandardSingleStructureImageGenerator(Font font) {
 		super(font);
@@ -45,7 +49,7 @@ public class AnnotatedStandardSingleStructureImageGenerator extends StandardSing
 	public RenderedImage generateImage(final IAtomContainer structure) {
 		Image image = new BufferedImage(this.imageWidth, this.imageHeight, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g2 = (Graphics2D) image.getGraphics();
-		g2.setColor(new Color(1.0f, 1.0f, 1.0f, 0.0f));
+		g2.setColor(this.backgroundColor);
 		g2.fillRect(0, 0, this.imageWidth, this.imageHeight);
 		try {
 			IAtomContainer moleculeToDraw = AtomContainerManipulator.removeHydrogens(structure);

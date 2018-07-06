@@ -75,7 +75,7 @@ import de.ipbhalle.metfragweb.validator.SmartsValidator;
 @SessionScoped
 public class MetFragWebBean {
 
-	private final String version = "v2.0.19";
+	private final String version = "v2.0.20";
 	/*
 	 * combines all the settings
 	 */
@@ -1325,6 +1325,14 @@ public class MetFragWebBean {
 	/*
 	 * score
 	 */
+	public boolean isStatisticalScoreEnabled() {
+		return this.beanSettingsContainer.isScoreEnabled("statistical");
+	}
+
+	public void setStatisticalScoreEnabled(boolean statisticalScoreEnabled) {
+		this.beanSettingsContainer.setScoreEnabled(statisticalScoreEnabled, "statistical");
+	}
+
 	public boolean isSpectralSimilarityScoreEnabled() {
 		return this.beanSettingsContainer.isScoreEnabled("spectralSimilarity");
 	}

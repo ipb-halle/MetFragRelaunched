@@ -19,7 +19,7 @@ public class AutomatedPeakFingerprintAnnotationScore extends AbstractScore {
 		this.optimalValues = new double[1];
 		this.optimalValues[0] = 0.0;
 		this.candidate = (ICandidate)settings.get(VariableNames.CANDIDATE_NAME);
-		this.hasInterimResults = false;
+		this.hasInterimResults = true;
 	}
 	
 	public void calculate() {
@@ -85,10 +85,16 @@ public class AutomatedPeakFingerprintAnnotationScore extends AbstractScore {
 					else matchType.add(2);
 				}
 				else {
+					if(currentFingerprint.equals(new FastBitArray("0")) && peakToFingerprintGroupList.getElementByFingerprint(currentFingerprint) == null) {
+						matchType.add(4);
+						matchProb.add(peakToFingerprintGroupList.getBetaProb());
+						this.value += Math.log(peakToFingerprintGroupList.getBetaProb());
+					} else {
+						this.value += Math.log(peakToFingerprintGroupList.getAlphaProb());
+						matchProb.add(peakToFingerprintGroupList.getAlphaProb());
+						matchType.add(3);
+					}
 					matchMasses.add(currentMass);
-					this.value += Math.log(peakToFingerprintGroupList.getAlphaProb());
-					matchProb.add(peakToFingerprintGroupList.getAlphaProb());
-					matchType.add(3);
 				}
 			}
 		}
@@ -127,6 +133,11 @@ public class AutomatedPeakFingerprintAnnotationScore extends AbstractScore {
 				return match;
 		}
 		return null;
+	}
+
+	@Override
+	public String getOptimalValuesToString() {
+		return this.candidate.hasDefinedProperty("AutomatedPeakFingerprintAnnotationScore_Probtypes") ? (String)this.candidate.getProperty("AutomatedPeakFingerprintAnnotationScore_Probtypes") : "NA";
 	}
 	
 	@Override

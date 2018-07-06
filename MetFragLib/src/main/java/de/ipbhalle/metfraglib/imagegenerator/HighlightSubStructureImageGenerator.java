@@ -99,7 +99,7 @@ public class HighlightSubStructureImageGenerator extends StandardSingleStructure
 			Rectangle2D bounds = new Rectangle2D.Double(0, 0, this.imageWidth, this.imageHeight);
 			
 			Graphics2D g2 = (Graphics2D) image.getGraphics();
-			g2.setColor(new Color(1.0f, 1.0f, 1.0f, 0.0f));
+			g2.setColor(this.backgroundColor);
 			g2.fillRect(0, 0, this.imageWidth, this.imageHeight);
 			this.renderer.paint(moleculeToDraw, new AWTDrawVisitor(g2), bounds, true);
 		} catch (Exception e) {
@@ -141,7 +141,7 @@ public class HighlightSubStructureImageGenerator extends StandardSingleStructure
 			}
 
 			Graphics2D g2 = (Graphics2D) image.getGraphics();
-			g2.setColor(new Color(1.0f, 1.0f, 1.0f, 0.0f));
+			g2.setColor(this.backgroundColor);
 			g2.fillRect(0, 0, this.imageWidth, this.imageHeight);
 			this.renderer.paint(structure, new AWTDrawVisitor(g2), bounds, true);
 		} catch (Exception e) {

@@ -33,23 +33,30 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 	public void initScoreParameters(Settings settings) throws Exception {
 		if(!settings.containsKey(VariableNames.LOSS_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME) || settings.get(VariableNames.LOSS_TO_FINGERPRINT_GROUP_LIST_COLLECTION_NAME) == null) {
 			MassToFingerprintGroupListCollection lossToFingerprintGroupListCollection = new MassToFingerprintGroupListCollection();
-			String filename = (String)settings.get(VariableNames.FINGERPRINT_LOSS_ANNOTATION_FILE_NAME);
 			DefaultPeakList peakList = (DefaultPeakList)settings.get(VariableNames.PEAK_LIST_NAME);
 			Double mzppm = (Double)settings.get(VariableNames.RELATIVE_MASS_DEVIATION_NAME);
 			Double mzabs = (Double)settings.get(VariableNames.ABSOLUTE_MASS_DEVIATION_NAME);
-			
+			BufferedReader breader = null;
+			java.io.InputStream is = null;
+			if(settings.containsKey(VariableNames.FINGERPRINT_LOSS_ANNOTATION_FILE_NAME) && settings.get(VariableNames.FINGERPRINT_LOSS_ANNOTATION_FILE_NAME) != null) {
+				breader = new BufferedReader(new FileReader(new File((String)settings.get(VariableNames.FINGERPRINT_LOSS_ANNOTATION_FILE_NAME))));
+			} else {
+				String filename = "loss_annotations_neg.txt";
+				if((Boolean)settings.get(VariableNames.IS_POSITIVE_ION_MODE_NAME)) filename = "loss_annotations_pos.txt";
+				is = AutomatedPeakFingerprintAnnotationScoreInitialiser.class.getResourceAsStream("/" + filename);
+				breader = new java.io.BufferedReader(new java.io.InputStreamReader(is));
+			}
 			Double neutralPrecursorMass = (Double)settings.get(VariableNames.PRECURSOR_NEUTRAL_MASS_NAME);
 			Double adductMass = Constants.getIonisationTypeMassCorrection(Constants.ADDUCT_NOMINAL_MASSES.indexOf((Integer)settings.get(VariableNames.PRECURSOR_ION_MODE_NAME)), (Boolean)settings.get(VariableNames.IS_POSITIVE_ION_MODE_NAME));
 			
 			java.util.ArrayList<Double> massDifferences = this.calculatePeakDifferences(peakList, neutralPrecursorMass, adductMass);
 			java.util.ArrayList<Double> uniqueMassDifferences = this.calculateUniquePeakDifferences(massDifferences, mzppm, mzabs);
 			java.util.LinkedList<Double> lossMassesFound = new java.util.LinkedList<Double>();
-			BufferedReader breader = new BufferedReader(new FileReader(new File(filename)));
 			String line = "";
 			int numMatchedObservationsMerged = 0;
 			java.util.HashMap<Double, MassToFingerprintGroupList> mergedFingerprintGroupLists = new java.util.HashMap<Double, MassToFingerprintGroupList>();
 			
-
+			this.setPseudoCountValues(settings);
 			// first add non-matched masses with dummy fingerprint "0"
 			// these masses are present in the first line of the annotation file: mass[:counts]
 			String nonMatchedMassesString = breader.readLine().trim();
@@ -177,37 +184,35 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 				java.util.ArrayList<MassFingerprintMatch> lossMatchlist = new java.util.ArrayList<MassFingerprintMatch>();
 				MatchList matchlist = candidate.getMatchList();
 				
-				if(matchlist == null || matchlist.getNumberElements() == 0) {
-					candidate.setProperty("LossMatchList", lossMatchlist);
-					continue;
-				}
-				candidate.initialisePrecursorCandidate();
-				for(int i = 0; i < matchlist.getNumberElements(); i++) {
-					IMatch matchI = matchlist.getElement(i);
-					IFragment fragmentI = matchI.getBestMatchedFragment();
-					double peakMassI = matchI.getMatchedPeak().getMass();
-					for(int j = i + 1; j < matchlist.getNumberElements(); j++) {
-						IMatch matchJ = matchlist.getElement(j);
-						double peakMassJ = matchJ.getMatchedPeak().getMass();
-						IFragment fragmentJ = matchJ.getBestMatchedFragment();
-						if(fragmentJ.isRealSubStructure(fragmentI)) {
-							double diff = MathTools.round(peakMassJ - peakMassI);
-							MassToFingerprintGroupList matchingLossToFingerprintGroupList = lossToFingerprintGroupListCollection.getElementByPeak(diff, mzppm, mzabs);
-							if(matchingLossToFingerprintGroupList == null) continue;
-							IFragment diffFragment = fragmentJ.getDifferenceFragment(candidate.getPrecursorMolecule(), fragmentI);
-							if(diffFragment == null) continue;
-							IAtomContainer con = fingerprint.getNormalizedAtomContainer(candidate.getPrecursorMolecule(), diffFragment);	
-							lossMatchlist.add(new MassFingerprintMatch(diff, fingerprint.getNormalizedFastBitArrayFingerprint(con)));
+				if(matchlist != null) {
+					candidate.initialisePrecursorCandidate();
+					for(int i = 0; i < matchlist.getNumberElements(); i++) {
+						IMatch matchI = matchlist.getElement(i);
+						IFragment fragmentI = matchI.getBestMatchedFragment();
+						double peakMassI = matchI.getMatchedPeak().getMass();
+						for(int j = i + 1; j < matchlist.getNumberElements(); j++) {
+							IMatch matchJ = matchlist.getElement(j);
+							double peakMassJ = matchJ.getMatchedPeak().getMass();
+							IFragment fragmentJ = matchJ.getBestMatchedFragment();
+							if(fragmentJ.isRealSubStructure(fragmentI)) {
+								double diff = MathTools.round(peakMassJ - peakMassI);
+								MassToFingerprintGroupList matchingLossToFingerprintGroupList = lossToFingerprintGroupListCollection.getElementByPeak(diff, mzppm, mzabs);
+								if(matchingLossToFingerprintGroupList == null) continue;
+								IFragment diffFragment = fragmentJ.getDifferenceFragment(candidate.getPrecursorMolecule(), fragmentI);
+								if(diffFragment == null) continue;
+								IAtomContainer con = fingerprint.getNormalizedAtomContainer(candidate.getPrecursorMolecule(), diffFragment);	
+								lossMatchlist.add(new MassFingerprintMatch(diff, fingerprint.getNormalizedFastBitArrayFingerprint(con)));
+							}
 						}
+						//do the same for the precursor ion
+						double diff = MathTools.round(ionmass - peakMassI);	
+						MassToFingerprintGroupList matchingLossToFingerprintGroupList = lossToFingerprintGroupListCollection.getElementByPeak(diff, mzppm, mzabs);
+						if(matchingLossToFingerprintGroupList == null) continue;
+						IFragment diffFragment = fragmentI.getDifferenceFragment(candidate.getPrecursorMolecule());
+						if(diffFragment == null) continue;
+						IAtomContainer con = fingerprint.getNormalizedAtomContainer(candidate.getPrecursorMolecule(), diffFragment);
+						lossMatchlist.add(new MassFingerprintMatch(diff, fingerprint.getNormalizedFastBitArrayFingerprint(con)));
 					}
-					//do the same for the precursor ion
-					double diff = MathTools.round(ionmass - peakMassI);	
-					MassToFingerprintGroupList matchingLossToFingerprintGroupList = lossToFingerprintGroupListCollection.getElementByPeak(diff, mzppm, mzabs);
-					if(matchingLossToFingerprintGroupList == null) continue;
-					IFragment diffFragment = fragmentI.getDifferenceFragment(candidate.getPrecursorMolecule());
-					if(diffFragment == null) continue;
-					IAtomContainer con = fingerprint.getNormalizedAtomContainer(candidate.getPrecursorMolecule(), diffFragment);
-					lossMatchlist.add(new MassFingerprintMatch(diff, fingerprint.getNormalizedFastBitArrayFingerprint(con)));
 				}
 				//java.util.LinkedList<Double> nonExplainedLosses = this.getNonExplainedLoss(peakList, matchlist);
 				for(int j = 0; j < lossMatchlist.size(); j++) {
@@ -401,6 +406,18 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 		for(Double elem : nonExplainedLosses) {
 			lossMatchlist.add(new MassFingerprintMatch(elem, new FastBitArray("0")));
 		}
+	}
+	
+	private void setPseudoCountValues(Settings settings) {
+		boolean ionmode = (Boolean)settings.get(VariableNames.IS_POSITIVE_ION_MODE_NAME);
+		// loss alpha
+		if(!settings.containsKey(VariableNames.LOSS_FINGERPRINT_ANNOTATION_ALPHA_VALUE_NAME) || settings.get(VariableNames.LOSS_FINGERPRINT_ANNOTATION_ALPHA_VALUE_NAME) == null)
+			if(ionmode) settings.set(VariableNames.LOSS_FINGERPRINT_ANNOTATION_ALPHA_VALUE_NAME, Constants.DEFAULT_LOSS_FINGERPRINT_ANNOTATION_ALPHA_POS_VALUE);
+			else settings.set(VariableNames.LOSS_FINGERPRINT_ANNOTATION_ALPHA_VALUE_NAME, Constants.DEFAULT_LOSS_FINGERPRINT_ANNOTATION_ALPHA_NEG_VALUE);
+		// loss beta
+		if(!settings.containsKey(VariableNames.LOSS_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME) || settings.get(VariableNames.LOSS_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME) == null)
+			if(ionmode) settings.set(VariableNames.LOSS_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME, Constants.DEFAULT_LOSS_FINGERPRINT_ANNOTATION_BETA_POS_VALUE);
+			else settings.set(VariableNames.LOSS_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME, Constants.DEFAULT_LOSS_FINGERPRINT_ANNOTATION_BETA_NEG_VALUE);
 	}
 	
 }

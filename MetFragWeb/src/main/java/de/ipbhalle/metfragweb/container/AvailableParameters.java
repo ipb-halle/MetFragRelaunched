@@ -221,7 +221,7 @@ public class AvailableParameters {
 			new SelectItem("LipidMaps", "LipidMaps"),
 			new SelectItem("LocalDerivatisedKegg", "KEGG (derivatised)"),
 			new SelectItem("LocalChEBI", "ChEBI"),
-			new SelectItem("LocalHMDB", "HMBD")
+			new SelectItem("LocalHMDB", "HMDB")
 		};
 		SelectItem[] filedbs = new SelectItem[] {
 			new SelectItem("LocalCSV", "CSV"), 

@@ -130,7 +130,6 @@ public class GetRankOfCandidateCSV {
 					scorePropertyToMaximumValue[l] = curVal;
 			}
 		}
-
 		boolean[] negativeScore = new boolean[scoringPropertyNames.size()];
 		
 		for(int l = 0; l < scoringPropertyNames.size(); l++) {
@@ -139,7 +138,7 @@ public class GetRankOfCandidateCSV {
 			else if(scorePropertyToMaximumValue[l] < 0) {
 				negativeScore[l] = true;
 				scorePropertyToMaximumValue[l] = 1.0 / Math.abs(scorePropertyToMaximumValue[l]);
-			}
+			}	
 		}
 
 		if(found == -1 && !outputSortedList) {
@@ -158,7 +157,7 @@ public class GetRankOfCandidateCSV {
 				}
 				else currentValue = Double.parseDouble((String)candidates.getElement(j).getProperty(scoringPropertyNames.get(l)));
 				if(negativeScore[l]) {
-					curScore += (1.0 / Math.abs(currentValue)) * scorePropertyToWeight.get(scoringPropertyNames.get(l));
+					curScore += ((1.0 / Math.abs(currentValue)) / scorePropertyToMaximumValue[l]) * scorePropertyToWeight.get(scoringPropertyNames.get(l));
 				}
 				else if(!scorePropertyNamesForTakeRawValue.contains(scoringPropertyNames.get(l))) 
 					curScore += (currentValue / scorePropertyToMaximumValue[l]) * scorePropertyToWeight.get(scoringPropertyNames.get(l));

@@ -9,6 +9,10 @@ public class TopDownPrecursorCandidate extends PrecursorCandidate {
 		super(inchi, identifier);
 	}
 
+	public TopDownPrecursorCandidate(String inchi, String identifier, String smiles) {
+		super(inchi, identifier, smiles);
+	}
+
 	@Override
 	public void initialisePrecursorCandidate() throws AtomTypeNotKnownFromInputListException, Exception {
 		this.precursorStructure = new TopDownBitArrayPrecursor(this.getImplicitHydrogenAtomContainer());

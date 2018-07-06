@@ -188,7 +188,7 @@ public class StandardSingleStructureImageGenerator implements IImageGenerator {
 		Image image = new BufferedImage(this.imageWidth, this.imageHeight, BufferedImage.TYPE_INT_ARGB);
 
 		Graphics2D g2 = (Graphics2D) image.getGraphics();
-		g2.setColor(new Color(1.0f, 1.0f, 1.0f, 0.0f));
+		g2.setColor(this.backgroundColor);
 		g2.fillRect(0, 0, this.imageWidth, this.imageHeight);
 		return image;
 	}

@@ -349,6 +349,21 @@
 				</h:panelGrid>
 			</h:panelGrid>
 
+			<h:panelGrid columns="2" width="80%" style="vertical-align:top;"
+				cellspacing="4" cellpadding="4" styleClass="mainPanel"
+				columnClasses="firstColumnSimple,secondColumnSimple">
+				<p:selectBooleanCheckbox id="statisticalScoreEnabled"
+					value="#{metFragWebBean.statisticalScoreEnabled}">
+					<p:ajax update="statisticalScorePanel" />
+				</p:selectBooleanCheckbox>
+				<h:outputText id="statisticalScoreLabel"
+					value="Statistical Scoring" />
+			</h:panelGrid>
+			<h:panelGrid id="statisticalScorePanel">
+				<h:panelGrid columns="2" style="vertical-align:top;" cellspacing="4"
+					cellpadding="4" styleClass="subPanel" rendered="false">
+				</h:panelGrid>
+			</h:panelGrid>
 			<br />
 			<h:panelGrid columns="1">
 				<h:panelGroup layout="block" style="padding-top: 10px;">
