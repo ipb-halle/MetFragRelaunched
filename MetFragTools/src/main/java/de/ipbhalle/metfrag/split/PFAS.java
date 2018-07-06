@@ -28,6 +28,7 @@ public class PFAS {
 	
 	public PFAS(String smiles) throws AtomTypeNotKnownFromInputListException, Exception {
 		this.pfasStructure = new TopDownPrecursorCandidate("", "1", smiles);
+		System.out.println("Reading " + smiles);
 		this.pfasStructure.setUseSmiles(true);
 		this.pfasStructure.initialisePrecursorCandidate();
 	}
