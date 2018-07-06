@@ -106,7 +106,7 @@ public class SplitPFAS {
 				System.err.println("property " + tmp[0] + " already defined.");
 				return false;
 			}
-			argsHash.put(tmp[0], tmp[1]);
+			argsHash.put(tmp[0], combineStringArray(tmp));
 		}
 		
 		if (!argsHash.containsKey("smiles")) {
@@ -114,5 +114,15 @@ public class SplitPFAS {
 			return false;
 		}
 		return true;
+	}
+	
+	public static String combineStringArray(String[] array) {
+		StringBuilder stringBuilder = new StringBuilder();
+		if(array.length > 1) stringBuilder.append(array[1]);
+		for(int i = 2; i < array.length; i++) {
+			stringBuilder.append("=");
+			stringBuilder.append(array[i]);
+		}
+		return stringBuilder.toString();
 	}
 }
