@@ -140,27 +140,34 @@ public class PFAS {
 		return connectedFluorsCount;
 	}
 	
-	public String getSplitResult(List<Integer> bondIndexes, int[] endChainCarbonIndexes) {
+	public FragmentPFAS getSplitResult(List<Integer> bondIndexes, int[] endChainCarbonIndexes) {
 		LinkedList<AbstractTopDownBitArrayFragment> abstractTopDownBitArrayFragments = new LinkedList<AbstractTopDownBitArrayFragment>();
 		LinkedList<AbstractTopDownBitArrayFragment> newAbstractTopDownBitArrayFragments = null;
 		AbstractTopDownBitArrayFragment root = ((AbstractTopDownBitArrayPrecursor)this.pfasStructure.getPrecursorMolecule()).toFragment();
 		abstractTopDownBitArrayFragments.add(root);
-		for(int bondIndex : bondIndexes) {
+		int bondsBroken = 0;
+		List<AbstractTopDownBitArrayFragment> createdFragments = new ArrayList<AbstractTopDownBitArrayFragment>();
+		for(int i = 0; i < bondIndexes.size(); i++) {
+			int bondIndex = bondIndexes.get(i);
 			newAbstractTopDownBitArrayFragments = new LinkedList<AbstractTopDownBitArrayFragment>();
 			while(!abstractTopDownBitArrayFragments.isEmpty()) {
 				AbstractTopDownBitArrayFragment currentFragment = abstractTopDownBitArrayFragments.remove();
 				if(currentFragment.getBondsFastBitArray().get(bondIndex)) {
 					AbstractTopDownBitArrayFragment[] fragments = this.split((short)bondIndex, currentFragment);
-					for(int i = 0; i < fragments.length; i++) newAbstractTopDownBitArrayFragments.add(fragments[i]);
-				}
+					if(fragments.length != 1) bondsBroken++;
+					for(int ii = 0; ii < fragments.length; ii++) {
+						newAbstractTopDownBitArrayFragments.add(fragments[ii]);
+						if(!fragments[ii].getBondsFastBitArray().get(bondIndex) && i == (bondIndexes.size() - 1)) createdFragments.add(currentFragment);
+					}
+				} else createdFragments.add(currentFragment);
 			}
 			abstractTopDownBitArrayFragments = newAbstractTopDownBitArrayFragments;
 		}
-
+		
 		boolean[] containsEndChainCarbon = new boolean[newAbstractTopDownBitArrayFragments.size()];
 		for(int i = 0; i < newAbstractTopDownBitArrayFragments.size(); i++) {
 			for(int ii = 0; ii < endChainCarbonIndexes.length; ii++) {
-				if(newAbstractTopDownBitArrayFragments.get(i).getAtomsFastBitArray().get(endChainCarbonIndexes[ii])) containsEndChainCarbon[i] = true;
+				if(createdFragments.get(i).getAtomsFastBitArray().get(endChainCarbonIndexes[ii])) containsEndChainCarbon[i] = true;
 			}
 		}
 		
@@ -169,17 +176,17 @@ public class PFAS {
 			if(fragmentsWithEndChainCarbon) fragmentsWithEndChainCarbonCount++;
 		if(fragmentsWithEndChainCarbonCount == 0) {
 			System.err.println("Error: Problem occured. Check input molecule. No PFAS left after split.");
-			return "";
+			return null;
 		}
 		if(fragmentsWithEndChainCarbonCount >= 2) {
 			System.err.println("Error: Problem occured. Check input molecule. More than one functional group left after split.");
-			return "";
+			return null;
 		}
 		
 		for(int i = 0; i < containsEndChainCarbon.length; i++)
-			if(!containsEndChainCarbon[i]) return newAbstractTopDownBitArrayFragments.get(i).getSmiles(this.pfasStructure.getPrecursorMolecule());
+			if(!containsEndChainCarbon[i]) return new FragmentPFAS(createdFragments, containsEndChainCarbon, bondsBroken, this.pfasStructure);
 	
-		return "";
+		return null;
 	}
 	
 	protected AbstractTopDownBitArrayFragment[] split(short bondIndex, AbstractTopDownBitArrayFragment fragment) {
