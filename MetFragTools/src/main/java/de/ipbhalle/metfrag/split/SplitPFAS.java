@@ -19,7 +19,7 @@ public class SplitPFAS {
 		if(!getArgs(args)) {
 			System.out.println("Error: Could not read arguments properly.");
 			System.out.println("Usage:");
-			System.out.println("\tjava -cp NAME.jar de.ipbhalle.metfrag.split.SplitPFAS smiles='SMILES' [smartspath='FILEPATH']");
+			System.out.println("\tjava -cp NAME.jar de.ipbhalle.metfrag.split.SplitPFAS smiles='SMILES' [smartspath='FILEPATH'] [image='yes or no']");
 			System.out.println("");
 			System.out.println("\tsmiles    \t- SMILES of input PFAS");
 			System.out.println("");
@@ -27,6 +27,8 @@ public class SplitPFAS {
 			System.out.println("\t          \t- for empty SMARTS just include empty line");
 			System.out.println("\t          \t- order marks priotity");
 			System.out.println("\t          \t- if not given, default \"\" is used");
+			System.out.println("");
+			System.out.println("\timage     \t- create image of bonds broken (default 'no')");
 			System.out.println("");
 			System.exit(1);
 		}
@@ -42,6 +44,15 @@ public class SplitPFAS {
 		
 		String smiles = argsHash.get("smiles");
 		PFAS pfas = new PFAS(smiles);
+		boolean createImage = false;
+		if(argsHash.containsKey("image")) {
+			String image = (String)argsHash.get("image");
+			if(image.toLowerCase().equals("yes")) createImage = true;
+			else if(!image.toLowerCase().equals("no")) {
+				System.err.println("Error: Unexpected value for 'image' found " + image + ". 'yes' or 'no' expected.");
+				System.exit(4);
+			}
+		}
 		
 		int[] endChainCarbonIndexes = pfas.findEndChainCarbons();
 
@@ -56,14 +67,17 @@ public class SplitPFAS {
 			
 			if(numberFoundToSplit == 0) {
 				File file = File.createTempFile("pref", ".png", new File(Constants.OS_TEMP_DIR));
-				pfas.saveHighlightedBondsImage(bondIndexesToSplitForAllSmarts.get(ii), file.getAbsolutePath());
-				System.out.println("stored bond(s) to break highlighted in " + file.getAbsolutePath());
+				if(createImage) {
+					pfas.saveHighlightedBondsImage(bondIndexesToSplitForAllSmarts.get(ii), file.getAbsolutePath());
+					System.out.println("stored bond(s) to break highlighted in " + file.getAbsolutePath());
+				}
 				
-				String fragmentSmiles = pfas.getSplitResult(bondIndexesToSplitForAllSmarts.get(ii), endChainCarbonIndexes);
+				FragmentPFAS fragment = pfas.getSplitResult(bondIndexesToSplitForAllSmarts.get(ii), endChainCarbonIndexes);
 				
-				System.out.println(fragmentSmiles);
-				
-				if(!fragmentSmiles.equals("")) numberFoundToSplit++;
+				if(fragment != null) {
+					numberFoundToSplit++;
+					System.out.println(fragment.toString());
+				}
 			}
 		}
 	}	
@@ -98,7 +112,7 @@ public class SplitPFAS {
 		for (String arg : args) {
 			arg = arg.trim();
 			String[] tmp = arg.split("=");
-			if (!tmp[0].equals("smiles") && !tmp[0].equals("smartspath")) {
+			if (!tmp[0].equals("smiles") && !tmp[0].equals("smartspath") && !tmp[0].equals("image")) {
 				System.err.println("property " + tmp[0] + " not known.");
 				return false;
 			}
@@ -108,10 +122,12 @@ public class SplitPFAS {
 			}
 			argsHash.put(tmp[0], combineStringArray(tmp));
 		}
-		
 		if (!argsHash.containsKey("smiles")) {
 			System.err.println("Error: No smiles defined");
 			return false;
+		}
+		if (!argsHash.containsKey("image")) {
+			argsHash.put("image", "no");
 		}
 		return true;
 	}
