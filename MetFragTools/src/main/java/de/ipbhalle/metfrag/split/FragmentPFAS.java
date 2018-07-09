@@ -1,5 +1,6 @@
 package de.ipbhalle.metfrag.split;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import de.ipbhalle.metfraglib.candidate.TopDownPrecursorCandidate;
@@ -27,14 +28,20 @@ public class FragmentPFAS {
 	
 	public String getPfasSmiles() {
 		StringBuilder stringBuilder = new StringBuilder();
-		for(int i = 0; i < this.isChainPFAS.length; i++) 
+		List<String> fragmentSmiles = new LinkedList<String>();
+		for(int i = 0; i < this.isChainPFAS.length; i++) {
 			if(this.isChainPFAS[i]) { 
-				if(stringBuilder.length() == 0) stringBuilder.append(this.createdFragments.get(i).getPreparedSmiles(this.pfasStructure.getPrecursorMolecule()));
-				else {
-					stringBuilder.append("|");
-					stringBuilder.append(this.createdFragments.get(i).getPreparedSmiles(this.pfasStructure.getPrecursorMolecule()));
+				String smiles = this.createdFragments.get(i).getPreparedSmiles(this.pfasStructure.getPrecursorMolecule());
+				if(!fragmentSmiles.contains(smiles)) {
+					fragmentSmiles.add(smiles);
+					if(stringBuilder.length() == 0) stringBuilder.append(smiles);
+					else {
+						stringBuilder.append("|");
+						stringBuilder.append(smiles);
+					}
 				}
 			}
+		}
 		return stringBuilder.toString();
 	}
 	
