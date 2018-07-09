@@ -157,17 +157,28 @@ public class PFAS {
 					if(fragments.length != 1) bondsBroken++;
 					for(int ii = 0; ii < fragments.length; ii++) {
 						newAbstractTopDownBitArrayFragments.add(fragments[ii]);
-						if(!fragments[ii].getBondsFastBitArray().get(bondIndex) && i == (bondIndexes.size() - 1)) createdFragments.add(currentFragment);
+						createdFragments.add(fragments[ii]);
 					}
-				} else createdFragments.add(currentFragment);
+				}
 			}
 			abstractTopDownBitArrayFragments = newAbstractTopDownBitArrayFragments;
 		}
-		
-		boolean[] containsEndChainCarbon = new boolean[newAbstractTopDownBitArrayFragments.size()];
-		for(int i = 0; i < newAbstractTopDownBitArrayFragments.size(); i++) {
+
+		List<AbstractTopDownBitArrayFragment> cleanedCreatedFragments = new ArrayList<AbstractTopDownBitArrayFragment>();
+		for(int i = 0; i < createdFragments.size(); i++) {	
+			boolean bondFound = false;
+			for(int j = 0; j < bondIndexes.size(); j++) {
+				if(createdFragments.get(i).getBondsFastBitArray().get(bondIndexes.get(j))) {
+					bondFound = true;
+				}
+			}
+			if(!bondFound) cleanedCreatedFragments.add(createdFragments.get(i));
+		}
+
+		boolean[] containsEndChainCarbon = new boolean[cleanedCreatedFragments.size()];
+		for(int i = 0; i < cleanedCreatedFragments.size(); i++) {
 			for(int ii = 0; ii < endChainCarbonIndexes.length; ii++) {
-				if(createdFragments.get(i).getAtomsFastBitArray().get(endChainCarbonIndexes[ii])) containsEndChainCarbon[i] = true;
+				if(cleanedCreatedFragments.get(i).getAtomsFastBitArray().get(endChainCarbonIndexes[ii])) containsEndChainCarbon[i] = true;
 			}
 		}
 		
@@ -178,13 +189,13 @@ public class PFAS {
 			System.err.println("Error: Problem occured. Check input molecule. No PFAS left after split.");
 			return null;
 		}
-		if(fragmentsWithEndChainCarbonCount >= 2) {
+		if(fragmentsWithEndChainCarbonCount < cleanedCreatedFragments.size() - 1) {
 			System.err.println("Error: Problem occured. Check input molecule. More than one functional group left after split.");
 			return null;
 		}
 		
 		for(int i = 0; i < containsEndChainCarbon.length; i++)
-			if(!containsEndChainCarbon[i]) return new FragmentPFAS(createdFragments, containsEndChainCarbon, bondsBroken, this.pfasStructure);
+			if(!containsEndChainCarbon[i]) return new FragmentPFAS(cleanedCreatedFragments, containsEndChainCarbon, bondsBroken, this.pfasStructure);
 	
 		return null;
 	}
