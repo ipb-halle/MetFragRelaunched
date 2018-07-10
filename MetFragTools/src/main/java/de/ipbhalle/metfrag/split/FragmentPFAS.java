@@ -3,6 +3,11 @@ package de.ipbhalle.metfrag.split;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.openscience.cdk.exception.CDKException;
+import org.openscience.cdk.exception.InvalidSmilesException;
+import org.openscience.cdk.interfaces.IAtomContainer;
+
+import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
 import de.ipbhalle.metfraglib.candidate.TopDownPrecursorCandidate;
 import de.ipbhalle.metfraglib.fragment.AbstractTopDownBitArrayFragment;
 
@@ -20,13 +25,13 @@ public class FragmentPFAS {
 		this.numberBrokenBonds = numberBrokenBonds;
 	}
 	
-	public String getFunctionalGroupsSmiles() {
+	public String getFunctionalGroupsSmiles() throws CDKException {
 		for(int i = 0; i < this.isChainPFAS.length; i++) 
 			if(!this.isChainPFAS[i]) return this.createdFragments.get(i).getPreparedSmiles(this.pfasStructure.getPrecursorMolecule());
 		return "";
 	}
 	
-	public String getPfasSmiles() {
+	public String getPfasSmiles() throws CDKException {
 		StringBuilder stringBuilder = new StringBuilder();
 		List<String> fragmentSmiles = new LinkedList<String>();
 		for(int i = 0; i < this.isChainPFAS.length; i++) {
@@ -37,7 +42,7 @@ public class FragmentPFAS {
 					if(stringBuilder.length() == 0) stringBuilder.append(smiles);
 					else {
 						stringBuilder.append("|");
-						stringBuilder.append(smiles);
+						stringBuilder.append(this.reReadSmiles(smiles));
 					}
 				}
 			}
@@ -45,11 +50,23 @@ public class FragmentPFAS {
 		return stringBuilder.toString();
 	}
 	
+	protected String reReadSmiles(String smiles) throws InvalidSmilesException {
+		IAtomContainer con = MoleculeFunctions.parseSmiles(smiles);
+		MoleculeFunctions.prepareAtomContainer(con, false);
+		return MoleculeFunctions.generateSmiles(con);
+	}
+	
 	public int getNumberBrokenBonds() {
 		return this.numberBrokenBonds;
 	}
 	
 	public String toString() {
-		return this.getFunctionalGroupsSmiles() + " " + this.getPfasSmiles() + " " + this.getNumberBrokenBonds();
+		try {
+			return this.getFunctionalGroupsSmiles() + " " + this.getPfasSmiles() + " " + this.getNumberBrokenBonds();
+		} catch (CDKException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "";
 	}
 }

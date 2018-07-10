@@ -8,6 +8,7 @@ import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
 import org.openscience.cdk.smiles.SmiFlavor;
 import org.openscience.cdk.smiles.SmilesGenerator;
+import org.openscience.cdk.tools.CDKHydrogenAdder;
 
 import de.ipbhalle.metfraglib.FastBitArray;
 import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
@@ -304,10 +305,13 @@ public class DefaultBitArrayFragment extends AbstractFragment {
 		return smiles;
 	}
 
-	public String getPreparedSmiles(IMolecularStructure precursorMolecule) {
+	public String getPreparedSmiles(IMolecularStructure precursorMolecule) throws CDKException {
 		IAtomContainer molecule = this.getStructureAsIAtomContainer(precursorMolecule);
+
 		MoleculeFunctions.prepareAtomContainer(molecule, false);
-		
+		CDKHydrogenAdder adder = CDKHydrogenAdder.getInstance(molecule.getBuilder());
+		adder.addImplicitHydrogens(molecule);
+		   
 		SmilesGenerator sg = new SmilesGenerator(SmiFlavor.Generic);
 		String smiles = null;
 		try {

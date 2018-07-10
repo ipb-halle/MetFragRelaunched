@@ -75,6 +75,7 @@ public class CalculateAtomStatistics {
 			e.printStackTrace();
 		}
 		
+		
 	}
 	
 	public static void determineCarbonAtomStatistics(IAtomContainer mol, ICandidate candidate, java.util.ArrayList<Integer> aromaticAtomIndexes) {
