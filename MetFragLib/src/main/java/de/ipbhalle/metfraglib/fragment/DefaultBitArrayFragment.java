@@ -1,11 +1,13 @@
 package de.ipbhalle.metfraglib.fragment;
 
 import org.openscience.cdk.DefaultChemObjectBuilder;
+import org.openscience.cdk.Element;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
+import org.openscience.cdk.silent.Bond;
 import org.openscience.cdk.smiles.SmiFlavor;
 import org.openscience.cdk.smiles.SmilesGenerator;
 import org.openscience.cdk.tools.CDKHydrogenAdder;
@@ -383,7 +385,47 @@ public class DefaultBitArrayFragment extends AbstractFragment {
 		}
 	//	loss of hydrogens
 	//	MoleculeFunctions.prepareAtomContainer(fragmentStructure);
+
+		java.util.List<IAtom> atomsToAdd = new java.util.LinkedList<IAtom>();
+		java.util.List<IBond> bondsToAdd = new java.util.LinkedList<IBond>();
 		
+		for(int i = 0; i < fragmentStructure.getAtomCount(); i++) {
+			int bondOrderSum = 0;
+			java.util.List<IBond> bonds = fragmentStructure.getConnectedBondsList(fragmentStructure.getAtom(i));
+			for(int ii = 0; ii < bonds.size(); ii++) {
+				bondOrderSum += bonds.get(ii).getOrder().numeric();
+			}
+			if(fragmentStructure.getAtom(i).getBondOrderSum() != null && fragmentStructure.getAtom(i).getBondOrderSum() > bondOrderSum) {
+				for(int k = 0; k < (fragmentStructure.getAtom(i).getBondOrderSum() - bondOrderSum); k++) {
+					org.openscience.cdk.Atom hydrogenAtom = new org.openscience.cdk.Atom(new Element("H"));
+					IBond bond = new Bond(hydrogenAtom, fragmentStructure.getAtom(i));
+					atomsToAdd.add(hydrogenAtom);
+					bondsToAdd.add(bond);
+				}
+				fragmentStructure.getAtom(i).setImplicitHydrogenCount(0);
+			}
+		}
+		for(IBond bond : bondsToAdd) fragmentStructure.addBond(bond);
+		for(IAtom atom : atomsToAdd) fragmentStructure.addAtom(atom);
+		atomsToAdd = new java.util.LinkedList<IAtom>();
+		bondsToAdd = new java.util.LinkedList<IBond>();
+		for(int i = 0; i < fragmentStructure.getAtomCount(); i++) {
+			if(fragmentStructure.getAtom(i).getImplicitHydrogenCount() != null && fragmentStructure.getAtom(i).getImplicitHydrogenCount() > 0) {
+				for(int k = 0; k < fragmentStructure.getAtom(i).getImplicitHydrogenCount(); k++) {
+					org.openscience.cdk.Atom hydrogenAtom = new org.openscience.cdk.Atom(new Element("H"));
+					IBond bond = new Bond(hydrogenAtom, fragmentStructure.getAtom(i));
+					atomsToAdd.add(hydrogenAtom);
+					bondsToAdd.add(bond);
+				}
+				fragmentStructure.getAtom(i).setImplicitHydrogenCount(0);
+			}
+		}
+		for(IBond bond : bondsToAdd) fragmentStructure.addBond(bond);
+		for(IAtom atom : atomsToAdd) fragmentStructure.addAtom(atom);
+		//MoleculeFunctions.removeHydrogens(fragmentStructure);
+		
+		
+		fragmentStructure = MoleculeFunctions.convertExplicitToImplicitHydrogens(fragmentStructure);
 		return fragmentStructure;
 	}
 

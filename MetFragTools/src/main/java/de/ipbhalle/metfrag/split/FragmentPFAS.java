@@ -26,23 +26,35 @@ public class FragmentPFAS {
 	}
 	
 	public String getFunctionalGroupsSmiles() throws CDKException {
-		for(int i = 0; i < this.isChainPFAS.length; i++) 
-			if(!this.isChainPFAS[i]) return this.createdFragments.get(i).getPreparedSmiles(this.pfasStructure.getPrecursorMolecule());
-		return "";
+		StringBuilder stringBuilder = new StringBuilder();
+		for(int i = 0; i < this.isChainPFAS.length; i++) {
+			if(!this.isChainPFAS[i]) {
+				if(stringBuilder.length() == 0) stringBuilder.append(this.createdFragments.get(i).getPreparedSmiles(this.pfasStructure.getPrecursorMolecule()));
+				else {
+					stringBuilder.append("|");
+					stringBuilder.append(this.createdFragments.get(i).getPreparedSmiles(this.pfasStructure.getPrecursorMolecule()));
+				}
+			}
+		}
+		return stringBuilder.toString();
 	}
 	
 	public String getPfasSmiles() throws CDKException {
 		StringBuilder stringBuilder = new StringBuilder();
 		List<String> fragmentSmiles = new LinkedList<String>();
+		List<String> fragmentInChIKeys = new LinkedList<String>();
 		for(int i = 0; i < this.isChainPFAS.length; i++) {
 			if(this.isChainPFAS[i]) { 
 				String smiles = this.createdFragments.get(i).getPreparedSmiles(this.pfasStructure.getPrecursorMolecule());
-				if(!fragmentSmiles.contains(smiles)) {
+				String[] inchiInfo = MoleculeFunctions.getInChIInfoFromAtomContainer(this.createdFragments.get(i).getStructureAsIAtomContainer(this.pfasStructure.getPrecursorMolecule()));
+				String inchikey1 = inchiInfo[1];
+				if(!fragmentInChIKeys.contains(inchikey1)) {
 					fragmentSmiles.add(smiles);
+					fragmentInChIKeys.add(inchikey1);
 					if(stringBuilder.length() == 0) stringBuilder.append(smiles);
 					else {
 						stringBuilder.append("|");
-						stringBuilder.append(this.reReadSmiles(smiles));
+						stringBuilder.append(smiles);
 					}
 				}
 			}

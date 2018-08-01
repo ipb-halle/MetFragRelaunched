@@ -132,14 +132,16 @@ public class LocalInMemoryDatabase extends AbstractDatabase {
 		for(int i = 0; i < molecules.length; i++) {
 			MoleculeFunctions.prepareAtomContainer(molecules[i], true);
 			String[] inchiInfo = null;
+			String smiles = "";
 			try {
 				inchiInfo = MoleculeFunctions.getInChIInfoFromAtomContainer(molecules[i]);
+				smiles = MoleculeFunctions.generateSmiles(molecules[i]);
 			} catch (CDKException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 				continue;
 			}
-			TopDownPrecursorCandidate precursorCandidate = new TopDownPrecursorCandidate(inchiInfo[0], (i + 1) + "");
+			TopDownPrecursorCandidate precursorCandidate = new TopDownPrecursorCandidate(inchiInfo[0], (i + 1) + "", smiles);
 
 			java.util.Iterator<Object> properties = molecules[i].getProperties().keySet().iterator();
 			while(properties.hasNext()) {
