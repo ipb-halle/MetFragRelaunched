@@ -67,7 +67,7 @@ public class PFAS {
 	}
 	
 	
-	protected List<Integer> findBondsAfterMatch(List<Integer> matchedAtomIndexes, int endChainCarbonIndex, IAtomContainer con) {
+	protected List<Integer> findBondsAfterMatch(List<Integer> matchedAtomIndexes, int endChainCarbonIndex, IAtomContainer con) throws Exception {
 		List<Integer> bondIndexesAfterMatch = new ArrayList<Integer>();
 		IAtom endChainCarbon = con.getAtom(endChainCarbonIndex);
 		List<IAtom> connectedAtoms = con.getConnectedAtomsList(endChainCarbon);
@@ -187,10 +187,6 @@ public class PFAS {
 			if(fragmentsWithEndChainCarbon) fragmentsWithEndChainCarbonCount++;
 		if(fragmentsWithEndChainCarbonCount == 0) {
 			System.err.println("Error: Problem occured. Check input molecule. No PFAS left after split.");
-			return null;
-		}
-		if(fragmentsWithEndChainCarbonCount < cleanedCreatedFragments.size() - 1) {
-			System.err.println("Error: Problem occured. Check input molecule. More than one functional group left after split.");
 			return null;
 		}
 		

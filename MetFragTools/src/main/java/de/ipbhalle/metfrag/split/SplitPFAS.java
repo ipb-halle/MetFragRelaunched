@@ -43,7 +43,13 @@ public class SplitPFAS {
 		}
 		
 		String smiles = argsHash.get("smiles");
-		PFAS pfas = new PFAS(smiles);
+		PFAS pfas = null; 
+		try {
+			pfas = new PFAS(smiles);
+		} catch(Exception e) {
+			System.err.println("Error: Problem occured. Check input.");
+			System.exit(5);
+		}
 		boolean createImage = false;
 		if(argsHash.containsKey("image")) {
 			String image = (String)argsHash.get("image");
@@ -57,10 +63,16 @@ public class SplitPFAS {
 		int[] endChainCarbonIndexes = pfas.findEndChainCarbons();
 
 		List<List<Integer>> bondIndexesToSplitForAllSmarts = new ArrayList<List<Integer>>();
-		for(int ii = 0; ii < extendedChainSmarts.length; ii++) {
-			bondIndexesToSplitForAllSmarts.add(pfas.getBondIndexAfterEndChain(endChainCarbonIndexes, extendedChainSmarts[ii]));
+		try {	
+			for(int ii = 0; ii < extendedChainSmarts.length; ii++) {
+				bondIndexesToSplitForAllSmarts.add(pfas.getBondIndexAfterEndChain(endChainCarbonIndexes, extendedChainSmarts[ii]));
+			}
+		} catch(java.lang.IndexOutOfBoundsException e) {
+			System.err.println("Error: The initial match for the PFAS chain ending seemed to cause an error. Check your input SMILES.");
+			System.exit(6);
 		}
 		int numberFoundToSplit = 0;
+		boolean fragmentFound = false;
 		for(int ii = 0; ii < bondIndexesToSplitForAllSmarts.size(); ii++) {
 			// favor smarts unequal "" in case of multiple matches
 			if(bondIndexesToSplitForAllSmarts.get(ii).size() == 0) continue;
@@ -76,10 +88,13 @@ public class SplitPFAS {
 				
 				if(fragment != null) {
 					numberFoundToSplit++;
-					System.out.println(fragment.toString());
+					System.out.println(fragment.toString() + " smarts='" + extendedChainSmarts[ii] + "'");
+					fragmentFound = true;
 				}
 			}
 		}
+		if(!fragmentFound) System.out.println("No splittable bond found for the input molecule " + smiles);
+		
 	}	
 	
 	public static boolean readSmarts(String filename) throws IOException {
