@@ -181,7 +181,7 @@ public class Constants {
 	public static final Integer				DEFAULT_PRECURSOR_ION_TYPE 									= 	1;
 	public static final Boolean				DEFAULT_PROCESS_CANDIDATES 									= 	true;
 	public static final Boolean				DEFAULT_USE_SMILES	 										= 	false;
-	public static final String				DEFAULT_FINGERPRINT_TYPE	 								= 	"LingoFingerprinter";
+	public static final String				DEFAULT_FINGERPRINT_TYPE	 								= 	"CircularFingerprinter";
 
 	public static final Integer 			DEFAULT_STRUCTURE_IMAGE_WIDTH 								= 	200;
 	public static final Integer 			DEFAULT_STRUCTURE_IMAGE_HEIGHT 								= 	200;

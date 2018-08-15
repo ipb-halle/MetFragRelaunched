@@ -1,13 +1,15 @@
 package de.ipbhalle.metfraglib.additionals;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.openscience.cdk.Atom;
+import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.Bond;
 import org.openscience.cdk.exception.CDKException;
-import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
@@ -75,7 +77,8 @@ public class CheckMoleculeConversions_Test {
 		IAtomContainer conImplicitHydrogen = MoleculeFunctions.convertExplicitToImplicitHydrogens(this.con);
 		assertTrue("Number non-hydrogen atom missmatch", MoleculeFunctions.countNonHydrogenAtoms(this.con) == 6);
 		assertTrue("Number implicit-hydrogen atom missmatch", conImplicitHydrogen.getAtomCount() == 6);
-		assertEquals(86.10955, MoleculeFunctions.calculateMonoIsotopicMassImplicitHydrogens(conImplicitHydrogen), 0.000001);
+		
+		assertEquals(86.10962, MoleculeFunctions.calculateMonoIsotopicMassImplicitHydrogens(conImplicitHydrogen), 0.00001);
 	}
 	
 }

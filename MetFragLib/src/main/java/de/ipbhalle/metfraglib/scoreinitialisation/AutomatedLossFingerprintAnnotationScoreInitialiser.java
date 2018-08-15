@@ -66,7 +66,7 @@ public class AutomatedLossFingerprintAnnotationScoreInitialiser implements IScor
 				String[] tmp = nonMatchedMassesString.split(";"); // masses are separated by ";"
 				numNonMatchElements = tmp.length;
 				for(int k = 0; k < tmp.length; k++) { // run over all masses
-					String[] tmp2 = tmp[k].split(":");	// split by ":" to separate mass[:counts]
+					String[] tmp2 = tmp[k].split("\\s+");	// split by ":" to separate mass[:counts]
 					int count = 1;
 					Double newMass = Double.parseDouble(tmp2[0]);  // create mass value 
 					if(tmp2.length == 2) count = Integer.parseInt(tmp2[1]);  // if count is present use count else use 1 (default)

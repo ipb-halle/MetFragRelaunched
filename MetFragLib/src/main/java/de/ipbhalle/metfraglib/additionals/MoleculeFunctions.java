@@ -1,6 +1,6 @@
 package de.ipbhalle.metfraglib.additionals;
 
-import net.sf.jniinchi.INCHI_RET;
+import java.util.stream.StreamSupport;
 
 import org.openscience.cdk.aromaticity.Aromaticity;
 import org.openscience.cdk.aromaticity.ElectronDonation;
@@ -33,6 +33,7 @@ import de.ipbhalle.metfraglib.interfaces.IMolecularStructure;
 import de.ipbhalle.metfraglib.parameter.Constants;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.precursor.HDTopDownBitArrayPrecursor;
+import net.sf.jniinchi.INCHI_RET;
 
 public class MoleculeFunctions {
 
@@ -159,14 +160,10 @@ public class MoleculeFunctions {
 	 * @throws ExplicitHydrogenRepresentationException
 	 */
 	public static double calculateMonoIsotopicMassImplicitHydrogens(IAtomContainer molecule) throws ExplicitHydrogenRepresentationException {
-		double neutralMonoisotopicMass = 0.0;
-		for(int i = 0; i < molecule.getAtomCount(); i++) {
-			String currentAtomSymbol = molecule.getAtom(i).getSymbol();
-			if(currentAtomSymbol.equals("H"))
-				throw new ExplicitHydrogenRepresentationException();
-			neutralMonoisotopicMass += Constants.getMonoisotopicMassOfAtom(currentAtomSymbol) + molecule.getAtom(i).getImplicitHydrogenCount() * Constants.HYDROGEN_MASS;
-		}
-		return neutralMonoisotopicMass;
+		return StreamSupport.stream(molecule.atoms().spliterator(), false).map(IAtom::getSymbol)
+				.map(Constants::getMonoisotopicMassOfAtom).reduce(0.0, (a, b) -> a + b) // non-hydrogen atoms
+			+ StreamSupport.stream(molecule.atoms().spliterator(), false).map(IAtom::getImplicitHydrogenCount)
+				.map(x -> x * Constants.HYDROGEN_MASS).reduce(0.0, (a, b) -> a + b); // hydrogen
 	}
 	
 	public static IAtomContainer getAtomContainerFromSMILES(String smiles) throws Exception {

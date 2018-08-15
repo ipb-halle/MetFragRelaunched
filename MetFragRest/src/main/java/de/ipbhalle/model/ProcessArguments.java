@@ -1,4 +1,4 @@
-package de.ipbhalle.metfragrest;
+package de.ipbhalle.model;
 
 import java.io.File;
 
