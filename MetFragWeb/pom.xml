@@ -24,9 +24,6 @@
 	<artifactId>MetFragWeb</artifactId>
 	<packaging>war</packaging>
 	<name>MetFragWeb</name>
-	<url>http://www.myorganization.org</url>
-
-
 	<build>
 		<finalName>MetFragWeb</finalName>
 		<plugins>
