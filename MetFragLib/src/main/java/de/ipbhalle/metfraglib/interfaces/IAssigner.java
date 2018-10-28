@@ -9,7 +9,7 @@ public interface IAssigner {
 	 * 
 	 * @return
 	 */
-	public MatchList assign();
+	public MatchList assign(ICandidate candidate);
 	
 	/**
 	 * delete all objects

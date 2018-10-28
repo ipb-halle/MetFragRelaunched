@@ -16,4 +16,8 @@ public class DefaultScoreInitialiser implements IScoreInitialiser {
 		//nothing to do here
 	}
 
+	public void postProcessScoreParameters(Settings settings) {
+		return;
+	}
+	
 }

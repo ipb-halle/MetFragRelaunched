@@ -4,6 +4,8 @@ import java.util.HashMap;
 
 import org.apache.log4j.Level;
 
+import de.ipbhalle.metfraglib.exceptions.ParameterNotKnownException;
+
 public class ParameterDataTypes {
 
 	/*
@@ -13,25 +15,30 @@ public class ParameterDataTypes {
 	static {
 		parameterDatatypes.put(	VariableNames.ABSOLUTE_MASS_DEVIATION_NAME, 							"Double"	);
 		parameterDatatypes.put(	VariableNames.CHEMSPIDER_TOKEN_NAME, 									"String"	);
+		parameterDatatypes.put(	VariableNames.CHEMSPIDER_REST_TOKEN_NAME, 								"String"	);
 		parameterDatatypes.put(	VariableNames.CONSIDER_HYDROGEN_SHIFTS_NAME, 							"Boolean"	);
 		parameterDatatypes.put(	VariableNames.DATABASE_RELATIVE_MASS_DEVIATION_NAME, 					"Double"	);
 		parameterDatatypes.put(	VariableNames.IS_POSITIVE_ION_MODE_NAME, 								"Boolean"	);
 		parameterDatatypes.put(	VariableNames.MAXIMUM_TREE_DEPTH_NAME, 									"Byte"		);
 		parameterDatatypes.put(	VariableNames.PEAK_LIST_PATH_NAME, 										"String"	);
+		parameterDatatypes.put(	VariableNames.PEAK_LIST_STRING_NAME, 									"String"	);
 		parameterDatatypes.put(	VariableNames.PRECURSOR_DATABASE_IDS_NAME, 								"String[]"	);
 		parameterDatatypes.put(	VariableNames.PRECURSOR_ION_MODE_NAME, 									"Integer"	);
+		parameterDatatypes.put(	VariableNames.PRECURSOR_ION_MODE_STRING_NAME, 							"String"	);
 		parameterDatatypes.put(	VariableNames.PRECURSOR_MOLECULAR_FORMULA_NAME, 						"String"	);
 		parameterDatatypes.put(	VariableNames.PRECURSOR_NEUTRAL_MASS_NAME, 								"Double"	);
 		parameterDatatypes.put(	VariableNames.PRECURSOR_ION_MASS_NAME, 									"Double"	);
 		parameterDatatypes.put(	VariableNames.RELATIVE_MASS_DEVIATION_NAME, 							"Double"	);
 		parameterDatatypes.put(	VariableNames.LOCAL_DATABASE_PATH_NAME, 								"String"	);
 		parameterDatatypes.put(	VariableNames.MINIMUM_ABSOLUTE_PEAK_INTENSITY_NAME, 					"Double"	);
+		parameterDatatypes.put(	VariableNames.NUMBER_MAXIMUM_PEAKS_USED_NAME,		 					"Integer"	);
 		parameterDatatypes.put(	VariableNames.MAXIMUM_CANDIDATE_LIMIT_TO_STOP_NAME, 					"Integer"	);
+		parameterDatatypes.put(	VariableNames.PROCESS_CANDIDATES,					 					"Boolean"	);
+		parameterDatatypes.put(	VariableNames.USE_SMILES_NAME,					 						"Boolean"	);
+		parameterDatatypes.put(	VariableNames.FINGERPRINT_TYPE_NAME,			 						"String"	);
 		
 		parameterDatatypes.put(	VariableNames.METFRAG_DATABASE_TYPE_NAME, 								"String"	);
-		parameterDatatypes.put(	VariableNames.METFRAG_PRE_PROCESSING_CANDIDATE_FILTER_NAME,				"String[]"	);
 		parameterDatatypes.put(	VariableNames.COMBINED_REFERENCE_SCORE_VALUES,							"String[]"	);
-		parameterDatatypes.put(	VariableNames.METFRAG_POST_PROCESSING_CANDIDATE_FILTER_NAME,			"String[]"	);
 		parameterDatatypes.put(	VariableNames.METFRAG_FRAGMENTER_TYPE_NAME, 							"String"	);
 		parameterDatatypes.put(	VariableNames.METFRAG_ASSIGNER_TYPE_NAME, 								"String"	);
 		parameterDatatypes.put(	VariableNames.METFRAG_SCORE_TYPES_NAME, 								"String[]"	);
@@ -44,6 +51,7 @@ public class ParameterDataTypes {
 		
 		parameterDatatypes.put(	VariableNames.SAMPLE_NAME, 												"String"	);
 		parameterDatatypes.put(	VariableNames.STORE_RESULTS_PATH_NAME, 									"String"	);
+		parameterDatatypes.put(	VariableNames.STORE_RESULTS_FILE_NAME, 									"String"	);
 		parameterDatatypes.put(	VariableNames.NUMBER_THREADS_NAME, 										"Byte"		);
 		parameterDatatypes.put(	VariableNames.MAXIMUM_NUMBER_OF_TOPDOWN_FRAGMENT_ADDED_TO_QUEUE, 		"Byte"		);
 		parameterDatatypes.put(	VariableNames.METFRAG_PEAK_LIST_READER_NAME, 							"String"	);
@@ -51,8 +59,8 @@ public class ParameterDataTypes {
 		parameterDatatypes.put(	VariableNames.EXPERIMENTAL_RETENTION_TIME_VALUE_NAME, 					"Double"	);
 		parameterDatatypes.put(	VariableNames.LOG_LEVEL_NAME, 											"Level"		);
 		parameterDatatypes.put(	VariableNames.MONA_PRESENT_INCHIKEYS_FILE_NAME, 						"String"	);
-		parameterDatatypes.put(	VariableNames.OFFLINE_SPECTRAL_DATABASE_FILE_NAME,						"String"	);
-				
+		parameterDatatypes.put(	VariableNames.SMARTS_PEAK_ANNOTATION_FILE_NAME, 						"String"	);
+		parameterDatatypes.put( VariableNames.OFFLINE_SPECTRAL_DATABASE_FILE_NAME, 						"String"	);
 		/*
 		 * candidate filters
 		 */
@@ -65,6 +73,7 @@ public class ParameterDataTypes {
 		parameterDatatypes.put( VariableNames.PRE_CANDIDATE_FILTER_SUSPECT_LIST_NAME, 					"String[]"  );
 		parameterDatatypes.put( VariableNames.PRE_CANDIDATE_FILTER_MAXIMUM_ELEMENTS_NAME, 				"String"  	);
 		parameterDatatypes.put( VariableNames.PRE_CANDIDATE_FILTER_MINIMUM_ELEMENTS_NAME, 				"String"  	);
+		parameterDatatypes.put( VariableNames.PRE_CANDIDATE_FILTER_SMARTS_FORMULA_NAME, 				"String"  	);
 
 		/*
 		 * candidate filters
@@ -74,6 +83,20 @@ public class ParameterDataTypes {
 		parameterDatatypes.put( VariableNames.SCORE_SUSPECT_LISTS_NAME,			 						"String[]"  );
 		parameterDatatypes.put( VariableNames.RETENTION_TIME_TRAINING_FILE_NAME,			 			"String"  	);
 		parameterDatatypes.put( VariableNames.USER_LOG_P_VALUE_NAME,						 			"String"  	);
+		
+		/*
+		 * substructure learning
+		 */
+		parameterDatatypes.put( VariableNames.SMARTS_PEAK_ANNOTATION_FILE_NAME,						 			"String"  	);
+		parameterDatatypes.put( VariableNames.SMARTS_LOSS_ANNOTATION_FILE_NAME,						 			"String"  	);
+		parameterDatatypes.put( VariableNames.FINGERPRINT_PEAK_ANNOTATION_FILE_NAME,				 			"String"  	);
+		parameterDatatypes.put( VariableNames.FINGERPRINT_PEAK_ANNOTATION_FILE_CONV_NAME,				 		"String"  	);
+		parameterDatatypes.put( VariableNames.FINGERPRINT_LOSS_ANNOTATION_FILE_NAME,				 			"String"  	);
+		
+		parameterDatatypes.put(	VariableNames.PEAK_FINGERPRINT_ANNOTATION_ALPHA_VALUE_NAME, 					"Double"	);
+		parameterDatatypes.put(	VariableNames.PEAK_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME, 						"Double"	);
+		parameterDatatypes.put(	VariableNames.LOSS_FINGERPRINT_ANNOTATION_ALPHA_VALUE_NAME, 					"Double"	);
+		parameterDatatypes.put(	VariableNames.LOSS_FINGERPRINT_ANNOTATION_BETA_VALUE_NAME, 						"Double"	);
 		
 		/*
 		 * parameters for local database connection
@@ -91,6 +114,7 @@ public class ParameterDataTypes {
 		parameterDatatypes.put(	VariableNames.LOCAL_DATABASE_SMILES_COLUMN_NAME, 						"String"	);
 		parameterDatatypes.put(	VariableNames.LOCAL_DATABASE_USER_NAME, 								"String"	);
 		parameterDatatypes.put(	VariableNames.LOCAL_DATABASE_PASSWORD_NAME, 							"String"	);
+		parameterDatatypes.put(	VariableNames.LOCAL_DATABASE_COMPOUND_NAME_COLUMN_NAME,					"String"	);
 
 		parameterDatatypes.put(	VariableNames.LOCAL_PUBCHEM_DATABASE_NAME, 								"String"	);
 		parameterDatatypes.put(	VariableNames.LOCAL_PUBCHEM_DATABASE_COMPOUND_TABLE_NAME, 				"String"	);
@@ -151,7 +175,29 @@ public class ParameterDataTypes {
 		parameterDatatypes.put(	VariableNames.LOCAL_DERIVATISED_KEGG_DATABASE_USER_NAME, 							"String"	);
 		parameterDatatypes.put(	VariableNames.LOCAL_DERIVATISED_KEGG_DATABASE_PASSWORD_NAME, 						"String"	);
 		parameterDatatypes.put(	VariableNames.LOCAL_DERIVATISED_KEGG_DATABASE_COMPOUND_NAME_COLUMN_NAME,			"String"	);
+
+		parameterDatatypes.put(	VariableNames.LOCAL_CHEBI_DATABASE_NAME, 								"String"	);
+		parameterDatatypes.put(	VariableNames.LOCAL_CHEBI_DATABASE_COMPOUND_TABLE_NAME, 				"String"	);
+		parameterDatatypes.put(	VariableNames.LOCAL_CHEBI_DATABASE_PORT_NUMBER_NAME, 					"String"	);
+		parameterDatatypes.put(	VariableNames.LOCAL_CHEBI_DATABASE_SERVER_IP_NAME, 						"String"	);
+		parameterDatatypes.put(	VariableNames.LOCAL_CHEBI_DATABASE_MASS_COLUMN_NAME, 					"String"	);
+		parameterDatatypes.put(	VariableNames.LOCAL_CHEBI_DATABASE_FORMULA_COLUMN_NAME, 				"String"	);
+		parameterDatatypes.put(	VariableNames.LOCAL_CHEBI_DATABASE_INCHI_COLUMN_NAME,		 			"String"	);
+		parameterDatatypes.put(	VariableNames.LOCAL_CHEBI_DATABASE_INCHIKEY1_COLUMN_NAME, 				"String"	);
+		parameterDatatypes.put(	VariableNames.LOCAL_CHEBI_DATABASE_INCHIKEY2_COLUMN_NAME, 				"String"	);
+		parameterDatatypes.put(	VariableNames.LOCAL_CHEBI_DATABASE_CID_COLUMN_NAME, 					"String"	);
+		parameterDatatypes.put(	VariableNames.LOCAL_CHEBI_DATABASE_SMILES_COLUMN_NAME, 					"String"	);
+		parameterDatatypes.put(	VariableNames.LOCAL_CHEBI_DATABASE_USER_NAME, 							"String"	);
+		parameterDatatypes.put(	VariableNames.LOCAL_CHEBI_DATABASE_PASSWORD_NAME, 						"String"	);
+		parameterDatatypes.put(	VariableNames.LOCAL_CHEBI_DATABASE_COMPOUND_NAME_COLUMN_NAME,			"String"	);
 		
+		parameterDatatypes.put(	VariableNames.LOCAL_METCHEM_DATABASE_LIBRARY_NAME,						"String"	);
+		parameterDatatypes.put(	VariableNames.LOCAL_METCHEM_DATABASE_PASSWORD_NAME,						"String"	);
+		parameterDatatypes.put(	VariableNames.LOCAL_METCHEM_DATABASE_PORT_NUMBER_NAME,					"String"	);
+		parameterDatatypes.put(	VariableNames.LOCAL_METCHEM_DATABASE_SERVER_IP_NAME,					"String"	);
+		parameterDatatypes.put(	VariableNames.LOCAL_METCHEM_DATABASE_USER_NAME,							"String"	);
+		parameterDatatypes.put(	VariableNames.LOCAL_METCHEM_DATABASE_NAME,								"String"	);
+
 		parameterDatatypes.put(	VariableNames.NUMBER_RANDOM_SPECTRA_NAME, 								"Integer"	);
 		parameterDatatypes.put(	VariableNames.ENABLE_DEUTERIUM_NAME, 									"Boolean"	);
 		/*
@@ -185,15 +231,24 @@ public class ParameterDataTypes {
 		parameterDatatypes.put(	VariableNames.HD_PRECURSOR_ION_MASS_NAME, 									"Double"	);
 		parameterDatatypes.put(	VariableNames.HD_PEAK_LIST_PATH_NAME, 										"String"	);
 		parameterDatatypes.put(	VariableNames.HD_PRECURSOR_ION_MODE_NAME, 									"Integer"	);
+		parameterDatatypes.put(	VariableNames.HD_MINIMUM_ABSOLUTE_PEAK_INTENSITY_NAME,						"Double"	);
 		parameterDatatypes.put(	VariableNames.HD_GROUP_FLAG_FILTER_ENABLED_NAME, 							"Boolean"	);
+		
+		/*
+		 * 
+		 */
+		parameterDatatypes.put(	VariableNames.CORRECT_MASSES_FOR_FINGERPRINT_ANNOTATION_NAME, 		"Boolean"	);
+		parameterDatatypes.put(	VariableNames.LOCAL_DATABASES_FOLDER_FOR_WEB,						"String"	);
 		
 	}
 	
 	/*
 	 * function to retrieve parameters
 	 */
-	public static Object getParameter(String parameter, String parameterName) {
+	public static Object getParameter(String parameter, String parameterName) throws ParameterNotKnownException {
 		String type = parameterDatatypes.get(parameterName);
+		if(type == null) throw new ParameterNotKnownException("Parameter '" + parameterName + "' not known.");
+		
 		if(type.equals("Double")) return Double.parseDouble(parameter);
 		if(type.equals("Integer")) return Integer.parseInt(parameter);
 		if(type.equals("Byte")) return Byte.parseByte(parameter);

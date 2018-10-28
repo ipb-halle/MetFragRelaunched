@@ -35,10 +35,10 @@ public class OnlineMetaCycDatabase extends AbstractDatabase {
 	 * @throws Exception 
 	 * 
 	 */
-	public java.util.Vector<String> getCandidateIdentifiers(double monoisotopicMass, double relativeMassDeviation) throws Exception {
+	public java.util.ArrayList<String> getCandidateIdentifiers(double monoisotopicMass, double relativeMassDeviation) throws Exception {
 		logger.info("Fetching candidates from MetaCyc");
-		java.util.Vector<String> cids = new java.util.Vector<String>();
-		String urlname = "http://websvc.biocyc.org/META/monoisotopicwt?wts=" + monoisotopicMass + "&tol=" + relativeMassDeviation;
+		java.util.ArrayList<String> cids = new java.util.ArrayList<String>();
+		String urlname = "https://websvc.biocyc.org/META/monoisotopicwt?wts=" + monoisotopicMass + "&tol=" + relativeMassDeviation;
 		if(logger.isTraceEnabled()) logger.trace(urlname);
 		java.io.InputStream stream = this.getInputStreamFromURL(urlname);
 		if(stream == null) return cids;
@@ -68,10 +68,10 @@ public class OnlineMetaCycDatabase extends AbstractDatabase {
 	 * @throws Exception 
 	 * 
 	 */
-	public java.util.Vector<String> getCandidateIdentifiers(String molecularFormula) throws Exception {
+	public java.util.ArrayList<String> getCandidateIdentifiers(String molecularFormula) throws Exception {
 		logger.info("Fetching candidates from MetaCyc");
-		java.util.Vector<String> cids = new java.util.Vector<String>();
-		String urlname = "http://websvc.biocyc.org/META/CF?cfs=" + molecularFormula;
+		java.util.ArrayList<String> cids = new java.util.ArrayList<String>();
+		String urlname = "https://websvc.biocyc.org/META/CF?cfs=" + molecularFormula;
 		java.io.InputStream stream = this.getInputStreamFromURL(urlname);
 		if(logger.isTraceEnabled()) logger.trace(urlname);
 		try {
@@ -97,12 +97,13 @@ public class OnlineMetaCycDatabase extends AbstractDatabase {
 	}
 
 	//ToDo: check whether identifiers are valid and exist
-	public java.util.Vector<String> getCandidateIdentifiers(java.util.Vector<String> identifiers) {
+	public java.util.ArrayList<String> getCandidateIdentifiers(java.util.ArrayList<String> identifiers) {
+		logger.info("Fetching candidates from MetaCyc");
 		return identifiers;
 	}
 	
 	public ICandidate getCandidateByIdentifierInChI(String identifier) throws Exception {
-		String urlname = "http://www.biocyc.org/getxml?id=META:" + identifier + "&detail=high";
+		String urlname = "https://www.biocyc.org/getxml?id=META:" + identifier + "&detail=high";
 		java.io.InputStream stream = this.getInputStreamFromURL(urlname);
 		if(logger.isTraceEnabled()) logger.trace(urlname);
 		if(stream == null) return null;
@@ -166,7 +167,7 @@ public class OnlineMetaCycDatabase extends AbstractDatabase {
 	 * 
 	 */
 	public ICandidate getCandidateByIdentifier(String identifier) throws Exception {
-		String urlname = "http://www.biocyc.org/getxml?id=META:" + identifier + "&detail=low";
+		String urlname = "https://www.biocyc.org/getxml?id=META:" + identifier + "&detail=low";
 		java.io.InputStream stream = this.getInputStreamFromURL(urlname);
 		if(logger.isTraceEnabled()) logger.trace(urlname);
 		if(stream == null) return null;
@@ -223,7 +224,7 @@ public class OnlineMetaCycDatabase extends AbstractDatabase {
 	 * @throws Exception 
 	 * 
 	 */
-	public CandidateList getCandidateByIdentifier(java.util.Vector<String> identifiers) throws Exception {
+	public CandidateList getCandidateByIdentifier(java.util.ArrayList<String> identifiers) throws Exception {
 		CandidateList candidates = new CandidateList();
 		for(int i = 0; i < identifiers.size(); i++) {
 			ICandidate candidate = this.getCandidateByIdentifier(identifiers.get(i));
@@ -241,7 +242,6 @@ public class OnlineMetaCycDatabase extends AbstractDatabase {
 		
 		try {
 			URL url = new URL(urlname);
-			
 			Proxy proxy = null;
 			if(this.settings.containsKey(VariableNames.METACYC_PROXY_SERVER) && this.settings.containsKey(VariableNames.METACYC_PROXY_PORT)
 					&& this.settings.get(VariableNames.METACYC_PROXY_SERVER) != null && this.settings.get(VariableNames.METACYC_PROXY_PORT) != null) {
@@ -259,8 +259,8 @@ public class OnlineMetaCycDatabase extends AbstractDatabase {
 				this.connection = (HttpURLConnection) url.openConnection(proxy);
 			}
 			
-			this.connection.setConnectTimeout(10000);
-			this.connection.setReadTimeout(10000);
+			this.connection.setConnectTimeout(30000);
+			this.connection.setReadTimeout(30000);
 			/*
 			if (this.connection.getResponseCode() != 200) {
 				System.out.println("throwing exception");
@@ -282,15 +282,15 @@ public class OnlineMetaCycDatabase extends AbstractDatabase {
 	
 	public static void main(String[] args) throws MultipleHeadersFoundInInputDatabaseException, Exception {
 		MetFragGlobalSettings settings = new MetFragGlobalSettings();
-		settings.set(VariableNames.PRECURSOR_NEUTRAL_MASS_NAME, 360.15728850299996);
-		settings.set(VariableNames.DATABASE_RELATIVE_MASS_DEVIATION_NAME, 5.0);
+		settings.set(VariableNames.PRECURSOR_NEUTRAL_MASS_NAME, 610.15331);
+		settings.set(VariableNames.DATABASE_RELATIVE_MASS_DEVIATION_NAME, 10.0);
 		
 		settings.set(VariableNames.METACYC_PROXY_SERVER, "www-cache.ipb-halle.de");
 		settings.set(VariableNames.METACYC_PROXY_PORT, 3128);
 		
 		OnlineMetaCycDatabase db = new OnlineMetaCycDatabase(settings);
 		
-		java.util.Vector<String> ids = db.getCandidateIdentifiers(360.15728850299996, 5.0);
+		java.util.ArrayList<String> ids = db.getCandidateIdentifiers(610.15331, 10.0);
 		System.out.println("got " + ids.size() + " candidates");
 		CandidateList list = db.getCandidateByIdentifier(ids);
 		System.out.println(list.getNumberElements());

@@ -19,11 +19,23 @@ public class PrecursorCandidate implements ICandidate {
 	protected Hashtable<String, Object> properties;
 	protected MatchList matchList;
 	protected IMolecularStructure precursorStructure;
+	protected boolean useSmiles = false;
 	
 	public PrecursorCandidate(String inchi, String identifier) {
 		this.properties = new Hashtable<String, Object>();
 		this.properties.put(VariableNames.IDENTIFIER_NAME, identifier);
 		this.properties.put(VariableNames.INCHI_NAME, inchi);
+	}
+
+	public PrecursorCandidate(String inchi, String identifier, String smiles) {
+		this.properties = new Hashtable<String, Object>();
+		this.properties.put(VariableNames.IDENTIFIER_NAME, identifier);
+		this.properties.put(VariableNames.INCHI_NAME, inchi);
+		this.properties.put(VariableNames.SMILES_NAME, smiles);
+	}
+	
+	public boolean hasDefinedProperty(String propertyName) {
+		return this.properties.containsKey(propertyName) && this.properties.get(propertyName) != null ? true : false;
 	}
 	
 	public void setProperty(String key, Object value) {
@@ -55,17 +67,16 @@ public class PrecursorCandidate implements ICandidate {
 	}
 
 	public IAtomContainer getAtomContainer() throws Exception {
-		IAtomContainer molecule = MoleculeFunctions.getAtomContainerFromInChI((String)this.properties.get(VariableNames.INCHI_NAME));
-		MoleculeFunctions.prepareAtomContainer(molecule, true);
-		return molecule;
-	}
-
-	public IAtomContainer getImplicitHydrogenAtomContainer() throws Exception {
-		int trials = 1;
 		IAtomContainer molecule = null;
+		int trials = 1;
 		while(trials <= 10) {
 			try {
-				molecule = MoleculeFunctions.getAtomContainerFromInChI((String)this.properties.get(VariableNames.INCHI_NAME));
+				if(!this.useSmiles) {
+					molecule = MoleculeFunctions.getAtomContainerFromInChI((String)this.properties.get(VariableNames.INCHI_NAME));
+				}
+				else {
+					molecule = MoleculeFunctions.getAtomContainerFromSMILES((String)this.properties.get(VariableNames.SMILES_NAME));
+				}
 			}
 			catch(Exception e) {
 				trials++;
@@ -73,8 +84,16 @@ public class PrecursorCandidate implements ICandidate {
 			}
 			break;
 		}
-		if(molecule == null) throw new Exception("Could not read InChI!");
+		if(molecule == null) {
+			if(!this.useSmiles) throw new Exception("Could not read InChI!");
+			else throw new Exception("Could not read SMILES!");
+		}
 		MoleculeFunctions.prepareAtomContainer(molecule, true);
+		return molecule;
+	}
+
+	public IAtomContainer getImplicitHydrogenAtomContainer() throws Exception {
+		IAtomContainer molecule = this.getAtomContainer();
 		MoleculeFunctions.convertExplicitToImplicitHydrogens(molecule);
 		return molecule;
 	}
@@ -143,9 +162,11 @@ public class PrecursorCandidate implements ICandidate {
 		this.precursorStructure.preprocessPrecursor();
 	}
 	
+	
+	
 	public String[] getPropertyNames() {
 		java.util.Enumeration<?> keys = this.properties.keys();
-		java.util.Vector<String> keys_vector = new java.util.Vector<String>();
+		java.util.ArrayList<String> keys_vector = new java.util.ArrayList<String>();
 		while(keys.hasMoreElements()) {
 			keys_vector.add((String)keys.nextElement());
 		}
@@ -155,4 +176,21 @@ public class PrecursorCandidate implements ICandidate {
 		return names;
 	}
 	
+	public void setUseSmiles(boolean useSmiles) {
+		this.useSmiles = useSmiles;
+	}
+
+	public boolean isUseSmiles() {
+		return this.useSmiles;
+	}
+
+	@Override
+	public void resetPrecursorMolecule() {
+		this.precursorStructure.resetAtomContainer();
+	}
+	
+	@Override
+	public void setPrecursorMolecule() throws Exception {
+		this.precursorStructure.setAtomContainer(this.getImplicitHydrogenAtomContainer());
+	}
 }

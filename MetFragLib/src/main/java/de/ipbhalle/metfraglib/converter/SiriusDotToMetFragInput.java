@@ -6,7 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import de.ipbhalle.metfraglib.exceptions.AtomTypeNotKnownFromInputListException;
 import de.ipbhalle.metfraglib.molecularformula.ByteMolecularFormula;
@@ -71,7 +71,7 @@ public class SiriusDotToMetFragInput {
 	class Node {
 		private String id;
 		private Node father;
-		private Vector<Node> children;
+		private ArrayList<Node> children;
 		private String formula;
 		private double mass;
 		private String intensity;
@@ -129,7 +129,7 @@ public class SiriusDotToMetFragInput {
 		
 		public void addChild(Node child) {
 			if(this.children == null) {
-				this.children = new Vector<Node>();
+				this.children = new ArrayList<Node>();
 			}
 			this.children.add(child);
 		}

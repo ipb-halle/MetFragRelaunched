@@ -25,10 +25,16 @@ import de.ipbhalle.metfraglib.list.MatchList;
 import de.ipbhalle.metfraglib.list.ScoredCandidateList;
 import de.ipbhalle.metfraglib.list.SortedScoredCandidateList;
 import de.ipbhalle.metfraglib.parameter.Constants;
+import de.ipbhalle.metfraglib.parameter.VariableNames;
+import de.ipbhalle.metfraglib.settings.Settings;
 
 public class CandidateListWriterExtendedXLS implements IWriter {
 
-	public boolean write(IList list, String filename, String path)
+	public boolean write(IList list, String filename, String path, Settings settings) throws Exception {
+		return this.write(list, filename, path);
+	}
+	
+	public boolean writeFile(File xlsFile, IList list, Settings settings)
 			throws Exception {
 		CandidateList candidateList = null;
 		int numberOfPeaksUsed = 0;
@@ -47,6 +53,8 @@ public class CandidateListWriterExtendedXLS implements IWriter {
 		for (int i = 0; i < candidateList.getNumberElements(); i++) {
 			int countExplainedPeaks = 0;
 			ICandidate scoredCandidate = candidateList.getElement(i);
+			if(settings != null) scoredCandidate.setUseSmiles((Boolean)settings.get(VariableNames.USE_SMILES_NAME));
+			scoredCandidate.initialisePrecursorCandidate();
 			if (scoredCandidate.getMatchList() != null) {
 				MatchList matchList = scoredCandidate.getMatchList();
 				for (int l = 0; l < matchList.getNumberElements(); l++) {
@@ -75,7 +83,7 @@ public class CandidateListWriterExtendedXLS implements IWriter {
 					}
 					String formula = scoredCandidate.getMatchList()
 							.getElement(ii)
-							.getModifiedFormulaStringOfBestMatchedFragment();
+							.getModifiedFormulaStringOfBestMatchedFragment(scoredCandidate.getPrecursorMolecule());
 					sumFormulasOfFragmentsExplainedPeaks += scoredCandidate
 							.getMatchList().getElement(ii).getMatchedPeak()
 							.getMass()
@@ -105,8 +113,6 @@ public class CandidateListWriterExtendedXLS implements IWriter {
 		boolean withImages = true;
 		boolean withFragments = false;
 
-		File xlsFile = new File(path + Constants.OS_SPECIFIC_FILE_SEPARATOR
-				+ filename + "_extended.xls");
 		xlsFile.createNewFile();
 		WritableWorkbook workbook = Workbook.createWorkbook(xlsFile);
 		WritableSheet sheet1 = workbook.createSheet("MetFrag result list", 0);
@@ -183,8 +189,7 @@ public class CandidateListWriterExtendedXLS implements IWriter {
 					numberCells++;
 				}
 				sheet1.addCell(new Label(labels.get(propName) + columnWidthAdd,
-						(i * rowHeightAdd) + 1, String.valueOf(properties
-								.get(propName))));
+						(i * rowHeightAdd) + 1, String.valueOf(properties.get(propName))));
 			}
 
 		}
@@ -255,6 +260,22 @@ public class CandidateListWriterExtendedXLS implements IWriter {
 
 	public void nullify() {
 
+	}
+
+	@Override
+	public boolean write(IList list, String filename, String path) throws Exception {
+		return this.writeFile(new File(path + Constants.OS_SPECIFIC_FILE_SEPARATOR
+				+ filename + "_extended.xls"), list);
+	}
+
+	@Override
+	public boolean write(IList list, String filename) throws Exception {
+		return this.writeFile(new File(filename), list);
+	}
+
+	@Override
+	public boolean writeFile(File file, IList list) throws Exception {
+		return this.writeFile(file, list, null);
 	}
 
 }

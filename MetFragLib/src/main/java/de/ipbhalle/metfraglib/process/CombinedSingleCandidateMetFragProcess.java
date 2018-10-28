@@ -90,6 +90,7 @@ public class CombinedSingleCandidateMetFragProcess implements Runnable {
 			this.shallowNullify();
 			return;
 		}
+		
 		/*
 		 * generate fragments
 		 */
@@ -103,15 +104,14 @@ public class CombinedSingleCandidateMetFragProcess implements Runnable {
 		 * fragment candidate, assign fragments and score
 		 */
 		this.fas.calculate();
-		this.fas.assignScores();
-
+		//removing score assignment and shifted to CombinedMetFragProcess after postCalculating scores
+		this.fas.assignInterimScoresResults();
 		//set the reference to the scored candidate(s)
 		this.scoredPrecursorCandidates = this.fas.getCandidates();
-		
 		if(logger.isTraceEnabled()) {
 			logger.trace("\t\tcleaning candidates");
 		}
-		
+
 		if(logger.isDebugEnabled()) {
 			logger.debug(this.scoredPrecursorCandidates[0].getIdentifier() + " finished");
 		}
@@ -120,13 +120,30 @@ public class CombinedSingleCandidateMetFragProcess implements Runnable {
 		//this.shallowNullify();
 		//this.scoredPrecursorCandidates[0].nullify();
 		this.fas.shallowNullify();
+		this.scoredPrecursorCandidates[0].resetPrecursorMolecule();
 		this.wasSuccessful = true;
+	}
+	
+	public void singlePostCalculateScores() throws Exception {
+		this.fas.singlePostCalculateScore();
+	}
+	
+	public void assignScores() {
+		this.fas.assignScores();
+	}
+
+	public void assignInterimScoresResults() {
+		this.fas.assignInterimScoresResults();
 	}
 	
 	public AbstractFragmenterAssignerScorer getFragmenterAssignerScorer() {
 		return this.fas;
 	}
 
+	public void setScoredPrecursorCandidates(ICandidate candidate) {
+		this.scoredPrecursorCandidates = new ICandidate[] {candidate};
+	}
+	
 	public ICandidate[] getScoredPrecursorCandidates() {
 		return this.scoredPrecursorCandidates;
 	}
@@ -137,6 +154,10 @@ public class CombinedSingleCandidateMetFragProcess implements Runnable {
 	
 	public boolean wasSuccessful() {
 		return this.wasSuccessful;
+	}
+
+	public void setWasSuccessful(boolean successful) {
+		this.wasSuccessful = successful;
 	}
 	
 	public void setPreProcessingCandidateFilterCollection(PreProcessingCandidateFilterCollection preProcessingCandidateFilterCollection) {

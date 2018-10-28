@@ -37,11 +37,11 @@ public interface IMatch {
 	
 	public void addToMatch(IMatch match);
 	
-	public String getModifiedFormulaStringOfBestMatchedFragment();
+	public String getModifiedFormulaStringOfBestMatchedFragment(IMolecularStructure precursorMolecule);
 
-	public String getModifiedFormulaStringOfMatchedFragment(int index);
+	public String getModifiedFormulaStringOfMatchedFragment(IMolecularStructure precursorMolecule, int index);
 	
-	public String getModifiedFormulasStringOfBestMatchedFragment();
+	public String getModifiedFormulasStringOfBestMatchedFragment(IMolecularStructure precursorMolecule);
 	
 	public void initialiseBestMatchedFragment(int index);
 	

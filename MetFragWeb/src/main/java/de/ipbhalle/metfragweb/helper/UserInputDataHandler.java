@@ -175,6 +175,7 @@ public class UserInputDataHandler {
 			beanSettingsContainer.setAvailablePartitioningCoefficients(null);
 			errorMessages.setMessage("retentionTimeTrainingFileError", "Error: Uploaded file does not contain a RetentionTime field.");
 		} catch (Exception e3) {
+			e3.printStackTrace();
 			beanSettingsContainer.setScoreValid(false, "retentionTimeTrainingFile");
 			beanSettingsContainer.setRetentionTimeScoreTrainingFilePath("");
 			beanSettingsContainer.setAvailablePartitioningCoefficients(null);

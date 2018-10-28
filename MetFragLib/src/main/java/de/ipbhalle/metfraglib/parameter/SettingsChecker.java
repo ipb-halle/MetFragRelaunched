@@ -11,27 +11,35 @@ public class SettingsChecker {
 	protected Logger logger = Logger.getLogger(this.getClass());
 	
 	public boolean check(Settings settings) {
-		
+
+		if(!checkIonModeSettings(settings)) return false;
 		if(!checkPeakListFileSettings(settings)) return false;
 		if(!checkDatabaseSettings(settings)) return false;
 		if(!checkFragmenterSettings(settings)) return false;
 		if(!candidateFilterSettings(settings)) return false;
 		if(!scoringTypesSettings(settings)) return false;
 		if(!checkOutputSettings(settings)) return false;
+		if(!checkFingerprinterSettings(settings)) return false;
 		
 		return true;
 	}
 
 	public boolean check(Settings settings, boolean checkOutput) {
-		
+
+		if(!checkIonModeSettings(settings)) return false;
 		if(!checkPeakListFileSettings(settings)) return false;
 		if(!checkDatabaseSettings(settings)) return false;
 		if(!checkFragmenterSettings(settings)) return false;
 		if(!candidateFilterSettings(settings)) return false;
 		if(!scoringTypesSettings(settings)) return false;
+		if(!checkFingerprinterSettings(settings)) return false;
 		if(checkOutput && !checkOutputSettings(settings)) return false;
 		
 		return true;
+	}
+	
+	public Logger getLogger() {
+		return this.logger;
 	}
 	
 	/**
@@ -69,7 +77,8 @@ public class SettingsChecker {
 		Object SampleName = settings.get(VariableNames.SAMPLE_NAME);
 		Object ResultsPath = settings.get(VariableNames.STORE_RESULTS_PATH_NAME);
 		Object MetFragCandidateWriter = settings.get(VariableNames.METFRAG_CANDIDATE_WRITER_NAME);
-		
+		Object ResultsFile = settings.get(VariableNames.STORE_RESULTS_FILE_NAME);
+
 		/**
 		 * check peak list file
 		 */
@@ -78,12 +87,26 @@ public class SettingsChecker {
 			this.logger.error(VariableNames.SAMPLE_NAME + " is not defined!");
 			checkPositive = false;
 		}
-		if(ResultsPath == null) {
-			this.logger.error(VariableNames.STORE_RESULTS_PATH_NAME + " is not defined!");
+		if(ResultsPath == null && ResultsFile == null) {
+			this.logger.error("No location for the result file defined. Specify " + VariableNames.STORE_RESULTS_PATH_NAME + " or " + VariableNames.STORE_RESULTS_FILE_NAME);
 			checkPositive = false;
 		}
 		else if(checkPositive) {
-			checkPositive = this.checkDirectory(VariableNames.STORE_RESULTS_PATH_NAME, (String)ResultsPath);
+			if(ResultsPath != null) checkPositive = this.checkDirectory(VariableNames.STORE_RESULTS_PATH_NAME, (String)ResultsPath);
+			if(ResultsFile != null) {
+				String[] tmp = ((String)ResultsFile).split(Constants.OS_SPECIFIC_FILE_SEPARATOR);
+				if(tmp.length > 1) {
+					String path = tmp[0];
+					for(int k = 1; k < (tmp.length - 1); k++) path += Constants.OS_SPECIFIC_FILE_SEPARATOR + tmp[k];
+					ResultsPath = path;
+					SampleName = tmp[tmp.length - 1];
+					settings.set(VariableNames.SAMPLE_NAME, SampleName);
+					settings.set(VariableNames.STORE_RESULTS_PATH_NAME, ResultsPath);
+				}
+			}
+			if(checkPositive && (ResultsPath != null && ResultsFile != null)) {
+				this.logger.info(VariableNames.STORE_RESULTS_PATH_NAME + " and " + VariableNames.STORE_RESULTS_FILE_NAME + " are specified. " + VariableNames.STORE_RESULTS_FILE_NAME + " has higher priority.");
+			}
 		}
 		if(MetFragCandidateWriter == null) {
 			this.logger.error(VariableNames.METFRAG_CANDIDATE_WRITER_NAME + " is not defined!");
@@ -106,11 +129,55 @@ public class SettingsChecker {
 	 * @param settings
 	 * @return
 	 */
+	private boolean checkIonModeSettings(Settings settings) {
+
+		boolean checkPositive = true;
+		
+		Object ionMode = settings.get(VariableNames.PRECURSOR_ION_MODE_NAME);
+		Object isPositive = settings.get(VariableNames.IS_POSITIVE_ION_MODE_NAME);
+		Object PrecursorIonModeString = settings.get(VariableNames.PRECURSOR_ION_MODE_STRING_NAME);
+		
+		if(PrecursorIonModeString != null) {
+			String PrecursorIonModeStringTmp = (String)PrecursorIonModeString;
+			if(!Constants.checkIonisationType(PrecursorIonModeStringTmp)) {
+				this.logger.error(PrecursorIonModeString + " not known!");
+				checkPositive = false;
+			}
+			else {
+				int PrecursorIonMode = Constants.getIonisationNominalMassByType((String)PrecursorIonModeString);
+				settings.set(VariableNames.PRECURSOR_ION_MODE_NAME, PrecursorIonMode);
+				boolean IsPositiveIonMode = Constants.getIonisationChargeByType((String)PrecursorIonModeString);
+				settings.set(VariableNames.IS_POSITIVE_ION_MODE_NAME, IsPositiveIonMode);
+				
+			}
+		} else if(ionMode != null) {
+			boolean IsPositiveIonMode = Constants.getIonisationChargeByNominalMassDifference((Integer)ionMode);
+			settings.set(VariableNames.IS_POSITIVE_ION_MODE_NAME, IsPositiveIonMode);
+		}
+		ionMode = settings.get(VariableNames.PRECURSOR_ION_MODE_NAME);
+		isPositive = settings.get(VariableNames.IS_POSITIVE_ION_MODE_NAME);
+		if(ionMode == null) {
+			this.logger.error(VariableNames.PRECURSOR_ION_MODE_NAME + " missing!");
+			checkPositive = false;
+		}
+		if(isPositive == null) {
+			this.logger.error(VariableNames.IS_POSITIVE_ION_MODE_NAME + " missing!");
+			checkPositive = false;
+		}
+		
+		return checkPositive;
+	}
+	
+	/**
+	 * 
+	 * @param settings
+	 * @return
+	 */
 	private boolean checkDatabaseSettings(Settings settings) {
 
 		boolean checkPositive = true;
 		
-		java.util.Vector<String> needsLocalDatabaseFile = new java.util.Vector<String>();
+		java.util.ArrayList<String> needsLocalDatabaseFile = new java.util.ArrayList<String>();
 		needsLocalDatabaseFile.add("LocalCSV");
 		needsLocalDatabaseFile.add("LocalPSV");
 		needsLocalDatabaseFile.add("LocalProperty");
@@ -123,6 +190,7 @@ public class SettingsChecker {
 		Object DatabaseSearchRelativeMassDeviation = settings.get(VariableNames.DATABASE_RELATIVE_MASS_DEVIATION_NAME);
 		Object LocalDatabasePath = settings.get(VariableNames.LOCAL_DATABASE_PATH_NAME);
 		Object ChemSpiderToken = settings.get(VariableNames.CHEMSPIDER_TOKEN_NAME);
+		Object ChemSpiderRestToken = settings.get(VariableNames.CHEMSPIDER_REST_TOKEN_NAME);
 		
 		Object MaxCandidateLimitToStop = settings.get(VariableNames.MAXIMUM_CANDIDATE_LIMIT_TO_STOP_NAME);
 	
@@ -138,7 +206,7 @@ public class SettingsChecker {
 				}
 			}
 			else {
-					try {
+				try {
 					Double ionMass = (Double)settings.get(VariableNames.PRECURSOR_ION_MASS_NAME);
 					Integer ionMode = (Integer)settings.get(VariableNames.PRECURSOR_ION_MODE_NAME);
 					Boolean isPositive = (Boolean)settings.get(VariableNames.IS_POSITIVE_ION_MODE_NAME);
@@ -164,6 +232,10 @@ public class SettingsChecker {
 			}
 			if(databaseName.equals("ChemSpider") && ChemSpiderToken == null) {
 				this.logger.error(VariableNames.CHEMSPIDER_TOKEN_NAME + " is not defined!");
+				checkPositive = false;
+			}
+			if(databaseName.equals("ChemSpiderRest") && ChemSpiderRestToken == null) {
+				this.logger.error(VariableNames.CHEMSPIDER_REST_TOKEN_NAME + " is not defined!");
 				checkPositive = false;
 			}
 			boolean isLocalDatabase = false;
@@ -240,6 +312,7 @@ public class SettingsChecker {
 				PrecursorIonModeValue = (Integer)PrecursorIonMode;
 			}
 			catch(Exception e) {
+				e.printStackTrace();
 				this.logger.error("No valid value for " + VariableNames.PRECURSOR_ION_MODE_NAME + ": " + PrecursorIonModeValue + "!");
 				checkPositive = false;
 			}
@@ -274,6 +347,23 @@ public class SettingsChecker {
 	 * @param settings
 	 * @return
 	 */
+	private boolean checkFingerprinterSettings(Settings settings) {
+		
+		Object FingerprintType = settings.get(VariableNames.FINGERPRINT_TYPE_NAME);
+		
+		if(FingerprintType == null) return true;
+		
+		boolean checkPositive = ClassNames.containsFingerprintType((String)FingerprintType);
+		if(!checkPositive) this.logger.error((String)FingerprintType + " is no known fingerprint type.");
+		
+		return ClassNames.containsFingerprintType((String)FingerprintType);
+	}
+	
+	/**
+	 * 
+	 * @param settings
+	 * @return
+	 */
 	private boolean candidateFilterSettings(Settings settings) {
 		
 		boolean checkPositive = true;
@@ -292,7 +382,7 @@ public class SettingsChecker {
 		 * check preprocessing filers
 		 */
 		if(MetFragPreProcessingCandidateFilter != null) {
-			java.util.Vector<String> definedFilters = new java.util.Vector<String>();
+			java.util.ArrayList<String> definedFilters = new java.util.ArrayList<String>();
 			String[] MetFragPreProcessingCandidateFilterValue = (String[])MetFragPreProcessingCandidateFilter;
 			for(int i = 0; i < MetFragPreProcessingCandidateFilterValue.length; i++) {
 				if(definedFilters.contains(MetFragPreProcessingCandidateFilterValue[i])) {
@@ -319,6 +409,12 @@ public class SettingsChecker {
 					}
 				}
 				else if(MetFragPreProcessingCandidateFilterValue[i].equals("ElementInclusionExclusiveFilter")) {
+					if(FilterIncludedElements == null) {
+						this.logger.error(VariableNames.PRE_CANDIDATE_FILTER_INCLUDED_ELEMENTS_NAME + " is not defined!");
+						checkPositive = false;
+					}
+				}
+				else if(MetFragPreProcessingCandidateFilterValue[i].equals("ElementInclusionOptionalFilter")) {
 					if(FilterIncludedElements == null) {
 						this.logger.error(VariableNames.PRE_CANDIDATE_FILTER_INCLUDED_ELEMENTS_NAME + " is not defined!");
 						checkPositive = false;
@@ -356,7 +452,7 @@ public class SettingsChecker {
 					else if(checkPositive) {
 						String[] fileNames = (String[])FilterSuspectLists;
 						for(int j = 0; j < fileNames.length; j++) {
-							if(!fileNames[j].equals(VariableNames.FORIDENT_SUSPECTLIST_NAME) && !this.checkFile(VariableNames.PRE_CANDIDATE_FILTER_SUSPECT_LIST_NAME, fileNames[j]))
+							if(!fileNames[j].equals(VariableNames.DSSTOX_SUSPECTLIST_NAME) && !fileNames[j].equals(VariableNames.FORIDENT_SUSPECTLIST_NAME) && !this.checkFile(VariableNames.PRE_CANDIDATE_FILTER_SUSPECT_LIST_NAME, fileNames[j]))
 								checkPositive = false;
 						}
 					}
@@ -412,7 +508,7 @@ public class SettingsChecker {
 				this.logger.error("Numbers of " + VariableNames.METFRAG_SCORE_TYPES_NAME + " and " + VariableNames.METFRAG_SCORE_WEIGHTS_NAME + " differ!");
 				checkPositive = false;
 			}
-			java.util.Vector<String> definedScores = new java.util.Vector<String>();
+			java.util.ArrayList<String> definedScores = new java.util.ArrayList<String>();
 			for(int i = 0; i < MetFragScoreTypesValue.length; i++) {
 				if(definedScores.contains(MetFragScoreTypesValue[i])) {
 					this.logger.error(MetFragScoreTypesValue[i] + " in " + VariableNames.METFRAG_SCORE_TYPES_NAME + " is defined more than once!");
@@ -448,7 +544,7 @@ public class SettingsChecker {
 					else if(checkPositive) {
 						String[] fileNames = (String[])ScoreSuspectLists;
 						for(int j = 0; j < fileNames.length; j++) 
-							if(!fileNames[j].equals(VariableNames.FORIDENT_SUSPECTLIST_NAME) && !this.checkFile(VariableNames.SCORE_SUSPECT_LISTS_NAME, fileNames[j]))
+							if(!fileNames[j].equals(VariableNames.DSSTOX_SUSPECTLIST_NAME) && !fileNames[j].equals(VariableNames.FORIDENT_SUSPECTLIST_NAME) && !this.checkFile(VariableNames.SCORE_SUSPECT_LISTS_NAME, fileNames[j]))
 								checkPositive = false;
 					}
 				}

@@ -21,21 +21,32 @@ import org.openscience.cdk.renderer.visitor.AWTDrawVisitor;
 import org.openscience.cdk.silent.AtomContainer;
 import org.openscience.cdk.layout.StructureDiagramGenerator;
 
-import de.ipbhalle.metfraglib.BitArray;
+import de.ipbhalle.metfraglib.FastBitArray;
 import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
 import de.ipbhalle.metfraglib.fragment.DefaultBitArrayFragment;
 import de.ipbhalle.metfraglib.fragment.TopDownBitArrayFragment;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.interfaces.IFragment;
+import de.ipbhalle.metfraglib.interfaces.IMolecularStructure;
 
 public class HighlightSubStructureImageGenerator extends StandardSingleStructureImageGenerator {
 
+	protected Color highlightColor = new Color(0x98F08E);
+	
 	public HighlightSubStructureImageGenerator() {
 		super();
 	}
 
 	public HighlightSubStructureImageGenerator(Font font) {
 		super(font);
+	}
+
+	public Color getHighlightColor() {
+		return highlightColor;
+	}
+
+	public void setHighlightColor(Color highlightColor) {
+		this.highlightColor = highlightColor;
 	}
 
 	public RenderedImage generateImage(final ICandidate candidate) {
@@ -48,18 +59,16 @@ public class HighlightSubStructureImageGenerator extends StandardSingleStructure
 		return image;
 	}
 
-	public RenderedImage generateImage(final IFragment structure) throws Exception {
-		if (structure instanceof DefaultBitArrayFragment)
-			return generateImage((DefaultBitArrayFragment) structure);
-		if (structure instanceof TopDownBitArrayFragment)
-			return generateImage((DefaultBitArrayFragment) structure);
-		return super.generateImage(structure);
+	public RenderedImage generateImage(IMolecularStructure precursorMolecule, final IFragment structure) throws Exception {
+		if (structure instanceof DefaultBitArrayFragment || structure instanceof TopDownBitArrayFragment)
+			return generateImage(precursorMolecule, (DefaultBitArrayFragment) structure);
+		return super.generateImage(precursorMolecule, structure);
 	}
 
-	public RenderedImage generateImage(final DefaultBitArrayFragment structure) {
+	public RenderedImage generateImage(IMolecularStructure precursorMolecule, final DefaultBitArrayFragment structure) {
 		Image image = new BufferedImage(this.imageWidth, this.imageHeight, BufferedImage.TYPE_INT_ARGB);
 		try {
-			IAtomContainer molecule = new AtomContainer(structure.getPrecursor().getStructureAsIAtomContainer());
+			IAtomContainer molecule = new AtomContainer(precursorMolecule.getStructureAsIAtomContainer());
 			StructureDiagramGenerator sdg = new StructureDiagramGenerator();
 			sdg.setMolecule(molecule);
 			sdg.generateCoordinates();
@@ -75,22 +84,22 @@ public class HighlightSubStructureImageGenerator extends StandardSingleStructure
 			rendererModel.set(StandardGenerator.Highlighting.class, StandardGenerator.HighlightStyle.OuterGlow);
     		rendererModel.set(StandardGenerator.StrokeRatio.class, this.strokeRatio);
 
-			BitArray atoms = structure.getAtomsBitArray();
+			FastBitArray atoms = structure.getAtomsFastBitArray();
 			for (int i = 0; i < atoms.getSize(); i++) {
-				if(atoms.get(i)) moleculeToDraw.getAtom(i).setProperty(StandardGenerator.HIGHLIGHT_COLOR, new Color(0x98F08E));
+				if(atoms.get(i)) moleculeToDraw.getAtom(i).setProperty(StandardGenerator.HIGHLIGHT_COLOR, this.highlightColor);
 				else moleculeToDraw.getAtom(i).removeProperty(StandardGenerator.HIGHLIGHT_COLOR);
 			}
 
-			BitArray bonds = structure.getBondsBitArray();
+			FastBitArray bonds = structure.getBondsFastBitArray();
 			for (int i = 0; i < bonds.getSize(); i++) {
-				if(bonds.get(i)) moleculeToDraw.getBond(i).setProperty(StandardGenerator.HIGHLIGHT_COLOR, new Color(0x98F08E));
+				if(bonds.get(i)) moleculeToDraw.getBond(i).setProperty(StandardGenerator.HIGHLIGHT_COLOR, this.highlightColor);
 				else moleculeToDraw.getBond(i).removeProperty(StandardGenerator.HIGHLIGHT_COLOR);
 			}
 
 			Rectangle2D bounds = new Rectangle2D.Double(0, 0, this.imageWidth, this.imageHeight);
 			
 			Graphics2D g2 = (Graphics2D) image.getGraphics();
-			g2.setColor(new Color(1.0f, 1.0f, 1.0f, 0.0f));
+			g2.setColor(this.backgroundColor);
 			g2.fillRect(0, 0, this.imageWidth, this.imageHeight);
 			this.renderer.paint(moleculeToDraw, new AWTDrawVisitor(g2), bounds, true);
 		} catch (Exception e) {
@@ -99,7 +108,7 @@ public class HighlightSubStructureImageGenerator extends StandardSingleStructure
 		return (RenderedImage) image;
 	}
 
-	public RenderedImage generateImage(final BitArray toHighlightAtoms, final BitArray toHighlightBonds, final IAtomContainer molecule) {
+	public RenderedImage generateImage(final FastBitArray toHighlightAtoms, final FastBitArray toHighlightBonds, final IAtomContainer molecule) {
 		Image image = new BufferedImage(this.imageWidth, this.imageHeight, BufferedImage.TYPE_INT_ARGB);
 		try {
 			StructureDiagramGenerator sdg = new StructureDiagramGenerator();
@@ -120,19 +129,19 @@ public class HighlightSubStructureImageGenerator extends StandardSingleStructure
 
 			for (int i = 0; i < toHighlightAtoms.getSize(); i++) {
 				if (toHighlightAtoms.get(i)) {
-					structure.getAtom(i).setProperty(StandardGenerator.HIGHLIGHT_COLOR, new Color(0x98F08E));
+					structure.getAtom(i).setProperty(StandardGenerator.HIGHLIGHT_COLOR, this.highlightColor);
 				}
 				else structure.getAtom(i).removeProperty(StandardGenerator.HIGHLIGHT_COLOR);
 			}
 			for (int i = 0; i < toHighlightBonds.getSize(); i++) {
 				if (toHighlightBonds.get(i)) {
-					structure.getBond(i).setProperty(StandardGenerator.HIGHLIGHT_COLOR, new Color(0x98F08E));
+					structure.getBond(i).setProperty(StandardGenerator.HIGHLIGHT_COLOR, this.highlightColor);
 				}
 				else structure.getBond(i).removeProperty(StandardGenerator.HIGHLIGHT_COLOR);
 			}
 
 			Graphics2D g2 = (Graphics2D) image.getGraphics();
-			g2.setColor(new Color(1.0f, 1.0f, 1.0f, 0.0f));
+			g2.setColor(this.backgroundColor);
 			g2.fillRect(0, 0, this.imageWidth, this.imageHeight);
 			this.renderer.paint(structure, new AWTDrawVisitor(g2), bounds, true);
 		} catch (Exception e) {
@@ -146,41 +155,60 @@ public class HighlightSubStructureImageGenerator extends StandardSingleStructure
 		//IAtomContainer m = sp.parseSmiles("CC(C)c1ccc(cc1)S(=O)(=O)O");
 		IAtomContainer m = null;
 		try {
-			m = MoleculeFunctions.getAtomContainerFromInChI("InChI=1S/C10H22N2/c1-9(2)4-8(12)5-10(3,6-9)7-11/h8H,4-7,11-12H2,1-3H3");
+			m = MoleculeFunctions.getAtomContainerFromInChI("InChI=1S/C15H14O6/c16-8-4-11(18)9-6-13(20)15(21-14(9)5-8)7-1-2-10(17)12(19)3-7/h1-5,13,15-20H,6H2/t13-,15-/m1/s1");
+			//m = MoleculeFunctions.getAtomContainerFromSMILES("C1CN(C(=N1)N)CC2=CN=C(C=C2)Cl");
+			MoleculeFunctions.removeHydrogens(m);
 			MoleculeFunctions.prepareAtomContainer(m, false);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
 		HighlightSubStructureImageGenerator s = new HighlightSubStructureImageGenerator(new Font("Verdana", Font.BOLD, 18));
-		s.setImageHeight(500);
-		s.setImageWidth(500);
-		s.setStrokeRation(1.5);
+		s.setHighlightColor(new Color(0x6495ED));
+		s.setImageHeight(1500);
+		s.setImageWidth(1500);
+		s.setStrokeRation(1.2);
 		
-		BitArray bitArrayAtoms = new BitArray(m.getAtomCount());
-		BitArray bitArrayBonds = new BitArray(m.getBondCount());
-		bitArrayAtoms.set(0, true);
-		bitArrayAtoms.set(1, true);
-		bitArrayAtoms.set(2, true);
-		bitArrayAtoms.set(3, true);
-		bitArrayAtoms.set(4, true);
-		bitArrayAtoms.set(5, true);
-		bitArrayAtoms.set(6, true);
-		bitArrayAtoms.set(7, true);
-		bitArrayAtoms.set(8, true);
-		bitArrayAtoms.set(9, true);
+		//1111101110001100001
+		FastBitArray bitArrayAtoms = generateAndSetBistString(21, new int[] {19,12,5});
+		FastBitArray bitArrayBonds = generateAndSetBistString(23, new int[] {11,20});
 		
-		bitArrayBonds.set(0, true);
-		bitArrayBonds.set(1, true);
-		bitArrayBonds.set(2, true);
-		bitArrayBonds.set(3, true);
-		bitArrayBonds.set(4, true);
-		bitArrayBonds.set(5, true);
-		bitArrayBonds.set(6, true);
-		bitArrayBonds.set(7, true);
-		bitArrayBonds.set(8, true);
-		bitArrayBonds.set(9, true);
-
+		
 		RenderedImage img = s.generateImage(bitArrayAtoms, bitArrayBonds, m);
-		ImageIO.write((RenderedImage) img, "PNG", new java.io.File("/tmp/file.png"));
+		ImageIO.write((RenderedImage) img, "PNG", new java.io.File("/tmp/file2.png"));
+	}
+	
+	public static FastBitArray convertBitString(String bitString) {
+		FastBitArray bitArray = new FastBitArray(bitString.length());
+		for(int i = 0; i < bitString.length(); i++) {
+			char pos = bitString.charAt(i);
+			if(pos == '1') bitArray.set(i, true);
+			else bitArray.set(i, false);
+		}
+		return bitArray;
+	}
+	
+	public static void convertBitString(String bitString, String type) {
+		for(int i = 0; i < bitString.length(); i++) {
+			char pos = bitString.charAt(i);
+			if(pos == '1') System.out.println(type + ".set(" + i + ", true);");
+			else System.out.println(type + ".set(" + i + ", false);");
+		}
+	}
+	
+	public static FastBitArray generateAndSetBistString(int size, int[] toSet) {
+		FastBitArray bitArray = new FastBitArray(size, false);
+		for(int i = 0; i < toSet.length; i++) {
+			bitArray.set(toSet[i]);
+		}
+		return bitArray;
+	}
+	
+	public static FastBitArray generateAndUnSetBistString(int size, int[] toUnSet) {
+		FastBitArray bitArray = new FastBitArray(size, true);
+		for(int i = 0; i < toUnSet.length; i++) {
+			bitArray.set(toUnSet[i], false);
+		}
+		return bitArray;
 	}
 }

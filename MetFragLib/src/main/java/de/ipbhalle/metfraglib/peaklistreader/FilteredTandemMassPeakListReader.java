@@ -22,6 +22,7 @@ public class FilteredTandemMassPeakListReader extends AbstractPeakListReader {
 	}
 
 	public DefaultPeakList read() {
+		int numberMaximumPeaksUsed = (Integer)settings.get(VariableNames.NUMBER_MAXIMUM_PEAKS_USED_NAME);
 		SortedTandemMassPeakList peakList = null;
 		String filename = (String)this.settings.get(VariableNames.PEAK_LIST_PATH_NAME);
 		try {
@@ -32,8 +33,15 @@ public class FilteredTandemMassPeakListReader extends AbstractPeakListReader {
 				line = line.trim();
 				if(line.startsWith("#") || line.length() == 0) continue;
 				String[] tmp = line.split("\\s+");
-				double currentMass = Double.parseDouble(tmp[0].trim().replaceAll("^-*", ""));
-				double currentIntensity = Double.parseDouble(tmp[1].trim());
+				double currentMass;
+				double currentIntensity;
+				try {
+					currentMass = Double.parseDouble(tmp[0].trim().replaceAll("^-*", ""));
+					currentIntensity = Double.parseDouble(tmp[1].trim());
+				} catch(Exception e) {
+					breader.close();
+					throw new IOException();
+				}
 				/*
 				 * filtering step
 				 */
@@ -54,6 +62,7 @@ public class FilteredTandemMassPeakListReader extends AbstractPeakListReader {
 		}
 		for(int i = 0; i < peakList.getNumberElements(); i++)
 			peakList.getElement(i).setID(i);
+		this.deleteByMaximumNumberPeaksUsed(numberMaximumPeaksUsed, peakList);
 		peakList.calculateRelativeIntensities(Constants.DEFAULT_MAXIMUM_RELATIVE_INTENSITY);
 		return peakList;
 	}

@@ -21,10 +21,15 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.mail.EmailAttachment;
 import org.apache.commons.mail.MultiPartEmail;
+import org.primefaces.component.organigram.OrganigramHelper;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.CloseEvent;
 import org.primefaces.event.ItemSelectEvent;
 import org.primefaces.event.SlideEndEvent;
+import org.primefaces.event.organigram.OrganigramNodeCollapseEvent;
+import org.primefaces.event.organigram.OrganigramNodeExpandEvent;
+import org.primefaces.event.organigram.OrganigramNodeSelectEvent;
+import org.primefaces.model.OrganigramNode;
 import org.primefaces.model.StreamedContent;
 import org.primefaces.model.chart.AxisType;
 import org.primefaces.model.chart.LineChartModel;
@@ -33,6 +38,7 @@ import org.primefaces.model.chart.LineChartSeries;
 import de.ipbhalle.metfraglib.additionals.MathTools;
 import de.ipbhalle.metfraglib.exceptions.AtomTypeNotKnownFromInputListException;
 import de.ipbhalle.metfraglib.imagegenerator.HighlightSubStructureImageGenerator;
+import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.list.DefaultPeakList;
 import de.ipbhalle.metfraglib.list.MatchList;
 import de.ipbhalle.metfraglib.match.FragmentMassToPeakMatch;
@@ -42,6 +48,8 @@ import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.peak.TandemMassPeak;
 import de.ipbhalle.metfraglib.settings.MetFragGlobalSettings;
 import de.ipbhalle.metfraglib.settings.Settings;
+import de.ipbhalle.metfragweb.compoundCluster.ClusterCompoundsThreadRunner;
+import de.ipbhalle.metfragweb.compoundCluster.INode;
 import de.ipbhalle.metfragweb.container.BeanSettingsContainer;
 import de.ipbhalle.metfragweb.container.Messages;
 import de.ipbhalle.metfragweb.container.MetFragResultsContainer;
@@ -60,18 +68,31 @@ import de.ipbhalle.metfragweb.validator.ElementsValidator;
 import de.ipbhalle.metfragweb.validator.FormulaValidator;
 import de.ipbhalle.metfragweb.validator.PeakListValidator;
 import de.ipbhalle.metfragweb.validator.PositiveDoubleValueValidator;
+import de.ipbhalle.metfragweb.validator.SmartsExpressionValidator;
 import de.ipbhalle.metfragweb.validator.SmartsValidator;
 
 @ManagedBean
 @SessionScoped
 public class MetFragWebBean {
 
-	private final String version = "v2.0";
+	private final String version = "v2.0.20";
 	/*
 	 * combines all the settings
 	 */
 	protected BeanSettingsContainer beanSettingsContainer;
+	
+	protected boolean compoundClusteringEnabled = false;
+	protected Thread clusterCompoundsThread;
+	protected ClusterCompoundsThreadRunner clusterCompoundsThreadRunner;
+	private OrganigramNode selectedNode;
+	private boolean clusterImageTooltipRendered = false;
+	private boolean mergedCandidateResultsByInChIKey1 = true;
+//	protected TreeNode[] selectedClusterNodes;
+//	protected TreeNode selectedContextMenuClusterNode;
+	protected Boolean clusterCompoundsThreadStarted;
+	
 	protected Messages errorMessages;
+	protected Messages warningMessages;
 	protected Messages infoMessages;
 
 	protected List<Weight> weights;
@@ -143,6 +164,7 @@ public class MetFragWebBean {
 		this.filteredMetFragResultsContainer = new MetFragResultsContainer();
 		this.errorMessages = new Messages();
 		this.infoMessages = new Messages();
+		this.warningMessages = new Messages();
 		this.beanSettingsContainer = new BeanSettingsContainer(this.getRootSessionFolder());
 		this.fragmentsModel = new LineChartModel();
 		this.explainedPeaksFilter = new Integer[0];
@@ -245,7 +267,9 @@ public class MetFragWebBean {
 		System.out.println("parametersUploadListener");
 		FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("metFragWebBean");
 		this.errorMessages.removeKey("updateParametersError");
+		this.errorMessages.removeKey("buttonDownloadCompoundsError");
 		this.infoMessages.removeKey("updateParametersInfo");
+		this.warningMessages.removeKey("databaseWarning");
 		//do the work
 		this.init();
 		this.beanSettingsContainer.getUserInputDataHandler().handleParametersZipFile(event.getFile(), this.infoMessages, 
@@ -303,6 +327,7 @@ public class MetFragWebBean {
 			return;
 		}
 		this.errorMessages.removeKey("inputMeasuredMassError");
+		this.errorMessages.removeKey("buttonDownloadCompoundsError");
 		try {
 			int mode = this.beanSettingsContainer.getMeasuredMassMode();
 			if(mode == 1000 || mode == -1000) mode = 0;
@@ -312,7 +337,7 @@ public class MetFragWebBean {
 				this.errorMessages.setMessage("inputMeasuredMassError", "Error: Input results in a negative neutral mass.");
 				return;
 			}
-			this.beanSettingsContainer.setNeutralMonoisotopicMass(String.valueOf(MathTools.round(value, 6)));
+			this.beanSettingsContainer.setNeutralMonoisotopicMass(String.valueOf(MathTools.round(value)));
 		} catch(Exception e) {
 			e.printStackTrace();
 			this.errorMessages.setMessage("inputMeasuredMassError", "Error: Error calculating mass value.");
@@ -328,16 +353,19 @@ public class MetFragWebBean {
 		this.beanSettingsContainer.setCompoundsRetrieved(compoundsRetrieved);
 	}
 	
-	public String getDatabase() {
+	public Object getDatabase() {
 		return this.beanSettingsContainer.getDatabase();
 	}
 
-	public void setDatabase(String database) {
+	public void setDatabase(Object database) {
 		if(this.beanSettingsContainer.getDatabase().equals(database) && this.beanSettingsContainer.isDatabaseInitialise()) return;
 		this.metFragResultsContainer = new MetFragResultsContainer();
 		this.filteredMetFragResultsContainer = new MetFragResultsContainer();
 		this.errorMessages = new Messages();
 		this.infoMessages = new Messages();
+		this.warningMessages = new Messages();
+		if(database.equals("ChemSpider") || database.equals("ChemSpiderRest")) this.warningMessages.setMessage("databaseWarning", "ChemSpider uses an online query which slows down the candidate retrieval.");
+		else if(database.equals("LocalSDF")) this.warningMessages.setMessage("databaseWarning", "Molecules with aromatic bond order type (4) are discarded as not yet supported by CDK.");
 		this.processedPeaklistObject = null;
 		this.beanSettingsContainer.setDatabase(database);
 		this.candidateStatistics.setShowPointLabels(false);
@@ -430,7 +458,7 @@ public class MetFragWebBean {
 		try {
 			if(identifiers != null && identifiers.trim().length() != 0) {
 				identifiers = identifiers.trim();
-				if(identifiers.startsWith(",") || identifiers.matches(",,") || identifiers.endsWith(",") || !identifiers.replaceAll(",", "").matches("\\w*"))
+				if(identifiers.startsWith(",") || identifiers.matches(",,") || identifiers.endsWith(",") || !identifiers.replaceAll(",", "").replaceAll(":", "").matches("\\w*"))
 					throw new Exception();
 				else
 					this.errorMessages.removeKey("identifierError");
@@ -503,9 +531,10 @@ public class MetFragWebBean {
 		// check mass
 		if (this.beanSettingsContainer.getNeutralMonoisotopicMass() != null && this.beanSettingsContainer.getNeutralMonoisotopicMass().length() != 0) {
 			massIsGiven = true;
+			this.errorMessages.removeKey("buttonDownloadCompoundsError");
 			try {
 				double value = Double.parseDouble(this.beanSettingsContainer.getNeutralMonoisotopicMass());
-				if (value <= 0.0 || value >= 1000)
+				if (value <= 0.0 || value > 1250)
 					throw new Exception();
 				else
 					this.errorMessages.removeKey("inputNeutralMonoisotopicMassError");
@@ -517,7 +546,7 @@ public class MetFragWebBean {
 			this.errorMessages.removeKey("inputNeutralMonoisotopicMassError");
 		if (this.beanSettingsContainer.getIdentifiers() != null && this.beanSettingsContainer.getIdentifiers().trim().length() != 0) {
 			identifierIsGiven = true;
-			if (this.beanSettingsContainer.getIdentifiers().startsWith(",") || this.beanSettingsContainer.getIdentifiers().endsWith(",") || !this.beanSettingsContainer.getIdentifiers().replaceAll(",", "").matches("[A-Z0-9]*")) {
+			if (this.beanSettingsContainer.getIdentifiers().startsWith(",") || this.beanSettingsContainer.getIdentifiers().endsWith(",") || !this.beanSettingsContainer.getIdentifiers().replaceAll(",", "").replaceAll(":", "").matches("[A-Z0-9]*")) {
 				checksFine = false;
 				this.errorMessages.setMessage("inputIdentifiersError", "Error: Invalid identifiers value. Example: 932,2730,2519");
 			} else
@@ -597,7 +626,15 @@ public class MetFragWebBean {
 		RequestContext.getCurrentInstance().execute("PF('retrieveCandidatesProgressDialog').show();");
 		
 		this.isDatabaseProcessing = true;
-		
+		/*
+		 * stop compounds cluster thread
+		 */
+		if(this.clusterCompoundsThread != null)
+			try {
+				this.clusterCompoundsThread.join();
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
 		/*
 		 * check database settings before retrieving compounds
 		 */
@@ -608,6 +645,7 @@ public class MetFragWebBean {
 			return;
 		}
 		RequestContext.getCurrentInstance().execute("PF('mainAccordion').unselect(1)");
+		RequestContext.getCurrentInstance().execute("PF('mainAccordion').unselect(5)");
 		this.beanSettingsContainer.setCompoundsRetrieved(false);
 		this.metFragResultsContainer = new MetFragResultsContainer();
 		this.filteredMetFragResultsContainer = new MetFragResultsContainer();
@@ -639,12 +677,12 @@ public class MetFragWebBean {
 				this.isDatabaseProcessing = false;
 				System.out.println("checkDatabaseThread thread is dead");
 				this.threadExecutionStarted = false;
-			
+				
 				if (this.beanSettingsContainer.getRetrievedCandidateList() != null) {
 					if(this.beanSettingsContainer.getRetrievedCandidateList().getNumberElements() != 1) 
 						FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Candidate retrieval finished", "Got " + this.beanSettingsContainer.getRetrievedCandidateList().getNumberElements() + " candidates"));
 					else 
-						FacesContext.getCurrentInstance().addMessage("databaseGrowl", new FacesMessage("Candidate retrieval<br>finished", "Got " + this.beanSettingsContainer.getRetrievedCandidateList().getNumberElements() + " candidate"));
+						FacesContext.getCurrentInstance().addMessage("databaseGrowl", new FacesMessage("Candidate retrieval finished", "Got " + this.beanSettingsContainer.getRetrievedCandidateList().getNumberElements() + " candidate"));
 					System.out.println(this.beanSettingsContainer.getRetrievedCandidateList().getNumberElements() + " compound(s)");
 					if(this.beanSettingsContainer.getRetrievedCandidateList().getNumberElements() == 0) 
 						RequestContext.getCurrentInstance().execute("PF('mainAccordion').unselect(1)");
@@ -783,6 +821,14 @@ public class MetFragWebBean {
 		}
 	}
 	
+    public String getElementInclusionFilterType() {
+        return this.beanSettingsContainer.getElementInclusionFilterType();
+    }
+ 
+    public void setElementInclusionFilterType(String elementInclusionFilterType) {
+        this.beanSettingsContainer.setElementInclusionFilterType(elementInclusionFilterType);
+    }
+	
 	public boolean isElementInclusionFilterEnabled() {
 		return this.beanSettingsContainer.isFilterEnabled("includedFilterElements");
 	}
@@ -791,14 +837,6 @@ public class MetFragWebBean {
 		this.beanSettingsContainer.setFilterEnabled(elementInclusionFilterEnabled, "includedFilterElements");
 	}
 		
-	public boolean isElementInclusionExclusiveFilterEnabled() {
-		return this.beanSettingsContainer.isElementInclusionExclusiveFilterEnabled();
-	}
-
-	public void setElementInclusionExclusiveFilterEnabled(boolean elementInclusionExclusiveFilterEnabled) {
-		this.beanSettingsContainer.setElementInclusionExclusiveFilterEnabled(elementInclusionExclusiveFilterEnabled);
-	}
-	
 	//element exclusion filter
 	public boolean isElementExclusionFilterEnabled() {
 		return this.beanSettingsContainer.isFilterEnabled("excludedFilterElements");
@@ -952,6 +990,77 @@ public class MetFragWebBean {
 		this.beanSettingsContainer.setSmartsFilterExclusion(smartsFilterExclusion);
 	}
 	
+	//substructure information
+	public boolean isSubstructureInformationFilterEnabled() {
+		return this.beanSettingsContainer.isFilterEnabled("substructureInformationFilterExpression");
+	}
+
+	public void setSubstructureInformationFilterEnabled(boolean substructureInformationFilterEnabled) {
+		this.beanSettingsContainer.setFilterEnabled(substructureInformationFilterEnabled, "substructureInformationFilterExpression");
+	}
+
+	public String getSubstructureInformationFilterExpression() {
+		return this.beanSettingsContainer.getSubstructureInformationFilterExpression();
+	}
+
+	public void setSubstructureInformationFilterExpression(String substructureInformationFilterExpression) {
+		try {
+			if (substructureInformationFilterExpression == null || substructureInformationFilterExpression.trim().length() == 0) {
+			//	this.errorMessages.setMessage("substructureInformationFilterExpressionError", "Error: No substructure expression set.");
+				this.errorMessages.removeKey("substructureInformationFilterExpressionError");
+			} else {
+				if (SmartsExpressionValidator.check(substructureInformationFilterExpression))
+					this.errorMessages.removeKey("substructureInformationFilterExpressionError");
+				else
+					throw new Exception();
+			}
+		} catch (Exception e) {
+			this.errorMessages.setMessage("substructureInformationFilterExpressionError", "Error: Invalid value.");
+		} finally {
+			this.beanSettingsContainer.setSubstructureInformationFilterExpression(substructureInformationFilterExpression);
+		}
+	}
+
+	public String getSelectedInformationSmarts() {
+		return this.beanSettingsContainer.getSelectedInformationSmarts();
+	}
+	
+	public void setSelectedInformationSmarts(String selectedSmarts) {
+		this.errorMessages.removeKey("selectedInformationSmartsError");
+		this.beanSettingsContainer.setSelectedInformationSmarts(selectedSmarts);
+	}
+	
+	public java.util.List<javax.faces.model.SelectItem> getAvailableSubstructureInformationSmarts() {
+		return this.beanSettingsContainer.getAvailableParameters().getSubstructureInformationSmarts();
+	}
+	
+	public void andSelectedInformationSmarts(ActionEvent action) {
+		if(this.beanSettingsContainer.getSelectedInformationSmarts() == null || this.beanSettingsContainer.getSelectedInformationSmarts().length() == 0) {
+			return;
+		}
+		String currentExpression = this.beanSettingsContainer.getSubstructureInformationFilterExpression().trim();
+		if(currentExpression.length() != 0) this.beanSettingsContainer.setSubstructureInformationFilterExpression(currentExpression + " and " + this.beanSettingsContainer.getSelectedInformationSmarts());
+		else this.beanSettingsContainer.setSubstructureInformationFilterExpression(this.beanSettingsContainer.getSelectedInformationSmarts());
+	}
+
+	public void orSelectedInformationSmarts(ActionEvent action) {
+		if(this.beanSettingsContainer.getSelectedInformationSmarts() == null || this.beanSettingsContainer.getSelectedInformationSmarts().length() == 0) {
+			return;
+		}
+		String currentExpression = this.beanSettingsContainer.getSubstructureInformationFilterExpression().trim();
+		if(currentExpression.length() != 0) this.beanSettingsContainer.setSubstructureInformationFilterExpression(currentExpression + " or " + this.beanSettingsContainer.getSelectedInformationSmarts());
+		else this.beanSettingsContainer.setSubstructureInformationFilterExpression(this.beanSettingsContainer.getSelectedInformationSmarts());
+	}
+	
+	public void notSelectedInformationSmarts(ActionEvent action) {
+		if(this.beanSettingsContainer.getSelectedInformationSmarts() == null || this.beanSettingsContainer.getSelectedInformationSmarts().length() == 0) {
+			return;
+		}
+		String currentExpression = this.beanSettingsContainer.getSubstructureInformationFilterExpression().trim();
+		if(currentExpression.length() != 0) this.beanSettingsContainer.setSubstructureInformationFilterExpression(currentExpression + " and not " + this.beanSettingsContainer.getSelectedInformationSmarts());
+		else this.beanSettingsContainer.setSubstructureInformationFilterExpression("not " + this.beanSettingsContainer.getSelectedInformationSmarts());
+	}
+	
 	//suspect list filter
 	public SuspectListFileContainer getSuspectListFilterFileContainer() {
 		return this.beanSettingsContainer.getSuspectListFilterFileContainer();
@@ -967,7 +1076,9 @@ public class MetFragWebBean {
 		if (this.beanSettingsContainer.getSuspectListFilterFileContainer() != null) {
 			int suspectListElementName = (Integer) event.getComponent().getAttributes().get("currentSuspectListFilterElementId");
 			this.beanSettingsContainer.getSuspectListFilterFileContainer().removeById(suspectListElementName);
-			if (this.beanSettingsContainer.getSuspectListFilterFileContainer().size() == 0 && !this.isForIdentSuspectListInclusionFilterEnabled()) {
+			if (this.beanSettingsContainer.getSuspectListFilterFileContainer().size() == 0 
+					&& !this.isForIdentSuspectListInclusionFilterEnabled()
+					&& !this.isDsstoxSuspectListInclusionFilterEnabled()) {
 				this.errorMessages.setMessage("suspectListsFilterError", "Suspect list file(s) required.");
 				this.beanSettingsContainer.setScoreValid(false, "suspectListsFilter");
 			} else
@@ -983,9 +1094,33 @@ public class MetFragWebBean {
 		return this.beanSettingsContainer.isForIdentSuspectListFilterEnabled();
 	}
 
+	public boolean isDsstoxSuspectListInclusionFilterEnabled() {
+		return this.beanSettingsContainer.isDsstoxSuspectListFilterEnabled();
+	}
+
 	public void setForIdentSuspectListInclusionFilterEnabled(boolean value) {
 		this.beanSettingsContainer.setForIdentSuspectListFilterEnabled(value);
-		if ((this.beanSettingsContainer.getSuspectListFilterFileContainer() == null || this.beanSettingsContainer.getSuspectListFilterFileContainer().size() == 0) && !this.isForIdentSuspectListInclusionFilterEnabled()) 
+		if ((this.beanSettingsContainer.getSuspectListFilterFileContainer() == null 
+				|| this.beanSettingsContainer.getSuspectListFilterFileContainer().size() == 0) 
+				&& !this.isForIdentSuspectListInclusionFilterEnabled()
+				&& !this.isDsstoxSuspectListInclusionFilterEnabled()) 
+		{
+			this.errorMessages.setMessage("suspectListsFilterError", "Suspect list file(s) required.");
+			this.beanSettingsContainer.setScoreValid(false, "suspectListsFilter");
+		}
+		else 
+		{
+			this.errorMessages.removeKey("suspectListsFilterError");
+			this.beanSettingsContainer.setFilterValid(true, "suspectListsFilter");
+		}
+	}
+
+	public void setDsstoxSuspectListInclusionFilterEnabled(boolean value) {
+		this.beanSettingsContainer.setDsstoxSuspectListFilterEnabled(value);
+		if ((this.beanSettingsContainer.getSuspectListFilterFileContainer() == null 
+				|| this.beanSettingsContainer.getSuspectListFilterFileContainer().size() == 0) 
+				&& !this.isForIdentSuspectListInclusionFilterEnabled()
+				&& !this.isDsstoxSuspectListInclusionFilterEnabled()) 
 		{
 			this.errorMessages.setMessage("suspectListsFilterError", "Suspect list file(s) required.");
 			this.beanSettingsContainer.setScoreValid(false, "suspectListsFilter");
@@ -999,7 +1134,10 @@ public class MetFragWebBean {
 	
 	public void setSuspectListInclusionFilterEnabled(boolean suspectListInclusionFilterEnabled) {
 		if (suspectListInclusionFilterEnabled == true) {
-			if ((this.beanSettingsContainer.getSuspectListFilterFileContainer() == null || this.beanSettingsContainer.getSuspectListFilterFileContainer().size() == 0)  && !this.isForIdentSuspectListInclusionFilterEnabled())
+			if ((this.beanSettingsContainer.getSuspectListFilterFileContainer() == null 
+					|| this.beanSettingsContainer.getSuspectListFilterFileContainer().size() == 0)  
+					&& !this.isForIdentSuspectListInclusionFilterEnabled()
+					&& !this.isDsstoxSuspectListInclusionFilterEnabled())
 				this.beanSettingsContainer.setFilterValid(false, "suspectListsFilter");
 			else
 				this.beanSettingsContainer.setFilterValid(true, "suspectListsFilter");
@@ -1130,9 +1268,28 @@ public class MetFragWebBean {
 				this.errorMessages.setMessage("excludedFilterSmartsError", "Error: No substructure set.");
 			} 
 		}
+		//substructure information filter
+		if (this.beanSettingsContainer.isFilterEnabled("substructureInformationFilterExpression")) {
+			if (this.beanSettingsContainer.getSubstructureInformationFilterExpression() != null && this.beanSettingsContainer.getSubstructureInformationFilterExpression().length() != 0) 
+			{
+				if(!SmartsExpressionValidator.check(this.beanSettingsContainer.getSubstructureInformationFilterExpression())) {
+					this.beanSettingsContainer.setFilterValid(false, "substructureInformationFilterExpression");
+					this.errorMessages.setMessage("substructureInformationFilterExpressionError", "Error: Invalid SMARTS Expression.");
+				}
+				else {
+					this.beanSettingsContainer.setFilterValid(true, "substructureInformationFilterExpression");
+					this.errorMessages.removeKey("substructureInformationFilterExpressionError");
+				}
+			} else {
+				this.beanSettingsContainer.setFilterValid(false, "substructureInformationFilterExpression");
+				this.errorMessages.setMessage("substructureInformationFilterExpressionError", "Error: No substructure expression set.");
+			} 
+		}
 		// suspect lists inclusion filter
 		if (this.beanSettingsContainer.isFilterEnabled("suspectListsFilter")) {
-			if ((this.beanSettingsContainer.getSuspectListFilterFileContainer() == null || this.beanSettingsContainer.getSuspectListFilterFileContainer().size() == 0) && !this.isForIdentSuspectListInclusionFilterEnabled()) 
+			if ((this.beanSettingsContainer.getSuspectListFilterFileContainer() == null 
+					|| this.beanSettingsContainer.getSuspectListFilterFileContainer().size() == 0) 
+					&& !this.isForIdentSuspectListInclusionFilterEnabled() && !this.isDsstoxSuspectListInclusionFilterEnabled()) 
 			{
 				this.beanSettingsContainer.setFilterValid(false, "suspectListsFilter");
 				this.errorMessages.setMessage("suspectListsFilterError", "Suspect list file(s) required.");
@@ -1168,12 +1325,28 @@ public class MetFragWebBean {
 	/*
 	 * score
 	 */
+	public boolean isStatisticalScoreEnabled() {
+		return this.beanSettingsContainer.isScoreEnabled("statistical");
+	}
+
+	public void setStatisticalScoreEnabled(boolean statisticalScoreEnabled) {
+		this.beanSettingsContainer.setScoreEnabled(statisticalScoreEnabled, "statistical");
+	}
+
 	public boolean isSpectralSimilarityScoreEnabled() {
 		return this.beanSettingsContainer.isScoreEnabled("spectralSimilarity");
 	}
 
 	public void setSpectralSimilarityScoreEnabled(boolean spectralSimilarityScoreEnabled) {
 		this.beanSettingsContainer.setScoreEnabled(spectralSimilarityScoreEnabled, "spectralSimilarity");
+	}
+
+	public boolean isExactSpectralSimilarityScoreEnabled() {
+		return this.beanSettingsContainer.isScoreEnabled("exactSpectralSimilarity");
+	}
+
+	public void setExactSpectralSimilarityScoreEnabled(boolean exactSpectralSimilarityScoreEnabled) {
+		this.beanSettingsContainer.setScoreEnabled(exactSpectralSimilarityScoreEnabled, "exactSpectralSimilarity");
 	}
 
 	// SMARTS scores
@@ -1376,7 +1549,9 @@ public class MetFragWebBean {
 		if (this.beanSettingsContainer.getSuspectListScoreFileContainer() != null) {
 			int suspectListElementName = (Integer) event.getComponent().getAttributes().get("currentSuspectListScoreElementId");
 			this.beanSettingsContainer.getSuspectListScoreFileContainer().removeById(suspectListElementName);
-			if (this.beanSettingsContainer.getSuspectListScoreFileContainer().size() == 0 && !this.isForIdentSuspectListInclusionScoreEnabled()) {
+			if (this.beanSettingsContainer.getSuspectListScoreFileContainer().size() == 0 
+					&& !this.isForIdentSuspectListInclusionScoreEnabled()
+					&& !this.isDsstoxSuspectListInclusionScoreEnabled()) {
 				this.errorMessages.setMessage("suspectListsScoreError", "Suspect list file(s) required.");
 				this.beanSettingsContainer.setScoreValid(false, "suspectListsScore");
 			} else
@@ -1402,9 +1577,15 @@ public class MetFragWebBean {
 		return this.beanSettingsContainer.isForIdentSuspectListScoreEnabled();
 	}
 
+	public boolean isDsstoxSuspectListInclusionScoreEnabled() {
+		return this.beanSettingsContainer.isDsstoxSuspectListScoreEnabled();
+	}
+
 	public void setForIdentSuspectListInclusionScoreEnabled(boolean value) {
 		this.beanSettingsContainer.setForIdentSuspectListScoreEnabled(value);
-		if ((this.beanSettingsContainer.getSuspectListScoreFileContainer() == null || this.beanSettingsContainer.getSuspectListScoreFileContainer().size() == 0) && !this.isForIdentSuspectListInclusionScoreEnabled()) 
+		if ((this.beanSettingsContainer.getSuspectListScoreFileContainer() == null 
+				|| this.beanSettingsContainer.getSuspectListScoreFileContainer().size() == 0) 
+				&& !this.isForIdentSuspectListInclusionScoreEnabled() && !this.isDsstoxSuspectListInclusionScoreEnabled()) 
 		{
 			this.beanSettingsContainer.setScoreValid(false, "suspectListsScore");
 			this.errorMessages.setMessage("suspectListsScoreError", "Suspect list file(s) required.");
@@ -1414,6 +1595,31 @@ public class MetFragWebBean {
 			this.errorMessages.removeKey("suspectListsScoreError");
 			this.beanSettingsContainer.setScoreValid(true, "suspectListsScore");
 		}
+	}
+
+	public void setDsstoxSuspectListInclusionScoreEnabled(boolean value) {
+		this.beanSettingsContainer.setDsstoxSuspectListScoreEnabled(value);
+		if ((this.beanSettingsContainer.getSuspectListScoreFileContainer() == null || 
+				this.beanSettingsContainer.getSuspectListScoreFileContainer().size() == 0) && 
+				!this.isForIdentSuspectListInclusionScoreEnabled() && !this.isDsstoxSuspectListInclusionScoreEnabled()
+			) 
+		{
+			this.beanSettingsContainer.setScoreValid(false, "suspectListsScore");
+			this.errorMessages.setMessage("suspectListsScoreError", "Suspect list file(s) required.");
+		}
+		else 
+		{
+			this.errorMessages.removeKey("suspectListsScoreError");
+			this.beanSettingsContainer.setScoreValid(true, "suspectListsScore");
+		}
+	}
+	
+	public void setSelectedAvailableDatabaseScores(List<String> selectedAvailableDatabaseScores) {
+		this.beanSettingsContainer.setSelectedAvailableDatabaseScores(selectedAvailableDatabaseScores);
+	}
+	
+	public List<String> getSelectedAvailableDatabaseScores() {
+		return this.beanSettingsContainer.getSelectedAvailableDatabaseScores();
 	}
 	
 	public boolean isAvailableDatabaseScoresExist() {
@@ -1430,6 +1636,16 @@ public class MetFragWebBean {
 		return this.beanSettingsContainer.getAvailableDatabaseScores();
 	}
 	
+	public int getAvailableDatabaseScoresSize() {
+		return this.beanSettingsContainer.getAvailableDatabaseScores().size();
+	}
+	
+	public String getAvailableDatabaseScoresMenuLabel() {
+		if(this.beanSettingsContainer.getSelectedAvailableDatabaseScores() == null) 
+			return "0 of " + this.getAvailableDatabaseScoresSize() + " item(s) selected";
+		return this.beanSettingsContainer.getSelectedAvailableDatabaseScores().size() + " of " + this.getAvailableDatabaseScoresSize() + " item(s) selected";
+	}
+
 	//checking init
 	private void initScoreSettings() {
 		// SMARTS inclusion score
@@ -1520,7 +1736,10 @@ public class MetFragWebBean {
 		}
 		// suspect lists inclusion score
 		if (this.beanSettingsContainer.isScoreEnabled("suspectListsScore")) {
-			if ((this.beanSettingsContainer.getSuspectListScoreFileContainer() == null || this.beanSettingsContainer.getSuspectListScoreFileContainer().size() == 0) && !this.isForIdentSuspectListInclusionScoreEnabled()) 
+			if ((this.beanSettingsContainer.getSuspectListScoreFileContainer() == null 
+					|| this.beanSettingsContainer.getSuspectListScoreFileContainer().size() == 0) 
+					&& !this.isForIdentSuspectListInclusionScoreEnabled()
+					&& !this.isDsstoxSuspectListInclusionScoreEnabled()) 
 			{
 				this.beanSettingsContainer.setScoreValid(false, "suspectListsScore");
 				this.errorMessages.setMessage("suspectListsScoreError", "Suspect list file(s) required.");
@@ -1557,6 +1776,10 @@ public class MetFragWebBean {
 	 */	
 	public java.util.List<javax.faces.model.SelectItem> getPrecursorModes() {
 		return this.beanSettingsContainer.getAvailableParameters().getPrecursorModes();
+	}
+
+	public java.util.List<javax.faces.model.SelectItem> getTreeDepths() {
+		return this.beanSettingsContainer.getAvailableParameters().getTreeDepths();
 	}
 	
 	public String getRelativeMassDeviation() {
@@ -1609,6 +1832,22 @@ public class MetFragWebBean {
 
 	public void setMode(Integer mode) {
 		this.beanSettingsContainer.setMode(mode);
+	}
+
+	public boolean isGroupCandidatesEnabled() {
+		return this.mergedCandidateResultsByInChIKey1;
+	}
+
+	public void setGroupCandidatesEnabled(boolean groupCandidates) {
+		this.mergedCandidateResultsByInChIKey1 = groupCandidates;
+	}
+	
+	public Byte getTreeDepth() {
+		return this.beanSettingsContainer.getTreeDepth();
+	}
+
+	public void setTreeDepth(Byte treeDepth) {
+		this.beanSettingsContainer.setTreeDepth(treeDepth);
 	}
 	
 	public String getPeakList() {
@@ -1792,6 +2031,15 @@ public class MetFragWebBean {
 		this.initScoreSettings();
 		System.out.println("checks before processing");
 		
+		//cluster compounds reset
+		if(this.clusterCompoundsThread != null)
+			try {
+				this.clusterCompoundsThread.join();
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
+		if(this.clusterCompoundsThreadRunner != null) this.clusterCompoundsThreadRunner.reset();
+		
 		//check all parameters
 		boolean allSettingsFine = true;
 		//check filter settings
@@ -1822,6 +2070,7 @@ public class MetFragWebBean {
 		this.candidateStatistics = new CandidateStatistics();
 		this.candidateStatistics.setShowPointLabels(false);
 		this.candidateStatistics.setSelectedCandidate(0);
+		RequestContext.getCurrentInstance().execute("PF('mainAccordion').unselect(5)");
 		System.out.println("start processing");
 		//create a thread that undertakes the processing
 		this.threadExecutionStarted = true;
@@ -1833,8 +2082,9 @@ public class MetFragWebBean {
 		}
 		
 		this.processCompoundsThreadRunner = new ProcessCompoundsThreadRunner(this.beanSettingsContainer, 
-			this.infoMessages, this.errorMessages, this.getSessionId(), this.getRootSessionFolder());
+			this.infoMessages, this.errorMessages, this.getSessionId(), this.getRootSessionFolder(), this.mergedCandidateResultsByInChIKey1);
 		this.thread = new Thread(this.processCompoundsThreadRunner);
+		this.selectedNode = null;
 		/*
 		 * start the metfrag processing
 		 */
@@ -1884,9 +2134,13 @@ public class MetFragWebBean {
 			this.infoMessages.removeKey("processingProcessedCandidatesInfo");
 
 			this.threadExecutionStarted = false;
-			this.retrieveCompoundsThreadRunner = null;
-			
-			
+			if(this.clusterCompoundsThread != null)
+				try {
+					this.clusterCompoundsThread.join();
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
+			if(this.clusterCompoundsThreadRunner != null) this.clusterCompoundsThreadRunner.reset();
 			//stop the thread
 			RequestContext.getCurrentInstance().update("mainForm:mainAccordion");
 			//set the message
@@ -1904,10 +2158,13 @@ public class MetFragWebBean {
 	public void stopCompoundProcessing() {
 		System.out.println("stop processing triggered");
 		try {
-			this.processCompoundsThreadRunner.setInterrupted(true);
 			this.beanSettingsContainer.terminateMetFragProcess();
-			System.out.println("this.beanSettingsContainer.terminateMetFragProcess();");
 			this.thread.join();
+			//cluster compounds stop
+			if(this.clusterCompoundsThread != null) {
+				this.clusterCompoundsThread.join();
+				this.clusterCompoundsThreadStarted = false;
+			}
 			while(this.thread.isAlive()) {
 				try {
 					System.out.println("waiting for thread to be finished");
@@ -1916,7 +2173,6 @@ public class MetFragWebBean {
 				    Thread.currentThread().interrupt();
 				}
 			}
-			System.out.println("Thread is finished");
 			this.infoMessages.removeKey("processingErrorCandidatesInfo");
 			this.infoMessages.removeKey("processingProcessedCandidatesInfo");
 			this.infoMessages.removeKey("processingFilteredCandidatesInfo");
@@ -1930,12 +2186,15 @@ public class MetFragWebBean {
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Processing stopped.",  ""));
 			this.beanSettingsContainer.setProcessCompoundsDialogHeader("");
 			this.beanSettingsContainer.resetProcessStatus();
+			this.retrieveCompoundsThreadRunner = null;
+			
 		} catch (InterruptedException e) {
 			return;
 		}
 	}
 	
 	public void checkProcessingThread() {
+		this.checkClusterThread();
 		if(this.thread == null) return;
 		if(!this.threadExecutionStarted) return;
 		if(!this.isCandidateProcessing) return;
@@ -1962,15 +2221,27 @@ public class MetFragWebBean {
 				//set processing infos
 				String detailedMessage = this.infoMessages.getMessage("processingProcessedCandidatesInfo"); 
 				if(this.infoMessages.containsKey("processingErrorCandidatesInfo")) {
-					detailedMessage += "<br>" + this.infoMessages.getMessage("processingErrorCandidatesInfo");
+					detailedMessage += " " + this.infoMessages.getMessage("processingErrorCandidatesInfo");
 				}
 				if(this.infoMessages.containsKey("processingFilteredCandidatesInfo"))
-					detailedMessage += "<br>" + this.infoMessages.getMessage("processingFilteredCandidatesInfo");
+					detailedMessage += " " + this.infoMessages.getMessage("processingFilteredCandidatesInfo");
 				//set the global message
 				FacesContext.getCurrentInstance().addMessage("fragmenterGrowl", new FacesMessage("Processing finished", detailedMessage) );
 				//reset the header of the processing dialog
 				this.beanSettingsContainer.setProcessCompoundsDialogHeader("");
 				this.beanSettingsContainer.resetProcessStatus();
+				//start clustering compounds
+				if(this.compoundClusteringEnabled && this.getNumberProcessedCompounds() < 1000) {
+					if(this.filteredMetFragResultsContainer.getMetFragResults().size() >= 5) {
+						this.clusterCompoundsThreadRunner = new ClusterCompoundsThreadRunner(this.beanSettingsContainer, 
+								this.infoMessages, this.errorMessages, this.filteredMetFragResultsContainer);
+						this.clusterCompoundsThread = new Thread(this.clusterCompoundsThreadRunner);
+						if(this.clusterCompoundsThread != null) {
+							this.clusterCompoundsThreadStarted = true;
+							this.clusterCompoundsThread.start();
+						}
+					}
+				}
 			}
 			catch(Exception e) {
 				//error occured
@@ -2002,6 +2273,127 @@ public class MetFragWebBean {
 		return "test";
 	}
 	
+	/*
+	 * results cluster
+	 */
+	public void checkClusterThread() {
+		if(this.clusterCompoundsThread == null) return;
+		if(this.clusterCompoundsThreadStarted && this.clusterCompoundsThreadRunner != null) {
+			if(this.clusterCompoundsThreadRunner.isReady()) {
+				RequestContext.getCurrentInstance().update("mainForm:mainAccordion:resultClusterPanel");
+				this.clusterCompoundsThreadStarted = false;
+			}
+		}
+	}
+	
+	public boolean isCompoundsClusterReady() {
+		return this.clusterCompoundsThreadRunner == null ? false : this.clusterCompoundsThreadRunner.isReady();
+	}
+	
+	public boolean isCompoundClusteringEnabled() {
+		return this.compoundClusteringEnabled;
+	}
+	
+	public OrganigramNode getCompoundsClusterRoot() {
+		return this.clusterCompoundsThreadRunner.getTreeRoot();
+	}
+
+    public void expandSelectedClusterCompounds() {
+    	if(this.selectedNode != null) {
+    		OrganigramNode currentSelection = OrganigramHelper.findTreeNode(this.clusterCompoundsThreadRunner.getTreeRoot(), this.selectedNode);
+            java.util.Stack<OrganigramNode> stackList = new java.util.Stack<OrganigramNode>();
+    		stackList.push(currentSelection);
+    		while(!stackList.isEmpty()) {
+    			OrganigramNode current = stackList.pop();
+    			current.setExpanded(true);
+    			if(current.getChildCount() == 0) continue;
+     			for(OrganigramNode child : current.getChildren()) {
+    				stackList.push(child);
+    			}
+    		}
+    	//	RequestContext.getCurrentInstance().update("mainForm:mainAccordion:compoundClusterTree");
+    	}
+    }
+    
+    public void collapseSelectedClusterCompounds() {
+    	if(this.selectedNode != null) {
+    		OrganigramNode currentSelection = OrganigramHelper.findTreeNode(this.clusterCompoundsThreadRunner.getTreeRoot(), this.selectedNode);
+            java.util.Stack<OrganigramNode> stackList = new java.util.Stack<OrganigramNode>();
+    		stackList.push(currentSelection);
+    		while(!stackList.isEmpty()) {
+    			OrganigramNode current = stackList.pop();
+    			current.setExpanded(false);
+    			if(current.getChildCount() == 0) continue;
+     			for(OrganigramNode child : current.getChildren()) {
+    				stackList.push(child);
+    			}
+    		}
+    	//	RequestContext.getCurrentInstance().update("mainForm:mainAccordion:compoundClusterTree");
+    	}
+    }
+    
+    public void displaySelectedClusterCompounds() {
+    	if(this.selectedNode != null) {
+    		OrganigramNode currentSelection = OrganigramHelper.findTreeNode(this.clusterCompoundsThreadRunner.getTreeRoot(), this.selectedNode);
+           
+        	this.filteredMetFragResultsContainer = new MetFragResultsContainer();
+
+    		this.filteredMetFragResultsContainer.setNumberPeaksUsed(this.metFragResultsContainer.getNumberPeaksUsed());
+    		this.filteredMetFragResultsContainer.setCompoundNameAvailable(this.metFragResultsContainer.isCompoundNameAvailable());
+    		this.filteredMetFragResultsContainer.setSimScoreAvailable(this.metFragResultsContainer.isSimScoreAvailable());
+
+    		java.util.Stack<OrganigramNode> stackList = new java.util.Stack<OrganigramNode>();
+    		stackList.push(currentSelection);
+    		while(!stackList.isEmpty()) {
+    			OrganigramNode current = stackList.pop();
+    			if(current == null) continue;
+    			if(((INode)current.getData()).hasResult())
+    				this.filteredMetFragResultsContainer.addMetFragResultScoreSorted(((INode)current.getData()).getResult());
+    			if(current.getChildCount() == 0) continue;
+     			for(OrganigramNode child : current.getChildren()) {
+    				stackList.push(child);
+    			}
+    		}
+    		this.generateScoreDistributionModelView();
+    		
+    		//RequestContext.getCurrentInstance().update("mainForm:mainAccordion:MetFragResultsTable");
+    		//RequestContext.getCurrentInstance().update("mainForm:mainAccordion:statistics");
+    		//RequestContext.getCurrentInstance().update("mainForm:mainAccordion:resultsTablePanel");
+    		//RequestContext.getCurrentInstance().update("mainForm:mainAccordion:statisticsPanel");
+    		//RequestContext.getCurrentInstance().update("mainForm:mainAccordion:statistics");
+    		if(!this.isScoreDistributionModelAvailable()) RequestContext.getCurrentInstance().execute("PF('mainAccordion').unselect(3)");
+    		this.infoMessages.removeKey("filterCompoundsInfo");
+    		this.explainedPeaksFilter = new Integer[0];
+    		FacesContext.getCurrentInstance().addMessage("resultsClusterGrowl", new FacesMessage("Filtered Candidates", "Filtered " + this.filteredMetFragResultsContainer.getMetFragResults().size() + " candidates remained in result table") );
+    		//RequestContext.getCurrentInstance().update("mainForm:mainAccordion:resultTable");
+    		//RequestContext.getCurrentInstance().update("mainForm:mainAccordion:scoreDistributionPlot");
+    	}
+    }
+    
+    public void nodeSelectListener(OrganigramNodeSelectEvent event) {
+    	
+    }
+    
+    public boolean getClusterImageTooltipRendered() {
+    	return this.clusterImageTooltipRendered;
+    }
+    
+    public OrganigramNode getSelectedNode() {
+        return this.selectedNode;
+    }
+ 
+    public void setSelectedNode(OrganigramNode selectedNode) {
+        this.selectedNode = selectedNode;
+    }
+    
+    public void nodeExpand(OrganigramNodeExpandEvent event) {
+        event.getOrganigramNode().setExpanded(true); 
+    }
+
+    public void nodeCollapse(OrganigramNodeCollapseEvent event) {
+        event.getOrganigramNode().setExpanded(false);     
+    }
+
 	/*
 	 * results statistics 
 	 */
@@ -2042,7 +2434,7 @@ public class MetFragWebBean {
 		int pos = candidateIndex % 10;
 		RequestContext.getCurrentInstance().execute(
 			"var jobs = 0;" +
-			"var span = $('#mainForm').children('div').eq(0).children('div').eq(4).children('span').eq(0);" +
+			"var span = $('#mainForm').children('div').eq(0).children('div').eq(9).children('span').eq(0);" +
 			"var container = span.children('div').eq(0).children('div').eq(0).children('div').eq(0).children('div').eq(0).children('div').eq(2);" +
 			"var scrollTo;" +
 			"function f2() {"
@@ -2159,6 +2551,9 @@ public class MetFragWebBean {
 		}
 		
 		this.generateScoreDistributionModelView();
+		if(this.clusterCompoundsThreadRunner != null && this.clusterCompoundsThreadRunner.isReady()) {
+			this.clusterCompoundsThreadRunner.updateScores();
+		}
 	}
 	
 	public void weightsTextInputValueChanged() {
@@ -2183,6 +2578,10 @@ public class MetFragWebBean {
 			if(!molecule.isFiltered()) this.filteredMetFragResultsContainer.addMetFragResult(molecule);
 		}
 		this.generateScoreDistributionModelView();
+		if(this.clusterCompoundsThreadRunner != null && this.clusterCompoundsThreadRunner.isReady()) {
+			System.out.println("updating scores");
+			this.clusterCompoundsThreadRunner.updateScores();
+		}
 	}
 	
 	public boolean isResultsAvailable() {
@@ -2259,7 +2658,7 @@ public class MetFragWebBean {
 	public org.primefaces.model.StreamedContent generateCandidateDownloadFile() {
 		org.primefaces.model.StreamedContent resource = new org.primefaces.model.DefaultStreamedContent(System.in, "application/vnd.ms-excel", "MetFragWeb_Candidate.xls" );
 		try {
-			resource = this.beanSettingsContainer.getUserOutputDataHandler().generatedCandidateDownloadFile(this.currentScoreCandidate);
+			resource = this.beanSettingsContainer.getUserOutputDataHandler().generatedCandidateDownloadFile(this.currentScoreCandidate, this.beanSettingsContainer.getMetFragSettings());
 		} catch (Exception e1) {
 			e1.printStackTrace();
 			return resource;
@@ -2310,6 +2709,14 @@ public class MetFragWebBean {
 		//start creating the fragments
 		this.currentFragments = new java.util.Vector<Fragment>();
 		String sessionId = this.getSessionId();
+		ICandidate candidate = molecule.getRoot().getCandidate();
+		try {
+			candidate.initialisePrecursorCandidate();
+		} catch (Exception e1) {
+			System.err.println("error when initialising precursor for fragment generation");
+			e1.printStackTrace();
+			return;
+		}
 		for(int i = 0; i < molecule.getMatchList().getNumberElements(); i++) {
 			try {
 				HighlightSubStructureImageGenerator imageGenerator = new HighlightSubStructureImageGenerator();
@@ -2321,21 +2728,30 @@ public class MetFragWebBean {
 				RenderedImage image;
 				java.io.File imageFile = new java.io.File(imageFolderFragments.getAbsolutePath() + Constants.OS_SPECIFIC_FILE_SEPARATOR + "fragment_" + i + ".png");
 				try {
-					image = imageGenerator.generateImage(molecule.getMatchList().getElement(i).getBestMatchedFragment());
+					image = imageGenerator.generateImage(candidate.getPrecursorMolecule(), molecule.getMatchList().getElement(i).getBestMatchedFragment());
 					ImageIO.write(image, "png", imageFile); 
 				} catch (Exception e) {
 					System.err.println("error generating fragment image");
 				}
 				FragmentMassToPeakMatch match = (FragmentMassToPeakMatch)molecule.getMatchList().getElement(i);
+				match.getBestMatchedFragment();
 				this.currentFragments.add(
-						new Fragment(match.getModifiedFormulaHtmlStringOfBestMatchedFragment(),
-								MathTools.round(match.getBestMatchFragmentMass(), 5),
+						new Fragment(match.getModifiedFormulaHtmlStringOfBestMatchedFragment(candidate.getPrecursorMolecule()),
+								MathTools.round(match.getBestMatchFragmentMass()),
 								"/files/" + sessionId + "/images/fragments/fragment_" + i + ".png",
 								match.getMatchedPeak().getMass(), this.currentFragments.size() + 1));
 			} catch (Exception e) {
+				e.printStackTrace();
 				System.err.println("error generating fragment image for " + molecule.getIdentifier() + " " + i);
 				continue;
 			}
+		}
+		try {
+			candidate.resetPrecursorMolecule();
+		} catch (Exception e1) {
+			System.err.println("error when initialising precursor for fragment generation");
+			e1.printStackTrace();
+			return;
 		}
 	}
 	
@@ -2436,7 +2852,7 @@ public class MetFragWebBean {
 		if(this.processedPeaklistObject == null) return peaks;
 		for(int i = 0; i < this.processedPeaklistObject.getNumberElements(); i++) {
 			Double currentMass = ((TandemMassPeak)this.processedPeaklistObject.getElement(i)).getMass();
-			peaks.add(new SelectItem(((TandemMassPeak)this.processedPeaklistObject.getElement(i)).getID(), String.valueOf(MathTools.round(currentMass, 4))));
+			peaks.add(new SelectItem(((TandemMassPeak)this.processedPeaklistObject.getElement(i)).getID(), String.valueOf(MathTools.round(currentMass))));
 		}
 		return peaks;
 	}
@@ -2486,7 +2902,10 @@ public class MetFragWebBean {
 		//RequestContext.getCurrentInstance().update("mainForm:mainAccordion:statisticsPanel");
 		//RequestContext.getCurrentInstance().update("mainForm:mainAccordion:statistics");
 		if(!this.isScoreDistributionModelAvailable()) RequestContext.getCurrentInstance().execute("PF('mainAccordion').unselect(3)");
-		RequestContext.getCurrentInstance().update("mainForm:mainAccordion");
+		RequestContext.getCurrentInstance().update("mainForm:mainAccordion:MetFragResultsTable");
+		RequestContext.getCurrentInstance().update("mainForm:mainAccordion:peakFilterPanel");
+		RequestContext.getCurrentInstance().update("mainForm:mainAccordion:scoreDistributionPlot");
+		//RequestContext.getCurrentInstance().update("mainForm:mainAccordion");
 	}
 	
 	//results download
@@ -2524,7 +2943,15 @@ public class MetFragWebBean {
 	public boolean isInfoMessage(String id) {
 		return this.infoMessages.containsKey(id);
 	}
-	
+
+	public String getWarningMessage(String id) {
+		return this.warningMessages.getMessage(id);
+	}
+
+	public boolean isWarningMessage(String id) {
+		return this.warningMessages.containsKey(id);
+	}
+
 	/**
 	 * response to idle monitor when session is over
 	 */

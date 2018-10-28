@@ -14,6 +14,7 @@ import org.primefaces.model.chart.AxisType;
 import org.primefaces.model.chart.LineChartModel;
 import org.primefaces.model.chart.LineChartSeries;
 
+import de.ipbhalle.metfraglib.exceptions.ParameterNotKnownException;
 import de.ipbhalle.metfraglib.exceptions.RetentionTimeNotFoundException;
 import de.ipbhalle.metfraglib.exceptions.TooFewCandidatesException;
 import de.ipbhalle.metfraglib.functions.HelperFunctions;
@@ -25,6 +26,7 @@ import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.process.CombinedMetFragProcess;
 import de.ipbhalle.metfraglib.process.ProcessingStatus;
 import de.ipbhalle.metfraglib.settings.MetFragGlobalSettings;
+import de.ipbhalle.metfragweb.datatype.AdditionalFileDatabase;
 import de.ipbhalle.metfragweb.datatype.AvailableScore;
 import de.ipbhalle.metfragweb.datatype.SuspectListFileContainer;
 import de.ipbhalle.metfragweb.datatype.UploadedSuspectListFile;
@@ -33,6 +35,7 @@ import de.ipbhalle.metfragweb.helper.ProcessCompoundsThreadRunner;
 import de.ipbhalle.metfragweb.helper.SettingsInitialiser;
 import de.ipbhalle.metfragweb.helper.UserInputDataHandler;
 import de.ipbhalle.metfragweb.helper.UserOutputDataHandler;
+import edu.emory.mathcs.backport.java.util.Collections;
 import de.ipbhalle.metfraglib.peak.TandemMassPeak;
 import de.ipbhalle.metfraglib.peaklistreader.StringTandemMassPeakListReader;
 
@@ -68,7 +71,7 @@ public class BeanSettingsContainer {
 	 * database search parameters
 	 */
 	protected boolean isDatabaseInitialise = false;
-	protected String database = "KEGG";
+	protected Object database = "KEGG";
 	protected String formula = "";
 	protected String identifiers = "";
 	protected boolean includeReferences = false;
@@ -78,8 +81,10 @@ public class BeanSettingsContainer {
 	protected Integer measuredMassMode = 1;
 	protected Boolean positiveChargeMeasured = true;
 	protected String candidateFilePath = "";
+	protected Byte maximumTreeDepth = 2;
 	//availability of search properties
 	protected boolean isLocalDatabaseDefined = false;
+	protected boolean metChemDatabaseDefined = false;
 	protected boolean massSearchAvailable = false;
 	protected boolean formulaSearchAvailable = false;
 	protected boolean identifierSearchAvailable = false;
@@ -87,6 +92,7 @@ public class BeanSettingsContainer {
 	//retrieved candidates list
 	protected CandidateList retrievedCandidateList;
 	
+	protected String bondEnergyLipidMapsFilePath = "";
 	//for local databases
 	protected boolean localPubChemDatabase = false;
 	protected boolean localKeggDatabase = false;
@@ -101,12 +107,16 @@ public class BeanSettingsContainer {
 	protected String additionalSmartsFilterInclusion = "";
 	protected String[] smartsFilterExclusion = new String[] {"[cR1]1[cR1][cR1][cR1][cR1][cR1]1"};
 	protected String additionalSmartsFilterExclusion = "";
-	protected boolean elementInclusionExclusiveFilterEnabled;
 	protected boolean elementInclusionFilterValid = true;
+	protected String elementInclusionFilterType = "default";
+	
+	protected String substructureInformationFilterExpression = "( not c1ccccc1 and not C1CCCCC1 ) or [CX3](=O)[OX2H1]";
+	protected String selectedInformationSmarts = "";
 	
 	protected SuspectListFileContainer suspectListFilterFileContainer;
 	
 	protected boolean forIdentSuspectListFilterEnabled = false;
+	protected boolean dsstoxSuspectListFilterEnabled = false;
 	
 	/*
 	 * score parameters
@@ -125,9 +135,11 @@ public class BeanSettingsContainer {
 	protected List<SelectItem> availablePartitioningCoefficients;
 	
 	protected List<AvailableScore> availableDatabaseScores;
+	protected List<String> selectedAvailableDatabaseScores;
 	protected SuspectListFileContainer suspectListScoreFileContainer;
 
 	protected boolean forIdentSuspectListScoreEnabled = false;
+	protected boolean dsstoxSuspectListScoreEnabled = false;
 	
 	/*
 	 * fragmentation parameters
@@ -203,6 +215,7 @@ public class BeanSettingsContainer {
 		 * read settings from external file
 		 */
 		this.metFragSettingsFile = this.readDatabaseConfigFromFile();
+		this.availableParameters.initAddititionalDatabases(this.metFragSettingsFile);
 
 		//init filters
 		this.initFilterEnabled();
@@ -237,6 +250,8 @@ public class BeanSettingsContainer {
 		this.scoreEnabledMap.put("retentionTimeTrainingFile", false);
 		this.scoreEnabledMap.put("suspectListsScore", false);
 		this.scoreEnabledMap.put("spectralSimilarity", false);
+		this.scoreEnabledMap.put("exactSpectralSimilarity", false);
+		this.scoreEnabledMap.put("statistical", false);
 	}
 
 	protected void initScoreNames() {
@@ -247,6 +262,8 @@ public class BeanSettingsContainer {
 		this.scoreNamesMap.put("suspectListsScore", "Suspect Inclusion Lists");
 		this.scoreNamesMap.put("fragmenterScore", "Fragmenter Score");
 		this.scoreNamesMap.put("spectralSimilarity", "Spectral Similarity");
+		this.scoreNamesMap.put("exactSpectralSimilarity", "Exact Spectral Similarity");
+		this.scoreNamesMap.put("statistical", "Statistical Scoring");
 	}
 
 	protected void initScoreValid() {
@@ -258,6 +275,8 @@ public class BeanSettingsContainer {
 		this.scoreValidMap.put("fragmenterScore", true);
 		this.scoreValidMap.put("simScore", true);
 		this.scoreValidMap.put("spectralSimilarity", true);
+		this.scoreValidMap.put("exactSpectralSimilarity", true);
+		this.scoreValidMap.put("statistical", true);
 	}
 	
 	protected void initFilterEnabled() {
@@ -269,6 +288,7 @@ public class BeanSettingsContainer {
 		this.filterEnabledMap.put("includedFilterSmarts", false);
 		this.filterEnabledMap.put("excludedFilterSmarts", false);
 		this.filterEnabledMap.put("suspectListsFilter", false);
+		this.filterEnabledMap.put("substructureInformationFilterExpression", false);
 		this.filterEnabledMap.put("unconnectedStructureExclusionFilter", true);
 		this.filterEnabledMap.put("isotopeFilter", true);
 	}
@@ -282,6 +302,7 @@ public class BeanSettingsContainer {
 		this.filterNamesMap.put("includedFilterSmarts", "SMARTS Inclusion");
 		this.filterNamesMap.put("excludedFilterSmarts", "SMARTS Exclusion");
 		this.filterNamesMap.put("suspectListsFilter", "Suspect Inclusion Lists");
+		this.filterNamesMap.put("substructureInformationFilterExpression", "Substructure Information");
 		this.filterNamesMap.put("unconnectedStructureExclusionFilter", "Unconnected Structure Exclusion");
 		this.filterNamesMap.put("isotopeFilter", "Isotope");
 	}
@@ -294,6 +315,7 @@ public class BeanSettingsContainer {
 		this.filterValidMap.put("includedFilterMinimumElements", true);
 		this.filterValidMap.put("includedFilterSmarts", true);
 		this.filterValidMap.put("excludedFilterSmarts", true);
+		this.filterValidMap.put("substructureInformationFilterExpression", true);
 		this.filterValidMap.put("suspectListsFilter", false);
 		this.filterValidMap.put("unconnectedStructureExclusionFilter", true);
 		this.filterValidMap.put("isotopeFilter", true);
@@ -305,6 +327,7 @@ public class BeanSettingsContainer {
 
 	public boolean readUploadedSettings(java.io.File[] contentFiles, Messages infoMessages, Messages errorMessages, 
 			AvailableParameters avalableParameters, String rootDir) {
+		System.out.println("readUploadedSettings");
 		errorMessages.removeKey("uploadParametersError");
 		if(contentFiles == null) {
 			errorMessages.setMessage("uploadParametersError", "Error: Uploading file failed");
@@ -372,11 +395,11 @@ public class BeanSettingsContainer {
 	/*
 	 * database search settings
 	 */
-	public String getDatabase() {
-		return database;
+	public Object getDatabase() {
+		return this.database;
 	}
 	
-	public void setDatabase(String database) {
+	public void setDatabase(Object database) {
 		if(this.database.equals(database) && this.isDatabaseInitialise) return;
 		this.resetDatabaseParameters();
 		if(this.availableParameters.isNeedLocalFile(database)) {
@@ -517,22 +540,13 @@ public class BeanSettingsContainer {
 					String key = keys.nextElement();
 					if (this.getAvailableParameters().isPreservedCompoundScoreProperty(key))
 						continue;
-					Object value = candidates.getElement(0).getProperty(key);
-					if (value != null) {
-						try {
-							if (value instanceof Double)
-								availableScores.add(new AvailableScore(key));
-							else {
-								Double.parseDouble((String) value);
-								availableScores.add(new AvailableScore(key));
-							}
-						} catch (Exception e) {
-							continue;
-						}
+					if(this.isValidScoreValueProperty(key, candidates)) {
+						availableScores.add(new AvailableScore(key));
 					}
 				}
 			}
 		}
+		Collections.sort(availableScores);
 		this.setAvailableDatabaseScores(availableScores);
 	}
 	
@@ -726,11 +740,22 @@ public class BeanSettingsContainer {
 		this.additionalSmartsFilterExclusion = additionalSmartsFilterExclusion;
 	}
 	
-	public void setElementInclusionExclusiveFilterEnabled(
-			boolean elementInclusionExclusiveFilterEnabled) {
-		this.elementInclusionExclusiveFilterEnabled = elementInclusionExclusiveFilterEnabled;
+	public void setSubstructureInformationFilterExpression(String substructureInformationFilterExpression) {
+		this.substructureInformationFilterExpression = substructureInformationFilterExpression;
 	}
-		
+	
+	public String getSubstructureInformationFilterExpression() {
+		return this.substructureInformationFilterExpression;
+	}
+	
+	public void setSelectedInformationSmarts(String selectedSmarts) {
+		this.selectedInformationSmarts = selectedSmarts;
+	}
+	
+	public String getSelectedInformationSmarts() {
+		return this.selectedInformationSmarts;
+	}
+	
 	public void preprocessRetentionTimeTrainingFile() throws Exception {
 		if(this.retentionTimeScoreTrainingFilePath == null || this.retentionTimeScoreTrainingFilePath.trim().length() == 0) return;
 		if(this.availableCandidatePartitioningCoefficients == null || this.availableCandidatePartitioningCoefficients.size() == 0) return;
@@ -758,20 +783,61 @@ public class BeanSettingsContainer {
 						if(this.availableCandidatePartitioningCoefficients.get(k).getLabel().equals(currentKey)) {
 							if(currentKey.equals("CDK")) this.availablePartitioningCoefficients.add(new SelectItem(currentKey));
 							else {
-								try {
-									Double.parseDouble((String)candidates.getElement(0).getProperty(currentKey));
+								if(this.isValidLogValueProperty(currentKey, candidates))
 									this.availablePartitioningCoefficients.add(new SelectItem(currentKey));
-								}
-								catch(Exception e) {
-									continue;
-								}
 							}
 						}
 					}
 				}
 			}
+			Collections.sort(this.availablePartitioningCoefficients, new java.util.Comparator<SelectItem>() {
+			    @Override
+			    public int compare(SelectItem left, SelectItem right) {
+			    	return ((String)left.getValue()).compareTo((String)right.getValue());
+			    }
+			});
 		}
 		else this.availablePartitioningCoefficients = null;
+	}
+	
+	protected boolean isValidLogValueProperty(String key, CandidateList candidates) {
+		double numberCandidatesWithValidValue = 0.0;
+		for(int i = 0; i < candidates.getNumberElements(); i++) {
+			try {
+				Double.parseDouble((String)candidates.getElement(i).getProperty(key));
+				numberCandidatesWithValidValue++;
+			}
+			catch(Exception e) {
+				continue;
+			}
+		}
+		// at least 30 % need to have a valid log value
+		double percentage = numberCandidatesWithValidValue / candidates.getNumberElements();
+		if(percentage >= 0.3)
+			return true;
+		return false;
+	}
+	
+	protected boolean isValidScoreValueProperty(String key, CandidateList candidates) {
+		double numberCandidatesWithValidValue = 0.0;
+		for(int i = 0; i < candidates.getNumberElements(); i++) {
+			Object value = candidates.getElement(i).getProperty(key);
+			if (value != null) {
+				try {
+					if (value instanceof Double) {
+				
+					} else {
+						Double.parseDouble((String) value);
+					}
+				} catch (Exception e) {
+					continue;
+				}
+				numberCandidatesWithValidValue++;
+			}
+		}
+		// at least one candidate needs to have a valid log value
+		if(numberCandidatesWithValidValue >= 1) return true;
+		return false;
 	}
 	
 	protected void resetDatabaseParameters() {
@@ -812,7 +878,7 @@ public class BeanSettingsContainer {
 		/*
 		 * init the new combinedMetFragProcess
 		 */
-		System.out.println("retrieveCompounds");
+		
 		this.combinedMetFragProcess = new CombinedMetFragProcess(this.getMetFragSettings());
 		try {
 			this.setCompoundsRetrieved(this.combinedMetFragProcess.retrieveCompounds());
@@ -870,10 +936,6 @@ public class BeanSettingsContainer {
 		return "";
 	}
 
-	public boolean isElementInclusionExclusiveFilterEnabled() {
-		return this.elementInclusionExclusiveFilterEnabled;
-	}
-	
 	public String getFilterName(String filterName) {
 		return this.filterNamesMap.get(filterName);
 	}
@@ -885,13 +947,29 @@ public class BeanSettingsContainer {
 	public void setElementInclusionFilterValid(boolean elementInclusionFilterValid) {
 		this.elementInclusionFilterValid = elementInclusionFilterValid;
 	}
-	
+
+	public String getElementInclusionFilterType() {
+		return this.elementInclusionFilterType;
+	}
+
+	public void setElementInclusionFilterType(String elementInclusionFilterType) {
+		this.elementInclusionFilterType = elementInclusionFilterType;
+	}
+
 	public boolean isForIdentSuspectListFilterEnabled() {
 		return forIdentSuspectListFilterEnabled;
 	}
 
 	public void setForIdentSuspectListFilterEnabled(boolean forIdentSuspectListFilterEnabled) {
 		this.forIdentSuspectListFilterEnabled = forIdentSuspectListFilterEnabled;
+	}
+
+	public boolean isDsstoxSuspectListFilterEnabled() {
+		return dsstoxSuspectListFilterEnabled;
+	}
+
+	public void setDsstoxSuspectListFilterEnabled(boolean dsstoxSuspectListFilterEnabled) {
+		this.dsstoxSuspectListFilterEnabled = dsstoxSuspectListFilterEnabled;
 	}
 
 	/*
@@ -905,6 +983,18 @@ public class BeanSettingsContainer {
 		this.availableDatabaseScores = availableDatabaseScores;
 	}
 
+	public List<String> getSelectedAvailableDatabaseScores() {
+		return this.selectedAvailableDatabaseScores;
+	}
+
+	public void setSelectedAvailableDatabaseScores(java.util.List<String> selectedAvailableDatabaseScores) {
+		this.selectedAvailableDatabaseScores = selectedAvailableDatabaseScores;
+	}
+
+	public void resetSelectedAvailableDatabaseScores() {
+		this.selectedAvailableDatabaseScores = new java.util.ArrayList<String>();
+	}
+	
 	//retention time scores
 	public String getRetentionTimeScoreTrainingFileName() {
 		if(this.retentionTimeScoreTrainingFilePath == null || this.retentionTimeScoreTrainingFilePath.equals(""))
@@ -1019,6 +1109,14 @@ public class BeanSettingsContainer {
 		this.forIdentSuspectListScoreEnabled = forIdentSuspectListScoreEnabled;
 	}
 
+	public boolean isDsstoxSuspectListScoreEnabled() {
+		return dsstoxSuspectListScoreEnabled;
+	}
+
+	public void setDsstoxSuspectListScoreEnabled(boolean dsstoxSuspectListScoreEnabled) {
+		this.dsstoxSuspectListScoreEnabled = dsstoxSuspectListScoreEnabled;
+	}
+
 	public void incrementSuspectListScoreFileIdentifier() {
 		this.suspectListScoreFileIdentifier++;
 	}
@@ -1070,6 +1168,14 @@ public class BeanSettingsContainer {
 		else this.setPositiveCharge(Constants.ADDUCT_CHARGES.get(Constants.ADDUCT_NOMINAL_MASSES.indexOf(this.mode)));
 	}
 
+	public Byte getTreeDepth() {
+		return this.maximumTreeDepth;
+	}
+
+	public void setTreeDepth(Byte treeDepth) {
+		this.maximumTreeDepth = treeDepth;
+	}
+
 	public Boolean isPositiveChargeMeasured() {
 		return this.positiveChargeMeasured;
 	}
@@ -1109,17 +1215,56 @@ public class BeanSettingsContainer {
 	/*
 	 * overall settings processing
 	 */
-	private void prepareDatabaseSettings() {
-		String database = this.database;
-		if(database.equals("PubChem")) {
-			if(this.localPubChemDatabase) {
-				if(this.includeReferences) database = "LocalExtendedPubChem";
-				else database = "LocalPubChem";
+	private void prepareDatabaseSettings() throws ParameterNotKnownException {
+		System.out.println("prepareDatabaseSettings");
+		Object database = this.database;
+		String metchemLibrary = "";
+		if(!this.metChemDatabaseDefined) {
+			if(database.equals("PubChem")) {
+				if(this.localPubChemDatabase) {
+					if(this.includeReferences) database = "LocalExtendedPubChem";
+					else database = "LocalPubChem";
+				}
+				else if(this.includeReferences) database = "ExtendedPubChem";
 			}
-			else if(this.includeReferences) database = "ExtendedPubChem";
+			else if(database.equals("KEGG") && this.localKeggDatabase) database = "LocalKegg";
 		}
-		else if(database.equals("KEGG") && this.localKeggDatabase) database = "LocalKegg";
-		this.getMetFragSettings().set(VariableNames.METFRAG_DATABASE_TYPE_NAME, database);
+		else { // if MetChem definition is found previously
+			if(database.equals("PubChem")) {
+				database = "MetChem";
+				if(this.includeReferences) database = "ExtendedMetChem";
+				metchemLibrary = "pubchem";
+			}
+			else if(database.equals("KEGG")) {
+				metchemLibrary = "kegg";
+				database = "MetChem";
+			}
+			else if(database.equals("LipidMaps")) {
+				metchemLibrary = "lipidmaps";
+				database = "MetChem";
+			}
+			else if(database.equals("LocalDerivatisedKegg")) {
+				metchemLibrary = "kegg_derivatised";
+				database = "MetChem";
+			}
+			else if(database.equals("LocalChEBI")) {
+				metchemLibrary = "chebi";
+				database = "MetChem";
+			}
+			else if(database.equals("LocalHMDB")) {
+				metchemLibrary = "hmdb";
+				database = "MetChem";
+			}
+			this.getMetFragSettings().set(VariableNames.LOCAL_METCHEM_DATABASE_LIBRARY_NAME, metchemLibrary);
+		}
+		// if database is from type AdditionalFileDatabase
+		if(database instanceof AdditionalFileDatabase) {
+			System.out.println("AdditionalFileDatabase selected");
+			this.getMetFragSettings().set(VariableNames.METFRAG_DATABASE_TYPE_NAME, ((AdditionalFileDatabase)database).getType());
+			this.getMetFragSettings().set(VariableNames.LOCAL_DATABASE_PATH_NAME, ((AdditionalFileDatabase)database).getFilename());
+		} else { // else it's from type string
+			this.getMetFragSettings().set(VariableNames.METFRAG_DATABASE_TYPE_NAME, database);
+		}
 		this.getMetFragSettings().set(VariableNames.PRECURSOR_NEUTRAL_MASS_NAME, Double.parseDouble(this.getNeutralMonoisotopicMass()));
 		if(this.isFormulaSearchAvailable()) 
 			this.getMetFragSettings().set(VariableNames.PRECURSOR_MOLECULAR_FORMULA_NAME, this.getFormula() == null || this.getFormula().trim().length() == 0 ? null : this.getFormula().trim());
@@ -1140,13 +1285,12 @@ public class BeanSettingsContainer {
 		//isotope filter
 		if(this.filterEnabledMap.get("isotopeFilter") && this.filterValidMap.get("isotopeFilter")) 
 			compoundPreFilters.add("IsotopeFilter");
-		//element inclusion score
-		if(this.elementInclusionExclusiveFilterEnabled && this.filterEnabledMap.get("includedFilterElements") && this.filterValidMap.get("includedFilterElements")) {
-			compoundPreFilters.add("ElementInclusionExclusiveFilter");
-			this.metFragSettings.set(VariableNames.PRE_CANDIDATE_FILTER_INCLUDED_ELEMENTS_NAME, ParameterDataTypes.getParameter(this.includedElements, VariableNames.PRE_CANDIDATE_FILTER_INCLUDED_ELEMENTS_NAME));
-		} 	
-		else if(this.filterEnabledMap.get("includedFilterElements") && this.filterValidMap.get("includedFilterElements")) {
-			compoundPreFilters.add("ElementInclusionFilter");
+		//element inclusion filter
+		if(this.filterEnabledMap.get("includedFilterElements") && this.filterValidMap.get("includedFilterElements")) {
+			if(this.elementInclusionFilterType == null || this.elementInclusionFilterType.equals("")) compoundPreFilters.add("ElementInclusionFilter");
+			else if(this.elementInclusionFilterType.equals("optional")) compoundPreFilters.add("ElementInclusionOptionalFilter");
+			else if(this.elementInclusionFilterType.equals("exclusive")) compoundPreFilters.add("ElementInclusionExclusiveFilter");
+			else compoundPreFilters.add("ElementInclusionFilter");
 			this.metFragSettings.set(VariableNames.PRE_CANDIDATE_FILTER_INCLUDED_ELEMENTS_NAME, ParameterDataTypes.getParameter(this.includedElements, VariableNames.PRE_CANDIDATE_FILTER_INCLUDED_ELEMENTS_NAME));
 		} else this.metFragSettings.remove(VariableNames.PRE_CANDIDATE_FILTER_INCLUDED_ELEMENTS_NAME);
 		
@@ -1186,6 +1330,12 @@ public class BeanSettingsContainer {
 			this.metFragSettings.set(VariableNames.PRE_CANDIDATE_FILTER_SMARTS_EXCLUSION_LIST_NAME, ParameterDataTypes.getParameter(filterString, VariableNames.PRE_CANDIDATE_FILTER_SMARTS_EXCLUSION_LIST_NAME));				
 		}
 		else this.metFragSettings.remove(VariableNames.PRE_CANDIDATE_FILTER_SMARTS_EXCLUSION_LIST_NAME);
+		//substructure information
+		if(this.filterEnabledMap.get("substructureInformationFilterExpression") && this.filterValidMap.get("substructureInformationFilterExpression")) {
+			compoundPreFilters.add("SubstructureInformationFilter");
+			this.metFragSettings.set(VariableNames.PRE_CANDIDATE_FILTER_SMARTS_FORMULA_NAME, ParameterDataTypes.getParameter(this.substructureInformationFilterExpression, VariableNames.PRE_CANDIDATE_FILTER_SMARTS_FORMULA_NAME));				
+		}
+		else this.metFragSettings.remove(VariableNames.PRE_CANDIDATE_FILTER_SMARTS_FORMULA_NAME);
 		//suspect lists inclusion filter
 		if(this.filterEnabledMap.get("suspectListsFilter") && this.filterValidMap.get("suspectListsFilter")) {
 			compoundPreFilters.add("SuspectListFilter");
@@ -1203,6 +1353,17 @@ public class BeanSettingsContainer {
 					suspectListFilter = newSuspectListFilter;
 				}	
 			}
+			if(this.isDsstoxSuspectListFilterEnabled()) {
+				if(suspectListFilter == null) 
+					suspectListFilter = new String[] {VariableNames.DSSTOX_SUSPECTLIST_NAME};
+				else {
+					String[] newSuspectListFilter = new String[suspectListFilter.length + 1];
+					for(int k = 0; k < suspectListFilter.length; k++)
+						newSuspectListFilter[k] = suspectListFilter[k];
+					newSuspectListFilter[newSuspectListFilter.length - 1] = VariableNames.DSSTOX_SUSPECTLIST_NAME;
+					suspectListFilter = newSuspectListFilter;
+				}	
+			}
 			this.metFragSettings.set(VariableNames.PRE_CANDIDATE_FILTER_SUSPECT_LIST_NAME, suspectListFilter);
 		}
 		else this.metFragSettings.remove(VariableNames.PRE_CANDIDATE_FILTER_SUSPECT_LIST_NAME);
@@ -1215,7 +1376,7 @@ public class BeanSettingsContainer {
 	}
 
 	private void prepareCompoundScoreSettings() throws Exception {
-		java.util.Vector<String> compoundScores = new java.util.Vector<String>();
+		java.util.ArrayList<String> compoundScores = new java.util.ArrayList<String>();
 		//fragmenter score
 		if(this.scoreEnabledMap.get("fragmenterScore") && this.scoreValidMap.get("fragmenterScore")) {
 			compoundScores.add(VariableNames.METFRAG_FRAGMENTER_SCORE_NAME);
@@ -1242,6 +1403,15 @@ public class BeanSettingsContainer {
 		if(this.scoreEnabledMap.get("spectralSimilarity") && this.scoreValidMap.get("spectralSimilarity")) {
 			compoundScores.add("OfflineMetFusionScore");
 		}
+		//exact spectral similarity
+		if(this.scoreEnabledMap.get("exactSpectralSimilarity") && this.scoreValidMap.get("exactSpectralSimilarity")) {
+			compoundScores.add("OfflineIndividualMoNAScore");
+		}
+		//statistical scoring
+		if(this.scoreEnabledMap.get("statistical") && this.scoreValidMap.get("statistical")) {
+			compoundScores.add("AutomatedPeakFingerprintAnnotationScore");
+			compoundScores.add("AutomatedLossFingerprintAnnotationScore");
+		}
 		//suspect list inclusion score
 		if(this.scoreEnabledMap.get("suspectListsScore") && this.scoreValidMap.get("suspectListsScore")) {
 			compoundScores.add("SuspectListScore");
@@ -1256,6 +1426,17 @@ public class BeanSettingsContainer {
 					for(int k = 0; k < suspectListScore.length; k++)
 						newSuspectListScore[k] = suspectListScore[k];
 					newSuspectListScore[newSuspectListScore.length - 1] = VariableNames.FORIDENT_SUSPECTLIST_NAME;
+					suspectListScore = newSuspectListScore;
+				}	
+			}
+			if(this.isDsstoxSuspectListScoreEnabled()) {
+				if(suspectListScore == null)
+					suspectListScore = new String[] {VariableNames.DSSTOX_SUSPECTLIST_NAME};
+				else {
+					String[] newSuspectListScore = new String[suspectListScore.length + 1];
+					for(int k = 0; k < suspectListScore.length; k++)
+						newSuspectListScore[k] = suspectListScore[k];
+					newSuspectListScore[newSuspectListScore.length - 1] = VariableNames.DSSTOX_SUSPECTLIST_NAME;
 					suspectListScore = newSuspectListScore;
 				}	
 			}
@@ -1276,9 +1457,15 @@ public class BeanSettingsContainer {
 			this.metFragSettings.remove(VariableNames.USER_LOG_P_VALUE_NAME);
 		}
 		//database scores
-		if(this.availableDatabaseScores != null)
+		/*if(this.availableDatabaseScores != null) {
 			for(int i = 0; i < this.availableDatabaseScores.size(); i++)
 				if(this.availableDatabaseScores.get(i).isSelected()) compoundScores.add(this.availableDatabaseScores.get(i).getLabel());
+		}*/
+		if(this.selectedAvailableDatabaseScores != null) {
+			for(int i = 0; i < this.selectedAvailableDatabaseScores.size(); i++) {
+				compoundScores.add(this.selectedAvailableDatabaseScores.get(i).toString());
+			}
+		}
 		//set the sim score
 		if(this.scoreEnabledMap.get("simScore") && this.scoreValidMap.get("simScore")) {
 			compoundScores.add("SimScore");
@@ -1302,9 +1489,10 @@ public class BeanSettingsContainer {
 		this.metFragSettings.set(VariableNames.ABSOLUTE_MASS_DEVIATION_NAME, Double.parseDouble(this.absoluteMassDeviation));
 		this.metFragSettings.set(VariableNames.PEAK_LIST_NAME, new StringTandemMassPeakListReader(this.metFragSettings).read());
 		int mode = this.mode;
-		if(mode == 1000 || mode == -100) mode = 0;
+		if(mode == 1000 || mode == -1000) mode = 0;
 		this.metFragSettings.set(VariableNames.PRECURSOR_ION_MODE_NAME, mode);
 		this.metFragSettings.set(VariableNames.IS_POSITIVE_ION_MODE_NAME, this.isPositiveCharge());
+		this.metFragSettings.set(VariableNames.MAXIMUM_TREE_DEPTH_NAME, this.maximumTreeDepth);
 	}
 
 	public boolean generateSpectrumModelView(Messages errorMessages) {
@@ -1410,10 +1598,15 @@ public class BeanSettingsContainer {
 		this.prepareFragmenterSettings();
 		
 		this.metFragSettings.includeSettings(this.metFragSettingsFile, true, this.getExcludeKeys());
+		
+		if(this.database.equals("LipidMaps") && this.bondEnergyLipidMapsFilePath != null && this.bondEnergyLipidMapsFilePath.length() != 0) {
+			System.out.println("bond energy file path set to " + this.bondEnergyLipidMapsFilePath);
+			this.metFragSettings.set(VariableNames.BOND_ENERGY_FILE_PATH_NAME, this.bondEnergyLipidMapsFilePath);
+		}
 	}
 
-	public java.util.Vector<String> getExcludeKeys() {
-		java.util.Vector<String> excludeKeys = new java.util.Vector<String>();
+	public java.util.ArrayList<String> getExcludeKeys() {
+		java.util.ArrayList<String> excludeKeys = new java.util.ArrayList<String>();
 		excludeKeys.add(VariableNames.FEEDBACK_EMAIL_HOST);
 		excludeKeys.add(VariableNames.FEEDBACK_EMAIL_PASS);
 		excludeKeys.add(VariableNames.FEEDBACK_EMAIL_USER);
@@ -1504,7 +1697,32 @@ public class BeanSettingsContainer {
 		excludeKeys.add(VariableNames.LOCAL_DERIVATISED_KEGG_DATABASE_USER_NAME);
 		excludeKeys.add(VariableNames.LOCAL_DERIVATISED_KEGG_DATABASE_PASSWORD_NAME);
 		excludeKeys.add(VariableNames.LOCAL_DERIVATISED_KEGG_DATABASE_COMPOUND_NAME_COLUMN_NAME);
+		//local chebi database
+		excludeKeys.add(VariableNames.LOCAL_CHEBI_DATABASE_NAME);
+		excludeKeys.add(VariableNames.LOCAL_CHEBI_DATABASE_COMPOUND_TABLE_NAME);
+		excludeKeys.add(VariableNames.LOCAL_CHEBI_DATABASE_PORT_NUMBER_NAME);
+		excludeKeys.add(VariableNames.LOCAL_CHEBI_DATABASE_SERVER_IP_NAME);
+		excludeKeys.add(VariableNames.LOCAL_CHEBI_DATABASE_MASS_COLUMN_NAME);
+		excludeKeys.add(VariableNames.LOCAL_CHEBI_DATABASE_FORMULA_COLUMN_NAME);
+		excludeKeys.add(VariableNames.LOCAL_CHEBI_DATABASE_INCHI_COLUMN_NAME);
+		excludeKeys.add(VariableNames.LOCAL_CHEBI_DATABASE_INCHIKEY1_COLUMN_NAME);
+		excludeKeys.add(VariableNames.LOCAL_CHEBI_DATABASE_INCHIKEY2_COLUMN_NAME);
+		excludeKeys.add(VariableNames.LOCAL_CHEBI_DATABASE_CID_COLUMN_NAME);
+		excludeKeys.add(VariableNames.LOCAL_CHEBI_DATABASE_SMILES_COLUMN_NAME);
+		excludeKeys.add(VariableNames.LOCAL_CHEBI_DATABASE_COMPOUND_NAME_COLUMN_NAME);
+		excludeKeys.add(VariableNames.LOCAL_CHEBI_DATABASE_USER_NAME);
+		excludeKeys.add(VariableNames.LOCAL_CHEBI_DATABASE_PASSWORD_NAME);
+		//local metchem database
+		excludeKeys.add(VariableNames.LOCAL_METCHEM_DATABASE_LIBRARY_NAME);
+		excludeKeys.add(VariableNames.LOCAL_METCHEM_DATABASE_NAME);
+		excludeKeys.add(VariableNames.LOCAL_METCHEM_DATABASE_PASSWORD_NAME);
+		excludeKeys.add(VariableNames.LOCAL_METCHEM_DATABASE_PORT_NUMBER_NAME);
+		excludeKeys.add(VariableNames.LOCAL_METCHEM_DATABASE_SERVER_IP_NAME);
+		excludeKeys.add(VariableNames.LOCAL_METCHEM_DATABASE_USER_NAME);
 		
+		excludeKeys.add(VariableNames.PEAK_LIST_STRING_NAME);
+		excludeKeys.add(VariableNames.PUBCHEM_PROXY_PORT);
+		excludeKeys.add(VariableNames.PUBCHEM_PROXY_SERVER);
 		
 		return excludeKeys;
 	}
@@ -1691,10 +1909,13 @@ public class BeanSettingsContainer {
 	public MetFragGlobalSettings readDatabaseConfigFromFile() {
 		try {
 			ServletContext servletContext = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
+			this.bondEnergyLipidMapsFilePath = servletContext.getRealPath("/resources/BondEnergiesLipidMaps.txt");
 			String pathToProperties = servletContext.getRealPath("/resources/settings.properties");
 			MetFragGlobalSettings settings = MetFragGlobalSettings.readSettings(new java.io.File(pathToProperties), null);
+			// check local database settings within the settings file
 			if(settings.containsKey(VariableNames.LOCAL_KEGG_DATABASE_NAME) && settings.get(VariableNames.LOCAL_KEGG_DATABASE_NAME) != null) this.localKeggDatabase = true;
 			if(settings.containsKey(VariableNames.LOCAL_PUBCHEM_DATABASE_NAME) && settings.get(VariableNames.LOCAL_PUBCHEM_DATABASE_NAME) != null) this.localPubChemDatabase = true;
+			if(settings.containsKey(VariableNames.LOCAL_METCHEM_DATABASE_NAME) && settings.get(VariableNames.LOCAL_METCHEM_DATABASE_NAME) != null) this.metChemDatabaseDefined = true;
 			return settings;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1737,8 +1958,8 @@ public class BeanSettingsContainer {
 		bwriter.write(VariableNames.PRE_CANDIDATE_FILTER_MAXIMUM_ELEMENTS_NAME + " = " + this.includedMaximumElements); bwriter.newLine();
 		bwriter.write(VariableNames.PRE_CANDIDATE_FILTER_SMARTS_INCLUSION_LIST_NAME + " = " + this.smartsFilterInclusion); bwriter.newLine();
 		bwriter.write(VariableNames.PRE_CANDIDATE_FILTER_SMARTS_EXCLUSION_LIST_NAME + " = " + this.smartsFilterExclusion); bwriter.newLine();
-		bwriter.write("elementInclusionExclusiveFilterEnabled" + " = " + this.elementInclusionExclusiveFilterEnabled); bwriter.newLine();
-		bwriter.write("elementInclusionFilterValid" + " = " + this.elementInclusionExclusiveFilterEnabled); bwriter.newLine();
+		bwriter.write("elementInclusionFilterType" + " = " + this.elementInclusionFilterType); bwriter.newLine();
+		bwriter.write("elementInclusionFilterValid" + " = " + this.elementInclusionFilterValid); bwriter.newLine();
 		
 		bwriter.write("#### SCORES ####");
 		bwriter.newLine();

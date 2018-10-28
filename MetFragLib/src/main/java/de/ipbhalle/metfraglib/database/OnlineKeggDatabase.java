@@ -11,7 +11,7 @@ import java.net.URL;
 import org.openscience.cdk.ChemFile;
 import org.openscience.cdk.ChemObject;
 import org.openscience.cdk.interfaces.IAtomContainer;
-import org.openscience.cdk.io.MDLReader;
+import org.openscience.cdk.io.MDLV2000Reader;
 import org.openscience.cdk.tools.manipulator.ChemFileManipulator;
 
 import de.ipbhalle.metfraglib.additionals.MathTools;
@@ -34,9 +34,9 @@ public class OnlineKeggDatabase extends AbstractDatabase {
 	 * @throws Exception 
 	 * 
 	 */
-	public java.util.Vector<String> getCandidateIdentifiers(double monoisotopicMass, double relativeMassDeviation) throws Exception {
+	public java.util.ArrayList<String> getCandidateIdentifiers(double monoisotopicMass, double relativeMassDeviation) throws Exception {
 		logger.info("Fetching candidates from KEGG");
-		java.util.Vector<String> cids = new java.util.Vector<String>();
+		java.util.ArrayList<String> cids = new java.util.ArrayList<String>();
 		double mzabs = MathTools.calculateAbsoluteDeviation(monoisotopicMass, relativeMassDeviation);
 		String urlname = "http://rest.kegg.jp/find/compound/" + (monoisotopicMass - mzabs) + "-" + (monoisotopicMass + mzabs) + "/exact_mass";
 		logger.trace(urlname);
@@ -69,9 +69,9 @@ public class OnlineKeggDatabase extends AbstractDatabase {
 	 * @throws Exception 
 	 * 
 	 */
-	public java.util.Vector<String> getCandidateIdentifiers(String molecularFormula) throws Exception {
+	public java.util.ArrayList<String> getCandidateIdentifiers(String molecularFormula) throws Exception {
 		logger.info("Fetching candidates from KEGG");
-		java.util.Vector<String> cids = new java.util.Vector<String>();
+		java.util.ArrayList<String> cids = new java.util.ArrayList<String>();
 		String urlname = "http://rest.kegg.jp/find/compound/" + molecularFormula + "/formula";
 		java.io.InputStream stream = this.getInputStreamFromURL(urlname);
 		logger.trace(urlname);
@@ -99,7 +99,7 @@ public class OnlineKeggDatabase extends AbstractDatabase {
 	}
 
 	//ToDo: check whether identifiers are valid and exist
-	public java.util.Vector<String> getCandidateIdentifiers(java.util.Vector<String> identifiers) {
+	public java.util.ArrayList<String> getCandidateIdentifiers(java.util.ArrayList<String> identifiers) {
 		return identifiers;
 	}
 
@@ -126,7 +126,7 @@ public class OnlineKeggDatabase extends AbstractDatabase {
 		} 
 		java.util.List<IAtomContainer> containersList;
 		
-		MDLReader reader = new MDLReader(new java.io.StringReader(sb.toString()));
+		MDLV2000Reader reader = new MDLV2000Reader(new java.io.StringReader(sb.toString()));
         ChemFile chemFile = null;
         try {
         	chemFile = (ChemFile)reader.read((ChemObject)new ChemFile());
@@ -204,7 +204,7 @@ public class OnlineKeggDatabase extends AbstractDatabase {
 	 * @throws Exception 
 	 * 
 	 */
-	public CandidateList getCandidateByIdentifier(java.util.Vector<String> identifiers) throws Exception {
+	public CandidateList getCandidateByIdentifier(java.util.ArrayList<String> identifiers) throws Exception {
 		CandidateList candidates = new CandidateList();
 		for(int i = 0; i < identifiers.size(); i++) {
 			ICandidate candidate = this.getCandidateByIdentifier(identifiers.get(i));

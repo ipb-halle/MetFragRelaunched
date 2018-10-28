@@ -26,6 +26,10 @@ public abstract class AbstractScore implements IScore {
 		this.usesPiecewiseCalculation = false;
 	}
 	
+	public boolean isCandidatePropertyScore() {
+		return false;
+	}
+	
 	public boolean hasInterimResults() {
 		return this.hasInterimResults;
 	}
@@ -115,7 +119,11 @@ public abstract class AbstractScore implements IScore {
 
 	public void shallowNullify() {
 		this.optimalValues = null;
-		this.value = null;
 	}
 	
+	@Override
+	public void singlePostCalculate() {
+		return;
+	}
+
 }

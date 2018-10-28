@@ -1,9 +1,10 @@
 package de.ipbhalle.metfraglib.match;
 
-import de.ipbhalle.metfraglib.BitArray;
+import de.ipbhalle.metfraglib.FastBitArray;
 import de.ipbhalle.metfraglib.fragment.AbstractTopDownBitArrayFragment;
 import de.ipbhalle.metfraglib.interfaces.IFragment;
 import de.ipbhalle.metfraglib.interfaces.IMatch;
+import de.ipbhalle.metfraglib.interfaces.IMolecularStructure;
 import de.ipbhalle.metfraglib.interfaces.IPeak;
 import de.ipbhalle.metfraglib.molecularformula.BitArrayFragmentMolecularFormula;
 import de.ipbhalle.metfraglib.molecularformula.HDFragmentMolecularFormulaWrapper;
@@ -11,16 +12,16 @@ import de.ipbhalle.metfraglib.parameter.Constants;
 
 public class HDFragmentMassToPeakMatch extends FragmentMassToPeakMatch {
 	
-	protected java.util.Vector<Byte> numberOfDeuteriumsDifferToPeakMass;
-	protected java.util.Vector<Byte> numberOfDeuteriumsOfMatchedFragment;
-	protected java.util.Vector<Byte> numberOfVariableDeuteriumsDifferToPeakMass;
+	protected java.util.ArrayList<Byte> numberOfDeuteriumsDifferToPeakMass;
+	protected java.util.ArrayList<Byte> numberOfDeuteriumsOfMatchedFragment;
+	protected java.util.ArrayList<Byte> numberOfVariableDeuteriumsDifferToPeakMass;
 	
-	public java.util.Vector<Byte> getNumberOfVariableDeuteriumsDifferToPeakMass() {
+	public java.util.ArrayList<Byte> getNumberOfVariableDeuteriumsDifferToPeakMass() {
 		return numberOfVariableDeuteriumsDifferToPeakMass;
 	}
 
 	public void setNumberOfVariableDeuteriumsDifferToPeakMass(
-			java.util.Vector<Byte> numberOfVariableDeuteriumsDifferToPeakMass) {
+			java.util.ArrayList<Byte> numberOfVariableDeuteriumsDifferToPeakMass) {
 		this.numberOfVariableDeuteriumsDifferToPeakMass = numberOfVariableDeuteriumsDifferToPeakMass;
 	}
 
@@ -55,11 +56,11 @@ public class HDFragmentMassToPeakMatch extends FragmentMassToPeakMatch {
 
 	public HDFragmentMassToPeakMatch(IPeak matchedPeak) {
 		super(matchedPeak);
-		this.matchedFragmentMassesToTandemMassPeak = new java.util.Vector<Double>();
-		this.numberOfHydrogensDifferToPeakMass = new java.util.Vector<Byte>();
-		this.numberOfDeuteriumsDifferToPeakMass = new java.util.Vector<Byte>();
-		this.numberOfVariableDeuteriumsDifferToPeakMass = new java.util.Vector<Byte>();
-		this.numberOfDeuteriumsOfMatchedFragment = new java.util.Vector<Byte>();
+		this.matchedFragmentMassesToTandemMassPeak = new java.util.ArrayList<Double>();
+		this.numberOfHydrogensDifferToPeakMass = new java.util.ArrayList<Byte>();
+		this.numberOfDeuteriumsDifferToPeakMass = new java.util.ArrayList<Byte>();
+		this.numberOfVariableDeuteriumsDifferToPeakMass = new java.util.ArrayList<Byte>();
+		this.numberOfDeuteriumsOfMatchedFragment = new java.util.ArrayList<Byte>();
 	}
 	
 	public void shallowNullify() {
@@ -124,10 +125,10 @@ public class HDFragmentMassToPeakMatch extends FragmentMassToPeakMatch {
 	
 	public void addToMatch(IMatch match) {
 		HDFragmentMassToPeakMatch currentMatch = (HDFragmentMassToPeakMatch)match;
-		BitArray atomsBitArrayOfCurrentFragment = ((AbstractTopDownBitArrayFragment)currentMatch.getMatchedFragmentList().getElement(0)).getAtomsBitArray();
+		FastBitArray atomsFastBitArrayOfCurrentFragment = ((AbstractTopDownBitArrayFragment)currentMatch.getMatchedFragmentList().getElement(0)).getAtomsFastBitArray();
 		for(int i = 0; i < this.matchedFragmentsList.getNumberElements(); i++) {
 			AbstractTopDownBitArrayFragment tmpFragment = (AbstractTopDownBitArrayFragment)this.matchedFragmentsList.getElement(i);
-			if(tmpFragment.getAtomsBitArray().equals(atomsBitArrayOfCurrentFragment))
+			if(tmpFragment.getAtomsFastBitArray().equals(atomsFastBitArrayOfCurrentFragment))
 					return;
 		}
 		if(match.getBestMatchedFragment() != null) {
@@ -159,9 +160,9 @@ public class HDFragmentMassToPeakMatch extends FragmentMassToPeakMatch {
 		this.numberOfDeuteriumsOfBestFragment = this.numberOfDeuteriumsOfMatchedFragment.get(index);
 	}
 	
-	public String getModifiedFormulaStringOfBestMatchedFragment() {
+	public String getModifiedFormulaStringOfBestMatchedFragment(IMolecularStructure precursorMolecule) {
 		String formula = "";
-		BitArrayFragmentMolecularFormula form = (BitArrayFragmentMolecularFormula)this.bestMatchedFragment.getMolecularFormula();
+		BitArrayFragmentMolecularFormula form = (BitArrayFragmentMolecularFormula)this.bestMatchedFragment.getMolecularFormula(precursorMolecule);
 		HDFragmentMolecularFormulaWrapper formWrapper = new HDFragmentMolecularFormulaWrapper(form, (byte)(this.numberOfDeuteriumsOfBestFragment + this.variableDeuteriumDifferenceOfBestFragment));
 		
 		formula = "[" + formWrapper.toString();
@@ -184,11 +185,11 @@ public class HDFragmentMassToPeakMatch extends FragmentMassToPeakMatch {
 		return formula;
 	}
 
-	public String getModifiedFormulaStringOfMatchedFragment(int index) {
+	public String getModifiedFormulaStringOfMatchedFragment(IMolecularStructure precursorMolecule, int index) {
 		/*
 		 * in case there is a number of variable deuteriums we have to reduce the number of hydrogens
 		 */
-		BitArrayFragmentMolecularFormula form = (BitArrayFragmentMolecularFormula)this.matchedFragmentsList.getElement(index).getMolecularFormula();
+		BitArrayFragmentMolecularFormula form = (BitArrayFragmentMolecularFormula)this.matchedFragmentsList.getElement(index).getMolecularFormula(precursorMolecule);
 		HDFragmentMolecularFormulaWrapper formWrapper = new HDFragmentMolecularFormulaWrapper(form, (byte)(this.getNumberOfDeuteriumsOfMatchedFragment(index) + this.getNumberOfVariableDeuteriumDifferToPeakMass(index)));
 		
 		String formula = "[" + formWrapper.toString();
@@ -215,12 +216,12 @@ public class HDFragmentMassToPeakMatch extends FragmentMassToPeakMatch {
 	/**
 	 * 
 	 */
-	public String getModifiedFormulasStringOfBestMatchedFragment() {
+	public String getModifiedFormulasStringOfBestMatchedFragment(IMolecularStructure precursorMolecule) {
 		String formulas = "";
 		String formula = "";
 		
 
-		BitArrayFragmentMolecularFormula form = (BitArrayFragmentMolecularFormula)this.bestMatchedFragment.getMolecularFormula();
+		BitArrayFragmentMolecularFormula form = (BitArrayFragmentMolecularFormula)this.bestMatchedFragment.getMolecularFormula(precursorMolecule);
 		HDFragmentMolecularFormulaWrapper formWrapper = new HDFragmentMolecularFormulaWrapper(form, (byte)(this.numberOfDeuteriumsOfBestFragment + this.variableDeuteriumDifferenceOfBestFragment));
 		
 		formula = "[" + form.toString();
@@ -245,13 +246,13 @@ public class HDFragmentMassToPeakMatch extends FragmentMassToPeakMatch {
 		for(int i = 0; i < this.matchedFragmentsList.getNumberElements(); i++) {
 			formula = "";
 			if(this.getNumberOfVariableDeuteriumDifferToPeakMass(i) == 0) {
-				formula = "[" + this.matchedFragmentsList.getElement(i).getMolecularFormula().toString();
+				formula = "[" + this.matchedFragmentsList.getElement(i).getMolecularFormula(precursorMolecule).toString();
 			}
 			else {
 				/*
 				 * in case there is a number of variable deuteriums we have to reduce the number of hydrogens
 				 */
-				form = (BitArrayFragmentMolecularFormula)this.matchedFragmentsList.getElement(i).getMolecularFormula();
+				form = (BitArrayFragmentMolecularFormula)this.matchedFragmentsList.getElement(i).getMolecularFormula(precursorMolecule);
 				formWrapper = new HDFragmentMolecularFormulaWrapper(form, (byte)(this.getNumberOfDeuteriumsOfMatchedFragment(i) + this.getNumberOfVariableDeuteriumDifferToPeakMass(i)));
 				
 				formula = "[" + formWrapper.toString();

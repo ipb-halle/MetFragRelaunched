@@ -34,19 +34,22 @@ public class ProcessCompoundsThreadRunner extends ThreadRunner {
 	protected int renderedMoleculesNextPercentageValue;
 	protected int renderedMoleculesPercentageValue;
 	protected boolean renderingMolecules;
+	protected boolean mergedCandidateResultsByInChIKey1;
 	
 	public ProcessCompoundsThreadRunner(BeanSettingsContainer beanSettingsContainer, 
-			Messages infoMessages, Messages errorMessages, String sessionId, String rootSessionPath) {
+			Messages infoMessages, Messages errorMessages, String sessionId, String rootSessionPath, boolean mergedCandidateResultsByInChIKey1) {
 		super(beanSettingsContainer, infoMessages, errorMessages);
 		this.sessionId = sessionId;
 		this.rootSessionPath = rootSessionPath;
 		this.renderedMoleculesNextPercentageValue = 1;
 		this.renderedMoleculesPercentageValue = 0;
 		this.renderingMolecules = false;
+		this.mergedCandidateResultsByInChIKey1 = mergedCandidateResultsByInChIKey1;
 	}
 	
 	@Override
 	public void run() {
+		System.out.println("ProcessCompoundsThreadRunner run");
 		this.infoMessages.removeKey("processingErrorCandidatesInfo");
 		this.infoMessages.removeKey("processingFilteredCandidatesInfo");
 		this.infoMessages.removeKey("processingProcessedCandidatesInfo");
@@ -54,6 +57,7 @@ public class ProcessCompoundsThreadRunner extends ThreadRunner {
 		try {
 			this.beanSettingsContainer.prepareSettingsObject();
 		} catch (Exception e) {
+			e.printStackTrace();
 			this.errorMessages.setMessage("buttonProcessCompoundsError", "Error: Setting parameters failed.");
 			return;
 		}
@@ -66,10 +70,11 @@ public class ProcessCompoundsThreadRunner extends ThreadRunner {
 		try {
 			this.beanSettingsContainer.startCandidateProcessing();
 		} catch (Exception e) {
+			e.printStackTrace();
 			this.errorMessages.setMessage("buttonProcessCompoundsError", "Error: Processing of candidates failed.");
 			return;
 		}
-		
+
 		if(this.interrupted) return; 
 		
 		//wait until poll is triggered to display 100% in the progress bar for candidate processing
@@ -107,6 +112,9 @@ public class ProcessCompoundsThreadRunner extends ThreadRunner {
 		 */
 		String[] scoreNames = (String[])this.beanSettingsContainer.getMetFragSettings().get(VariableNames.METFRAG_SCORE_TYPES_NAME);
 		double[] maxScore = new double[scoreNames.length]; 
+		boolean[] negScore = new boolean[scoreNames.length]; 
+		for(int i = 0; i < maxScore.length; i++) 
+			maxScore[i] = Integer.MIN_VALUE;
 		java.util.Vector<String> additionalScoreNames = new java.util.Vector<String>();
 
 		this.metFragResultsContainer = new MetFragResultsContainer();
@@ -164,6 +172,13 @@ public class ProcessCompoundsThreadRunner extends ThreadRunner {
 			}
 		for(int j = 0; j < maxScore.length; j++) 
 			if(maxScore[j] == 0 || !enableScoreScalling[j]) maxScore[j] = 1.0;
+		for(int j = 0; j < maxScore.length; j++) {
+			if(maxScore[j] < 0) {
+				maxScore[j] = 1.0 / Math.abs(maxScore[j]);
+				negScore[j] = true;
+			}
+		}
+		
 		//generate necessary folders
 		java.io.File imageFolderCandidates = new java.io.File(this.rootSessionPath + Constants.OS_SPECIFIC_FILE_SEPARATOR + "images/candidates");
 		java.io.File imageFolderFragments = new java.io.File(this.rootSessionPath + Constants.OS_SPECIFIC_FILE_SEPARATOR + "images/fragments");
@@ -204,18 +219,27 @@ public class ProcessCompoundsThreadRunner extends ThreadRunner {
 			}
 			ScoreSummary[] scoreSummaries = new ScoreSummary[scoreNames.length];
 			for(int j = 0; j < scoreSummaries.length; j++) {
-				double score = 0.0;
-				double rawScore = 0.0;
+				Double score = 0.0;
+				Double rawScore = 0.0;
+				boolean databaseScore = false;
+				boolean isAvailable = true;
+				String infoScore = "NA";
 				try {
+					if(!candidate.getProperties().containsKey(scoreNames[j] + "_Values") || candidate.getProperty(scoreNames[j] + "_Values") == null)
+						databaseScore = true;
+					if(candidate.getProperties().containsKey(scoreNames[j] + "_Values") && candidate.getProperty(scoreNames[j] + "_Values") != null)
+						infoScore = ((String)candidate.getProperty(scoreNames[j] + "_Values"));
 					score = (Double)candidate.getProperty(scoreNames[j]); 
 					rawScore = score;
-					score /= maxScore[j];
+					if(!negScore[j]) score /= maxScore[j];
+					else score = (1.0 / Math.abs(score)) / maxScore[j];
 				}
 				catch(Exception e) {
 					score = 0.0;
 					rawScore = 0.0;
+					isAvailable = false;
 				}
-				scoreSummaries[j] = new ScoreSummary(this.getWeightDisplayName(scoreNames[j]), score, rawScore);
+				scoreSummaries[j] = new ScoreSummary(this.getWeightDisplayName(scoreNames[j]), score, rawScore, infoScore, databaseScore, isAvailable);
 				if(!this.isScoreAvailableForScore(scoreNames[j])) scoreSummaries[j].setUsedForScoring(false);
 				if(!this.isScoreAvailableForGraph(scoreNames[j])) scoreSummaries[j].setUsedForGraph(false);
 			}
@@ -228,7 +252,8 @@ public class ProcessCompoundsThreadRunner extends ThreadRunner {
 			String formula = (String)candidate.getProperty(VariableNames.MOLECULAR_FORMULA_NAME);
 			Molecule mol = new Molecule(identifier, mass, formula, 
 					this.weights, "/files/" + this.sessionId + "/images/candidates/" + candidate.getIdentifier() + ".png", 
-					scoreSummaries, candidate.getInChI());
+					scoreSummaries, candidate.getInChI(), (String)candidate.getProperty(VariableNames.SMILES_NAME),
+					(Boolean)this.beanSettingsContainer.getMetFragSettings().get(VariableNames.USE_SMILES_NAME));
 			if(simScoreIndex != null) mol.setSimScoreIndex(simScoreIndex);
 			mol.setDatabaseName(this.beanSettingsContainer.getDatabase());
 			if(candidate.getProperties().containsKey(VariableNames.COMPOUND_NAME_NAME)) {
@@ -253,7 +278,7 @@ public class ProcessCompoundsThreadRunner extends ThreadRunner {
 				mol.setMatchList(matchList);
 			}
 			mol.setNumberPeaksExplained(countExplainedPeaks);
-			if(candidate.getProperties().containsKey(VariableNames.INCHI_KEY_1_NAME) && candidate.getProperty(VariableNames.INCHI_KEY_1_NAME) != null) {
+			if(this.mergedCandidateResultsByInChIKey1 && (candidate.getProperties().containsKey(VariableNames.INCHI_KEY_1_NAME) && candidate.getProperty(VariableNames.INCHI_KEY_1_NAME) != null)) {
 				String currentInChI = (String)candidate.getProperties().get(VariableNames.INCHI_KEY_1_NAME);
 				if(metFragResults.containsKey(currentInChI)) 
 					metFragResults.get(currentInChI).addMolecule(mol);
@@ -263,7 +288,10 @@ public class ProcessCompoundsThreadRunner extends ThreadRunner {
 				}
 			}
 			else {
-				metFragResults.put(String.valueOf(currentKey), new MetFragResult(mol, String.valueOf(currentKey), index));
+				if(candidate.getProperties().containsKey(VariableNames.INCHI_KEY_1_NAME) && candidate.getProperty(VariableNames.INCHI_KEY_1_NAME) != null)
+					metFragResults.put(String.valueOf(currentKey), new MetFragResult(mol, (String)candidate.getProperties().get(VariableNames.INCHI_KEY_1_NAME), index));
+				else	
+					metFragResults.put(String.valueOf(currentKey), new MetFragResult(mol, String.valueOf(currentKey), index));
 				index++;
 				currentKey++;
 			}
@@ -302,7 +330,9 @@ public class ProcessCompoundsThreadRunner extends ThreadRunner {
 		if(realName.equals(VariableNames.METFRAG_FRAGMENTER_SCORE_NAME))
 			return "MetFrag";
 		else if(realName.equals("MetFusionMoNAScore") || realName.equals("OfflineMetFusionScore") || realName.equals("ExactMoNAScore") || realName.equals("IndividualMoNAScore"))
-			return "SpectralSimilarityScore";
+			return "SpectralSimilarity";
+		else if(realName.equals("OfflineIndividualMoNAScore") || realName.equals("IndividualMoNAScore"))
+			return "ExactSpectralSimilarity";
 		else if(realName.equals("ChemSpiderRSCCount"))
 			return "RSCCount";
 		else if(realName.equals("ChemSpiderReferenceCount"))
@@ -323,6 +353,10 @@ public class ProcessCompoundsThreadRunner extends ThreadRunner {
 			return "SubstructureExclusionScore";
 		else if(realName.equals("MatchSpectrumCosineSimilarityScore"))
 			return "SimScore";
+		else if(realName.equals("AutomatedPeakFingerprintAnnotationScore"))
+			return "PeakStatScore";
+		else if(realName.equals("AutomatedLossFingerprintAnnotationScore"))
+			return "LossStatScore";
 		return realName;
 	}
 	

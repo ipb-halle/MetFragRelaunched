@@ -26,7 +26,7 @@ public class GenFormToMetFragInput {
 					double oldmz = Double.parseDouble(tmp[0]);
 					double newmz = Double.parseDouble(tmp[3]);
 					for(int i = 0; i < original.length; i++) {
-						if(MathTools.round(oldmz, 5) == MathTools.round(original[i][0], 5)) {
+						if(MathTools.round(oldmz) == MathTools.round(original[i][0])) {
 							this.nodeString += newmz + " " + original[i][1] + " " + tmp[1] + " " + oldmz + "\n";
 							break;
 						}
@@ -52,8 +52,8 @@ public class GenFormToMetFragInput {
 		try {
 			breader = new BufferedReader(new FileReader(new File(filename)));
 			String line = "";
-			java.util.Vector<Double> mzs = new java.util.Vector<Double>();
-			java.util.Vector<Double> ints = new java.util.Vector<Double>();
+			java.util.ArrayList<Double> mzs = new java.util.ArrayList<Double>();
+			java.util.ArrayList<Double> ints = new java.util.ArrayList<Double>();
 			while((line = breader.readLine()) != null) {
 				line = line.trim();
 				if(line.startsWith("#")) continue;

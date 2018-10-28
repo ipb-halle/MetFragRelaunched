@@ -18,8 +18,9 @@
 	<parent>
 		<groupId>de.ipbhalle.metfrag</groupId>
 		<artifactId>MetFrag</artifactId>
-		<version>2.3.1</version>
+		<version>2.4.5</version>
 	</parent>
+  	<version>2.0.20</version>
 	<groupId>de.ipbhalle.metfragweb</groupId>
 	<artifactId>MetFragWeb</artifactId>
 	<packaging>war</packaging>
@@ -32,8 +33,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.4</version>
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>1.8</source>
+					<target>1.8</target>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -41,13 +42,13 @@
 				<artifactId>tomcat7-maven-plugin</artifactId>
 				<version>2.2</version>
 				<configuration>
-                			<url>http://localhost:8080</url>
-                			<path>/</path>
-            			</configuration>
+					<url>http://localhost:8080</url>
+					<path>/</path>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-  				<artifactId>maven-war-plugin</artifactId>
+				<artifactId>maven-war-plugin</artifactId>
 				<version>2.6</version>
 			</plugin>
 		</plugins>
@@ -65,14 +66,20 @@
 			<groupId>de.ipbhalle.metfraglib</groupId>
 			<artifactId>MetFragLib</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.apache.geronimo.specs</groupId>
 			<artifactId>geronimo-servlet_2.5_spec</artifactId>
 			<version>1.2</version>
 			<scope>provided</scope>
 		</dependency>
-	
+		
+		<dependency>
+			<groupId>org.omnifaces</groupId>
+			<artifactId>omnifaces</artifactId>
+			<version>1.6</version>
+		</dependency>
+		
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-email</artifactId>
@@ -103,9 +110,10 @@
 		<dependency>
 			<groupId>org.primefaces</groupId>
 			<artifactId>primefaces</artifactId>
-			<version>5.3</version>
+			<version>6.1</version>
+			<!-- <version>5.3</version> -->
 		</dependency>
-		
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -150,6 +158,13 @@
 			<id>jvnet-nexus-releases</id>
 			<name>jvnet-nexus-releases</name>
 			<url>https://maven.java.net/content/repositories/releases/</url>
+		</repository>
+		<repository>
+			<id>centralmaven</id>
+			<url>http://mvnrepository.com</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
 		</repository>
 	</repositories>
 

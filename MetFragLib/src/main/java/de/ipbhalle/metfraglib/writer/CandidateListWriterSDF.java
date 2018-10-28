@@ -19,10 +19,16 @@ import de.ipbhalle.metfraglib.list.MatchList;
 import de.ipbhalle.metfraglib.list.ScoredCandidateList;
 import de.ipbhalle.metfraglib.list.SortedScoredCandidateList;
 import de.ipbhalle.metfraglib.parameter.Constants;
+import de.ipbhalle.metfraglib.parameter.VariableNames;
+import de.ipbhalle.metfraglib.settings.Settings;
 
 public class CandidateListWriterSDF implements IWriter {
 
-	public boolean write(IList list, String filename, String path) throws Exception {
+	public boolean write(IList list, String filename, String path, Settings settings) throws Exception {
+		return this.write(list, filename, path);
+	}
+	
+	public boolean writeFile(File file, IList list, Settings settings) throws Exception {
 		IAtomContainerSet set = new AtomContainerSet();
 		CandidateList candidateList = null;
 		int numberOfPeaksUsed = 0;
@@ -39,9 +45,15 @@ public class CandidateListWriterSDF implements IWriter {
 			return false;
 		for (int i = 0; i < candidateList.getNumberElements(); i++) {
 			ICandidate candidate = candidateList.getElement(i);
+			if(settings != null) candidate.setUseSmiles((Boolean)settings.get(VariableNames.USE_SMILES_NAME));
+			try {
+				candidate.initialisePrecursorCandidate();
+			} catch(Exception e) {
+				continue;
+			}
 			IAtomContainer candidateAtomContainer = null;
 			try {
-				candidateAtomContainer = candidateList.getElement(i).getAtomContainer();
+				candidateAtomContainer = candidate.getAtomContainer();
 			} catch (Exception e1) {
 				System.err.println("Error saving: " + candidateList.getElement(i).getIdentifier());
 				continue;
@@ -81,22 +93,22 @@ public class CandidateListWriterSDF implements IWriter {
 					}
 					String formula = scoredCandidate.getMatchList()
 							.getElement(ii)
-							.getModifiedFormulaStringOfBestMatchedFragment();
+							.getModifiedFormulaStringOfBestMatchedFragment(scoredCandidate.getPrecursorMolecule());
 					sumFormulasOfFragmentsExplainedPeaks += scoredCandidate
 							.getMatchList().getElement(ii).getMatchedPeak()
 							.getMass()
 							+ ":" + formula + ";";
 					fragmentAtomArrays += ((DefaultBitArrayFragment) scoredCandidate
 							.getMatchList().getElement(ii)
-							.getBestMatchedFragment()).getAtomsBitArray()
+							.getBestMatchedFragment()).getAtomsFastBitArray()
 							+ ";";
 					fragmentBondArrays += ((DefaultBitArrayFragment) scoredCandidate
 							.getMatchList().getElement(ii)
-							.getBestMatchedFragment()).getBondsBitArray()
+							.getBestMatchedFragment()).getBondsFastBitArray()
 							+ ";";
 					fragmentBrokenBondArrays += ((DefaultBitArrayFragment) scoredCandidate
 							.getMatchList().getElement(ii)
-							.getBestMatchedFragment()).getBrokenBondsBitArray()
+							.getBestMatchedFragment()).getBrokenBondsFastBitArray()
 							+ ";";
 				}
 				if (sumFormulasOfFragmentsExplainedPeaks.length() != 0)
@@ -129,8 +141,9 @@ public class CandidateListWriterSDF implements IWriter {
 					.keys();
 			while (keys.hasMoreElements()) {
 				String key = keys.nextElement();
-				candidateAtomContainer.setProperty(key,
-						checkEmptyProperty(candidate.getProperty(key)));
+				String propertyValue = (String)checkEmptyProperty(candidate.getProperty(key));
+				if(key.equals(VariableNames.IDENTIFIER_NAME)) propertyValue = propertyValue.replaceAll("\\|[0-9]+", "");
+				candidateAtomContainer.setProperty(key, propertyValue);
 			}
 			candidateAtomContainer.setProperty("NumberPeaksUsed",
 					numberOfPeaksUsed);
@@ -140,8 +153,7 @@ public class CandidateListWriterSDF implements IWriter {
 			set.addAtomContainer(candidateAtomContainer);
 		}
 
-		SDFWriter writer = new SDFWriter(new FileWriter(new File(path
-				+ Constants.OS_SPECIFIC_FILE_SEPARATOR + filename + ".sdf")));
+		SDFWriter writer = new SDFWriter(new FileWriter(file));
 		writer.write(set);
 		writer.close();
 		return true;
@@ -160,6 +172,22 @@ public class CandidateListWriterSDF implements IWriter {
 	
 	public void nullify() {
 
+	}
+
+	@Override
+	public boolean write(IList list, String filename, String path) throws Exception {
+		return this.writeFile(new File(path
+				+ Constants.OS_SPECIFIC_FILE_SEPARATOR + filename + ".sdf"), list, null);
+	}
+
+	@Override
+	public boolean write(IList list, String filename) throws Exception {
+		return this.writeFile(new File(filename), list, null);
+	}
+
+	@Override
+	public boolean writeFile(File file, IList list) throws Exception {
+		return this.writeFile(file, list, null);
 	}
 
 }

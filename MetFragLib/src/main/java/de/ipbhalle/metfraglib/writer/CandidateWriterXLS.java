@@ -27,6 +27,7 @@ import de.ipbhalle.metfraglib.parameter.Constants;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.process.CombinedMetFragProcess;
 import de.ipbhalle.metfraglib.settings.MetFragGlobalSettings;
+import de.ipbhalle.metfraglib.settings.Settings;
 
 /**
  * writes single information from a single candidate into a XLS file 
@@ -36,9 +37,13 @@ import de.ipbhalle.metfraglib.settings.MetFragGlobalSettings;
  */
 public class CandidateWriterXLS implements IWriter {
 
+	public boolean write(IList list, String filename, String path, Settings settings) throws Exception {
+		return this.writeFile(new File(path + Constants.OS_SPECIFIC_FILE_SEPARATOR + filename + ".xls"), 
+				list, settings);
+	}
+	
 	@Override
-	public boolean write(IList list, String filename, String path) throws Exception {
-
+	public boolean writeFile(File xlsFile, IList list, Settings settings) throws Exception {
 		CandidateList candidateList = null;
 		boolean isScoredCandidate = false;
 		if (list instanceof ScoredCandidateList
@@ -53,8 +58,8 @@ public class CandidateWriterXLS implements IWriter {
 			return false;
 		
 		ICandidate candidate = candidateList.getElement(0);
-		
-		File xlsFile = new File(path + Constants.OS_SPECIFIC_FILE_SEPARATOR + filename + ".xls");
+		if(settings != null) candidate.setUseSmiles((Boolean)settings.get(VariableNames.USE_SMILES_NAME));
+		candidate.initialisePrecursorCandidate();
 		xlsFile.createNewFile();
 		WritableWorkbook workbook = Workbook.createWorkbook(xlsFile);
 		WritableSheet sheet1 = workbook.createSheet("MetFrag Candidate Result", 0);
@@ -68,7 +73,7 @@ public class CandidateWriterXLS implements IWriter {
 		WritableCellFormat arial10format = new WritableCellFormat(arial10font);
 
 		sheet1.addCell(new Label(0, 0, VariableNames.IDENTIFIER_NAME, arial10formatBold));
-		sheet1.addCell(new Label(1, 0, candidate.getIdentifier(), arial10format));
+		sheet1.addCell(new Label(1, 0, candidate.getIdentifier().replaceAll("\\|[0-9]+", ""), arial10format));
 		
 		java.util.Hashtable<String, Object> properties = candidate.getProperties();
 		
@@ -123,10 +128,10 @@ public class CandidateWriterXLS implements IWriter {
 					sheet1.addCell(new Label(column + colWidthImage, (propertyRow + 5) + (rowHeightImage * fragmentRow), "Fragment " + imagesWritten, arial10formatBold));
 					
 					sheet1.addCell(new Label(column + colWidthImage, (propertyRow + 5) + (rowHeightImage * fragmentRow) + 2, "Formula", arial10formatBold));
-					sheet1.addCell(new Label(column + colWidthImage + 1, (propertyRow + 5) + (rowHeightImage * fragmentRow) + 2, match.getModifiedFormulaStringOfBestMatchedFragment(), arial10format));
+					sheet1.addCell(new Label(column + colWidthImage + 1, (propertyRow + 5) + (rowHeightImage * fragmentRow) + 2, match.getModifiedFormulaStringOfBestMatchedFragment(candidate.getPrecursorMolecule()), arial10format));
 					
 					sheet1.addCell(new Label(column + colWidthImage, (propertyRow + 5) + (rowHeightImage * fragmentRow) + 3, "Mass", arial10formatBold));
-					sheet1.addCell(new Label(column + colWidthImage + 1, (propertyRow + 5) + (rowHeightImage * fragmentRow) + 3, String.valueOf(MathTools.round(match.getBestMatchFragmentMass(), 5)), arial10format));
+					sheet1.addCell(new Label(column + colWidthImage + 1, (propertyRow + 5) + (rowHeightImage * fragmentRow) + 3, String.valueOf(MathTools.round(match.getBestMatchFragmentMass())), arial10format));
 					
 					sheet1.addCell(new Label(column + colWidthImage, (propertyRow + 5) + (rowHeightImage * fragmentRow) + 4, "Peak m/z", arial10formatBold));
 					sheet1.addCell(new Label(column + colWidthImage + 1, (propertyRow + 5) + (rowHeightImage * fragmentRow) + 4, String.valueOf(match.getMatchedPeak().getMass()), arial10format));
@@ -180,7 +185,7 @@ public class CandidateWriterXLS implements IWriter {
 		
 		for (int i = 0; i < matchList.getNumberElements(); i++) {
 
-			RenderedImage renderedImage = imageGenerator.generateImage(matchList.getElement(i).getBestMatchedFragment());
+			RenderedImage renderedImage = imageGenerator.generateImage(candidate.getPrecursorMolecule(), matchList.getElement(i).getBestMatchedFragment());
 
 			molImages.add(renderedImage);
 
@@ -228,6 +233,23 @@ public class CandidateWriterXLS implements IWriter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public boolean write(IList list, String filename, String path) throws Exception {
+		return this.writeFile(new File(path + Constants.OS_SPECIFIC_FILE_SEPARATOR + filename + ".xls"), 
+				list, null);
+	}
+
+	@Override
+	public boolean write(IList list, String filename) throws Exception {
+		return this.writeFile(new File(filename), 
+				list, null);
+	}
+
+	@Override
+	public boolean writeFile(File file, IList list) throws Exception {
+		return this.writeFile(file, list, null);
 	}
 
 }

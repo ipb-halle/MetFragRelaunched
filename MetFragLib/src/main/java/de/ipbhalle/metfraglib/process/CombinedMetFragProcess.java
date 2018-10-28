@@ -75,7 +75,7 @@ public class CombinedMetFragProcess implements Runnable {
 	 */
 	public boolean retrieveCompounds() throws Exception {
 		this.processes = null;
-		java.util.Vector<String> databaseCandidateIdentifiers = this.database.getCandidateIdentifiers();
+		java.util.ArrayList<String> databaseCandidateIdentifiers = this.database.getCandidateIdentifiers();
 		if(this.globalSettings.containsKey(VariableNames.MAXIMUM_CANDIDATE_LIMIT_TO_STOP_NAME) && this.globalSettings.get(VariableNames.MAXIMUM_CANDIDATE_LIMIT_TO_STOP_NAME) != null) {
 			int limit = (Integer)this.globalSettings.get(VariableNames.MAXIMUM_CANDIDATE_LIMIT_TO_STOP_NAME);
 			if(limit < databaseCandidateIdentifiers.size()) {
@@ -121,6 +121,7 @@ public class CombinedMetFragProcess implements Runnable {
 	public void run() {
 		this.processes = null;
 		this.threadStoppedExternally = false;
+			
 		/*
 		 * read peak list and store in settings object
 		 * store database object
@@ -129,6 +130,7 @@ public class CombinedMetFragProcess implements Runnable {
 			this.globalSettings.set(VariableNames.PEAK_LIST_NAME, this.peakListReader.read());
 		} catch (Exception e) {
 			this.logger.error("Error when reading peak list.");
+			e.printStackTrace();
 			return;
 		}
 		this.globalSettings.set(VariableNames.MINIMUM_FRAGMENT_MASS_LIMIT_NAME, ((DefaultPeakList)this.globalSettings.get(VariableNames.PEAK_LIST_NAME)).getMinimumMassValue());
@@ -155,6 +157,7 @@ public class CombinedMetFragProcess implements Runnable {
 			/*
 			 * necessary to define number of hydrogens and make the implicit
 			 */
+			this.sortedScoredCandidateList.getElement(i).setUseSmiles((Boolean)this.globalSettings.get(VariableNames.USE_SMILES_NAME));
 			CombinedSingleCandidateMetFragProcess scmfp = new CombinedSingleCandidateMetFragProcess(singleProcessSettings, this.sortedScoredCandidateList.getElement(i));
 			scmfp.setPreProcessingCandidateFilterCollection(this.preProcessingCandidateFilterCollection);
 			
@@ -191,12 +194,28 @@ public class CombinedMetFragProcess implements Runnable {
 	     */
 	    ScoredCandidateList scoredCandidateList = new ScoredCandidateList();
 	    if(this.processes == null) return;
+	    
+	    /**
+	     * perform post processing of scores
+	     */
+	    this.globalSettings.set(VariableNames.METFRAG_PROCESSES_NAME, this.processes);
+	    this.postProcessScoresGlobal(this.globalSettings); 
+	    
 	    int numberCandidatesProcessed = 0;
 		for(CombinedSingleCandidateMetFragProcess scmfp : this.processes) {
 			/*
 			 * check whether the single run was successful
 			 */
 			if(scmfp.wasSuccessful()) {
+				try {
+					scmfp.singlePostCalculateScores();
+					scmfp.assignScores();
+				} catch (Exception e) {
+					e.printStackTrace();
+					this.logger.error("Error when processing candidate ID " + scmfp.getScoredPrecursorCandidate().getIdentifier());
+					scmfp.getFragmenterAssignerScorer().nullifyScoresCollection();
+					return;
+				}
 				numberCandidatesProcessed++;
 				ICandidate[] candidates = scmfp.getScoredPrecursorCandidates();
 				for(int i = 0; i < candidates.length; i++) scoredCandidateList.addElement(candidates[i]);
@@ -392,6 +411,32 @@ public class CombinedMetFragProcess implements Runnable {
 			}
 		}
 	}
+
+	private void postProcessScoresGlobal(MetFragGlobalSettings globalSettings) {
+		String[] score_types = (String[])globalSettings.get(VariableNames.METFRAG_SCORE_TYPES_NAME);
+		for(int i = 0; i < score_types.length; i++) {
+			try {
+				IScoreInitialiser scoreInitialiser = (IScoreInitialiser) Class.forName(ClassNames.getClassNameOfScoreInitialiser(score_types[i])).getConstructor().newInstance();
+				scoreInitialiser.postProcessScoreParameters(globalSettings);
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+			} catch (NoSuchMethodException e) {
+				e.printStackTrace();
+			} catch (SecurityException e) {
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
 	
 	public void nullify() {
 		if(this.database != null) this.database.nullify();
@@ -433,9 +478,9 @@ public class CombinedMetFragProcess implements Runnable {
 		Settings settings = new Settings();
 		settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, path);
 		LocalPropertyFileDatabase propertyDatabase = new LocalPropertyFileDatabase(settings);
-		java.util.Vector<String> externalInChIKeys = new java.util.Vector<String>();
-		java.util.Vector<String> externalPropertiesDefined = new java.util.Vector<String>();
-		java.util.Vector<String> ids = null;
+		java.util.ArrayList<String> externalInChIKeys = new java.util.ArrayList<String>();
+		java.util.ArrayList<String> externalPropertiesDefined = new java.util.ArrayList<String>();
+		java.util.ArrayList<String> ids = null;
 		try {
 			ids = propertyDatabase.getCandidateIdentifiers();
 		} catch(Exception e) {

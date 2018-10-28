@@ -25,7 +25,7 @@ public class SuspectListScore extends AbstractScore {
 			if(candidate.getProperty(VariableNames.INCHI_KEY_1_NAME) != null) {
 				String inchikey1 = (String)candidate.getProperty(VariableNames.INCHI_KEY_1_NAME);
 				if(inchikey1.length() != 0) {
-					if(suspectLists[i].containsElement(inchikey1)) {
+					if(suspectLists[i].contains(inchikey1)) {
 						this.value = 1.0;
 						break;
 					}

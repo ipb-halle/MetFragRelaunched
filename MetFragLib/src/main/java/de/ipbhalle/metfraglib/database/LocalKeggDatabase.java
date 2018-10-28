@@ -1,6 +1,6 @@
 package de.ipbhalle.metfraglib.database;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import de.ipbhalle.metfraglib.exceptions.DatabaseIdentifierNotFoundException;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
@@ -41,7 +41,7 @@ public class LocalKeggDatabase extends LocalPostgresDatabase {
 	/**
 	 * 
 	 */
-	public CandidateList getCandidateByIdentifier(Vector<String> identifiers) {
+	public CandidateList getCandidateByIdentifier(ArrayList<String> identifiers) {
 		CandidateList candidateList = super.getCandidateByIdentifier(identifiers);
 
 		return candidateList;

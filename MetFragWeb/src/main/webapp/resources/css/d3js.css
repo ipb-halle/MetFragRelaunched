@@ -1,0 +1,56 @@
+body {
+  font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.bar {
+  fill: orange;
+}
+
+.bar:hover {
+  fill: orangered ;
+}
+
+.x.axis path {
+  display: none;
+}
+
+rect.selection {
+  cursor: move !important;
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none !important;
+  -khtml-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+  stroke: #545454;
+  stroke-width: 2px;
+  stroke-opacity: 1;
+  fill: white;
+  fill-opacity: 0.5;
+}
+
+.d3-tip {
+  display: block;
+  line-height: 1;
+  font-weight: bold;
+  padding: 12px;
+  background: rgba(190, 190, 190, 0.8);
+  color: #fff;
+  border-radius: 2px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.dot {
+  stroke: transparent;
+}
+.dot:hover {
+  stroke: #000;
+}

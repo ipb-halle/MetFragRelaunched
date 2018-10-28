@@ -18,6 +18,16 @@ public class PreProcessingCandidateSuspectListFilter extends AbstractPreProcessi
 		}
 		
 	}
+
+	public PreProcessingCandidateSuspectListFilter(Settings settings, boolean isPrefiltered) {
+		super(settings);
+		String[] suspectListFileNames = (String[])settings.get(VariableNames.PRE_CANDIDATE_FILTER_SUSPECT_LIST_NAME);
+		this.suspectLists = new SuspectList[suspectListFileNames.length];
+		for(int i = 0; i < suspectListFileNames.length; i++) {
+			this.suspectLists[i] = new SuspectList(suspectListFileNames[i], isPrefiltered);
+		}
+		
+	}
 	
 	public PreProcessingCandidateSuspectListFilter(String filename, Settings settings) {
 		super(settings);
@@ -30,6 +40,24 @@ public class PreProcessingCandidateSuspectListFilter extends AbstractPreProcessi
 		this.suspectLists = new SuspectList[1];
 		this.suspectLists[0] = new SuspectList(is, name);
 	}
+
+	public PreProcessingCandidateSuspectListFilter(String filename, Settings settings, boolean isPrefiltered) {
+		super(settings);
+		this.suspectLists = new SuspectList[1];
+		this.suspectLists[0] = new SuspectList(filename, isPrefiltered);
+	}
+
+	public PreProcessingCandidateSuspectListFilter(java.io.InputStream is, String name, Settings settings, boolean isPrefiltered) {
+		super(settings);
+		this.suspectLists = new SuspectList[1];
+		this.suspectLists[0] = new SuspectList(is, name, isPrefiltered);
+	}
+	
+	public PreProcessingCandidateSuspectListFilter(String[] inChIKeys, String name, Settings settings, boolean isPrefiltered) {
+		super(settings);
+		this.suspectLists = new SuspectList[1];
+		this.suspectLists[0] = new SuspectList(inChIKeys, name, isPrefiltered);
+	}
 	
 	@Override
 	public boolean passesFilter(ICandidate candidate) {
@@ -39,7 +67,7 @@ public class PreProcessingCandidateSuspectListFilter extends AbstractPreProcessi
 			if(candidate.getProperty(VariableNames.INCHI_KEY_1_NAME) != null) {
 				String inchikey1 = (String)candidate.getProperty(VariableNames.INCHI_KEY_1_NAME);
 				if(inchikey1.length() != 0) {
-					if(this.suspectLists[i].containsElement(inchikey1)) {
+					if(this.suspectLists[i].contains(inchikey1)) {
 						containedIn += this.suspectLists[i].getName() + ";";
 						found = true;
 					}
@@ -57,7 +85,7 @@ public class PreProcessingCandidateSuspectListFilter extends AbstractPreProcessi
 			if(candidate.getProperty(VariableNames.INCHI_KEY_1_NAME) != null) {
 				String inchikey1 = (String)candidate.getProperty(VariableNames.INCHI_KEY_1_NAME);
 				if(inchikey1.length() != 0) {
-					if(this.suspectLists[i].containsElement(inchikey1)) {
+					if(this.suspectLists[i].contains(inchikey1)) {
 						containedIn += this.suspectLists[i].getName() + ";";
 						found = true;
 					}

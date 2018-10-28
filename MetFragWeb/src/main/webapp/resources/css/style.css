@@ -1,3 +1,8 @@
+ .ui-tooltip .ui-tooltip-text {
+	background-color: red;
+	color: #fff;
+}
+
 .error {
 	color: red;
 	font-size: 100%;
@@ -17,6 +22,17 @@
 	width: 40%;
 	max-width: 40%;
 }
+
+.clusterGradient {
+	width: 20%;
+	height: 10px;
+	background: #1e5799; /* Old browsers */
+	background: -moz-linear-gradient(top, #1e5799 0%, #207cca 100%, #2989d8 100%, #7db9e8 100%); /* FF3.6-15 */
+	background: -webkit-linear-gradient(top, #1e5799 0%,#207cca 100%,#2989d8 100%,#7db9e8 100%); /* Chrome10-25,Safari5.1-6 */
+	background: linear-gradient(to bottom, #1e5799 0%,#207cca 100%,#2989d8 100%,#7db9e8 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1e5799', endColorstr='#7db9e8',GradientType=0 ); /* IE6-9 */
+}
+
 
 .animated .ui-progressbar-value { 
 	background-image: url("#{resource['images/pbar-ani.gif']}"); 
@@ -49,6 +65,24 @@
 	font-size: 14px;
 	width: auto;
 	max-width: 400px;
+}
+
+.ui-datatable.ui-widget.ui-datatable-scrollable.resultsTable div.ui-datatable-scrollable-body {
+	height: auto;
+    max-height: 600px;
+    overflow-y: scroll;
+}
+
+.ui-datatable.ui-widget.ui-datatable-scrollable.blankTable div.ui-datatable-scrollable-body {
+    height: auto;
+    max-height: 200px;
+    overflow-y: scroll;
+}
+
+.ui-tooltip .ui-tooltip-text {
+	background-color: #fff !important; 
+	background-image: none !important;
+	color: black !important;
 }
 
 .csvImage {
@@ -174,7 +208,7 @@ html,body {
 #content {
 	width: 90%;
 	padding: 10px;
-	padding-bottom: 250px;
+	padding-bottom: 370px;
 	height: auto;
 	position: relative;
 }
@@ -202,7 +236,7 @@ html,body {
 	font-family: 'Lato', sans-serif;
 /*	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; */
 	font-size: 14px;
-	height: 150px;
+	height: 270px;
 }
 
 .mainPanel {
@@ -365,6 +399,53 @@ html,body {
 	padding: 0 0 0 0;
 }
 
+.ui-messages-warning-detail-user {
+	margin-left: -5px;
+	margin-right: 5px;
+}
+
+.ui-messages-warning-icon-user {
+	height: 24px;
+	width: 24px;
+	/*
+	background: transparent
+		url("/MetFragWeb/javax.faces.resource/messages/messages.png.xhtml?ln=primefaces&v=4_0_0_141104&v=5.3")
+		no-repeat scroll 0% 0%;
+	background-color: transparent;
+	background-image:
+		url("/MetFragWeb/javax.faces.resource/messages/messages.png.xhtml?ln=primefaces&v=4_0_0_141104&v=5.3");
+	*/
+	background-image: url("#{resource['images/icons/messages.png']}");
+	background-color: transparent;
+	background-repeat: no-repeat;
+	background-attachment: scroll;
+	background-position: 0px -484px;
+	background-clip: border-box;
+	background-origin: padding-box;
+	background-size: auto auto;
+	display: block;
+	float: left;
+	margin-top: -8.5px;
+	margin-right: 0px;
+	margin-bottom: 0px;
+	margin-left: 0px;
+	padding: 0px;
+	padding-top: 0px;
+	padding-right: 0px;
+	padding-bottom: 0px;
+	padding-left: 0px;
+	position: relative;
+}
+
+.ui-messages-warning-user {
+	font-size: 0.9em;
+	color: #c09853;
+	background-color: #fcf8e3;
+	border-color: #fcf8e3;
+	margin: -9px 0 -9px 0;
+	padding: 0 0 0 0;
+}
+
 .firstColumnDatabaseButtons {
 	width: 50%;
 	max-width: 50%;
@@ -442,12 +523,15 @@ html,body {
     /*background: -moz-linear-gradient(center top , rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0)) repeat scroll 0 0 #32a42d;*/
     
 	background: rgba(50,164,45,1);
+	
+	
 	background: -moz-linear-gradient(top, rgba(50,164,45,1) 0%, rgba(132,200,129,1) 100%);
 	background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(50,164,45,1)), color-stop(100%, rgba(132,200,129,1)));
 	background: -webkit-linear-gradient(top, rgba(50,164,45,1) 0%, rgba(132,200,129,1) 100%);
 	background: -o-linear-gradient(top, rgba(50,164,45,1) 0%, rgba(132,200,129,1) 100%);
 	background: -ms-linear-gradient(top, rgba(50,164,45,1) 0%, rgba(132,200,129,1) 100%);
 	background: linear-gradient(to bottom, rgba(50,164,45,1) 0%, rgba(132,200,129,1) 100%);
+	
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#32a42d', endColorstr='#84c881', GradientType=0 );
     
     box-shadow: 0 0 8px #32a42d;

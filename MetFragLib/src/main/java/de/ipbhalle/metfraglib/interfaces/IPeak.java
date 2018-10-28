@@ -4,11 +4,11 @@ import de.ipbhalle.metfraglib.exceptions.RelativeIntensityNotDefinedException;
 
 public interface IPeak {
 
-	public double getMass();
+	public Double getMass();
 	
 	public double getIntensity() throws RelativeIntensityNotDefinedException;
 	
-	public void setMass(double mass);
+	public void setMass(Double mass);
 
 	public double getAbsoluteIntensity();
 

@@ -6,6 +6,7 @@ import de.ipbhalle.metfraglib.fragment.DefaultBitArrayFragment;
 import de.ipbhalle.metfraglib.interfaces.IMolecularFormula;
 import de.ipbhalle.metfraglib.interfaces.IMolecularStructure;
 import de.ipbhalle.metfraglib.molecularformula.ByteMolecularFormula;
+import de.ipbhalle.metfraglib.parameter.Constants;
 
 
 public class DefaultPrecursor implements IMolecularStructure {
@@ -15,7 +16,7 @@ public class DefaultPrecursor implements IMolecularStructure {
 	 * Important: hydrogens should be represented implicitly
 	 * 
 	 */
-	protected final IAtomContainer precursorMolecule;
+	protected IAtomContainer precursorMolecule;
 	protected double neutralMonoisotopicMass;
 	protected IMolecularFormula molecularFormula;
 	
@@ -35,6 +36,11 @@ public class DefaultPrecursor implements IMolecularStructure {
 		return this.neutralMonoisotopicMass;
 	}
 
+	public double getMassOfAtom(int index) {
+		return Constants.MONOISOTOPIC_MASSES.get(Constants.ELEMENTS.indexOf(this.precursorMolecule.getAtom(index).getSymbol()))
+				+ this.precursorMolecule.getAtom(index).getImplicitHydrogenCount() * Constants.MONOISOTOPIC_MASSES.get(Constants.H_INDEX);
+	}
+	
 	public int getNonHydrogenAtomCount() {
 		return this.precursorMolecule.getAtomCount();
 	}
@@ -55,7 +61,7 @@ public class DefaultPrecursor implements IMolecularStructure {
 	public int getNumNodeDegreeOne() {
 		int numDegreeOne = 0;
 		for(int i = 0; i < this.precursorMolecule.getAtomCount(); i++) {
-			numDegreeOne += this.precursorMolecule.getConnectedAtomsCount(this.precursorMolecule.getAtom(i)) == 1 ? 1 : 0;
+			numDegreeOne += this.precursorMolecule.getConnectedBondsCount(this.precursorMolecule.getAtom(i)) == 1 ? 1 : 0;
 		}
 		return numDegreeOne;
 	}
@@ -63,7 +69,7 @@ public class DefaultPrecursor implements IMolecularStructure {
 	public double getMeanNodeDegree() {
 		double meanDegree = 0.0;
 		for(int i = 0; i < this.precursorMolecule.getAtomCount(); i++) {
-			meanDegree += this.precursorMolecule.getConnectedAtomsCount(this.precursorMolecule.getAtom(i));
+			meanDegree += this.precursorMolecule.getConnectedBondsCount(this.precursorMolecule.getAtom(i));
 		}
 		meanDegree /= this.precursorMolecule.getAtomCount();
 		return meanDegree;
@@ -95,5 +101,17 @@ public class DefaultPrecursor implements IMolecularStructure {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public void resetAtomContainer() {
+		this.precursorMolecule = null;
+	}
+
+
+	@Override
+	public void setAtomContainer(IAtomContainer molecule) {
+		this.precursorMolecule = molecule;
+	}
+
 
 }

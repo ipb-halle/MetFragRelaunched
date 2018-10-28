@@ -1,0 +1,124 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<h:body>
+
+	<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+		xmlns:h="http://java.sun.com/jsf/html"
+		xmlns:f="http://java.sun.com/jsf/core"
+		xmlns:c="http://java.sun.com/jsp/jstl/core"
+		xmlns:p="http://primefaces.org/ui">
+
+		<style>
+.ui-organigram .ui-organigram-node.compoundGroup {
+	background: #93e7ff;
+	background: -moz-linear-gradient(top, #93e7ff 0%, #007efc 100%);
+	background: -webkit-linear-gradient(top, #93e7ff 0%, #007efc 100%);
+	background: linear-gradient(to bottom, #93e7ff 0%, #007efc 100%);
+}
+
+.ui-organigram .ui-organigram-node.compound {
+	background: #88c048;
+	background: -moz-linear-gradient(top, #88c048 0%, #69a038 100%);
+	background: -webkit-linear-gradient(top, #88c048 0%, #69a038 100%);
+	background: linear-gradient(to bottom, #88c048 0%, #69a038 100%);
+}
+</style>
+
+		<h:panelGroup id="resultClusterPanel" layout="block">
+			<p:panel id="resultClusterPanelHelp" toggleable="true" toggleOrientation="horizontal"
+				rendered="#{metFragWebBean.compoundsClusterReady}">
+				<h:outputText
+					value="The compound cluster tree is constructed based on the 
+					structural similarity of the candidate molecules in the results tab. The label of each inner node consists of (1) the maximum 
+					final score and (2) the absolute number of all candidates in the underlying subtree. You can display all candidates of a subtree 
+					in the results tab by right clicking on an inner node to filter all molecules underneath. Inner node are colored by the maximum 
+					final score of its subtree. A dark blue color marks a high score whereas a light blue color marks a low score.
+					The label of a leaf node (green) marks the identifier of the candidate. By moving the mouse cursor
+					over the identifier the candidate structure is shown." /><br />
+			</p:panel>
+			<h:panelGroup rendered="#{not metFragWebBean.compoundsClusterReady}">
+				<p:graphicImage name="images/ajaxloadingbar.gif" />
+			</h:panelGroup>
+			<h:panelGroup rendered="#{metFragWebBean.compoundsClusterReady}">
+
+				<p:growl id="resultsClusterGrowl" showDetail="true" />
+				<p:organigram id="compoundClusterTree"
+					widgetVar="compoundClusterTree"
+					value="#{metFragWebBean.compoundsClusterRoot}" var="node"
+					leafNodeConnectorHeight="0" autoScrollToSelection="false"
+					zoom="true" selection="#{metFragWebBean.selectedNode}"
+					style="height: 700px; width: 100%">
+
+					<p:ajax event="select" process="@this"
+						listener="#{metFragWebBean.nodeSelectListener}" />
+					<p:ajax event="contextmenu" process="@this" />
+					<p:ajax event="collapse" process="@this"
+						listener="#{metFragWebBean.nodeCollapse}" />
+					<p:ajax event="expand" process="@this"
+						listener="#{metFragWebBean.nodeExpand}" />
+
+					<p:organigramNode>
+						<h:outputText value="#{node.data}" />
+					</p:organigramNode>
+
+					<p:organigramNode type="compoundGroup" styleClass="compoundGroup" 
+						style="#{node.data.getNodeColorCSS(metFragWebBean.compoundsClusterRoot.data.maxScore)}">
+						<h:outputText value="#{node.data.maxScore}" />
+						<br />
+						<h:outputText value="#{node.data.leafsUnderneath}" />
+					</p:organigramNode>
+
+					<p:organigramNode id="compoundNode" type="compound"
+						styleClass="compound">
+						<span id="cluster_compound_#{node.data.name}">#{node.data.name}</span><br />
+						<span id="cluster_score_#{node.data.name}">#{node.data.maxScore}</span>
+						<div id="tooltip_cluster_compound_node_#{node.data.name}"
+							class="ui-tooltip ui-widget ui-tooltip-right"
+							style="background-color: white; background-image: none;">
+							<div class="ui-tooltip-arrow"></div>
+							<div class="ui-tooltip-text ui-shadow ui-corner-all">
+								<img id="img_cluster_compound_node_#{node.data.name}"
+									src="#{node.data.imageAddress}" alt="images/ajaxloadingbar.gif" />
+							</div>
+						</div>
+						<script type="text/javascript">
+							$(function() {
+								PrimeFaces
+										.cw(
+												"Tooltip",
+												"widget_mainForm_mainAccordion_compoundClusterTree_#{node.data.name}",
+												{
+													id : "tooltip_cluster_compound_node_#{node.data.name}",
+													showEffect : "fade",
+													hideEffect : "fade",
+													target : "cluster_compound_#{node.data.name}"
+												});
+							});
+						</script>
+					</p:organigramNode>
+				</p:organigram>
+				<p:contextMenu for="compoundClusterTree" nodeType="compoundGroup">
+					<p:menuitem value="Filter subtree nodes"
+						update="mainForm:mainAccordion:MetFragResultsTable
+      						mainForm:mainAccordion:peakFilterPanel 
+      						mainForm:mainAccordion:scoreDistributionPlot 
+      						mainForm:mainAccordion:resultsClusterGrowl"
+						actionListener="#{metFragWebBean.displaySelectedClusterCompounds}" />
+					<p:menuitem value="Expand subtree"
+						update="mainForm:mainAccordion:resultClusterPanel"
+						actionListener="#{metFragWebBean.expandSelectedClusterCompounds}" />
+					<p:menuitem value="Collapse subtree"
+						update="mainForm:mainAccordion:resultClusterPanel"
+						actionListener="#{metFragWebBean.collapseSelectedClusterCompounds}" />
+				</p:contextMenu>
+			</h:panelGroup>
+		</h:panelGroup>
+	</ui:composition>
+
+</h:body>
+
+</html>

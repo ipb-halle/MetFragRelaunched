@@ -9,7 +9,7 @@ public class SiriusNodePeak extends TandemMassPeak {
 	protected SiriusNodePeak father;
 	protected IMolecularFormula molecularFormula;
 	protected IMolecularFormula lossFormula;
-	protected java.util.Vector<SiriusNodePeak> children;
+	protected java.util.ArrayList<SiriusNodePeak> children;
 	protected String siriusID;
 	protected String completeNodeLabel;
 	
@@ -46,11 +46,11 @@ public class SiriusNodePeak extends TandemMassPeak {
 		this.lossFormula = lossFormula;
 	}
 
-	public java.util.Vector<SiriusNodePeak> getChildren() {
+	public java.util.ArrayList<SiriusNodePeak> getChildren() {
 		return children;
 	}
 
-	public void setChildren(java.util.Vector<SiriusNodePeak> children) {
+	public void setChildren(java.util.ArrayList<SiriusNodePeak> children) {
 		this.children = children;
 	}
 
@@ -80,7 +80,7 @@ public class SiriusNodePeak extends TandemMassPeak {
 	
 	public void addChild(SiriusNodePeak child) {
 		if(this.children == null) 
-			this.children = new java.util.Vector<SiriusNodePeak>();
+			this.children = new java.util.ArrayList<SiriusNodePeak>();
 		this.children.add(child);
 	}
 	
@@ -103,7 +103,7 @@ public class SiriusNodePeak extends TandemMassPeak {
 		this.flag = flag;
 	}
 	
-	public double getMass() {
+	public Double getMass() {
 		return this.molecularFormula.getMonoisotopicMass();
 	}
 	

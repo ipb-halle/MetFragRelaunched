@@ -12,7 +12,7 @@ import de.ipbhalle.metfraglib.interfaces.IMatch;
 public class MatchList extends DefaultList {
 
 	public MatchList() {
-		this.list = new java.util.Vector<Object>();
+		this.list = new java.util.ArrayList<Object>();
 	}
 	
 	public IMatch getElement(int index) {
@@ -41,6 +41,14 @@ public class MatchList extends DefaultList {
 		return false;
 	}
 
+	public IMatch getMatchByMass(Double peakMass) {
+		for(int i = 0; i < this.list.size(); i++) {
+			IMatch match = (IMatch)this.list.get(i);
+			if(match.getMatchedPeak().getMass().equals(peakMass)) return match;
+		}
+		return null;
+	}
+	
 	public boolean containsPeakID(int peakID) {
 		for(int i = 0; i < this.list.size(); i++)
 			if(((IMatch)this.list.get(i)).getMatchedPeak().getID() == peakID) return true;

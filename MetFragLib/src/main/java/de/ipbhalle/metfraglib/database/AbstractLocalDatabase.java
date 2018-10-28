@@ -21,6 +21,7 @@ public abstract class AbstractLocalDatabase extends AbstractDatabase {
 	protected String INCHI_COLUMN_NAME;
 	protected String INCHIKEY1_COLUMN_NAME;
 	protected String INCHIKEY2_COLUMN_NAME;
+	protected String INCHIKEY3_COLUMN_NAME;
 	protected String CID_COLUMN_NAME;
 	protected String SMILES_COLUMN_NAME;
 	protected String COMPOUND_NAME_COLUMN_NAME;
@@ -30,18 +31,18 @@ public abstract class AbstractLocalDatabase extends AbstractDatabase {
 
 	public AbstractLocalDatabase(Settings settings) {
 		super(settings);
-		this.DATABASE_NAME 			= 	(String) settings.get( 	VariableNames.LOCAL_DATABASE_NAME								); 
-		this.TABLE_NAME				=	(String) settings.get( 	VariableNames.LOCAL_DATABASE_COMPOUND_TABLE_NAME				);
-		this.PORT					=	(String) settings.get( 	VariableNames.LOCAL_DATABASE_PORT_NUMBER_NAME					);
-		this.SERVER					=	(String) settings.get( 	VariableNames.LOCAL_DATABASE_SERVER_IP_NAME						);
-		this.MASS_COLUMN_NAME		=	(String) settings.get( 	VariableNames.LOCAL_DATABASE_MASS_COLUMN_NAME					);
-		this.FORMULA_COLUMN_NAME	=	(String) settings.get( 	VariableNames.LOCAL_DATABASE_FORMULA_COLUMN_NAME				);
-		this.INCHI_COLUMN_NAME		=	(String) settings.get( 	VariableNames.LOCAL_DATABASE_INCHI_COLUMN_NAME					);
-		this.INCHIKEY1_COLUMN_NAME	=	(String) settings.get( 	VariableNames.LOCAL_DATABASE_INCHIKEY1_COLUMN_NAME				);
-		this.INCHIKEY2_COLUMN_NAME	=	(String) settings.get(	VariableNames.LOCAL_DATABASE_INCHIKEY2_COLUMN_NAME				);
-		this.CID_COLUMN_NAME		=	(String) settings.get( 	VariableNames.LOCAL_DATABASE_CID_COLUMN_NAME					);
-		this.SMILES_COLUMN_NAME		=	(String) settings.get( 	VariableNames.LOCAL_DATABASE_SMILES_COLUMN_NAME					);
-		this.COMPOUND_NAME_COLUMN_NAME		=	(String) settings.get( 	VariableNames.LOCAL_DATABASE_COMPOUND_NAME_COLUMN_NAME	);
+		this.DATABASE_NAME 			= 	(String) settings.get( 	VariableNames.LOCAL_DATABASE_NAME					); 
+		this.TABLE_NAME				=	(String) settings.get( 	VariableNames.LOCAL_DATABASE_COMPOUND_TABLE_NAME	);
+		this.PORT					=	(String) settings.get( 	VariableNames.LOCAL_DATABASE_PORT_NUMBER_NAME		);
+		this.SERVER					=	(String) settings.get( 	VariableNames.LOCAL_DATABASE_SERVER_IP_NAME			);
+		this.MASS_COLUMN_NAME		=	(String) settings.get( 	VariableNames.LOCAL_DATABASE_MASS_COLUMN_NAME		);
+		this.FORMULA_COLUMN_NAME	=	(String) settings.get( 	VariableNames.LOCAL_DATABASE_FORMULA_COLUMN_NAME	);
+		this.INCHI_COLUMN_NAME		=	(String) settings.get( 	VariableNames.LOCAL_DATABASE_INCHI_COLUMN_NAME		);
+		this.INCHIKEY1_COLUMN_NAME	=	(String) settings.get( 	VariableNames.LOCAL_DATABASE_INCHIKEY1_COLUMN_NAME	);
+		this.INCHIKEY2_COLUMN_NAME	=	(String) settings.get(	VariableNames.LOCAL_DATABASE_INCHIKEY2_COLUMN_NAME	);
+		this.CID_COLUMN_NAME		=	(String) settings.get( 	VariableNames.LOCAL_DATABASE_CID_COLUMN_NAME		);
+		this.SMILES_COLUMN_NAME		=	(String) settings.get( 	VariableNames.LOCAL_DATABASE_SMILES_COLUMN_NAME		);
+		this.COMPOUND_NAME_COLUMN_NAME		=	(String) settings.get( 	VariableNames.LOCAL_DATABASE_COMPOUND_NAME_COLUMN_NAME		);
 		
 		this.db_user				=	(String) settings.get( 	VariableNames.LOCAL_DATABASE_USER_NAME				);
 		this.db_password			=	(String) settings.get( 	VariableNames.LOCAL_DATABASE_PASSWORD_NAME			);

@@ -3,7 +3,7 @@ package de.ipbhalle.metfraglib.database;
 import java.io.IOException;
 import java.io.StringReader;
 import java.rmi.RemoteException;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.transport.http.HTTPConstants;
@@ -53,7 +53,7 @@ public class OnlineChemSpiderDatabase extends AbstractDatabase {
 	/**
 	 * 
 	 */
-	public Vector<String> getCandidateIdentifiers(double monoisotopicMass, double relativeMassDeviation) throws Exception {
+	public ArrayList<String> getCandidateIdentifiers(double monoisotopicMass, double relativeMassDeviation) throws Exception {
 		logger.info("Fetching candidates from ChemSpider");
 		double mzabs = MathTools.calculateAbsoluteDeviation(monoisotopicMass, relativeMassDeviation);
 		MassSpecAPIStub stub = null;
@@ -86,7 +86,7 @@ public class OnlineChemSpiderDatabase extends AbstractDatabase {
 				throw new Exception();
 			}
 		}
-		Vector<String> csids_vec = new Vector<String>();
+		ArrayList<String> csids_vec = new ArrayList<String>();
 		for(int i = 0; i < csids.length; i++) {
 			csids_vec.add(String.valueOf(csids[i]));
 		}
@@ -96,7 +96,7 @@ public class OnlineChemSpiderDatabase extends AbstractDatabase {
 	/**
 	 * 
 	 */
-	public Vector<String> getCandidateIdentifiers(String formula) throws Exception {
+	public ArrayList<String> getCandidateIdentifiers(String formula) throws Exception {
 		logger.info("Fetching candidates from ChemSpider");
 		String molecularFormula = formula.replaceAll("([0-9]+)", "_{$1}");
 		molecularFormula = formula.replaceAll("\\[_\\{([0-9]+)\\}([A-Z][a-z]{0,3})\\]", "^\\{$1\\}$2");
@@ -108,7 +108,6 @@ public class OnlineChemSpiderDatabase extends AbstractDatabase {
 			this.logger.error("Error: Could not perform database query. This could be caused by a temporal database timeout. Try again later.");
 			throw new Exception();
 		}
-
         SearchByFormulaAsync sbfa = new SearchByFormulaAsync();
         sbfa.setFormula(molecularFormula);
         sbfa.setToken(this.chemSpiderToken);
@@ -129,7 +128,7 @@ public class OnlineChemSpiderDatabase extends AbstractDatabase {
 				throw new Exception();
 			}
 		}
-		Vector<String> csids_vec = new Vector<String>();
+		ArrayList<String> csids_vec = new ArrayList<String>();
 		for(int i = 0; i < csids.length; i++) {
 			csids_vec.add(String.valueOf(csids[i]));
 		}
@@ -139,9 +138,9 @@ public class OnlineChemSpiderDatabase extends AbstractDatabase {
 	/**
 	 * 
 	 */
-	public Vector<String> getCandidateIdentifiers(Vector<String> identifiers) {
+	public ArrayList<String> getCandidateIdentifiers(ArrayList<String> identifiers) {
 		logger.info("Fetching candidates from ChemSpider");
-		Vector<String> uniqueCsidArray = new Vector<String>();
+		ArrayList<String> uniqueCsidArray = new ArrayList<String>();
         for(int i = 0; i < identifiers.size(); i++) {
                 if(!uniqueCsidArray.contains(identifiers.get(i)))
                         uniqueCsidArray.add(identifiers.get(i));
@@ -217,13 +216,13 @@ public class OnlineChemSpiderDatabase extends AbstractDatabase {
 	/**
 	 * 
 	 */
-	public CandidateList getCandidateByIdentifier(Vector<String> identifiers) throws Exception {
-		Vector<String> uniqueCsidArray = new Vector<String>();
+	public CandidateList getCandidateByIdentifier(ArrayList<String> identifiers) throws Exception {
+		ArrayList<String> uniqueCsidArray = new ArrayList<String>();
         for(int i = 0; i < identifiers.size(); i++) {
         	if(!uniqueCsidArray.contains(identifiers.get(i))) uniqueCsidArray.add(identifiers.get(i));
         }
         CandidateList candidateList = new CandidateList();
-
+        if(identifiers.size() == 0) return new CandidateList();
         int[] csids = null;
         String rid = "";
         /*
@@ -282,7 +281,7 @@ public class OnlineChemSpiderDatabase extends AbstractDatabase {
 			throw new Exception();
 		}
 		do {
-			Vector<ExtendedMolCompoundInfo> emci = getExtendedPrecursorCandidates(rid, searchStub, start, count);
+			ArrayList<ExtendedMolCompoundInfo> emci = getExtendedPrecursorCandidates(rid, searchStub, start, count);
 			for(int i = 0; i < emci.size(); i++) {
 				if(lastIDToRemove && emci.get(i).getCSID() == Integer.parseInt(removeID)) 
 					continue;
@@ -329,16 +328,16 @@ public class OnlineChemSpiderDatabase extends AbstractDatabase {
 	 * @param count
 	 * @return
 	 */
-	private Vector<ExtendedMolCompoundInfo> getExtendedPrecursorCandidates(String rid, SearchStub searchStub, int start, int count) {
+	private ArrayList<ExtendedMolCompoundInfo> getExtendedPrecursorCandidates(String rid, SearchStub searchStub, int start, int count) {
 		int neededCounts = count;
-		Vector<ExtendedMolCompoundInfo> extendedMolCompoundInfoVector = new Vector<ExtendedMolCompoundInfo>();
+		ArrayList<ExtendedMolCompoundInfo> extendedMolCompoundInfoArrayList = new ArrayList<ExtendedMolCompoundInfo>();
 		do {
 			MassSpecAPIStub stub = null;
 			try {
 				stub = this.initMassSpecAPIStub();
 			} catch (Exception e) {
 				this.logger.error("Error: Could not perform database query. This could be caused by a temporal database timeout. Try again later.");
-				return new Vector<ExtendedMolCompoundInfo>();
+				return new ArrayList<ExtendedMolCompoundInfo>();
 			}
 	        GetAsyncSearchResultPart gasrp = new GetAsyncSearchResultPart();
 			gasrp.setRid(rid);
@@ -350,7 +349,7 @@ public class OnlineChemSpiderDatabase extends AbstractDatabase {
 				gasrpr = searchStub.getAsyncSearchResultPart(gasrp);
 			} catch (Exception e) {
 				this.logger.error("Error: Could not perform database query. This could be caused by a temporal database timeout. Try again later.");
-				return new Vector<ExtendedMolCompoundInfo>();
+				return new ArrayList<ExtendedMolCompoundInfo>();
 			}
 			
 			com.chemspider.www.SearchStub.ArrayOfInt aoi = gasrpr.getGetAsyncSearchResultPartResult();
@@ -374,12 +373,12 @@ public class OnlineChemSpiderDatabase extends AbstractDatabase {
 			}
 			ExtendedMolCompoundInfo[] array = gemciar.getGetExtendedMolCompoundInfoArrayResult().getExtendedMolCompoundInfo();
 			for(int i = 0; i < array.length; i++)
-				extendedMolCompoundInfoVector.add(array[i]);
+				extendedMolCompoundInfoArrayList.add(array[i]);
 			start += count;
 			neededCounts = neededCounts - count;
 			count = neededCounts;
 		} while(neededCounts != 0);
-		return extendedMolCompoundInfoVector;
+		return extendedMolCompoundInfoArrayList;
 	}
 	
 	/**
@@ -388,11 +387,11 @@ public class OnlineChemSpiderDatabase extends AbstractDatabase {
 	 * @return
 	 * @throws CDKException
 	 */
-	protected Vector<IAtomContainer> getAtomContainerFromString(String sdfString) {
+	protected ArrayList<IAtomContainer> getAtomContainerFromString(String sdfString) {
         MDLV2000Reader reader = new MDLV2000Reader(new StringReader(sdfString));
 
         java.util.List<IAtomContainer> containersList;
-        java.util.Vector<IAtomContainer> ret = new Vector<IAtomContainer>();
+        java.util.ArrayList<IAtomContainer> ret = new ArrayList<IAtomContainer>();
 
         ChemFile chemFile = null;
 		try {
@@ -403,7 +402,7 @@ public class OnlineChemSpiderDatabase extends AbstractDatabase {
 			} catch (IOException e1) {
 			}
 			this.logger.error("Error: Could not perform database query. This could be caused by a temporal database timeout. Try again later.");
-			return new Vector<IAtomContainer>();
+			return new ArrayList<IAtomContainer>();
 		}
         containersList = ChemFileManipulator.getAllAtomContainers(chemFile);
         for (IAtomContainer container: containersList) {
@@ -413,7 +412,7 @@ public class OnlineChemSpiderDatabase extends AbstractDatabase {
 			reader.close();
 		} catch (IOException e) {
 			this.logger.error("Error: Could not perform database query. This could be caused by a temporal database timeout. Try again later.");
-			return new Vector<IAtomContainer>();
+			return new ArrayList<IAtomContainer>();
 		}
         return ret;
 	}
@@ -513,7 +512,6 @@ public class OnlineChemSpiderDatabase extends AbstractDatabase {
 				pp.setProxyName((String)this.settings.get(VariableNames.CHEMSPIDER_PROXY_SERVER));
 				pp.setProxyPort(Integer.parseInt((String)this.settings.get(VariableNames.CHEMSPIDER_PROXY_PORT)));
 			} catch(Exception e) {
-				e.printStackTrace();
 				this.logger.error("Error: Could not set proxy settings. Please check input.");
 				throw new Exception();
 			}

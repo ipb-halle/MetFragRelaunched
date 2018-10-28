@@ -19,7 +19,7 @@
 				<p:dataTable rendered="#{metFragWebBean.renderWeights}"
 					widgetVar="weightsTable" id="weightsSliderTable" paginator="false"
 					value="#{metFragWebBean.weights}" var="weight" disabled="true"
-					style="width: 500px; border: none;" styleClass="blankTable">
+					style="width: 500px; border: none;" styleClass="blankTable" scrollable="true" >
 					<f:facet name="header">
 		        				Weights
 		    				</f:facet>
@@ -32,7 +32,7 @@
 						style="border: none; width: 100px; padding-right: 20px;">
 						<p:slider for="sliderValue" id="slider">
 							<p:ajax event="slideEnd" process="sliderValue slider"
-								update="mainForm:mainAccordion:MetFragResultsTable mainForm:mainAccordion:scoreDistributionPlot"
+								update="mainForm:mainAccordion:MetFragResultsTable mainForm:mainAccordion:scoreDistributionPlot mainForm:mainAccordion:resultClusterPanel"
 								listener="#{metFragWebBean.weightsSliderValueChanged}" />
 						</p:slider>
 					</p:column>
@@ -42,7 +42,7 @@
 						<p:inputText id="sliderValue" required="false" size="2"
 							value="#{weight.value}" style="text-align: center;">
 							<p:ajax event="blur"
-								update="mainForm:mainAccordion:MetFragResultsTable mainForm:mainAccordion:scoreDistributionPlot"
+								update="mainForm:mainAccordion:MetFragResultsTable mainForm:mainAccordion:scoreDistributionPlot mainForm:mainAccordion:resultClusterPanel"
 								listener="#{metFragWebBean.weightsTextInputValueChanged}" />
 						</p:inputText>
 					</p:column>
@@ -73,7 +73,7 @@
 							</h:panelGroup>
 						</h:panelGroup>
 					</h:panelGrid>
-					<h:panelGrid columns="1" style="padding-top: 10px; padding-bottom: 10px;">
+					<h:panelGrid columns="1" style="padding-top: 10px; padding-bottom: 10px;" id="peakFilterPanel">
 						<h:outputLabel value="Filter Candidates by explained MS/MS Peaks" />
 						<h:panelGrid columns="3" style="padding-left: 20px; padding-bottom: 10px;">
 							<p:selectCheckboxMenu id="explainedPeaksFilterMenu" value="#{metFragWebBean.explainedPeaksFilter}" 
@@ -108,7 +108,7 @@
 								widgetVar="MetFragResultsTable"
 								value="#{metFragWebBean.filteredMetFragResults}" var="metFragResult" rows="10"
 								styleClass="resultsTable" rowIndexVar="rowIndex"
-								scrollable="true" scrollHeight="600" paginator="true"
+								scrollable="true" paginator="true"
 								first="#{metFragWebBean.selectedCandidate}">
 								<!--<p:column style="width:16px">
 							<p:rowToggler rendered="#{metFragResult.hasMolecules}" />
@@ -124,7 +124,7 @@
 									<h:panelGrid columns="2" style="border: none;"
 										columnClasses="resultImageFirst,resultImageSecond">
 										<h:panelGroup>
-											<h:graphicImage alt="#{metFragResult.identifier}" width="100%"
+											<h:graphicImage alt="#{metFragResult.originalIdentifier}" width="100%"
 												id="imageCellNames" value="#{metFragResult.imageAddress}" cache="false" />
 											<br />
 											<h:outputText
@@ -134,7 +134,7 @@
 										<h:panelGroup>
 											<h:graphicImage id="magnifierMol_1"
 												name="images/icons/magni3.png" />
-											<p:tooltip id="molImageLarge1" for="magnifierMol_1">
+											<p:tooltip id="molImageLarge1" for="magnifierMol_1" style="background-color: white; background-image: none;">
 												<p:graphicImage alt="images/ajaxloadingbar.gif"
 													value="#{metFragResult.imageAddress}" />
 											</p:tooltip>
@@ -148,7 +148,7 @@
 									<h:panelGrid columns="2" style="border: none;"
 										columnClasses="resultImageFirst,resultImageSecond">
 										<h:panelGroup>
-											<h:graphicImage alt="#{metFragResult.identifier}"
+											<h:graphicImage alt="#{metFragResult.originalIdentifier}"
 												id="imageCell" value="#{metFragResult.imageAddress}"
 												width="100%" cache="false" />
 										</h:panelGroup>
@@ -170,10 +170,10 @@
 							</f:facet> -->
 									<h:outputText
 										rendered="#{not metFragResult.databaseLinkAvailable}"
-										id="idCell" value="#{metFragResult.identifier}" />
-									<p:link target="_blank" rendered="#{metFragResult.databaseLinkAvailable}"
+										id="idCell" value="#{metFragResult.originalIdentifier}" />
+									<p:link rendered="#{metFragResult.databaseLinkAvailable}"
 										href="#{metFragResult.databaseLink}"
-										value="#{metFragResult.identifier}" />
+										value="#{metFragResult.originalIdentifier}" target="_blank" />
 									<p:dataScroller scrollHeight="100px" mode="inline"
 										styleClass="dataScroller"
 										rendered="#{metFragResult.hasMolecules}"
@@ -181,10 +181,10 @@
 										chunkSize="10">
 										<h:outputText
 											rendered="#{not metFragResult.databaseLinkAvailable}"
-											id="idCell" value="#{subResult.identifier}" />
-										<p:link target="_blank" rendered="#{metFragResult.databaseLinkAvailable}"
+											id="idCell" value="#{subResult.originalIdentifier}" />
+										<p:link rendered="#{metFragResult.databaseLinkAvailable}"
 											href="#{subResult.databaseLink}"
-											value="#{subResult.identifier}" />
+											value="#{subResult.originalIdentifier}" target="_blank" />
 									</p:dataScroller>
 									<br />
 									<br />
@@ -194,7 +194,7 @@
 										value="#{metFragResult.inchikey1}" />
 									<p:link target="_blank" rendered="#{metFragResult.inChIKeyLinkAvailable}"
 										href="#{metFragResult.inChIKeyLink}"
-										value="#{metFragResult.inchikey1}" />
+										value="#{metFragResult.inchikey1}"/>
 								</p:column>
 	
 								<p:column id="mass" width="100" headerText="Mass"

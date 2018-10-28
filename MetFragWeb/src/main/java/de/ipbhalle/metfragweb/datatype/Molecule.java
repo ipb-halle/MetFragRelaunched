@@ -27,7 +27,9 @@ public class Molecule implements Serializable {
 	protected String imageAddress;
 	protected String name;
 	protected String inchi;
-
+	protected String smiles;
+	protected boolean useSmiles = false;
+	
 	protected int numberPeaksExplained;
 	
 	protected String displayFormula;
@@ -40,7 +42,7 @@ public class Molecule implements Serializable {
 	protected MatchList matchList;
 	
 	protected HorizontalBarChartModel horizontalBarModel;
-	protected String databaseName;
+	protected Object database;
 	protected Integer simScoreIndex;
 	
 	public Molecule(String identifier) {
@@ -48,10 +50,11 @@ public class Molecule implements Serializable {
 	}
 
 	public Molecule(String identifier, double mass, String formula, final List<Weight> weights, 
-			String imageAddress, final ScoreSummary[] scoresSummaries, String inchi) {
+			String imageAddress, final ScoreSummary[] scoresSummaries, String inchi, String smiles, boolean useSmiles) {
 		super();
 		this.additionalValues = new int[] {100, 200, 110};
 		
+		this.useSmiles = useSmiles;
 		this.identifier = identifier;
 		this.mass = mass;
 		this.formula = formula;
@@ -61,6 +64,7 @@ public class Molecule implements Serializable {
 		
 		this.recalculateScore(weights);
 		this.inchi = inchi;
+		this.smiles = smiles;
 		this.imageAddress = imageAddress;
 		
 		this.horizontalBarModel = new HorizontalBarChartModel();
@@ -123,6 +127,10 @@ public class Molecule implements Serializable {
 		return identifier;
 	}
 
+	public String getOriginalIdentifier() {
+		return identifier.replaceAll("\\|[0-9]+", "");
+	}
+
 	public void setIdentifier(String identifier) {
 		this.identifier = identifier;
 	}
@@ -172,28 +180,40 @@ public class Molecule implements Serializable {
 	}
 	
 	public boolean isDatabaseLinkAvailable() {
-		if(databaseName == null) return false;
-		if(databaseName.equals("PubChem") || databaseName.equals("KEGG") 
-				|| databaseName.equals("ChemSpider") || databaseName.equals("MetaCyc")
-				|| databaseName.equals("LipidMaps")) return true;
+		if(database == null) return false;
+		if(database instanceof AdditionalFileDatabase) {
+			if(this.identifier.startsWith("DTXSID")) return true;
+		} else {
+			if(database.equals("PubChem") || database.equals("KEGG") 
+				|| database.equals("ChemSpider") || database.equals("MetaCyc") || database.equals("ChemSpiderRest")
+				|| database.equals("LipidMaps") || database.equals("LocalHMDB")
+				|| database.equals("LocalChEBI") || ((database.equals("LocalSDF") || database.equals("LocalCSV") || database.equals("LocalPSV")) && this.identifier.startsWith("DTXSID"))) return true;
+		}
 		return false;
 	}
 	
-	public String getDatabase() {
-		return databaseName;
+	public Object getDatabase() {
+		return database;
 	}
 	
 	public String getDatabaseLink() {
-		if(databaseName.equals("PubChem")) return "https://pubchem.ncbi.nlm.nih.gov/compound/" + this.identifier;
-		else if(databaseName.equals("KEGG")) return "http://www.kegg.jp/dbget-bin/www_bget?cpd:" + this.identifier;
-		else if(databaseName.equals("ChemSpider")) return "http://www.chemspider.com/Chemical-Structure." + this.identifier + ".html";
-		else if(databaseName.equals("MetaCyc")) return "http://metacyc.org/META/NEW-IMAGE?type=COMPOUND&object=" + this.identifier;
-		else if(databaseName.equals("LipidMaps")) return "http://www.lipidmaps.org/data/LMSDRecord.php?LMID=" + this.identifier;
-		return this.identifier; 
+		if(database instanceof AdditionalFileDatabase) {
+			if(this.identifier.startsWith("DTXSID")) return "https://comptox.epa.gov/dashboard/dsstoxdb/results?search=" + this.getOriginalIdentifier();
+		} else {
+			if(database.equals("PubChem")) return "https://pubchem.ncbi.nlm.nih.gov/compound/" + this.getOriginalIdentifier();
+			else if(database.equals("KEGG")) return "http://www.kegg.jp/dbget-bin/www_bget?cpd:" + this.getOriginalIdentifier();
+			else if(database.equals("ChemSpider") || database.equals("ChemSpiderRest")) return "http://www.chemspider.com/Chemical-Structure." + this.getOriginalIdentifier() + ".html";
+			else if(database.equals("MetaCyc")) return "http://metacyc.org/META/NEW-IMAGE?type=COMPOUND&object=" + this.getOriginalIdentifier();
+			else if(database.equals("LipidMaps")) return "http://www.lipidmaps.org/data/LMSDRecord.php?LMID=" + this.getOriginalIdentifier();
+			else if(database.equals("LocalHMDB")) return "http://www.hmdb.ca/metabolites/" + this.getOriginalIdentifier();
+			else if(database.equals("LocalChEBI")) return "https://www.ebi.ac.uk/chebi/searchId.do?chebiId=" + this.getOriginalIdentifier();
+			else if((database.equals("LocalSDF") || database.equals("LocalCSV") || database.equals("LocalPSV")) && this.identifier.startsWith("DTXSID")) return "https://comptox.epa.gov/dashboard/dsstoxdb/results?search=" + this.getOriginalIdentifier();
+		}
+		return this.identifier;
 	}
 	
-	public void setDatabaseName(String databaseName) {
-		this.databaseName = databaseName;
+	public void setDatabaseName(Object database) {
+		this.database = database;
 	}
 	
 	public void setImageAddress(String imageAddress) {
@@ -212,7 +232,11 @@ public class Molecule implements Serializable {
 	public boolean equals(Object mol) {
 		return this.identifier.equals(((Molecule)mol).getIdentifier());
 	}
-	
+
+	public String getSMILES() {
+		return this.smiles;
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -261,8 +285,9 @@ public class Molecule implements Serializable {
 	 * @return
 	 */
 	public ICandidate getCandidate() {
-		ICandidate candidate = new PrecursorCandidate(this.inchi, this.identifier);
+		ICandidate candidate = new PrecursorCandidate(this.inchi, this.identifier, this.smiles);
 		candidate.setProperty(VariableNames.FINAL_SCORE_COLUMN_NAME, this.finalScore);
+		candidate.setUseSmiles(this.useSmiles);
 		candidate.setProperty(VariableNames.MONOISOTOPIC_MASS_NAME, this.mass);
 		candidate.setProperty(VariableNames.MOLECULAR_FORMULA_NAME, this.formula);
 		candidate.setProperty(VariableNames.NUMBER_EXPLAINED_PEAKS_COLUMN, this.numberPeaksExplained);
@@ -270,7 +295,13 @@ public class Molecule implements Serializable {
 		candidate.setMatchList(this.matchList);
 		
 		for(int i = 0; i < this.scoresSummaries.length; i++) {
-			candidate.setProperty(this.scoresSummaries[i].getName(), String.valueOf(this.scoresSummaries[i].getRawValue()));
+			String scoreValue = "NA";
+			if(this.scoresSummaries[i].isAvailable()) scoreValue = String.valueOf(this.scoresSummaries[i].getRawValue());
+			candidate.setProperty(this.scoresSummaries[i].getName(), scoreValue);
+			if(!this.scoresSummaries[i].isDatabaseScore()) {
+				candidate.setProperty(this.scoresSummaries[i].getName() + "_Values", this.scoresSummaries[i].getInfo());
+			}
+				
 		}
 		
 		return candidate;

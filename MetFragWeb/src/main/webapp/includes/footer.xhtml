@@ -6,7 +6,7 @@
 
 <h:body>
 	<ui:composition>
-
+		
 		<h:panelGrid columns="3" width="100%" columnClasses="footerTableColumns,footerTableColumns,footerTableColumns">
 			<h:panelGroup>
 				<h:panelGrid columns="1" width="100%">
@@ -15,6 +15,7 @@
 						<h:outputLink value="http://www.ipb-halle.de/en">IPB Halle</h:outputLink>
 						<h:outputLink value="https://c-ruttkies.github.io/MetFrag/">MetFrag Webpage</h:outputLink>
 						<h:outputLink value="http://www.solutions-project.eu">Solutions Project</h:outputLink>
+						<h:outputLink value="https://www.ipb-halle.de/en/contact/imprint-data-protection/">Privacy Policy</h:outputLink>
 					</h:panelGrid>
 				</h:panelGrid>
 			</h:panelGroup>
@@ -44,6 +45,19 @@
 			<h:panelGrid columns="1" style="padding-left: 1px;">
 				<a href="http://jcheminf.springeropen.com/articles/10.1186/s13321-016-0115-9">MetFrag relaunched: incorporating strategies beyond in silico fragmentation: 
 				C Ruttkies, E L Schymanski, S Wolf, J Hollender, S Neumann Journal of Cheminformatics 2016 8:3</a>
+			</h:panelGrid>
+		</h:panelGrid>
+		<h:panelGrid columns="1" width="100%" style="padding-top: 10px;">
+			<h:outputText value="Funding" style="font-weight: bold;" />
+			<h:panelGrid columns="2" width="100%">
+				<h:panelGrid columns="1" width="100%">
+		 			<h:graphicImage alt="" name="images/deNBI_logo1.png" style="float: left; border: 0px;" height="40"/>
+					<a href="http://www.denbi.de">German Network for Bioinformatics Infrastructure</a>
+				</h:panelGrid>
+				<h:panelGrid columns="1" width="100%">
+					<h:graphicImage alt="" name="images/solutions.jpg" style="float: left; border: 0px;" height="40"/>
+					<a href="http://www.solutions-project.eu">EU FP7 project SOLUTIONS</a> under Grant Agreement No. 603437
+				</h:panelGrid>
 			</h:panelGrid>
 		</h:panelGrid>
 	</ui:composition>

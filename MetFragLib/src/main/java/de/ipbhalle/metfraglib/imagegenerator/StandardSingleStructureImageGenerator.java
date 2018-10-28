@@ -77,8 +77,8 @@ public class StandardSingleStructureImageGenerator implements IImageGenerator {
 	 * @return
 	 * @throws CDKException
 	 */
-	public RenderedImage generateImage(final IFragment structure) throws Exception {
-		return this.generateImage(structure.getStructureAsIAtomContainer());
+	public RenderedImage generateImage(IMolecularStructure precursorMolecule, final IFragment structure) throws Exception {
+		return this.generateImage(structure.getStructureAsIAtomContainer(precursorMolecule));
 	}
 
 	/**
@@ -188,7 +188,7 @@ public class StandardSingleStructureImageGenerator implements IImageGenerator {
 		Image image = new BufferedImage(this.imageWidth, this.imageHeight, BufferedImage.TYPE_INT_ARGB);
 
 		Graphics2D g2 = (Graphics2D) image.getGraphics();
-		g2.setColor(new Color(1.0f, 1.0f, 1.0f, 0.0f));
+		g2.setColor(this.backgroundColor);
 		g2.fillRect(0, 0, this.imageWidth, this.imageHeight);
 		return image;
 	}
@@ -200,15 +200,18 @@ public class StandardSingleStructureImageGenerator implements IImageGenerator {
 	public static void main(String[] args) throws InvalidSmilesException, IOException {
 		 IAtomContainer m = null;
 			try {
-				m = MoleculeFunctions.getAtomContainerFromInChI("InChI=1S/C10H22N2/c1-9(2)7-10(8-12-11)5-3-4-6-10/h9,12H,3-8,11H2,1-2H3");
+				//m = MoleculeFunctions.getAtomContainerFromInChI("InChI=1S/C15H14O6/c16-8-4-11(18)9-6-13(20)15(21-14(9)5-8)7-1-2-10(17)12(19)3-7/h1-5,13,15-20H,6H2/t13-,15-/m1/s1");
+				m = MoleculeFunctions.getAtomContainerFromSMILES("C1C(OC2=C(C1=O)C(=C(C=C2)O)O)C3=CC=CC=C3O");
+
 				MoleculeFunctions.prepareAtomContainer(m, false);
+				//MoleculeFunctions.removeHydrogens(m);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 	    StandardSingleStructureImageGenerator s = new StandardSingleStructureImageGenerator();
-	    s.setImageHeight(500);
-	    s.setImageWidth(500);
-	    s.setStrokeRation(2);
+	    s.setImageHeight(1500);
+	    s.setImageWidth(1500);
+	    s.setStrokeRation(2.2);
 	    RenderedImage img = s.generateImage(m, "1");
 	    
 	    ImageIO.write((RenderedImage) img, "PNG", new java.io.File("/tmp/file.png"));

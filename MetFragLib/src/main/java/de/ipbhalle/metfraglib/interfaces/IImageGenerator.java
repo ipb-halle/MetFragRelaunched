@@ -7,7 +7,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 
 public interface IImageGenerator {
 
-	public RenderedImage generateImage(IFragment structure) throws Exception;
+	public RenderedImage generateImage(IMolecularStructure precursorMolecule, IFragment structure) throws Exception;
 	
 	public RenderedImage generateImage(IMolecularStructure structure) throws Exception;
 	

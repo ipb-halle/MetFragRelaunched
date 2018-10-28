@@ -3,6 +3,7 @@ package de.ipbhalle.metfraglib.peaklistreader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
 import de.ipbhalle.metfraglib.collection.SpectralPeakListCollection;
 import de.ipbhalle.metfraglib.list.DefaultPeakList;
 import de.ipbhalle.metfraglib.list.SortedSimilarityTandemMassPeakList;
@@ -52,6 +53,7 @@ public class MultipleTandemMassPeakListReader extends AbstractPeakListReader {
 					if(paramname.equals(VariableNames.INCHI_KEY_NAME)) peakList.setInchikey1(valuename.split("-")[0]);
 					if(paramname.equals(VariableNames.IS_POSITIVE_ION_MODE_NAME)) peakList.setIsPositiveCharge(valuename.toLowerCase().equals("true"));
 					if(paramname.equals(VariableNames.SAMPLE_NAME)) peakList.setSampleName(valuename);
+					if(paramname.equals(VariableNames.MOLECULAR_FINGERPRINT_NAME)) peakList.setFingerprint(MoleculeFunctions.stringToFingerPrint(valuename));
 				}
 				catch(Exception e) {
 					System.err.println("Error with spectrum " + peakList.getSampleName());
@@ -80,13 +82,18 @@ public class MultipleTandemMassPeakListReader extends AbstractPeakListReader {
 		java.io.BufferedReader breader = new java.io.BufferedReader(new java.io.FileReader(new java.io.File(path)));
 		String line = "";
 		SpectralPeakListCollection spectralPeakListCollection = 
-				new SpectralPeakListCollection((Boolean)this.settings.get(VariableNames.IS_POSITIVE_ION_MODE_NAME), (Double)this.settings.get(VariableNames.ABSOLUTE_MASS_DEVIATION_NAME), (Double)this.settings.get(VariableNames.RELATIVE_MASS_DEVIATION_NAME));
+				new SpectralPeakListCollection(
+						(Boolean)this.settings.get(VariableNames.IS_POSITIVE_ION_MODE_NAME), 
+						(Double)this.settings.get(VariableNames.ABSOLUTE_MASS_DEVIATION_NAME), 
+						(Double)this.settings.get(VariableNames.RELATIVE_MASS_DEVIATION_NAME),
+						(Double)this.settings.get(VariableNames.MINIMUM_COSINE_SIMILARITY_LIMIT_NAME));
 		SortedSimilarityTandemMassPeakList peakList = null;
 		int precursorIonTypeIndex = 0;
 		while((line = breader.readLine()) != null) {
 			line = line.trim();
 			if(line.length() == 0 && peakList != null) {
-				if(peakList.isFullyInitialised()) {
+				//if(peakList.isFullyInitialised()) {
+				if(peakList.isPartlyInitialised()) {
 					peakList.calculateRelativeIntensities(Constants.DEFAULT_MAXIMUM_RELATIVE_INTENSITY);
 					spectralPeakListCollection.addPeakList(peakList);
 				}
@@ -94,7 +101,9 @@ public class MultipleTandemMassPeakListReader extends AbstractPeakListReader {
 			}
 			else if(line.length() == 0) continue;
 			else if(line.startsWith("#")) { //comment
-				if(peakList == null) peakList = new SortedSimilarityTandemMassPeakList(0.0);
+				if(peakList == null) {
+					peakList = new SortedSimilarityTandemMassPeakList(0.0);
+				}
 				line = line.replaceFirst("^#\\s*", "");
 				String[] tmp = line.split("=");
 				String paramname = tmp[0].trim();
@@ -110,6 +119,7 @@ public class MultipleTandemMassPeakListReader extends AbstractPeakListReader {
 					if(paramname.equals(VariableNames.INCHI_KEY_NAME)) peakList.setInchikey1(valuename.split("-")[0]);
 					if(paramname.equals(VariableNames.IS_POSITIVE_ION_MODE_NAME)) peakList.setIsPositiveCharge(valuename.toLowerCase().equals("true"));
 					if(paramname.equals(VariableNames.SAMPLE_NAME)) peakList.setSampleName(valuename);
+					if(paramname.equals(VariableNames.MOLECULAR_FINGERPRINT_NAME)) peakList.setFingerprint(MoleculeFunctions.stringToFingerPrint(valuename));
 				}
 				catch(Exception e) {
 					System.err.println("Error with spectrum " + peakList.getSampleName());

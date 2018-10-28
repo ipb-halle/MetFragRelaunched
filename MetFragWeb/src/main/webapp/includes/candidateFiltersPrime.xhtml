@@ -12,7 +12,7 @@
 
 		<h:panelGroup id="filterSettingsPanel"
 			rendered="#{metFragWebBean.numberCompoundsRetrieved > 0}">
-			<h:outputText value="Candidate Filters:"
+			<h:outputText value="Candidate Filters"
 				style="font-weight: bold; padding-bottom: 10px" />
 			<br />
 			<h:panelGrid columns="2" width="80%" style="vertical-align:top;"
@@ -29,20 +29,20 @@
 				<h:panelGrid columns="1" style="vertical-align:top;" cellspacing="4"
 					cellpadding="4" styleClass="subPanel"
 					rendered="#{metFragWebBean.elementInclusionFilterEnabled}">
-					<h:panelGrid columns="3">
+					<h:panelGrid columns="2">
 						<h:outputLabel value="Element List:" />
 						<p:inputText id="includedFilterElements" required="false"
 							value="#{metFragWebBean.includedFilterElements}">
 							<p:ajax event="blur" update="elementInclusionFilterPanel" />
 						</p:inputText>
-						<h:panelGrid columns="2" style="padding-left:10px">
-							<h:outputText id="exclusive" value="Exclusive" />
-							<p:selectBooleanCheckbox
-								id="elementInclusionExclusiveFilterEnabled"
-								value="#{metFragWebBean.elementInclusionExclusiveFilterEnabled}">
-								<p:ajax />
-							</p:selectBooleanCheckbox>
-						</h:panelGrid>
+					</h:panelGrid>
+					<h:panelGrid columns="2" style="padding-left:10px">
+						<h:outputText id="elementInclusionFilterType" value="Filter Type" />
+						<p:selectOneButton value="#{metFragWebBean.elementInclusionFilterType}">
+            				<f:selectItem itemLabel="Exclusive" itemValue="exclusive" />
+            				<f:selectItem itemLabel="Optional" itemValue="optional" />
+							<p:ajax/>
+        				</p:selectOneButton>
 					</h:panelGrid>
 					<h:panelGroup style="max-width: -moz-fit-content; padding-top: 5px" id="includedFilterElementsError" layout="block"
 						styleClass="ui-messages ui-widget"
@@ -216,6 +216,80 @@
 			<h:panelGrid columns="2" width="80%" style="vertical-align:top;"
 				cellspacing="4" cellpadding="4" styleClass="mainPanel"
 				columnClasses="firstColumnSimple,secondColumnSimple">
+				<p:selectBooleanCheckbox id="substructureInformationFilterEnabled"
+					value="#{metFragWebBean.substructureInformationFilterEnabled}"
+					required="false" labelPosition="left">
+					<p:ajax update="substructureInformationFilterPanel" />
+				</p:selectBooleanCheckbox>
+				<h:outputText id="substructureInformationFilterLabel"
+					value="Substructure Information" />
+			</h:panelGrid>
+			<h:panelGrid id="substructureInformationFilterPanel">
+				<h:panelGrid columns="1" style="vertical-align:top;" cellspacing="4"
+					cellpadding="4" styleClass="subPanel" 
+					rendered="#{metFragWebBean.substructureInformationFilterEnabled}">
+					<h:outputLabel value="Substructure Expression:" />
+					<h:panelGrid columns="2" columnClasses="firstColumnScoreSummary,secondColumnScoreSummary">
+						<h:panelGrid columns="1" id="substructureInformationFilterSubPanel">
+							<p:inputTextarea rows="10" cols="20" autoResize="false"
+								value="#{metFragWebBean.substructureInformationFilterExpression}" required="false"
+								style="resize: none" id="substructureInformationFilterExpression" label="Substructure Expression" 
+								labelPosition="top" indicatorPosition="right">
+								<p:ajax event="blur" update="substructureInformationFilterSubPanel" />
+							</p:inputTextarea>
+							<h:panelGroup style="max-width: -moz-fit-content; padding-top: 10px" id="substructureInformationFilterExpressionError" layout="block"
+								styleClass="ui-messages ui-widget"
+								rendered="#{metFragWebBean.isErrorMessage('substructureInformationFilterExpressionError')}">
+								<h:panelGroup styleClass="ui-messages-error-user ui-corner-all"
+								layout="block">
+									<h:panelGrid columns="2">
+										<h:panelGroup styleClass="ui-messages-error-icon-user" />
+										<h:outputText styleClass="ui-messages-error-detail-user"
+											value="#{metFragWebBean.getErrorMessage('substructureInformationFilterExpressionError')}" />
+									</h:panelGrid>
+								</h:panelGroup>
+							</h:panelGroup>
+						</h:panelGrid>
+						<h:panelGrid columns="1" columnClasses="firstColumnScoreSummary,secondColumnScoreSummary">
+							<p:selectOneListbox id="smartsFilterMenu2" value="#{metFragWebBean.selectedInformationSmarts}" 
+								panelStyle="width:250px" showHeader="false" scrollHeight="100">
+	           					<f:selectItems value="#{metFragWebBean.availableSubstructureInformationSmarts}" />
+	       					</p:selectOneListbox>
+	       					<h:panelGroup>
+		       					<p:commandButton style="height: 25px; font-size: 0.9em" 
+									value="and"
+									actionListener="#{metFragWebBean.andSelectedInformationSmarts}"
+									id="andSelectedSmarts" onclick=""
+									update="substructureInformationFilterExpression">
+								</p:commandButton>
+		       					<p:commandButton style="height: 25px; font-size: 0.9em" 
+									value="or"
+									actionListener="#{metFragWebBean.orSelectedInformationSmarts}"
+									id="orSelectedSmarts" onclick=""
+									update="substructureInformationFilterExpression">
+								</p:commandButton>
+		       					<p:commandButton style="height: 25px; font-size: 0.9em" 
+									value="not"
+									actionListener="#{metFragWebBean.notSelectedInformationSmarts}"
+									id="notSelectedSmarts" onclick=""
+									update="substructureInformationFilterExpression">
+								</p:commandButton>
+							</h:panelGroup>
+						</h:panelGrid>
+					</h:panelGrid>
+					<h:panelGroup style="padding-left: 10px; font-size: 9">
+						(Find out more about <a
+							href="http://www.daylight.com/dayhtml/doc/theory/theory.smarts.html">SMARTS</a>)
+					</h:panelGroup>
+				</h:panelGrid>
+				<h:panelGrid
+					rendered="#{not metFragWebBean.substructureInformationFilterEnabled}">
+				</h:panelGrid>
+			</h:panelGrid>
+			
+			<h:panelGrid columns="2" width="80%" style="vertical-align:top;"
+				cellspacing="4" cellpadding="4" styleClass="mainPanel"
+				columnClasses="firstColumnSimple,secondColumnSimple">
 				<p:selectBooleanCheckbox id="elementMinimumNumberFilterEnabled"
 					value="#{metFragWebBean.elementMinimumElementsFilterEnabled}"
 					required="false" labelPosition="left">
@@ -359,7 +433,14 @@
 								<p:ajax update="suspectListInclusionFilterPanel" />
 							</p:selectBooleanCheckbox>
 							<h:outputText escape="false" id="forIdentSuspectListInclusionFilterLabel"
-							value="FOR-IDENT (Find out more about &lt;a href='http://for-ident.hswt.de/pages/en/home.php?lang=EN'&gt;FOR-IDENT&lt;/a&gt;)" />
+								value="FOR-IDENT (Find out more about &lt;a target='_blank' href='http://for-ident.hswt.de/pages/en/home.php?lang=EN'&gt;ForIdent&lt;/a&gt;)" />
+							<p:selectBooleanCheckbox id="dsstoxSuspectListInclusionFilterEnabled"
+								value="#{metFragWebBean.dsstoxSuspectListInclusionFilterEnabled}"
+								required="false" labelPosition="left">
+								<p:ajax update="suspectListInclusionFilterPanel" />
+							</p:selectBooleanCheckbox>
+							<h:outputText escape="false" id="dsstoxSuspectListInclusionFilterLabel"
+							value="DSSTox (Find out more about &lt;a target='_blank' href='https://www.epa.gov/chemical-research/distributed-structure-searchable-toxicity-dsstox-database'&gt;DSSTox&lt;/a&gt;)" />
 						</h:panelGrid>
 					</h:panelGrid>
 					<h:panelGroup style="max-width: -moz-fit-content; padding-top: 5px" id="suspectListsFilterError" layout="block"

@@ -7,7 +7,7 @@
 	xmlns:f="http://java.sun.com/jsf/core">
 
 <h:body>
-	<p:dialog width="635" dynamic="true" visible="#{metFragWebBean.scoresViewActive}"
+	<p:dialog width="655" dynamic="true" visible="#{metFragWebBean.scoresViewActive}"
 		id="scoresViewDialog" header="Scores View"
 		widgetVar="scoresViewDialog" modal="true" resizable="false"
 		position="center" showEffect="fade">
@@ -24,7 +24,10 @@
 					value="#{metFragWebBean.currentScoreCandidateIdentifier}" />
 			</h:panelGrid>
 			<br/>
-			<p:dataTable var="score" style="width: 600px" value="#{metFragWebBean.candidateScore}" >
+			<p:dataTable var="score" style="width: 620px" value="#{metFragWebBean.candidateScore}" scrollable="true" >
+				<p:column style="width:16px">
+            		<p:rowToggler />
+        		</p:column>
 				<p:column id="name" headerText="Name" 
 					width="300" style="text-align: left; word-wrap: break-word; overflow-wrap: break-word;">
 					<h:outputText id="scoreNameCell" value="#{score.name}" />
@@ -37,6 +40,12 @@
 					width="100" style="text-align: center">
 					<h:outputText id="rawScoreCell" value="#{score.roundedRawValue}" />
 				</p:column>
+				<p:rowExpansion>
+   					<h:outputText value="Details" style="font-weight: bold;"/>
+					<p:outputPanel style="word-wrap: break-word;">
+   						<h:outputText value="#{score.info == 'NA' ? 'no further information available' : score.info}" />
+					</p:outputPanel>
+              	</p:rowExpansion>
 			</p:dataTable>
 		</h:form>
 	</p:dialog>

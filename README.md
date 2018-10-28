@@ -134,6 +134,8 @@ mvn clean tomcat7:run-war -pl MetFragWeb -DskipTests
 - after the successful build Tomcat web server runs on port 8080<br>
 - MetFragWeb can be accessed via pointing to http://localhost:8080/index.xhtml in the web browser<br>
 
+- you can change the port by adding -Dmaven.tomcat.port=...<br>
+
 ##### Build
 - if you just want to build the war file to transfer it to another Tomcat instance, run:
 

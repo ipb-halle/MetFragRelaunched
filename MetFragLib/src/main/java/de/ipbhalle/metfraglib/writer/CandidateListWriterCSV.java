@@ -14,13 +14,29 @@ import de.ipbhalle.metfraglib.list.ScoredCandidateList;
 import de.ipbhalle.metfraglib.list.SortedScoredCandidateList;
 import de.ipbhalle.metfraglib.parameter.Constants;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
+import de.ipbhalle.metfraglib.settings.Settings;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
 public class CandidateListWriterCSV implements IWriter {
+
+	public boolean write(IList list, String filename, String path, Settings settings) throws Exception {
+		File file = new File(path + Constants.OS_SPECIFIC_FILE_SEPARATOR + filename + ".csv");
+		return this.writeFile(file, list, settings);
+	}
 	
-	public boolean write(IList list, String filename, String path) throws IOException {
+	public boolean write(IList list, String filename, String path) throws Exception {
+		File file = new File(path + Constants.OS_SPECIFIC_FILE_SEPARATOR + filename + ".csv");
+		return this.writeFile(file, list);
+	}
+
+	public boolean write(IList list, String filename) throws Exception {
+		return this.writeFile(new File(filename), list);
+	}
+	
+	 @Override
+	public boolean writeFile(File file, IList list, Settings settings) throws Exception {
 		CandidateList candidateList = null;
 		int numberOfPeaksUsed = 0;
 		if(list instanceof ScoredCandidateList || list instanceof SortedScoredCandidateList) {
@@ -30,16 +46,23 @@ public class CandidateListWriterCSV implements IWriter {
 		if(list instanceof CandidateList) {
 			candidateList = (CandidateList) list;
 		}
-		if(candidateList == null) return false;
-
-		File file = new File(path + Constants.OS_SPECIFIC_FILE_SEPARATOR + filename + ".csv");
+		if(candidateList == null || candidateList.getNumberElements() == 0) {
+			writeDefaultHeader(file);
+			return false;
+		}
 		java.io.Writer writer = new java.io.OutputStreamWriter(new java.io.FileOutputStream(file), Charset.forName("UTF-8"));
-		System.out.println(Constants.OS_LINE_SEPARATOR);
 		CSVPrinter csvFilePrinter = new CSVPrinter(writer, CSVFormat.EXCEL);
 		java.util.List<Object> header = new java.util.ArrayList<Object>();
 		for(int i = 0; i < candidateList.getNumberElements(); i++) {
 			int countExplainedPeaks = 0;
 			ICandidate scoredCandidate = candidateList.getElement(i);
+			String origIdentifier = ((String)scoredCandidate.getProperty(VariableNames.IDENTIFIER_NAME)).replaceAll("\\|[0-9]+", "");
+			if(settings != null) scoredCandidate.setUseSmiles((Boolean)settings.get(VariableNames.USE_SMILES_NAME));
+			try {
+				scoredCandidate.initialisePrecursorCandidate();
+			} catch(Exception e) {
+				continue;
+			}
 			if(scoredCandidate.getMatchList() != null) {
 				MatchList matchList = scoredCandidate.getMatchList();
 				for(int l = 0; l < matchList.getNumberElements(); l++) {
@@ -67,7 +90,7 @@ public class CandidateListWriterCSV implements IWriter {
 					} catch (RelativeIntensityNotDefinedException e1) {
 						continue;
 					}
-					String formula = scoredCandidate.getMatchList().getElement(ii).getModifiedFormulaStringOfBestMatchedFragment();
+					String formula = scoredCandidate.getMatchList().getElement(ii).getModifiedFormulaStringOfBestMatchedFragment(scoredCandidate.getPrecursorMolecule());
 					
 					sumFormulasOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + formula + ";";
 				
@@ -93,7 +116,10 @@ public class CandidateListWriterCSV implements IWriter {
 			}
 			java.util.List<Object> entries = new java.util.ArrayList<Object>();
 			for(int ii = 0; ii < header.size(); ii++) {
-				entries.add(checkEmptyProperty(scoredCandidate.getProperty((String)header.get(ii))));
+				if(header.get(ii).equals(VariableNames.IDENTIFIER_NAME))
+					entries.add(origIdentifier);
+				else
+					entries.add(checkEmptyProperty(scoredCandidate.getProperty((String)header.get(ii))));
 			}
 			csvFilePrinter.printRecord(entries);
 		}
@@ -114,6 +140,23 @@ public class CandidateListWriterCSV implements IWriter {
 		return prop;
 	}
 	
+	public void writeDefaultHeader(File file) throws IOException {
+		java.io.Writer writer = new java.io.OutputStreamWriter(new java.io.FileOutputStream(file), Charset.forName("UTF-8"));
+		CSVPrinter csvFilePrinter = new CSVPrinter(writer, CSVFormat.EXCEL);
+		java.util.List<Object> header = new java.util.ArrayList<Object>();
+		String[] defaultHeaderValues = {"Score","MonoisotopicMass","SMILES","InChIKey",
+				"NoExplPeaks","NumberPeaksUsed","InChI",
+				"MaximumTreeDepth","Identifier","ExplPeaks","InChIKey3","InChIKey2",
+				"InChIKey1","CompoundName","FragmenterScore","MolecularFormula","FormulasOfExplPeaks"};
+		for(int i = 0; i < defaultHeaderValues.length; i++) {
+			header.add(defaultHeaderValues[i]);
+		}
+		csvFilePrinter.printRecord(header);
+		writer.flush();
+		writer.close();
+		csvFilePrinter.close();
+	}
+	
 	public void nullify() {
 		
 	}
@@ -128,6 +171,11 @@ public class CandidateListWriterCSV implements IWriter {
 		csvFilePrinter.printRecord(header);
 		writer.close();
 		csvFilePrinter.close();
+	}
+
+	@Override
+	public boolean writeFile(File file, IList list) throws Exception {
+		return this.writeFile(file, list, null);
 	}
 
 }

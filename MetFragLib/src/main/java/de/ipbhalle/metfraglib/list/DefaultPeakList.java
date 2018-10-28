@@ -20,6 +20,15 @@ public class DefaultPeakList extends AbstractPeakList {
 		}
 		return minimumMassValue;
 	}
+
+	public double getMaximumMassValue() {
+		double maximumMassValue = 0.0;
+		for(int i = 0; i < this.list.size(); i++) {
+			double currentMassValue = ((IPeak)this.list.get(i)).getMass();
+			if(currentMassValue > maximumMassValue) maximumMassValue = currentMassValue;
+		}
+		return maximumMassValue;
+	}
 	
 	public void initialiseMassLimits(double relativeMassDeviation, double absoluteMassDeviation) {
 		for(int i = 0; i < this.list.size(); i++) 
@@ -58,6 +67,29 @@ public class DefaultPeakList extends AbstractPeakList {
 			
 		}
 		return false;
+	}
+	
+	@Override
+	public Double getBestMatchingMass(double mass, double mzppm, double mzabs) {
+		double dev = MathTools.calculateAbsoluteDeviation(mass, mzppm);
+		dev += mzabs;
+		double bestDev = Integer.MAX_VALUE;
+		int bestPeakIndex = -1;
+		
+		for(int i = 0; i < this.list.size(); i++) 
+		{
+			double currentMass = ((Peak)this.list.get(i)).getMass();
+			if(currentMass - dev <= mass && mass <= currentMass + dev) {
+				double currentDev = Math.abs(currentMass - mass);
+				if(currentDev < bestDev) {
+					bestPeakIndex = i;
+					bestDev = currentDev;
+				}
+			}
+			
+		}
+		if(bestPeakIndex != -1) return ((Peak)this.list.get(bestPeakIndex)).getMass();
+		else return null;
 	}
 	
 }

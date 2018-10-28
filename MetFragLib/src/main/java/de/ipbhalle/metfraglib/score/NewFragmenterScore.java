@@ -116,7 +116,7 @@ public class NewFragmenterScore extends AbstractScore {
 			 * check if current fragment is valid based on the tree depth
 			 */
 //			if(currentFragment.getTreeDepth() > this.maximumTreeDepth) continue;
-			int[] brokenBondIndeces = ((AbstractTopDownBitArrayFragment)currentFragment).getBrokenBondsBitArray().getSetIndeces();
+			int[] brokenBondIndeces = ((AbstractTopDownBitArrayFragment)currentFragment).getBrokenBondsFastBitArray().getSetIndeces();
 			double energyOfFragment = 0.0;
 			for(int bondIndex : brokenBondIndeces) {
 				energyOfFragment += this.bondEnergies[bondIndex];
@@ -129,6 +129,14 @@ public class NewFragmenterScore extends AbstractScore {
 				minimumEnergyPerMatch = energyOfFragment;
 				indexOfBestFragment = ii;
 			}
+			/*
+			if(((AbstractTopDownBitArrayFragment)currentFragment).getAtomsFastBitArray().toString().equals("111110001100010001")) {
+				System.out.println(((AbstractTopDownBitArrayFragment)currentFragment).getAtomsFastBitArray().toString() + " " + 
+						((AbstractTopDownBitArrayFragment)currentFragment).getBondsFastBitArray().toString() + " " + 
+						((AbstractTopDownBitArrayFragment)currentFragment).getBrokenBondsFastBitArray().toString() + " " + currentFragment.getID()
+						+ " " + energyOfFragment);
+			}
+			*/
 		}
 		this.calculationFinished = true;
 		if(indexOfBestFragment != -1) currentMatch.initialiseBestMatchedFragment(indexOfBestFragment);

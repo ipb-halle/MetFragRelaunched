@@ -15,7 +15,7 @@ public interface IDatabase {
 	 * @throws MultipleHeadersFoundInInputDatabaseException 
 	 * @throws Exception 
 	 */
-	public java.util.Vector<String> getCandidateIdentifiers(double monoisotopicMass, double relativeMassDeviation) throws MultipleHeadersFoundInInputDatabaseException, Exception;
+	public java.util.ArrayList<String> getCandidateIdentifiers(double monoisotopicMass, double relativeMassDeviation) throws MultipleHeadersFoundInInputDatabaseException, Exception;
 	
 	/**
 	 * returns database identifiers based on parameters set in the given seetings
@@ -25,7 +25,7 @@ public interface IDatabase {
 	 * @throws Exception 
 	 * @throws MultipleHeadersFoundInInputDatabaseException 
 	 */
-	public java.util.Vector<String> getCandidateIdentifiers() throws MultipleHeadersFoundInInputDatabaseException, Exception;
+	public java.util.ArrayList<String> getCandidateIdentifiers() throws MultipleHeadersFoundInInputDatabaseException, Exception;
 
 	/**
 	 * returns database identifiers of candidates matching molecular formula criteria
@@ -34,7 +34,7 @@ public interface IDatabase {
 	 * @return
 	 * @throws Exception 
 	 */
-	public java.util.Vector<String> getCandidateIdentifiers(String molecularFormula) throws Exception;
+	public java.util.ArrayList<String> getCandidateIdentifiers(String molecularFormula) throws Exception;
 	
 	/**
 	 * returns database identifiers of candidates matching given identifier criteria
@@ -45,7 +45,7 @@ public interface IDatabase {
 	 * @throws Exception 
 	 * @throws MultipleHeadersFoundInInputDatabaseException 
 	 */
-	public java.util.Vector<String> getCandidateIdentifiers(java.util.Vector<String> identifiers) throws MultipleHeadersFoundInInputDatabaseException, Exception;
+	public java.util.ArrayList<String> getCandidateIdentifiers(java.util.ArrayList<String> identifiers) throws MultipleHeadersFoundInInputDatabaseException, Exception;
 
 	/**
 	 * returns database identifiers of candidates matching given identifier criteria
@@ -55,7 +55,7 @@ public interface IDatabase {
 	 * @return
 	 * @throws Exception 
 	 */
-	public java.util.Vector<String> getCandidateIdentifiers(String[] identifiers) throws Exception;
+	public java.util.ArrayList<String> getCandidateIdentifiers(String[] identifiers) throws Exception;
 	
 	/**
 	 * returns one candidate based on its identifier
@@ -73,7 +73,7 @@ public interface IDatabase {
 	 * @return
 	 * @throws Exception 
 	 */
-	public CandidateList getCandidateByIdentifier(java.util.Vector<String> identifiers) throws Exception;
+	public CandidateList getCandidateByIdentifier(java.util.ArrayList<String> identifiers) throws Exception;
 
 	/**
 	 * delete all objects

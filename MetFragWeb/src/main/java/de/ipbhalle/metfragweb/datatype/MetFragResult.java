@@ -93,7 +93,7 @@ public class MetFragResult implements Serializable {
 	}
 	
 	public double getRoundedMass() {
-		return MathTools.round(this.root.mass, 5);
+		return MathTools.round(this.root.mass);
 	}
 	
 	public String getName() {
@@ -129,6 +129,10 @@ public class MetFragResult implements Serializable {
 	
 	public String getIdentifier() {
 		return this.root.getIdentifier();
+	}
+
+	public String getOriginalIdentifier() {
+		return this.root.getOriginalIdentifier();
 	}
 
 	public java.util.List<String> getIdentifiers() {
@@ -182,14 +186,27 @@ public class MetFragResult implements Serializable {
 	}
 	
 	public boolean isInChIKeyLinkAvailable() {
-		if(this.inchikey1 != null && this.inchikey1.length() != 0 && (this.root.getDatabase().equals("PubChem") || this.root.getDatabase().equals("ChemSpider")))
-			return true;
+		if(this.inchikey1 != null && this.inchikey1.length() != 0) {
+			if(this.root.getDatabase() instanceof AdditionalFileDatabase) {
+				if(this.root.getIdentifier().startsWith("DTXSID")) return true;
+			} else {
+				if((this.root.getDatabase().equals("PubChem") || this.root.getDatabase().equals("ChemSpider") || this.root.getDatabase().equals("ChemSpiderRest") || 
+						((this.root.getDatabase().equals("LocalSDF") || this.root.getDatabase().equals("LocalCSV") || this.root.getDatabase().equals("LocalPSV")) && this.root.getIdentifier().startsWith("DTXSID"))))
+					return true;
+			}
+		}
 		return false;
 	}
 
 	public String getInChIKeyLink() {
-		if(this.root.getDatabase().equals("PubChem")) return "https://www.ncbi.nlm.nih.gov/pccompound?term=" + this.inchikey1;
-		else if(this.root.getDatabase().equals("ChemSpider")) return "http://www.chemspider.com/Search.aspx?q=" + this.inchikey1;
+		if(this.root.getDatabase() instanceof AdditionalFileDatabase) {
+			if(this.root.getIdentifier().startsWith("DTXSID")) return "https://comptox.epa.gov/dashboard/dsstoxdb/results?search=" + this.inchikey1;
+		} else {
+			if(this.root.getDatabase().equals("PubChem")) return "https://www.ncbi.nlm.nih.gov/pccompound?term=" + this.inchikey1;
+			else if(this.root.getDatabase().equals("ChemSpider") || this.root.getDatabase().equals("ChemSpiderRest")) return "http://www.chemspider.com/Search.aspx?q=" + this.inchikey1;
+			else if((this.root.getDatabase().equals("LocalSDF") || this.root.getDatabase().equals("LocalCSV") || this.root.getDatabase().equals("LocalPSV")) 
+					&& this.root.getIdentifier().startsWith("DTXSID")) return "https://comptox.epa.gov/dashboard/dsstoxdb/results?search=" + this.inchikey1;
+		}
 		return this.inchikey1; 
 	}
 	

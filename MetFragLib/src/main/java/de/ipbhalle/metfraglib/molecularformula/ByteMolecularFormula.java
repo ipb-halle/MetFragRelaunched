@@ -114,7 +114,7 @@ public class ByteMolecularFormula implements IMolecularFormula {
 			monoisotopicMass += Constants.getMonoisotopicMassOfAtom(this.atomsAsIndeces[i]) * this.numberOfAtoms[i];
 		}
 		monoisotopicMass += Constants.getMonoisotopicMassOfAtom("H") * this.numberHydrogens;
-		return MathTools.round(monoisotopicMass, Constants.DEFAULT_NUMBER_OF_DIGITS_AFTER_ROUNDING);
+		return MathTools.round(monoisotopicMass);
 	}
 	
 	/**
@@ -318,6 +318,23 @@ public class ByteMolecularFormula implements IMolecularFormula {
 			if(this.atomsAsIndeces[i] == atomIndex) return this.numberOfAtoms[i];
 		}
 		return 0;
+	}
+
+	/**
+	 * change the amount of a specific atom type
+	 * 
+	 * @param atomIndex
+	 * @param amount
+	 */
+	public void changeNumberElementsFromByte(byte atomIndex, int amount) {
+		if(Constants.ELEMENTS.indexOf("H") == atomIndex)
+			this.numberHydrogens = (short)((int)this.numberHydrogens + amount);
+		for (int i = 0; i < this.atomsAsIndeces.length; i++) {
+			if(this.atomsAsIndeces[i] == atomIndex) {
+				this.numberOfAtoms[i] = (short)((int)this.numberOfAtoms[i] + amount);
+				break;
+			}
+		}
 	}
 	
 	public boolean isContainsC() {

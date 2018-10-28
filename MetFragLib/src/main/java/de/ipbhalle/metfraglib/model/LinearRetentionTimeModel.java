@@ -43,14 +43,13 @@ public class LinearRetentionTimeModel extends AbstractModel {
 	 */
 	private void initialise() {
 		String modelFileName = (String)this.settings.get(VariableNames.RETENTION_TIME_TRAINING_FILE_NAME);
-		
 		Settings settings = new Settings();
 		settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, modelFileName);
 		if(this.settings.containsKey(VariableNames.USER_LOG_P_VALUE_NAME) && this.settings.get(VariableNames.USER_LOG_P_VALUE_NAME) != null)
 			settings.set(VariableNames.USER_LOG_P_VALUE_NAME, (String)this.settings.get(VariableNames.USER_LOG_P_VALUE_NAME));
 
 		LocalPropertyFileDatabase database = new LocalPropertyFileDatabase(settings);
-		java.util.Vector<String> identifiers;
+		java.util.ArrayList<String> identifiers;
 		CandidateList candidateList = null;
 		try {
 			identifiers = database.getCandidateIdentifiers();
@@ -67,9 +66,9 @@ public class LinearRetentionTimeModel extends AbstractModel {
 		} catch (CDKException e1) {
 			e1.printStackTrace();
 		}
-		java.util.Vector<String> inchis = new java.util.Vector<String>();
-		java.util.Vector<Double> rt_values = new java.util.Vector<Double>();
-		java.util.Vector<Double> userLogPs = new java.util.Vector<Double>();
+		java.util.ArrayList<String> inchis = new java.util.ArrayList<String>();
+		java.util.ArrayList<Double> rt_values = new java.util.ArrayList<Double>();
+		java.util.ArrayList<Double> userLogPs = new java.util.ArrayList<Double>();
 		/*
 		 * reading the retention time information for training process
 		 */
@@ -102,7 +101,9 @@ public class LinearRetentionTimeModel extends AbstractModel {
 				rt_values.add(Double.parseDouble((String)candidate.getProperties().get(VariableNames.RETENTION_TIME_NAME)));
 			}
 			catch(Exception e) {
-				System.err.println("no valid value in " + VariableNames.RETENTION_TIME_TRAINING_FILE_NAME + " in line " + (i + 1) + ": " + (String)candidate.getProperties().get(VariableNames.RETENTION_TIME_NAME));
+				System.err.println("no valid value in " + VariableNames.RETENTION_TIME_TRAINING_FILE_NAME + " in line " + (i + 1) + ": " + 
+						(String)candidate.getProperties().get(VariableNames.RETENTION_TIME_NAME) + " " +
+						(String)candidate.getProperties().get(VariableNames.USER_LOG_P_VALUE_NAME));
 				continue;
 			}
 		}
@@ -126,7 +127,7 @@ public class LinearRetentionTimeModel extends AbstractModel {
 			values[i][0] = rt_values.get(i);
 			values[i][1] = logp_values[i];
 		}
-		
+
 		this.predictByLeastSquares(values);
 	}
 	
@@ -154,7 +155,7 @@ public class LinearRetentionTimeModel extends AbstractModel {
 	 * @param inchis
 	 * @return
 	 */
-	public Double[] calculateXLogpValues(java.util.Vector<String> inchis) {
+	public Double[] calculateXLogpValues(java.util.ArrayList<String> inchis) {
 		Double[] values = new Double[inchis.size()];
 		if(this.xlogp == null) return values;
 		
@@ -217,6 +218,8 @@ public class LinearRetentionTimeModel extends AbstractModel {
 		
 		this.slope = (sum_products_xy - n * mean_x * mean_y) / (sum_squares_x - n * mean_x * mean_x);
 		this.coefficient = mean_y - this.slope * mean_x;
+	
+	//	System.out.println("values: " + this.slope + " " + this.coefficient);
 	}
 	
 	public double getSlope() {
@@ -226,5 +229,7 @@ public class LinearRetentionTimeModel extends AbstractModel {
 	public double getCoefficient() {
 		return this.coefficient;
 	}
+	
+
 	
 }

@@ -8,6 +8,7 @@ import de.ipbhalle.metfraglib.interfaces.IWriter;
 import de.ipbhalle.metfraglib.list.ScoredCandidateList;
 import de.ipbhalle.metfraglib.parameter.Constants;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
+import de.ipbhalle.metfraglib.settings.Settings;
 import de.ipbhalle.metfraglib.writer.CandidateListWriterCSV;
 import de.ipbhalle.metfraglib.writer.CandidateListWriterSDF;
 import de.ipbhalle.metfraglib.writer.CandidateListWriterXLS;
@@ -37,7 +38,7 @@ public class UserOutputDataHandler {
 	 * @return
 	 * @throws Exception
 	 */
-	public org.primefaces.model.StreamedContent generatedCandidateDownloadFile(MetFragResult metfragResult) throws Exception {
+	public org.primefaces.model.StreamedContent generatedCandidateDownloadFile(MetFragResult metfragResult, Settings settings) throws Exception {
 		org.primefaces.model.StreamedContent resource = new org.primefaces.model.DefaultStreamedContent(System.in, "application/vnd.ms-excel", "MetFragWeb_Candidate.xls" );
 		if(metfragResult == null) {
 			System.out.println("generatedCandidateDownloadFile null");
@@ -51,6 +52,7 @@ public class UserOutputDataHandler {
 		ICandidate candidate = new PrecursorCandidate(root.getInChI(), root.getIdentifier());
 		candidate.setProperty(VariableNames.MONOISOTOPIC_MASS_NAME, String.valueOf(root.getMass()));
 		candidate.setProperty(VariableNames.MOLECULAR_FORMULA_NAME, root.getFormula());
+		candidate.setProperty(VariableNames.SMILES_NAME, root.getSMILES());
 		candidate.setMatchList(root.getMatchList());
 		if(root.getName().length() != 0) candidate.setProperty(VariableNames.COMPOUND_NAME_NAME, root.getName());
 		ScoreSummary[] scoreSummary = root.getScoreSummary();
@@ -71,7 +73,7 @@ public class UserOutputDataHandler {
 		
 		try {
 			System.out.println("generating resource");
-			if(writer.write(scoredCandidateListSingle, "MetFragWeb_Candidate_" + candidate.getIdentifier(), folder.getAbsolutePath())) {
+			if(writer.write(scoredCandidateListSingle, "MetFragWeb_Candidate_" + candidate.getIdentifier(), folder.getAbsolutePath(), settings)) {
 				String filePath = folder.getAbsolutePath() + Constants.OS_SPECIFIC_FILE_SEPARATOR + "MetFragWeb_Candidate_" + candidate.getIdentifier() + ".xls";
 				resource = new org.primefaces.model.DefaultStreamedContent(new java.io.FileInputStream(new java.io.File(filePath)), "application/vnd.ms-excel", "MetFragWeb_Candidate_" + candidate.getIdentifier() + ".xls");
 			}	
@@ -104,6 +106,21 @@ public class UserOutputDataHandler {
 			if(databasename.equals("LocalPubChem")) this.beanSettingsContainer.getMetFragSettings().set(VariableNames.METFRAG_DATABASE_TYPE_NAME, "PubChem");
 			if(databasename.equals("LocalKegg")) this.beanSettingsContainer.getMetFragSettings().set(VariableNames.METFRAG_DATABASE_TYPE_NAME, "KEGG");
 			if(databasename.equals("LocalExtendedPubChem")) this.beanSettingsContainer.getMetFragSettings().set(VariableNames.METFRAG_DATABASE_TYPE_NAME, "ExtendedPubChem");
+			if(databasename.equals("MetChem")) {
+				String library = (String)this.beanSettingsContainer.getMetFragSettings().get(VariableNames.LOCAL_METCHEM_DATABASE_LIBRARY_NAME);
+				if(library.equals("pubchem")) {
+					this.beanSettingsContainer.getMetFragSettings().set(VariableNames.METFRAG_DATABASE_TYPE_NAME, "PubChem");
+					this.beanSettingsContainer.getMetFragSettings().remove(VariableNames.LOCAL_METCHEM_DATABASE_LIBRARY_NAME);
+				}
+				else if(library.equals("kegg")) {
+					this.beanSettingsContainer.getMetFragSettings().set(VariableNames.METFRAG_DATABASE_TYPE_NAME, "KEGG");
+					this.beanSettingsContainer.getMetFragSettings().remove(VariableNames.LOCAL_METCHEM_DATABASE_LIBRARY_NAME);
+				}
+			} else {
+				this.beanSettingsContainer.getMetFragSettings().remove(VariableNames.LOCAL_METCHEM_DATABASE_LIBRARY_NAME);
+			}
+			this.beanSettingsContainer.getMetFragSettings().remove(VariableNames.PEAK_LIST_STRING_NAME);
+			this.beanSettingsContainer.getMetFragSettings().remove(VariableNames.LOCAL_DATABASES_FOLDER_FOR_WEB);
 			
 			// setting missing values
 			this.beanSettingsContainer.getMetFragSettings().set(VariableNames.SAMPLE_NAME, "MetFragWeb_Sample");
@@ -111,13 +128,20 @@ public class UserOutputDataHandler {
 			this.beanSettingsContainer.getMetFragSettings().set(VariableNames.PEAK_LIST_PATH_NAME, "MetFragWeb_Peaklist.txt");
 			
 			if(this.beanSettingsContainer.getDatabase().equals("ChemSpider")) 
-				this.beanSettingsContainer.getMetFragSettings().set("ChemSpiderToken", "");
+				this.beanSettingsContainer.getMetFragSettings().set(VariableNames.CHEMSPIDER_TOKEN_NAME, "");
 			else 
-				this.beanSettingsContainer.getMetFragSettings().remove("ChemSpiderToken");
+				this.beanSettingsContainer.getMetFragSettings().remove(VariableNames.CHEMSPIDER_TOKEN_NAME);
+			
+			if(this.beanSettingsContainer.getDatabase().equals("ChemSpiderRest")) 
+				this.beanSettingsContainer.getMetFragSettings().set(VariableNames.CHEMSPIDER_REST_TOKEN_NAME, "");
+			else 
+				this.beanSettingsContainer.getMetFragSettings().remove(VariableNames.CHEMSPIDER_REST_TOKEN_NAME);
 			// in case local database is defined, set the parameter to the
 			// candidates
 			if (this.beanSettingsContainer.isLocalDatabaseDefined()) {
 				this.beanSettingsContainer.getMetFragSettings().set(VariableNames.LOCAL_DATABASE_PATH_NAME, new java.io.File(this.beanSettingsContainer.getCandidateFilePath()).getName());
+			} else if(this.beanSettingsContainer.getMetFragSettings().containsKey(VariableNames.LOCAL_DATABASE_PATH_NAME) && this.beanSettingsContainer.getMetFragSettings().get(VariableNames.LOCAL_DATABASE_PATH_NAME) != null) {
+				this.beanSettingsContainer.getMetFragSettings().set(VariableNames.LOCAL_DATABASE_PATH_NAME, new java.io.File((String)this.beanSettingsContainer.getMetFragSettings().get(VariableNames.LOCAL_DATABASE_PATH_NAME)).getName());
 			}
 
 			byte[] buffer = new byte[1024];
@@ -317,6 +341,7 @@ public class UserOutputDataHandler {
 			resource = new org.primefaces.model.DefaultStreamedContent(new java.io.FileInputStream(new java.io.File(filePath)), mimetype, "MetFragWeb_Candidates." + format);
 			errorMessages.removeKey("buttonDownloadResultsError");
 		} catch (Exception e) {
+			e.printStackTrace();
 			errorMessages.setMessage("buttonDownloadResultsError", "Error when downloading candidates.");
 			return resource;
 		}

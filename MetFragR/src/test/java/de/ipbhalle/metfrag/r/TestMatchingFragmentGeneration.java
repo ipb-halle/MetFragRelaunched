@@ -2,6 +2,7 @@ package de.ipbhalle.metfrag.r;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.openscience.cdk.exception.InvalidSmilesException;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
@@ -28,9 +29,16 @@ public class TestMatchingFragmentGeneration {
 
 	@Test
 	public void test() {
-		IAtomContainer[] matchedFragments = MetfRag.generateMatchingFragments(MoleculeFunctions.parseSmiles("C1C(OC2=CC(=CC(=C2C1=O)O)O)C3=CC=C(C=C3)O"), 
-				this.masses, this.exactMass, this.mzabs, this.mzppm, this.posCharge, this.mode, this.treeDepth);
-		System.out.println("Generated " + matchedFragments.length + " matching fragments..");
+		IAtomContainer[] matchedFragments;
+		try {
+			matchedFragments = MetfRag.generateMatchingFragments(MoleculeFunctions.parseSmiles("C1C(OC2=CC(=CC(=C2C1=O)O)O)C3=CC=C(C=C3)O"), 
+					this.masses, this.exactMass, this.mzabs, this.mzppm, this.posCharge, this.mode, this.treeDepth);
+			System.out.println("Generated " + matchedFragments.length + " matching fragments..");
+		} catch (InvalidSmilesException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 }

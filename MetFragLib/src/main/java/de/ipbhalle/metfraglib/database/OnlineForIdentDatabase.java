@@ -19,9 +19,9 @@ public class OnlineForIdentDatabase extends AbstractDatabase {
 	 * @throws Exception 
 	 * 
 	 */
-	public java.util.Vector<String> getCandidateIdentifiers(double monoisotopicMass, double relativeMassDeviation) throws Exception {
+	public java.util.ArrayList<String> getCandidateIdentifiers(double monoisotopicMass, double relativeMassDeviation) throws Exception {
 		logger.info("Fetching candidates from FOR-IDENT");
-		java.util.Vector<String> cids = new java.util.Vector<String>();
+		java.util.ArrayList<String> cids = new java.util.ArrayList<String>();
 		this.candidateList = this.forIdentRestWebService.getCandidatesByMass(monoisotopicMass, relativeMassDeviation);
 		for(int i = 0; i < this.candidateList.getNumberElements(); i++) {
 			cids.add(this.candidateList.getElement(i).getIdentifier());
@@ -33,9 +33,10 @@ public class OnlineForIdentDatabase extends AbstractDatabase {
 	 * @throws Exception 
 	 * 
 	 */
-	public java.util.Vector<String> getCandidateIdentifiers(String molecularFormula) throws Exception {
+	public java.util.ArrayList<String> getCandidateIdentifiers(String molecularFormula) throws Exception {
 		logger.info("Fetching candidates from FOR-IDENT");
-		java.util.Vector<String> cids = new java.util.Vector<String>();
+		java.util.ArrayList<String> cids = new java.util.ArrayList<String>();
+
 		this.candidateList = this.forIdentRestWebService.getCandidatesByMolecularFormula(molecularFormula);
 		for(int i = 0; i < this.candidateList.getNumberElements(); i++) {
 			cids.add(this.candidateList.getElement(i).getIdentifier());
@@ -44,7 +45,8 @@ public class OnlineForIdentDatabase extends AbstractDatabase {
 	}
 
 	//ToDo: check whether identifiers are valid and exist
-	public java.util.Vector<String> getCandidateIdentifiers(java.util.Vector<String> identifiers) {
+	public java.util.ArrayList<String> getCandidateIdentifiers(java.util.ArrayList<String> identifiers) {
+		logger.info("Fetching candidates from FOR-IDENT");
 		return identifiers;
 	}
 
@@ -65,12 +67,12 @@ public class OnlineForIdentDatabase extends AbstractDatabase {
 	 * @throws Exception 
 	 * 
 	 */
-	public CandidateList getCandidateByIdentifier(java.util.Vector<String> identifiers) throws Exception {
+	public CandidateList getCandidateByIdentifier(java.util.ArrayList<String> identifiers) throws Exception {
 		if(this.candidateList == null) {
 			return this.forIdentRestWebService.getCandidatesByIdentifier(identifiers);
 		}
 		CandidateList candidateList = new CandidateList();
-		java.util.Vector<String> identifiersFound = new java.util.Vector<String>();
+		java.util.ArrayList<String> identifiersFound = new java.util.ArrayList<String>();
 		for(String id : identifiers) {
 			for(int i = 0; i < this.candidateList.getNumberElements(); i++) {
 				if(this.candidateList.getElement(i).getIdentifier().equals(id) && !identifiersFound.contains(id)) {

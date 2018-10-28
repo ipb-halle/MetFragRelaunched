@@ -24,6 +24,9 @@ public class MetFragGlobalSettings extends Settings {
 		this.defaults.put(VariableNames.NUMBER_THREADS_NAME, Constants.DEFAULT_NUMBER_THREADS);
 		this.defaults.put(VariableNames.NUMBER_OF_DIGITS_AFTER_ROUNDING_NAME, Constants.DEFAULT_NUMBER_OF_DIGITS_AFTER_ROUNDING);
 		this.defaults.put(VariableNames.SCORE_NAMES_NOT_TO_SCALE, Constants.DEFAULT_SCORE_NAMES_NOT_TO_SCALE);
+		this.defaults.put(VariableNames.PROCESS_CANDIDATES, Constants.DEFAULT_PROCESS_CANDIDATES);
+		this.defaults.put(VariableNames.USE_SMILES_NAME, Constants.DEFAULT_USE_SMILES);
+		this.defaults.put(VariableNames.FINGERPRINT_TYPE_NAME, Constants.DEFAULT_FINGERPRINT_TYPE);
 		/*
 		 * needs to be set externally
 		 */
@@ -34,10 +37,11 @@ public class MetFragGlobalSettings extends Settings {
 		this.defaults.put(VariableNames.PRECURSOR_DATABASE_IDS_NAME, Constants.DEFAULT_PRECURSOR_DATABASE_IDS);
 		this.defaults.put(VariableNames.PEAK_LIST_PATH_NAME, Constants.DEFAULT_PEAK_LIST_PATH);
 		this.defaults.put(VariableNames.MINIMUM_ABSOLUTE_PEAK_INTENSITY_NAME, Constants.DEFAULT_MINIMUM_ABSOLUTE_PEAK_INTENSITY);
+		this.defaults.put(VariableNames.HD_MINIMUM_ABSOLUTE_PEAK_INTENSITY_NAME, Constants.DEFAULT_MINIMUM_ABSOLUTE_PEAK_INTENSITY);
+		this.defaults.put(VariableNames.NUMBER_MAXIMUM_PEAKS_USED_NAME, Constants.DEFAULT_NUMBER_MAXIMUM_PEAKS_USED_NAME);
 
 		this.defaults.put(VariableNames.METFRAG_DATABASE_TYPE_NAME, Constants.DEFAULT_METFRAG_DATABASE_TYPE);
 		this.defaults.put(VariableNames.METFRAG_FRAGMENTER_TYPE_NAME, Constants.DEFAULT_METFRAG_FRAGMENTER_TYPE);
-		this.defaults.put(VariableNames.METFRAG_ASSIGNER_TYPE_NAME, Constants.DEFAULT_METFRAG_ASSIGNER_TYPE);
 		this.defaults.put(VariableNames.METFRAG_ASSIGNER_SCORER_NAME, Constants.DEFAULT_METFRAG_ASSIGNER_SCORER);
 		this.defaults.put(VariableNames.METFRAG_SCORE_TYPES_NAME, Constants.DEFAULT_METFRAG_SCORE_TYPES);
 		this.defaults.put(VariableNames.METFRAG_CANDIDATE_WRITER_NAME, Constants.DEFAULT_METFRAG_CANDIDATE_WRITER);
@@ -52,6 +56,7 @@ public class MetFragGlobalSettings extends Settings {
 		this.defaults.put(VariableNames.METFRAG_UNIQUE_FRAGMENT_MATCHES, Constants.DEFAULT_METFRAG_UNIQUE_FRAGMENT_MATCHES);
 
 		this.defaults.put(VariableNames.USER_LOG_P_VALUE_NAME, Constants.DEFAULT_LOG_P_VALUE_NAME);
+		this.defaults.put(VariableNames.MINIMUM_COSINE_SIMILARITY_LIMIT_NAME, Constants.DEFAULT_MINIMUM_COSINE_SIMILARITY_LIMIT);
 
 		/*
 		 * candidate filters
@@ -84,6 +89,10 @@ public class MetFragGlobalSettings extends Settings {
 		this.defaults.put(VariableNames.LOCAL_DATABASE_USER_NAME, Constants.DEFAULT_LOCAL_DATABASE_USER);
 		this.defaults.put(VariableNames.LOCAL_DATABASE_PASSWORD_NAME, Constants.DEFAULT_LOCAL_DATABASE_PASSWORD);
 		
+		this.defaults.put(VariableNames.LOCAL_METCHEM_DATABASE_LIBRARY_NAME, Constants.DEFAULT_LOCAL_METCHEM_DATABASE_LIBRARY_NAME);
+		
+		this.defaults.put(VariableNames.CORRECT_MASSES_FOR_FINGERPRINT_ANNOTATION_NAME, Constants.DEFAULT_CORRECT_MASSES_FOR_FINGERPRINT_ANNOTATION_NAME);;
+
 	}
 
 	public void writeSettingsFile(String filename) throws IOException {
@@ -137,7 +146,7 @@ public class MetFragGlobalSettings extends Settings {
 
 	public static MetFragGlobalSettings readSettings(java.io.File parameterFile, org.apache.log4j.Logger logger) throws Exception {
 		MetFragGlobalSettings settings = new MetFragGlobalSettings();
-		java.util.Vector<String> setParameters = new java.util.Vector<String>();
+		java.util.ArrayList<String> setParameters = new java.util.ArrayList<String>();
 		java.io.BufferedReader parameterFileReader = new java.io.BufferedReader(new java.io.FileReader(parameterFile));
 		String line = "";
 		int lineNumber = 1;
@@ -171,7 +180,7 @@ public class MetFragGlobalSettings extends Settings {
 			catch(Exception e) {
 				logger.error("Error in parameter file at \"" + line + " \"");
 				parameterFileReader.close();
-				throw new Exception();
+				throw new Exception("Error in parameter file at \"" + line + " \"");
 			}
 			/*
 			 * 
@@ -184,6 +193,28 @@ public class MetFragGlobalSettings extends Settings {
 		return settings;
 	}
 
+	public static MetFragGlobalSettings readSettings(java.util.Hashtable<String, String> arguments, org.apache.log4j.Logger logger) throws Exception {
+		MetFragGlobalSettings settings = new MetFragGlobalSettings();
+		java.util.Enumeration<String> keys = arguments.keys();
+		while(keys.hasMoreElements()) {
+			String currentKey = keys.nextElement();
+			if(currentKey.equals(VariableNames.PARAMETER_FILE_NAME)) continue;
+			String argument = arguments.get(currentKey);
+			settings.set(currentKey, ParameterDataTypes.getParameter(argument, currentKey));
+		}
+	
+		return settings;
+	}
+
+	public static void readSettings(java.util.Hashtable<String, String> arguments, MetFragGlobalSettings settings, org.apache.log4j.Logger logger) throws Exception {
+		java.util.Enumeration<String> keys = arguments.keys();
+		while(keys.hasMoreElements()) {
+			String currentKey = keys.nextElement();
+			if(currentKey.equals(VariableNames.PARAMETER_FILE_NAME)) continue;
+			String argument = arguments.get(currentKey);
+			settings.set(currentKey, ParameterDataTypes.getParameter(argument, currentKey));
+		}
+	}
 	
 	public void includeSettings(MetFragGlobalSettings settings, boolean overwrite) {
 		if(settings == null) return;
@@ -217,7 +248,7 @@ public class MetFragGlobalSettings extends Settings {
 		}
 	}
 	
-	public void includeSettings(MetFragGlobalSettings settings, boolean overwrite, java.util.Vector<String> excludeKeys) {
+	public void includeSettings(MetFragGlobalSettings settings, boolean overwrite, java.util.ArrayList<String> excludeKeys) {
 		if(settings == null) return;
 		java.util.Set<String> keys = settings.getKeys();
 		java.util.Iterator<String> it = keys.iterator();

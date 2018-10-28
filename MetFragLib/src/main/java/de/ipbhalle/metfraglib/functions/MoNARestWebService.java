@@ -92,8 +92,8 @@ public class MoNARestWebService implements Runnable {
 		JSONArray jsonArray = (JSONArray)parser.parse(new java.io.InputStreamReader(IOUtils.toInputStream(result)));
 		CandidateList spectralCandidates = new CandidateList();
 		this.logger.info("Got " + jsonArray.size() + " results from MoNA.");
-		java.util.Vector<String> inchikeys = new java.util.Vector<String>();
-		java.util.Vector<Double> scores = new java.util.Vector<Double>();
+		java.util.ArrayList<String> inchikeys = new java.util.ArrayList<String>();
+		java.util.ArrayList<Double> scores = new java.util.ArrayList<Double>();
 		for(int i = 0; i < jsonArray.size(); i++) 
 		{
 			try {
@@ -154,7 +154,7 @@ public class MoNARestWebService implements Runnable {
 			e.printStackTrace();
 			throw new Exception();
 		}
-		java.util.Vector<DefaultPeakList> peakLists = new java.util.Vector<DefaultPeakList>();
+		java.util.ArrayList<DefaultPeakList> peakLists = new java.util.ArrayList<DefaultPeakList>();
 		JSONParser parser = new JSONParser();
 		try {
 			JSONArray jsonArray = (JSONArray)parser.parse(new java.io.InputStreamReader(IOUtils.toInputStream(result)));
@@ -242,7 +242,7 @@ public class MoNARestWebService implements Runnable {
 			e.printStackTrace();
 			throw new Exception();
 		}
-		java.util.Vector<SortedSimilarityTandemMassPeakList> peakLists = new java.util.Vector<SortedSimilarityTandemMassPeakList>();
+		java.util.ArrayList<SortedSimilarityTandemMassPeakList> peakLists = new java.util.ArrayList<SortedSimilarityTandemMassPeakList>();
 		JSONParser parser = new JSONParser();
 		try {
 			JSONArray jsonArray = (JSONArray)parser.parse(new java.io.InputStreamReader(IOUtils.toInputStream(result)));

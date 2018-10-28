@@ -26,6 +26,15 @@ import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
 
 public class AnnotatedStandardSingleStructureImageGenerator extends StandardSingleStructureImageGenerator {
 
+	private boolean bondsAsCharacters = false;
+	private boolean annotateBonds = true;
+	private int atomIndexStart = 0;
+	private int bondIndexStart = 0;
+
+	public AnnotatedStandardSingleStructureImageGenerator() {
+		super(new Font("Verdana", Font.BOLD, 18));
+	}
+	
 	public AnnotatedStandardSingleStructureImageGenerator(Font font) {
 		super(font);
 	}
@@ -40,7 +49,7 @@ public class AnnotatedStandardSingleStructureImageGenerator extends StandardSing
 	public RenderedImage generateImage(final IAtomContainer structure) {
 		Image image = new BufferedImage(this.imageWidth, this.imageHeight, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g2 = (Graphics2D) image.getGraphics();
-		g2.setColor(new Color(1.0f, 1.0f, 1.0f, 0.0f));
+		g2.setColor(this.backgroundColor);
 		g2.fillRect(0, 0, this.imageWidth, this.imageHeight);
 		try {
 			IAtomContainer moleculeToDraw = AtomContainerManipulator.removeHydrogens(structure);
@@ -49,9 +58,15 @@ public class AnnotatedStandardSingleStructureImageGenerator extends StandardSing
 
 			AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(moleculeToDraw);
 			for(int i = 0; i < moleculeToDraw.getAtomCount(); i++) 
-				moleculeToDraw.getAtom(i).setProperty(StandardGenerator.ANNOTATION_LABEL, i + "");
-			for(int i = 0; i < moleculeToDraw.getBondCount(); i++) 
-				moleculeToDraw.getBond(i).setProperty(StandardGenerator.ANNOTATION_LABEL, i + "");
+				moleculeToDraw.getAtom(i).setProperty(StandardGenerator.ANNOTATION_LABEL, (i + this.atomIndexStart) + "");
+			
+			if(this.annotateBonds) {
+				boolean useBondCharacters = this.bondsAsCharacters;
+				if((moleculeToDraw.getBondCount() + this.bondIndexStart) >= 27) useBondCharacters = false;
+				for(int i = 0; i < moleculeToDraw.getBondCount(); i++) 
+					if(!useBondCharacters) moleculeToDraw.getBond(i).setProperty(StandardGenerator.ANNOTATION_LABEL, (i + this.bondIndexStart) + "");
+					else moleculeToDraw.getBond(i).setProperty(StandardGenerator.ANNOTATION_LABEL, ((char)((i + this.bondIndexStart) + 97)) + "");
+			}
 			
 			StructureDiagramGenerator sdg = new StructureDiagramGenerator();
             sdg.setMolecule(moleculeToDraw);
@@ -80,9 +95,14 @@ public class AnnotatedStandardSingleStructureImageGenerator extends StandardSing
 			AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(moleculeToDraw);
 			StructureDiagramGenerator sdg = new StructureDiagramGenerator();
 			for(int i = 0; i < moleculeToDraw.getAtomCount(); i++) 
-				moleculeToDraw.getAtom(i).setProperty(StandardGenerator.ANNOTATION_LABEL, i + "");
-			for(int i = 0; i < moleculeToDraw.getBondCount(); i++) 
-				moleculeToDraw.getBond(i).setProperty(StandardGenerator.ANNOTATION_LABEL, i + "");
+				moleculeToDraw.getAtom(i).setProperty(StandardGenerator.ANNOTATION_LABEL, (i + this.atomIndexStart) + "");
+			if(this.annotateBonds) {
+				boolean useBondCharacters = this.bondsAsCharacters;
+				if((moleculeToDraw.getBondCount() + this.bondIndexStart) >= 27) useBondCharacters = false;
+				for(int i = 0; i < moleculeToDraw.getBondCount(); i++) 
+					if(!useBondCharacters) moleculeToDraw.getBond(i).setProperty(StandardGenerator.ANNOTATION_LABEL, (i + this.bondIndexStart) + "");
+					else moleculeToDraw.getBond(i).setProperty(StandardGenerator.ANNOTATION_LABEL, ((char)((i + this.bondIndexStart) + 97)) + "");
+			}
             sdg.setMolecule(moleculeToDraw);
             sdg.generateCoordinates();
             this.renderer.setup(sdg.getMolecule(), drawArea);
@@ -105,11 +125,28 @@ public class AnnotatedStandardSingleStructureImageGenerator extends StandardSing
 		return (RenderedImage) image;
 	}
 	
+	public void setAnnotateBonds(boolean annotateBonds) {
+		this.annotateBonds = annotateBonds;
+	}
+
+	public void setAtomIndexStart(int atomIndexStart) {
+		this.atomIndexStart = atomIndexStart;
+	}
+
+	public void setBondIndexStart(int bondIndexStart) {
+		this.bondIndexStart = bondIndexStart;
+	}
+
+	public void setBondAsCharacters(boolean value) {
+		this.bondsAsCharacters = value;
+	}
+	
 	public static void main(String[] args) {
 	    IAtomContainer m = null;
 		
 	    try {
-			m = MoleculeFunctions.getAtomContainerFromInChI("InChI=1S/C11H15N5O4/c1-19-8-7(18)5(2-17)20-11(8)16-4-15-6-9(12)13-3-14-10(6)16/h3-5,7-8,11,17-18H,2H2,1H3,(H2,12,13,14)/t5-,7-,8-,11?/m1/s1");
+			m = MoleculeFunctions.getAtomContainerFromInChI("InChI=1S/C20H22O9/c21-8-16-17(25)18(26)20(29-16)27-11-5-13(23)12-7-14(24)19(28-15(12)6-11)9-1-3-10(22)4-2-9/h1-6,14,16-26H,7-8H2/t14-,16+,17-,18+,19-,20+/m1/s1");
+			//m = MoleculeFunctions.getAtomContainerFromSMILES("C1CN(C(=N1)N)CC2=CN=C(C=C2)Cl");
 			MoleculeFunctions.prepareAtomContainer(m, true);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -117,9 +154,13 @@ public class AnnotatedStandardSingleStructureImageGenerator extends StandardSing
 		
 	    //m = MoleculeFunctions.parseSmiles("O=C1C=CC(=O)C2=C1C=CC=C2");
 	    AnnotatedStandardSingleStructureImageGenerator s = new AnnotatedStandardSingleStructureImageGenerator(new Font("Verdana", Font.BOLD, 18));
-	    s.setImageHeight(500);
-	    s.setImageWidth(500);
+	    s.setImageHeight(1500);
+	    s.setImageWidth(1500);
 	    s.setStrokeRation(1.2);
+	    s.setBondAsCharacters(false);
+	    s.setAtomIndexStart(0);
+	    s.setBondIndexStart(0);
+	    s.setAnnotateBonds(true);
 	    RenderedImage img = s.generateImage(m, "1");
 	    try {
 			ImageIO.write((RenderedImage) img, "PNG", new java.io.File("/tmp/file.png"));

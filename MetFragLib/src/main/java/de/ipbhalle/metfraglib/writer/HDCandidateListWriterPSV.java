@@ -2,7 +2,6 @@ package de.ipbhalle.metfraglib.writer;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 
 import de.ipbhalle.metfraglib.exceptions.RelativeIntensityNotDefinedException;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
@@ -14,10 +13,15 @@ import de.ipbhalle.metfraglib.list.ScoredCandidateList;
 import de.ipbhalle.metfraglib.list.SortedScoredCandidateList;
 import de.ipbhalle.metfraglib.parameter.Constants;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
+import de.ipbhalle.metfraglib.settings.Settings;
 
 public class HDCandidateListWriterPSV implements IWriter {
+
+	public boolean write(IList list, String filename, String path, Settings settings) throws Exception {
+		return this.write(list, filename, path);
+	}
 	
-	public boolean write(IList list, String filename, String path) throws IOException {
+	public boolean writeFile(File file, IList list, Settings settings) throws Exception {
 		CandidateList candidateList = null;
 		int numberOfPeaksUsed = 0;
 		if(list instanceof ScoredCandidateList || list instanceof SortedScoredCandidateList) {
@@ -32,6 +36,8 @@ public class HDCandidateListWriterPSV implements IWriter {
 		for(int i = 0; i < candidateList.getNumberElements(); i++) {
 			int countExplainedPeaks = 0;
 			ICandidate scoredCandidate = candidateList.getElement(i);
+			if(settings != null) scoredCandidate.setUseSmiles((Boolean)settings.get(VariableNames.USE_SMILES_NAME));
+			scoredCandidate.initialisePrecursorCandidate();
 			if(scoredCandidate.getMatchList() != null) {
 				MatchList matchList = scoredCandidate.getMatchList();
 				for(int l = 0; l < matchList.getNumberElements(); l++) {
@@ -59,7 +65,8 @@ public class HDCandidateListWriterPSV implements IWriter {
 					} catch (RelativeIntensityNotDefinedException e1) {
 						continue;
 					}
-					String formula = scoredCandidate.getMatchList().getElement(ii).getModifiedFormulaStringOfBestMatchedFragment();
+
+					String formula = scoredCandidate.getMatchList().getElement(ii).getModifiedFormulaStringOfBestMatchedFragment(scoredCandidate.getPrecursorMolecule());
 					
 					sumFormulasOfFragmentsExplainedPeaks += scoredCandidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + formula + ";";
 				
@@ -76,25 +83,25 @@ public class HDCandidateListWriterPSV implements IWriter {
 			
 		}
 		
-		java.util.Hashtable<String, java.util.Vector<ICandidate>> hdGroupedCandidates = new java.util.Hashtable<String, java.util.Vector<ICandidate>>();	
+		java.util.Hashtable<String, java.util.ArrayList<ICandidate>> hdGroupedCandidates = new java.util.Hashtable<String, java.util.ArrayList<ICandidate>>();	
 		String[] lines = new String[candidateList.getNumberElements()];
 		String heading = "";
 		
 		for(int i = 0; i < candidateList.getNumberElements(); i++) {
 			ICandidate candidate = candidateList.getElement(i);
 			if(hdGroupedCandidates.containsKey((String)candidate.getProperty(VariableNames.HD_GROUP_FLAG_NAME)))
-				((java.util.Vector<ICandidate>)hdGroupedCandidates.get((String)candidate.getProperty(VariableNames.HD_GROUP_FLAG_NAME))).add(candidate);
+				((java.util.ArrayList<ICandidate>)hdGroupedCandidates.get((String)candidate.getProperty(VariableNames.HD_GROUP_FLAG_NAME))).add(candidate);
 			else {
-				java.util.Vector<ICandidate> vec = new java.util.Vector<ICandidate>();
+				java.util.ArrayList<ICandidate> vec = new java.util.ArrayList<ICandidate>();
 				vec.add(candidate);
 				hdGroupedCandidates.put((String)candidate.getProperty(VariableNames.HD_GROUP_FLAG_NAME), vec);
 			}
 		}
-		java.util.Vector<String> propertyNames = new java.util.Vector<String>();
+		java.util.ArrayList<String> propertyNames = new java.util.ArrayList<String>();
 		java.util.Iterator<?> it = (java.util.Iterator<?>)hdGroupedCandidates.keys();
 		while(it.hasNext()) {
 			String currentGroup = (String)it.next();
-			java.util.Vector<ICandidate> vec = hdGroupedCandidates.get(currentGroup);
+			java.util.ArrayList<ICandidate> vec = hdGroupedCandidates.get(currentGroup);
 			int originalCandidate = -1;
 			int maxPropertySize = 0;
 			//find original candidate properties
@@ -133,9 +140,7 @@ public class HDCandidateListWriterPSV implements IWriter {
 			}
 		}
 		
-		java.io.BufferedWriter bwriter;
-		File file = new File(path + Constants.OS_SPECIFIC_FILE_SEPARATOR + filename + ".psv");
-		bwriter = new java.io.BufferedWriter(new FileWriter(file));
+		java.io.BufferedWriter bwriter = new java.io.BufferedWriter(new FileWriter(file));
 		bwriter.write(heading);
 		bwriter.newLine();
 		for(int i = 0; i < lines.length; i++) {
@@ -160,6 +165,21 @@ public class HDCandidateListWriterPSV implements IWriter {
 	
 	public void nullify() {
 		
+	}
+
+	@Override
+	public boolean write(IList list, String filename, String path) throws Exception {
+		return this.writeFile(new File(path + Constants.OS_SPECIFIC_FILE_SEPARATOR + filename + ".csv"), list, null);
+	}
+
+	@Override
+	public boolean write(IList list, String filename) throws Exception {
+		return this.writeFile(new File(filename), list, null);
+	}
+
+	@Override
+	public boolean writeFile(File file, IList list) throws Exception {
+		return this.writeFile(file, list, null);
 	}
 
 }

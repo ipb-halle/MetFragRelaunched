@@ -136,7 +136,11 @@ class MetfRag {
 			return new CandidateList();
 		}
 		
-		return mp.getCandidateList();
+		SortedScoredCandidateList scoredCandidateList = (SortedScoredCandidateList)mp.getCandidateList();
+		
+		addPropertiesToCandidateList(scoredCandidateList);
+		
+		return scoredCandidateList;
 	}
 	
 	/**
@@ -238,6 +242,7 @@ class MetfRag {
 			IAtomContainer tmp = null;
 			try {
 				tmp = candidate.getAtomContainer();
+				MoleculeFunctions.prepareAtomContainer(tmp, false);
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
@@ -251,7 +256,12 @@ class MetfRag {
 			
 			tmp.setProperty(VariableNames.IDENTIFIER_NAME, candidate.getIdentifier());
 			IMolecularFormula molFormula = MolecularFormulaManipulator.getMolecularFormula(tmp);
-			Double massDoubleOrig = MoleculeFunctions.calculateMonoIsotopicMassExplicitHydrogens(tmp);
+			Double massDoubleOrig = null;
+			try {
+				massDoubleOrig = candidate.getMolecularFormula().getMonoisotopicMass();
+			} catch (AtomTypeNotKnownFromInputListException e) {
+				e.printStackTrace();
+			}
 			massDoubleOrig = (double)Math.round((massDoubleOrig) * 10000)/10000;
 			tmp.setProperty(VariableNames.MONOISOTOPIC_MASS_NAME, massDoubleOrig);
 			tmp.setProperty(VariableNames.FINAL_SCORE_COLUMN_NAME, candidate.getProperty(VariableNames.FINAL_SCORE_COLUMN_NAME));
@@ -271,7 +281,8 @@ class MetfRag {
 					} catch (RelativeIntensityNotDefinedException e1) {
 						e1.printStackTrace();
 					}
-					sumFormulasOfFragmentsExplainedPeaks += candidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + candidate.getMatchList().getElement(ii).getBestMatchedFragment().getMolecularFormula() + ";";
+					sumFormulasOfFragmentsExplainedPeaks += candidate.getMatchList().getElement(ii).getMatchedPeak().getMass() 
+							+ ":" + candidate.getMatchList().getElement(ii).getBestMatchedFragment().getMolecularFormula(candidate.getPrecursorMolecule()) + ";";
 				}
 				if(sumFormulasOfFragmentsExplainedPeaks.length() != 0) sumFormulasOfFragmentsExplainedPeaks = sumFormulasOfFragmentsExplainedPeaks.substring(0, sumFormulasOfFragmentsExplainedPeaks.length() - 1);
 				if(peaksExplained.length() != 0) peaksExplained = peaksExplained.substring(0, peaksExplained.length() - 1);
@@ -390,6 +401,7 @@ class MetfRag {
 			IAtomContainer tmp = null;
 			try {
 				tmp = candidate.getAtomContainer();
+				MoleculeFunctions.prepareAtomContainer(tmp, false);
 			} catch (Exception e1) {
 				e1.printStackTrace();
 				continue;
@@ -404,7 +416,12 @@ class MetfRag {
 			
 			tmp.setProperty(VariableNames.IDENTIFIER_NAME, candidate.getIdentifier());
 			IMolecularFormula molFormula = MolecularFormulaManipulator.getMolecularFormula(tmp);
-			Double massDoubleOrig = MoleculeFunctions.calculateMonoIsotopicMassExplicitHydrogens(tmp);
+			Double massDoubleOrig = null;
+			try {
+				massDoubleOrig = candidate.getMolecularFormula().getMonoisotopicMass();
+			} catch (AtomTypeNotKnownFromInputListException e) {
+				e.printStackTrace();
+			}
 			massDoubleOrig = (double)Math.round((massDoubleOrig)*10000)/10000;
 			tmp.setProperty(VariableNames.MONOISOTOPIC_MASS_NAME, massDoubleOrig);
 			tmp.setProperty(VariableNames.FINAL_SCORE_COLUMN_NAME, candidate.getProperty(VariableNames.FINAL_SCORE_COLUMN_NAME));
@@ -424,7 +441,8 @@ class MetfRag {
 					} catch (RelativeIntensityNotDefinedException e1) {
 						e1.printStackTrace();
 					}
-					sumFormulasOfFragmentsExplainedPeaks += candidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + candidate.getMatchList().getElement(ii).getBestMatchedFragment().getMolecularFormula() + ";";
+					sumFormulasOfFragmentsExplainedPeaks += candidate.getMatchList().getElement(ii).getMatchedPeak().getMass() 
+							+ ":" + candidate.getMatchList().getElement(ii).getBestMatchedFragment().getMolecularFormula(candidate.getPrecursorMolecule()) + ";";
 				}
 				if(sumFormulasOfFragmentsExplainedPeaks.length() != 0) sumFormulasOfFragmentsExplainedPeaks = sumFormulasOfFragmentsExplainedPeaks.substring(0, sumFormulasOfFragmentsExplainedPeaks.length() - 1);
 				if(peaksExplained.length() != 0) peaksExplained = peaksExplained.substring(0, peaksExplained.length() - 1);
@@ -522,13 +540,19 @@ class MetfRag {
 			IAtomContainer tmp = null;
 			try {
 				tmp = candidate.getAtomContainer();
+				MoleculeFunctions.prepareAtomContainer(tmp, false);
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
 			
 			tmp.setProperty(VariableNames.IDENTIFIER_NAME, candidate.getIdentifier());
 			IMolecularFormula molFormula = MolecularFormulaManipulator.getMolecularFormula(tmp);
-			Double massDoubleOrig = MoleculeFunctions.calculateMonoIsotopicMassExplicitHydrogens(tmp);
+			Double massDoubleOrig = null;
+			try {
+				massDoubleOrig = candidate.getMolecularFormula().getMonoisotopicMass();
+			} catch (AtomTypeNotKnownFromInputListException e) {
+				e.printStackTrace();
+			}
 			massDoubleOrig = (double)Math.round((massDoubleOrig)*10000)/10000;
 			tmp.setProperty(VariableNames.MONOISOTOPIC_MASS_NAME, massDoubleOrig);
 			tmp.setProperty(VariableNames.FINAL_SCORE_COLUMN_NAME, candidate.getProperty(VariableNames.FINAL_SCORE_COLUMN_NAME));
@@ -548,7 +572,8 @@ class MetfRag {
 					} catch (RelativeIntensityNotDefinedException e1) {
 						e1.printStackTrace();
 					}
-					sumFormulasOfFragmentsExplainedPeaks += candidate.getMatchList().getElement(ii).getMatchedPeak().getMass() + ":" + candidate.getMatchList().getElement(ii).getBestMatchedFragment().getMolecularFormula() + ";";
+					sumFormulasOfFragmentsExplainedPeaks += candidate.getMatchList().getElement(ii).getMatchedPeak().getMass() 
+							+ ":" + candidate.getMatchList().getElement(ii).getBestMatchedFragment().getMolecularFormula(candidate.getPrecursorMolecule()) + ";";
 				}
 				if(peaksExplained.length() == 0) peaksExplained = "NA";
 				if(sumFormulasOfFragmentsExplainedPeaks.length() == 0) sumFormulasOfFragmentsExplainedPeaks = "NA";
@@ -582,8 +607,9 @@ class MetfRag {
 		
 		MetFragGlobalSettings settings = new MetFragGlobalSettings();
 		MoleculeFunctions.prepareAtomContainer(molecule, true);
-		ICandidate candidate = new TopDownPrecursorCandidate(MoleculeFunctions.getInChIInfoFromAtomContainer(molecule)[0], "1");
+		ICandidate candidate = null;
 		try {
+			candidate = new TopDownPrecursorCandidate(MoleculeFunctions.getInChIInfoFromAtomContainer(molecule)[0], "1");
 			candidate.initialisePrecursorCandidate();
 		} catch (AtomTypeNotKnownFromInputListException e1) {
 			e1.printStackTrace();
@@ -605,7 +631,7 @@ class MetfRag {
 		FragmentList fragmentList = fragmenter.generateFragments();
 		IAtomContainer[] fragments = new IAtomContainer[fragmentList.getNumberElements()];
 		for(int i = 0; i < fragmentList.getNumberElements(); i++) {
-			fragments[i] = fragmentList.getElement(i).getStructureAsIAtomContainer();
+			fragments[i] = fragmentList.getElement(i).getStructureAsIAtomContainer(candidate.getPrecursorMolecule());
 		}
 		return fragments;
 	}	
@@ -679,12 +705,52 @@ class MetfRag {
 		IAtomContainer[] assignedFragments = new IAtomContainer[assignedFragmentList.getNumberElements()];
 		
 		for(int i = 0; i < assignedFragmentList.getNumberElements(); i++) {
-			IAtomContainer currentFragment = assignedFragmentList.getElement(i).getBestMatchedFragment().getStructureAsIAtomContainer();
+			IAtomContainer currentFragment = assignedFragmentList.getElement(i).getBestMatchedFragment().getStructureAsIAtomContainer(scoredCandidateList.getElement(0).getPrecursorMolecule());
 			currentFragment.setProperty("AssignedMassPeak", assignedFragmentList.getElement(i).getMatchedPeak().getMass());
-			currentFragment.setProperty("FragmentMass", assignedFragmentList.getElement(i).getBestMatchedFragment().getMonoisotopicMass());
+			currentFragment.setProperty("FragmentMass", assignedFragmentList.getElement(i).getBestMatchedFragment().getMonoisotopicMass(scoredCandidateList.getElement(0).getPrecursorMolecule()));
 			assignedFragments[i] = currentFragment;
 		}
 		
 		return assignedFragments;
+	}
+	
+	/**
+	 * adds properties 
+	 * 
+	 * EXPLAINED_PEAKS_COLUMN, FORMULAS_OF_PEAKS_EXPLAINED_COLUMN, NUMBER_PEAKS_USED_COLUMN
+	 * 
+	 * to candidate list
+	 * 
+	 * @param scoredCandidateList
+	 */
+	public static void addPropertiesToCandidateList(SortedScoredCandidateList scoredCandidateList) {
+		int numberOfPeaksUsed = scoredCandidateList.getNumberPeaksUsed();
+		
+		for(int i = 0; i < scoredCandidateList.getNumberElements(); i++) {
+			ICandidate candidate = scoredCandidateList.getElement(i);
+		
+			if(candidate.getMatchList() != null) candidate.setProperty(VariableNames.NUMBER_EXPLAINED_PEAKS_COLUMN, candidate.getMatchList().getNumberElements());
+			String peaksExplained = "";
+			String sumFormulasOfFragmentsExplainedPeaks = "";
+			if(candidate.getMatchList() != null) {
+				for(int ii = 0; ii < candidate.getMatchList().getNumberElements(); ii++) {
+					try {
+						peaksExplained += candidate.getMatchList().getElement(ii).getMatchedPeak().getMass() 
+								+ "_" + candidate.getMatchList().getElement(ii).getMatchedPeak().getIntensity() + ";";
+					} catch (RelativeIntensityNotDefinedException e1) {
+						e1.printStackTrace();
+					}
+					sumFormulasOfFragmentsExplainedPeaks += candidate.getMatchList().getElement(ii).getMatchedPeak().getMass() 
+							+ ":" + candidate.getMatchList().getElement(ii).getBestMatchedFragment().getMolecularFormula(candidate.getPrecursorMolecule()) + ";";
+				}
+				if(peaksExplained.length() == 0) peaksExplained = "NA";
+				else peaksExplained = peaksExplained.substring(0, peaksExplained.length() - 1);
+				if(sumFormulasOfFragmentsExplainedPeaks.length() == 0) sumFormulasOfFragmentsExplainedPeaks = "NA";
+				else sumFormulasOfFragmentsExplainedPeaks = sumFormulasOfFragmentsExplainedPeaks.substring(0, sumFormulasOfFragmentsExplainedPeaks.length() - 1);
+				candidate.setProperty(VariableNames.EXPLAINED_PEAKS_COLUMN, peaksExplained);
+				candidate.setProperty(VariableNames.FORMULAS_OF_PEAKS_EXPLAINED_COLUMN, sumFormulasOfFragmentsExplainedPeaks);
+			}
+			candidate.setProperty(VariableNames.NUMBER_PEAKS_USED_COLUMN, numberOfPeaksUsed);
+		}
 	}
 }

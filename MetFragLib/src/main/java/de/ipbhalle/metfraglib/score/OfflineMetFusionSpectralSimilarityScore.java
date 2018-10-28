@@ -4,6 +4,7 @@ import org.openscience.cdk.fingerprint.IBitFingerprint;
 
 import de.ipbhalle.metfraglib.candidate.PrecursorCandidate;
 import de.ipbhalle.metfraglib.collection.SpectralPeakListCollection;
+import de.ipbhalle.metfraglib.fingerprint.TanimotoSimilarity;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.interfaces.IMatch;
 import de.ipbhalle.metfraglib.list.DefaultPeakList;
@@ -12,7 +13,6 @@ import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.peaklistreader.FilteredStringTandemMassPeakListReader;
 import de.ipbhalle.metfraglib.settings.MetFragGlobalSettings;
 import de.ipbhalle.metfraglib.settings.Settings;
-import de.ipbhalle.metfraglib.similarity.TanimotoSimilarity;
 
 /**
  * fetch spectra from offline spectral file
@@ -41,12 +41,13 @@ public class OfflineMetFusionSpectralSimilarityScore extends AbstractScore {
 			//fingerprint of the current candidate
 			IBitFingerprint f2 = TanimotoSimilarity.calculateFingerPrint(this.candidate.getAtomContainer());
 			//calculate similarity score
-			java.util.Hashtable<String, SortedSimilarityTandemMassPeakList> inchikey1ToPeakList = spectralPeakLists.getInchikey1ToPeakList();
+			java.util.Hashtable<String, java.util.ArrayList<SortedSimilarityTandemMassPeakList>> inchikey1ToPeakList = spectralPeakLists.getInchikey1ToPeakList();
 			java.util.Hashtable<String, Double> inchikey1ToSimScore = spectralPeakLists.getInchikey1ToSimScore();
 			java.util.Enumeration<?> it = inchikey1ToPeakList.keys();
 			while(it.hasMoreElements()) {
 				String inchikey1 = (String)it.nextElement();
-				double val = TanimotoSimilarity.calculateSimilarity(inchikey1ToPeakList.get(inchikey1).getFingerprint(), f2) * inchikey1ToSimScore.get(inchikey1);
+				double tanimoto_sim = TanimotoSimilarity.calculateSimilarity(inchikey1ToPeakList.get(inchikey1).get(0).getFingerprint(), f2);
+				double val = tanimoto_sim * inchikey1ToSimScore.get(inchikey1);
 				this.value += this.signum(-9.0, 0.6, val);
 			}
 		} catch(Exception e) {

@@ -26,10 +26,16 @@ import de.ipbhalle.metfraglib.list.MatchList;
 import de.ipbhalle.metfraglib.list.ScoredCandidateList;
 import de.ipbhalle.metfraglib.list.SortedScoredCandidateList;
 import de.ipbhalle.metfraglib.parameter.Constants;
+import de.ipbhalle.metfraglib.parameter.VariableNames;
+import de.ipbhalle.metfraglib.settings.Settings;
 
 public class CandidateListWriterXLS implements IWriter {
 
-	public boolean write(IList list, String filename, String path)
+	public boolean write(IList list, String filename, String path, Settings settings) throws Exception {
+		return this.write(list, filename, path);
+	}
+	
+	public boolean writeFile(File xlsFile, IList list, Settings settings)
 			throws Exception {
 		CandidateList candidateList = null;
 		int numberOfPeaksUsed = 0;
@@ -44,10 +50,17 @@ public class CandidateListWriterXLS implements IWriter {
 		}
 		if (candidateList == null)
 			return false;
-
+		
+		java.util.ArrayList<Integer> correctIndeces = new java.util.ArrayList<Integer>();
 		for (int i = 0; i < candidateList.getNumberElements(); i++) {
 			int countExplainedPeaks = 0;
 			ICandidate scoredCandidate = candidateList.getElement(i);
+			if(settings != null) scoredCandidate.setUseSmiles((Boolean)settings.get(VariableNames.USE_SMILES_NAME));
+			try {
+				scoredCandidate.initialisePrecursorCandidate();
+			} catch(Exception e) {
+				continue;
+			}
 			if (scoredCandidate.getMatchList() != null) {
 				MatchList matchList = scoredCandidate.getMatchList();
 				for (int l = 0; l < matchList.getNumberElements(); l++) {
@@ -76,7 +89,7 @@ public class CandidateListWriterXLS implements IWriter {
 					}
 					String formula = scoredCandidate.getMatchList()
 							.getElement(ii)
-							.getModifiedFormulaStringOfBestMatchedFragment();
+							.getModifiedFormulaStringOfBestMatchedFragment(scoredCandidate.getPrecursorMolecule());
 					sumFormulasOfFragmentsExplainedPeaks += scoredCandidate
 							.getMatchList().getElement(ii).getMatchedPeak()
 							.getMass()
@@ -101,12 +114,12 @@ public class CandidateListWriterXLS implements IWriter {
 						numberOfPeaksUsed);
 				scoredCandidate.setProperty("NoExplPeaks", countExplainedPeaks);
 			}
+			scoredCandidate.resetPrecursorMolecule();
+			correctIndeces.add(i);
 		}
 
 		boolean withImages = false;
 
-		File xlsFile = new File(path + Constants.OS_SPECIFIC_FILE_SEPARATOR
-				+ filename + ".xls");
 		xlsFile.createNewFile();
 		WritableWorkbook workbook = Workbook.createWorkbook(xlsFile);
 		WritableSheet sheet = workbook.createSheet("MetFrag result list", 0);
@@ -142,9 +155,9 @@ public class CandidateListWriterXLS implements IWriter {
 			}
 		}
 
-		for (int i = 0; i < candidateList.getNumberElements(); i++) {
+		for (int i = 0; i < correctIndeces.size(); i++) {
 			java.util.Hashtable<String, Object> properties = candidateList
-					.getElement(i).getProperties();
+					.getElement(correctIndeces.get(i)).getProperties();
 			Iterator<String> propNames = properties.keySet().iterator();
 
 			while (propNames.hasNext()) {
@@ -164,9 +177,9 @@ public class CandidateListWriterXLS implements IWriter {
 				try {
 					String prop = String.valueOf(properties.get(propName));
 					if(prop.trim().length() == 0) prop = "NA";
+					if(propName.equals(VariableNames.IDENTIFIER_NAME)) prop = prop.replaceAll("\\|[0-9]+", "");
 					sheet.addCell(new Label(labels.get(propName)
-							+ columnWidthAdd, (i * rowHeightAdd) + 1, String
-							.valueOf(properties.get(propName))));
+							+ columnWidthAdd, (i * rowHeightAdd) + 1, prop));
 				} catch (RowsExceededException e) {
 					e.printStackTrace();
 				} catch (WriteException e) {
@@ -209,6 +222,22 @@ public class CandidateListWriterXLS implements IWriter {
 
 	public void nullify() {
 
+	}
+
+	@Override
+	public boolean write(IList list, String filename, String path) throws Exception {
+		return this.writeFile(new File(path + Constants.OS_SPECIFIC_FILE_SEPARATOR
+				+ filename + ".xls"), list, null);
+	}
+
+	@Override
+	public boolean write(IList list, String filename) throws Exception {
+		return this.writeFile(new File(filename), list, null);
+	}
+
+	@Override
+	public boolean writeFile(File file, IList list) throws Exception {
+		return this.writeFile(file, list, null);
 	}
 
 }

@@ -12,7 +12,7 @@
 		xmlns:p="http://primefaces.org/ui">
 		<h:panelGroup id="scoreSettingsPanel"
 			rendered="#{metFragWebBean.numberCompoundsRetrieved > 0}">
-			<h:outputText value="MetFrag Scoring Terms:"
+			<h:outputText value="MetFrag Scoring Terms"
 				style="font-weight: bold; padding-bottom: 10px" />
 			<br />
 			<h:panelGrid columns="2" width="80%" style="vertical-align:top;"
@@ -215,7 +215,7 @@
 					<h:outputLabel value="Partitioning Coefficient: "
 						rendered="#{metFragWebBean.availablePartitioningCoefficientsExist}" />
 					<h:panelGrid columns="1">
-						<p:selectOneMenu id="selectPartitioningCoefficient"
+						<p:selectOneMenu id="selectPartitioningCoefficient" style="width:160px"
 							value="#{metFragWebBean.partitioningCoefficientColumnName}"
 							rendered="#{metFragWebBean.availablePartitioningCoefficientsExist}">
 							<f:selectItems
@@ -289,7 +289,14 @@
 								<p:ajax update="suspectListInclusionScorePanel" />
 							</p:selectBooleanCheckbox>
 							<h:outputText escape="false" id="forIdentSuspectListInclusionScoreLabel"
-							value="FOR-IDENT (Find out more about &lt;a href='http://for-ident.hswt.de/pages/en/home.php?lang=EN'&gt;FOR-IDENT&lt;/a&gt;)" />
+								value="FOR-IDENT (Find out more about &lt;a target='_blank' href='http://for-ident.hswt.de/pages/en/home.php?lang=EN'&gt;ForIdent&lt;/a&gt;)" />
+							<p:selectBooleanCheckbox id="dsstoxSuspectListInclusionScoreEnabled"
+								value="#{metFragWebBean.dsstoxSuspectListInclusionScoreEnabled}"
+								required="false" labelPosition="left">
+								<p:ajax update="suspectListInclusionScorePanel" />
+							</p:selectBooleanCheckbox>
+							<h:outputText escape="false" id="dsstoxSuspectListInclusionScoreLabel"
+							value="DSSTox (Find out more about &lt;a target='_blank' href='https://www.epa.gov/chemical-research/distributed-structure-searchable-toxicity-dsstox-database'&gt;DSSTox&lt;/a&gt;)" />
 						</h:panelGrid>
 					</h:panelGrid>
 					<h:panelGroup id="suspectListsScoreError" layout="block"
@@ -323,17 +330,59 @@
 			<h:panelGrid id="spectralSimilarityScorePanel">
 				<h:panelGrid columns="2" style="vertical-align:top;" cellspacing="4"
 					cellpadding="4" styleClass="subPanel" rendered="false">
-
 				</h:panelGrid>
 			</h:panelGrid>
 
+			<h:panelGrid columns="2" width="80%" style="vertical-align:top;"
+				cellspacing="4" cellpadding="4" styleClass="mainPanel"
+				columnClasses="firstColumnSimple,secondColumnSimple">
+				<p:selectBooleanCheckbox id="exactSpectralSimilarityScoreEnabled"
+					value="#{metFragWebBean.exactSpectralSimilarityScoreEnabled}">
+					<p:ajax update="exactSpectralSimilarityScorePanel" />
+				</p:selectBooleanCheckbox>
+				<h:outputText id="exactSpectralSimilarityScoreLabel"
+					value="Exact Spectral Similarity (MoNA)" />
+			</h:panelGrid>
+			<h:panelGrid id="exactSpectralSimilarityScorePanel">
+				<h:panelGrid columns="2" style="vertical-align:top;" cellspacing="4"
+					cellpadding="4" styleClass="subPanel" rendered="false">
+				</h:panelGrid>
+			</h:panelGrid>
+
+			<h:panelGrid columns="2" width="80%" style="vertical-align:top;"
+				cellspacing="4" cellpadding="4" styleClass="mainPanel"
+				columnClasses="firstColumnSimple,secondColumnSimple">
+				<p:selectBooleanCheckbox id="statisticalScoreEnabled"
+					value="#{metFragWebBean.statisticalScoreEnabled}">
+					<p:ajax update="statisticalScorePanel" />
+				</p:selectBooleanCheckbox>
+				<h:outputText id="statisticalScoreLabel"
+					value="Statistical Scoring" />
+			</h:panelGrid>
+			<h:panelGrid id="statisticalScorePanel">
+				<h:panelGrid columns="2" style="vertical-align:top;" cellspacing="4"
+					cellpadding="4" styleClass="subPanel" rendered="false">
+				</h:panelGrid>
+			</h:panelGrid>
 			<br />
 			<h:panelGrid columns="1">
 				<h:panelGroup layout="block" style="padding-top: 10px;">
-					<h:outputText value="Database Scoring Terms:"
+					<h:outputText value="Database Scoring Terms"
 						style="font-weight: bold"
 						rendered="#{metFragWebBean.availableDatabaseScoresExist}" />
 				</h:panelGroup>
+				<h:panelGroup layout="block" style="padding-left: 2px; padding-top: 5px">
+					<h:panelGrid columns="2" rendered="#{metFragWebBean.availableDatabaseScoresExist}">
+						<p:selectCheckboxMenu id="availableDatabaseScoresMenu" value="#{metFragWebBean.selectedAvailableDatabaseScores}" 
+							label="Select Item(s)" filter="true" filterMatchMode="startsWith">
+	            			<f:selectItems value="#{metFragWebBean.availableDatabaseScores}" />
+	            			<p:ajax event="toggleSelect" update="availableDatabaseScoresMenuLabel" />
+	            			<p:ajax update="availableDatabaseScoresMenuLabel" />
+	        			</p:selectCheckboxMenu>
+	        			<h:outputText style="padding-left: 10px" id="availableDatabaseScoresMenuLabel" value="#{metFragWebBean.availableDatabaseScoresMenuLabel}" />
+	        		</h:panelGrid>
+        		</h:panelGroup>
+				<!-- 
 				<h:panelGroup layout="block" style="padding-left: 2px;">
 					<h:dataTable styleClass="availableScoreTable"
 						id="availableDatabaseScoresTable"
@@ -346,10 +395,11 @@
 							</p:selectBooleanCheckbox>
 						</h:column>
 						<h:column>
-					#{availableScore.label}
-				</h:column>
+							#{availableScore.label}
+						</h:column>
 					</h:dataTable>
 				</h:panelGroup>
+				 -->
 			</h:panelGrid>
 
 			<ui:insert name="scorePrimeTooltips">

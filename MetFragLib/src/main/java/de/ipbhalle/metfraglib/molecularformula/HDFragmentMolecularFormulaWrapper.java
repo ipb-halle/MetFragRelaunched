@@ -49,14 +49,17 @@ public class HDFragmentMolecularFormulaWrapper {
 		short[] buckets = new short[maxIndex + 1];
 		for(int i = 0; i < atomsAsIndeces.length; i++)
 			buckets[atomsAsIndeces[i]] = numberOfAtoms[i];
-		if(this.molecularFormula.getNumberHydrogens() != 0) buckets[hydrogenIndex] = (short)(this.molecularFormula.getNumberHydrogens() - this.numberDeuteriums);
+		if(this.molecularFormula.getNumberHydrogens() != 0) {
+			buckets[hydrogenIndex] = (short)(this.molecularFormula.getNumberHydrogens() - this.numberDeuteriums);
+		}
 		if(this.numberDeuteriums != 0) buckets[deuteriumIndex] = (short)this.numberDeuteriums;
 		
 		boolean includedHydrogen = false;
 		for(int i = 0; i < buckets.length; i++) {
 			if(i > carbonIndex && this.molecularFormula.isContainsC() && !includedHydrogen) 
 			{
-				if((this.molecularFormula.getNumberHydrogens() - this.numberDeuteriums)!= 0) formula += "H" + (buckets[hydrogenIndex] == 1 ? "" : buckets[hydrogenIndex] + "");
+				if((this.molecularFormula.getNumberHydrogens() - this.numberDeuteriums) != 0) 
+					formula += "H" + (buckets[hydrogenIndex] == 1 ? "" : buckets[hydrogenIndex] + "");
 				includedHydrogen = true;
 			}
 			if(buckets[i] != 0) {

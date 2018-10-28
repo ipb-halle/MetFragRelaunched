@@ -1,14 +1,19 @@
 package de.ipbhalle.metfraglib.fragment;
 
 import org.openscience.cdk.DefaultChemObjectBuilder;
+import org.openscience.cdk.Element;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
+import org.openscience.cdk.silent.Bond;
+import org.openscience.cdk.smiles.SmiFlavor;
 import org.openscience.cdk.smiles.SmilesGenerator;
+import org.openscience.cdk.tools.CDKHydrogenAdder;
 
-import de.ipbhalle.metfraglib.BitArray;
+import de.ipbhalle.metfraglib.FastBitArray;
+import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
 import de.ipbhalle.metfraglib.exceptions.AtomTypeNotKnownFromInputListException;
 import de.ipbhalle.metfraglib.interfaces.IFragment;
 import de.ipbhalle.metfraglib.interfaces.IMatch;
@@ -20,9 +25,10 @@ import de.ipbhalle.metfraglib.molecularformula.BitArrayFragmentMolecularFormula;
 import de.ipbhalle.metfraglib.parameter.Constants;
 import de.ipbhalle.metfraglib.peak.TandemMassPeak;
 import de.ipbhalle.metfraglib.precursor.BitArrayPrecursor;
+import de.ipbhalle.metfraglib.precursor.DefaultPrecursor;
 
 /**
- * BitArrayFragment is an memory efficient way to store a fragment.
+ * FastBitArrayFragment is an memory efficient way to store a fragment.
  * It is always related to a CDK AtomContainer object.
  * 
  * @author c-ruttkies
@@ -30,15 +36,15 @@ import de.ipbhalle.metfraglib.precursor.BitArrayPrecursor;
  */
 public class DefaultBitArrayFragment extends AbstractFragment {
 
-	protected int numberHydrogens;
+	protected short numberHydrogens;
 
 	/**
-	 * atoms represented as BitArray object 
+	 * atoms represented as FastBitArray object 
 	 * 
 	 */
-	protected de.ipbhalle.metfraglib.BitArray atomsBitArray;
-	protected de.ipbhalle.metfraglib.BitArray bondsBitArray;
-	protected de.ipbhalle.metfraglib.BitArray brokenBondsBitArray;
+	protected de.ipbhalle.metfraglib.FastBitArray atomsFastBitArray;
+	protected de.ipbhalle.metfraglib.FastBitArray bondsFastBitArray;
+	protected de.ipbhalle.metfraglib.FastBitArray brokenBondsFastBitArray;
 	
 	/**
 	 * constructor setting precursor molecule of fragment
@@ -46,54 +52,79 @@ public class DefaultBitArrayFragment extends AbstractFragment {
 	 * @param precursor
 	 */
 	public DefaultBitArrayFragment(IMolecularStructure precursorMolecule) {
-		super(precursorMolecule);
-		this.atomsBitArray = new BitArray(precursorMolecule.getNonHydrogenAtomCount(), true);
-		this.bondsBitArray = new BitArray(precursorMolecule.getNonHydrogenBondCount(), true);
-		this.brokenBondsBitArray = new BitArray(precursorMolecule.getNonHydrogenBondCount());
+		//super(precursorMolecule);
+		this.atomsFastBitArray = new FastBitArray(precursorMolecule.getNonHydrogenAtomCount(), true);
+		this.bondsFastBitArray = new FastBitArray(precursorMolecule.getNonHydrogenBondCount(), true);
+		this.brokenBondsFastBitArray = new FastBitArray(precursorMolecule.getNonHydrogenBondCount());
 		this.treeDepth = 0;
 	}
 	
 	/**
 	 * 
-	 * @param atomsBitArray
-	 * @param bondsBitArray
+	 * @param atomsFastBitArray
+	 * @param bondsFastBitArray
 	 */
-	public DefaultBitArrayFragment(BitArrayPrecursor precursorMolecule, de.ipbhalle.metfraglib.BitArray atomsBitArray, de.ipbhalle.metfraglib.BitArray bondsBitArray, de.ipbhalle.metfraglib.BitArray brokenBondsBitArray) {
-		super(precursorMolecule);
-		this.atomsBitArray = atomsBitArray;
-		this.bondsBitArray = bondsBitArray;
-		this.brokenBondsBitArray = brokenBondsBitArray;
+	public DefaultBitArrayFragment(BitArrayPrecursor precursorMolecule, de.ipbhalle.metfraglib.FastBitArray atomsFastBitArray, de.ipbhalle.metfraglib.FastBitArray bondsFastBitArray, de.ipbhalle.metfraglib.FastBitArray brokenBondsFastBitArray) {
+		//super(precursorMolecule);
+		this.atomsFastBitArray = atomsFastBitArray;
+		this.bondsFastBitArray = bondsFastBitArray;
+		this.brokenBondsFastBitArray = brokenBondsFastBitArray;
 		this.treeDepth = 0;
 	}
 	
-	public DefaultBitArrayFragment(BitArrayPrecursor precursorMolecule, de.ipbhalle.metfraglib.BitArray atomsBitArray) {
-		super(precursorMolecule);
-		this.atomsBitArray = atomsBitArray;
-		this.bondsBitArray = new BitArray(precursorMolecule.getNonHydrogenBondCount(), false);
-		this.brokenBondsBitArray = new BitArray(precursorMolecule.getNonHydrogenBondCount(), false);
-		for(int i = 0; i < this.atomsBitArray.getSize(); i++) {
-			short[] atomIndeces = precursorMolecule.getConnectedAtomIndecesOfAtomIndex((byte)i);
-			if(this.atomsBitArray.get(i)) {
+	public DefaultBitArrayFragment(BitArrayPrecursor precursorMolecule, de.ipbhalle.metfraglib.FastBitArray atomsFastBitArray) {
+		//super(precursorMolecule);
+		this.atomsFastBitArray = atomsFastBitArray;
+		this.bondsFastBitArray = new FastBitArray(precursorMolecule.getNonHydrogenBondCount(), false);
+		this.brokenBondsFastBitArray = new FastBitArray(precursorMolecule.getNonHydrogenBondCount(), false);
+		for(int i = 0; i < this.atomsFastBitArray.getSize(); i++) {
+			short[] atomIndeces = precursorMolecule.getConnectedAtomIndecesOfAtomIndex((short)i);
+			if(this.atomsFastBitArray.get(i)) {
 				for(int k = 0; k < atomIndeces.length; k++) {
-					if(this.atomsBitArray.get(atomIndeces[k])) 
-						this.bondsBitArray.set(precursorMolecule.getBondIndexFromAtomAdjacencyList((short)i, atomIndeces[k]) - 1);
+					if(this.atomsFastBitArray.get(atomIndeces[k])) 
+						this.bondsFastBitArray.set(precursorMolecule.getBondIndexFromAtomAdjacencyList((short)i, atomIndeces[k]) - 1);
 					else 
-						this.brokenBondsBitArray.set(precursorMolecule.getBondIndexFromAtomAdjacencyList((short)i, atomIndeces[k]) - 1);
+						this.brokenBondsFastBitArray.set(precursorMolecule.getBondIndexFromAtomAdjacencyList((short)i, atomIndeces[k]) - 1);
 				}
 			}
 			else {
 				for(int k = 0; k < atomIndeces.length; k++) {
-					if(this.atomsBitArray.get(atomIndeces[k])) 
-						this.brokenBondsBitArray.set(precursorMolecule.getBondIndexFromAtomAdjacencyList((short)i, atomIndeces[k]) - 1);
+					if(this.atomsFastBitArray.get(atomIndeces[k])) 
+						this.brokenBondsFastBitArray.set(precursorMolecule.getBondIndexFromAtomAdjacencyList((short)i, atomIndeces[k]) - 1);
 				}
 			}
 		}
 		
 		this.treeDepth = 0;
 	}
+
+	protected void initialiseNumberHydrogens(BitArrayPrecursor precursorMolecule) {
+		this.numberHydrogens = 0;
+		for(int i = 0; i < this.atomsFastBitArray.getSize(); i++) {
+			if(this.atomsFastBitArray.get(i)) {
+				this.numberHydrogens += precursorMolecule.getNumberHydrogensConnectedToAtomIndex(i);
+			}
+		}
+	}
+	
+	public double getMonoisotopicMass(IMolecularStructure precursorMolecule) {
+		//return this.molecularFormula.getMonoisotopicMass();
+		double mass = 0.0;
+		for(int i = 0; i < this.atomsFastBitArray.getSize(); i++) {
+			if(this.atomsFastBitArray.get(i)) {
+				mass += precursorMolecule.getMassOfAtom(i);
+			}
+		}
+		return mass;
+	}
+	
+	/*
+	public void initialiseMolecularFormula(IMolecularStructure precursorMolecule) throws AtomTypeNotKnownFromInputListException {
+		this.molecularFormula = new BitArrayFragmentMolecularFormula((BitArrayPrecursor)precursorMolecule, this.atomsFastBitArray);
+	}*/
 	
 	@Override
-	public byte matchToPeak(IPeak peak, int precursorIonTypeIndex, boolean isPositive, IMatch[] fragmentPeakMatch) {
+	public byte matchToPeak(IMolecularStructure precursorMolecule, IPeak peak, int precursorIonTypeIndex, boolean isPositive, IMatch[] fragmentPeakMatch) {
 		if(fragmentPeakMatch == null || fragmentPeakMatch.length != 1) return -1;
 		double[] ionisationTypeMassCorrection = new double [] {
 			Constants.getIonisationTypeMassCorrection(precursorIonTypeIndex, isPositive),
@@ -104,11 +135,16 @@ public class DefaultBitArrayFragment extends AbstractFragment {
 		byte numberCompareResultsEqualPlusOne = 0;
 		byte numberComparisons = 2;
 		boolean matched = false;
+		
+		short numberHydrogens = this.getNumberHydrogens();
+		
 		for(int i = 0; i < ionisationTypeMassCorrection.length; i++) {
+			int substractHydrogenFromCharge = 0;
+			if(i == 0 && precursorIonTypeIndex == 1) substractHydrogenFromCharge = 1;
 			boolean[] toCheckHydrogenShiftType = {true, true};
-			double currentFragmentMass = this.getMonoisotopicMass() + ionisationTypeMassCorrection[i];
+			double currentFragmentMass = this.getMonoisotopicMass(precursorMolecule) + ionisationTypeMassCorrection[i];
 			byte compareResult = ((TandemMassPeak)peak).matchesToMass(currentFragmentMass);
-			if(compareResult == 0) {
+			if(compareResult == 0 && substractHydrogenFromCharge <= numberHydrogens) {
 				/*
 				 * if a former fragment has matched already then add the current fragment list to the match object
 				 */
@@ -143,6 +179,9 @@ public class DefaultBitArrayFragment extends AbstractFragment {
 				 */
 				for(byte signIndex = 0; signIndex < signs.length; signIndex++) {
 					if(!toCheckHydrogenShiftType[signIndex]) {
+						continue;
+					}
+					if(numberHydrogens - (signs[signIndex] * hydrogenShift - substractHydrogenFromCharge) < 0) {
 						continue;
 					}
 					/*
@@ -196,7 +235,7 @@ public class DefaultBitArrayFragment extends AbstractFragment {
 	 * @return
 	 */
 	public boolean getAtomBit(int atomIndex) {
-		return this.atomsBitArray.get(atomIndex);
+		return this.atomsFastBitArray.get(atomIndex);
 	}
 	
 	/**
@@ -205,102 +244,117 @@ public class DefaultBitArrayFragment extends AbstractFragment {
 	 * @param value
 	 */
 	public void setAtomBit(int atomIndex, boolean value) {
-		this.atomsBitArray.set(atomIndex, value);
+		this.atomsFastBitArray.set(atomIndex, value);
 	}
 
-	public de.ipbhalle.metfraglib.interfaces.IMolecularStructure getPrecursor() {
-		return this.precursorMolecule;
+	public de.ipbhalle.metfraglib.FastBitArray getAtomsFastBitArray() {
+		return this.atomsFastBitArray;
 	}
 
-	public de.ipbhalle.metfraglib.BitArray getAtomsBitArray() {
-		return this.atomsBitArray;
+	public void setAtomsFastBitArray(de.ipbhalle.metfraglib.FastBitArray atomsFastBitArray) {
+		this.atomsFastBitArray = atomsFastBitArray;
 	}
 
-	public void setAtomsBitArray(de.ipbhalle.metfraglib.BitArray atomsBitArray) {
-		this.atomsBitArray = atomsBitArray;
+	public de.ipbhalle.metfraglib.FastBitArray getBondsFastBitArray() {
+		return this.bondsFastBitArray;
 	}
 
-	public de.ipbhalle.metfraglib.BitArray getBondsBitArray() {
-		return this.bondsBitArray;
-	}
-
-	public de.ipbhalle.metfraglib.BitArray getBrokenBondsBitArray() {
-		return this.brokenBondsBitArray;
+	public de.ipbhalle.metfraglib.FastBitArray getBrokenBondsFastBitArray() {
+		return this.brokenBondsFastBitArray;
 	}
 	
-	public void setBondsBitArray(de.ipbhalle.metfraglib.BitArray bondsBitArray) {
-		this.bondsBitArray = bondsBitArray;
+	public void setBondsFastBitArray(de.ipbhalle.metfraglib.FastBitArray bondsFastBitArray) {
+		this.bondsFastBitArray = bondsFastBitArray;
 	}
 
-	public void setBrokenBondsBitArray(de.ipbhalle.metfraglib.BitArray brokenBondsBitArray) {
-		this.brokenBondsBitArray = brokenBondsBitArray;
+	public void setBrokenBondsFastBitArray(de.ipbhalle.metfraglib.FastBitArray brokenBondsFastBitArray) {
+		this.brokenBondsFastBitArray = brokenBondsFastBitArray;
 	}
 
-	public IAtomContainer getPrecursorAsIAtomContainer() {
-		return this.precursorMolecule.getStructureAsIAtomContainer();
-	}
-	
 	public boolean equals(IFragment fragment) {
 		DefaultBitArrayFragment curFragment = (DefaultBitArrayFragment)fragment;
-		return this.atomsBitArray.equals(curFragment.getAtomsBitArray());
+		return this.atomsFastBitArray.equals(curFragment.getAtomsFastBitArray());
 	}
 	
 	public void setNumberHydrogens(int numberHydrogens) {
-		this.numberHydrogens = numberHydrogens;
+		this.numberHydrogens = (short)numberHydrogens;
 	}
 	
-	public int getNumberHydrogens() {
+	public short getNumberHydrogens() {
 		return this.numberHydrogens;
 	}
-	
-	public IMolecularFormula getMolecularFormula() {
+
+	public IMolecularFormula getMolecularFormula(IMolecularStructure precursorMolecule) {
 		try {
-			return new BitArrayFragmentMolecularFormula((BitArrayPrecursor)this.precursorMolecule, this.atomsBitArray);
+			BitArrayFragmentMolecularFormula form = new BitArrayFragmentMolecularFormula((DefaultPrecursor)precursorMolecule, this.atomsFastBitArray);
+			return form;
 		} catch (AtomTypeNotKnownFromInputListException e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
 
-	public String getSmiles() {
-		IAtomContainer molecule = this.getStructureAsIAtomContainer();
-		SmilesGenerator sg = new SmilesGenerator();
-		String smiles = null;
-		try {
-			smiles = sg.create(molecule);
-		} catch (CDKException e) {
-			e.printStackTrace();
-		}
-		return smiles;
-	}
-
-	public String getAromaticSmiles() {
-		IAtomContainer molecule = this.getStructureAsAromaticIAtomContainer();
-		SmilesGenerator sg = SmilesGenerator.generic().aromatic();
-		String smiles = null;
-		try {
-			smiles = sg.create(molecule);
-		} catch (CDKException e) {
-			e.printStackTrace();
-		}
-		return smiles;
-	}
+	public String getSmiles(IMolecularStructure precursorMolecule) {
+		IAtomContainer molecule = this.getStructureAsIAtomContainer(precursorMolecule);
 	
-	public IMolecularStructure getPrecursorMolecule() {
-		return this.precursorMolecule;
+		SmilesGenerator sg = new SmilesGenerator(SmiFlavor.Generic);
+		String smiles = null;
+		try {
+			smiles = sg.create(molecule);
+		} catch (CDKException e) {
+			e.printStackTrace();
+		}
+		return smiles;
 	}
 
-	public IAtomContainer getStructureAsAromaticIAtomContainer() {
+	public String getPreparedSmiles(IMolecularStructure precursorMolecule) throws CDKException {
+		IAtomContainer molecule = this.getStructureAsIAtomContainer(precursorMolecule);
+
+		MoleculeFunctions.prepareAtomContainer(molecule, false);
+		CDKHydrogenAdder adder = CDKHydrogenAdder.getInstance(molecule.getBuilder());
+		adder.addImplicitHydrogens(molecule);
+		   
+		SmilesGenerator sg = new SmilesGenerator(SmiFlavor.Generic);
+		String smiles = null;
+		try {
+			smiles = sg.create(molecule);
+		} catch (CDKException e) {
+			e.printStackTrace();
+		}
+		return smiles;
+	}
+
+	/**
+	public String getAromaticSmiles(IMolecularStructure precursorMolecule) {
+		IAtomContainer molecule = this.getStructureAsAromaticIAtomContainer(precursorMolecule);
+		SmilesGenerator sg = new SmilesGenerator(SmiFlavor.UseAromaticSymbols);
+		String smiles = null;
+		try {
+			smiles = sg.create(molecule);
+		} catch (CDKException e) {
+			e.printStackTrace();
+		}
+		return smiles;
+	}
+
+	public IAtomContainer getStructureAsAromaticIAtomContainer(IMolecularStructure precursorMolecule) {
 		IChemObjectBuilder builder = DefaultChemObjectBuilder.getInstance();
 		IAtomContainer fragmentStructure = builder.newInstance(IAtomContainer.class);
-		
-		for(int i = 0; i < this.bondsBitArray.getSize(); i++) {
-			if(this.bondsBitArray.get(i)) {
-				IBond curBond = this.precursorMolecule.getStructureAsIAtomContainer().getBond(i);
-				if(this.precursorMolecule.isAromaticBond(i)) curBond.setIsAromatic(true);
+		if(this.atomsFastBitArray.cardinality() == 1) {
+			fragmentStructure.addAtom(precursorMolecule.getStructureAsIAtomContainer().getAtom(this.atomsFastBitArray.getFirstSetBit()));
+			if(precursorMolecule.getStructureAsIAtomContainer().getAtom(this.atomsFastBitArray.getFirstSetBit()).isAromatic())
+				fragmentStructure.getAtom(0).setIsAromatic(true);
+			else 
+				fragmentStructure.getAtom(0).setIsAromatic(false);
+			return fragmentStructure;
+		}
+		for(int i = 0; i < this.bondsFastBitArray.getSize(); i++) {
+			if(this.bondsFastBitArray.get(i)) {
+				IBond curBond = precursorMolecule.getStructureAsIAtomContainer().getBond(i);
+				if(precursorMolecule.isAromaticBond(i)) curBond.setIsAromatic(true);
 				for(IAtom atom : curBond.atoms()) {
 					atom.setImplicitHydrogenCount(0);
-					if(this.precursorMolecule.isAromaticBond(i)) atom.setIsAromatic(true);
+					if(precursorMolecule.isAromaticBond(i)) atom.setIsAromatic(true);
 					fragmentStructure.addAtom(atom);
 				}
 				fragmentStructure.addBond(curBond);
@@ -311,14 +365,18 @@ public class DefaultBitArrayFragment extends AbstractFragment {
 		
 		return fragmentStructure;
 	}
+	**/
 	
-	public IAtomContainer getStructureAsIAtomContainer() {
+	public IAtomContainer getStructureAsIAtomContainer(IMolecularStructure precursorMolecule) {
 		IChemObjectBuilder builder = DefaultChemObjectBuilder.getInstance();
 		IAtomContainer fragmentStructure = builder.newInstance(IAtomContainer.class);
-		
-		for(int i = 0; i < this.bondsBitArray.getSize(); i++) {
-			if(this.bondsBitArray.get(i)) {
-				IBond curBond = this.precursorMolecule.getStructureAsIAtomContainer().getBond(i);
+		if(this.atomsFastBitArray.cardinality() == 1) {
+			fragmentStructure.addAtom(precursorMolecule.getStructureAsIAtomContainer().getAtom(this.atomsFastBitArray.getFirstSetBit()));
+			return fragmentStructure;
+		}
+		for(int i = 0; i < this.bondsFastBitArray.getSize(); i++) {
+			if(this.bondsFastBitArray.get(i)) {
+				IBond curBond = precursorMolecule.getStructureAsIAtomContainer().getBond(i);
 				for(IAtom atom : curBond.atoms()) {
 					fragmentStructure.addAtom(atom);
 				}
@@ -327,20 +385,56 @@ public class DefaultBitArrayFragment extends AbstractFragment {
 		}
 	//	loss of hydrogens
 	//	MoleculeFunctions.prepareAtomContainer(fragmentStructure);
-		
-		return fragmentStructure;
-	}
 
-	public double getMonoisotopicMass() {
-		return this.getMolecularFormula().getMonoisotopicMass();
+		java.util.List<IAtom> atomsToAdd = new java.util.LinkedList<IAtom>();
+		java.util.List<IBond> bondsToAdd = new java.util.LinkedList<IBond>();
+		
+		for(int i = 0; i < fragmentStructure.getAtomCount(); i++) {
+			int bondOrderSum = 0;
+			java.util.List<IBond> bonds = fragmentStructure.getConnectedBondsList(fragmentStructure.getAtom(i));
+			for(int ii = 0; ii < bonds.size(); ii++) {
+				bondOrderSum += bonds.get(ii).getOrder().numeric();
+			}
+			if(fragmentStructure.getAtom(i).getBondOrderSum() != null && fragmentStructure.getAtom(i).getBondOrderSum() > bondOrderSum) {
+				for(int k = 0; k < (fragmentStructure.getAtom(i).getBondOrderSum() - bondOrderSum); k++) {
+					org.openscience.cdk.Atom hydrogenAtom = new org.openscience.cdk.Atom(new Element("H"));
+					IBond bond = new Bond(hydrogenAtom, fragmentStructure.getAtom(i));
+					atomsToAdd.add(hydrogenAtom);
+					bondsToAdd.add(bond);
+				}
+				fragmentStructure.getAtom(i).setImplicitHydrogenCount(0);
+			}
+		}
+		for(IBond bond : bondsToAdd) fragmentStructure.addBond(bond);
+		for(IAtom atom : atomsToAdd) fragmentStructure.addAtom(atom);
+		atomsToAdd = new java.util.LinkedList<IAtom>();
+		bondsToAdd = new java.util.LinkedList<IBond>();
+		for(int i = 0; i < fragmentStructure.getAtomCount(); i++) {
+			if(fragmentStructure.getAtom(i).getImplicitHydrogenCount() != null && fragmentStructure.getAtom(i).getImplicitHydrogenCount() > 0) {
+				for(int k = 0; k < fragmentStructure.getAtom(i).getImplicitHydrogenCount(); k++) {
+					org.openscience.cdk.Atom hydrogenAtom = new org.openscience.cdk.Atom(new Element("H"));
+					IBond bond = new Bond(hydrogenAtom, fragmentStructure.getAtom(i));
+					atomsToAdd.add(hydrogenAtom);
+					bondsToAdd.add(bond);
+				}
+				fragmentStructure.getAtom(i).setImplicitHydrogenCount(0);
+			}
+		}
+		for(IBond bond : bondsToAdd) fragmentStructure.addBond(bond);
+		for(IAtom atom : atomsToAdd) fragmentStructure.addAtom(atom);
+		//MoleculeFunctions.removeHydrogens(fragmentStructure);
+		
+		
+		fragmentStructure = MoleculeFunctions.convertExplicitToImplicitHydrogens(fragmentStructure);
+		return fragmentStructure;
 	}
 
 	public int getNonHydrogenAtomCount() {
-		return this.atomsBitArray.cardinality();
+		return this.atomsFastBitArray.cardinality();
 	}
 
 	public int getNonHydrogenBondCount() {
-		return this.bondsBitArray.cardinality();
+		return this.bondsFastBitArray.cardinality();
 	}
 
 	public void setTreeDepth(byte treeDepth) {
@@ -352,7 +446,7 @@ public class DefaultBitArrayFragment extends AbstractFragment {
 	}
 
 	public boolean equals(Object object) {
-		if(this.atomsBitArray.equals(((DefaultBitArrayFragment)object).getAtomsBitArray())) return true;
+		if(this.atomsFastBitArray.equals(((DefaultBitArrayFragment)object).getAtomsFastBitArray())) return true;
 		return false;
 	}
 	
@@ -362,72 +456,72 @@ public class DefaultBitArrayFragment extends AbstractFragment {
 	 * returns 1 if the mass of the current is greater to the mass of the argument fragment
 	 * @throws AtomTypeNotKnownFromInputListException 
 	 */
-	public byte shareEqualProperties(IFragment fragment) {
-		if(this.getMonoisotopicMass() == fragment.getMonoisotopicMass()) return 0;
-		if(this.getMonoisotopicMass() > fragment.getMonoisotopicMass()) return 1;
+	public byte shareEqualProperties(IMolecularStructure precursorMolecule, IFragment fragment) {
+		if(this.getMonoisotopicMass(precursorMolecule) == fragment.getMonoisotopicMass(precursorMolecule)) return 0;
+		if(this.getMonoisotopicMass(precursorMolecule) > fragment.getMonoisotopicMass(precursorMolecule)) return 1;
 		return -1;
 	}
 
 	public int[] getBrokenBondIndeces() {
-		return this.brokenBondsBitArray.getSetIndeces();
+		return this.brokenBondsFastBitArray.getSetIndeces();
 	}
 	
-	public DefaultBitArrayFragment clone() {
-		DefaultBitArrayFragment clone = new DefaultBitArrayFragment((BitArrayPrecursor)this.precursorMolecule, this.atomsBitArray.clone(), this.bondsBitArray.clone(), this.brokenBondsBitArray.clone());
+	public DefaultBitArrayFragment clone(IMolecularStructure precursorMolecule) {
+		DefaultBitArrayFragment clone = new DefaultBitArrayFragment((BitArrayPrecursor)precursorMolecule, this.atomsFastBitArray.clone(), this.bondsFastBitArray.clone(), this.brokenBondsFastBitArray.clone());
 	//	clone.setID(this.ID);
-		clone.setNumberHydrogens(this.numberHydrogens);
+		clone.setNumberHydrogens(this.getNumberHydrogens());
 		clone.setTreeDepth(this.treeDepth);
 		return clone;
 	}
 	
 	public void nullify() {
 		super.nullify();
-		this.atomsBitArray.nullify();
-		this.bondsBitArray.nullify();
-		this.brokenBondsBitArray.nullify();
+		this.atomsFastBitArray.nullify();
+		this.bondsFastBitArray.nullify();
+		this.brokenBondsFastBitArray.nullify();
 	}
 
 	/**
 	 * is the argument fragment a real substructure of the current fragment
 	 */
 	public boolean isRealSubStructure(IFragment molecularStructure) {
-		BitArray currentAtomsBitArray = ((DefaultBitArrayFragment)molecularStructure).getAtomsBitArray();
-		if(currentAtomsBitArray.getSize() != this.atomsBitArray.getSize()) return false; 
-		int currentAtomsBitArrayCardinality = 0;
-		int thisAtomsBitArrayCardinality = 0;
-		for(int i = 0; i < this.atomsBitArray.getSize(); i++) {
-			boolean currentAtomsBitArrayValue = currentAtomsBitArray.get(i);
-			boolean thisAtomsBitArrayValue = this.atomsBitArray.get(i);
-			if(thisAtomsBitArrayValue) thisAtomsBitArrayCardinality++;
-			if(currentAtomsBitArrayValue) currentAtomsBitArrayCardinality++;
-			if(!thisAtomsBitArrayValue && currentAtomsBitArrayValue) return false;
+		FastBitArray currentAtomsFastBitArray = ((DefaultBitArrayFragment)molecularStructure).getAtomsFastBitArray();
+		if(currentAtomsFastBitArray.getSize() != this.atomsFastBitArray.getSize()) return false; 
+		int currentAtomsFastBitArrayCardinality = 0;
+		int thisAtomsFastBitArrayCardinality = 0;
+		for(int i = 0; i < this.atomsFastBitArray.getSize(); i++) {
+			boolean currentAtomsFastBitArrayValue = currentAtomsFastBitArray.get(i);
+			boolean thisAtomsFastBitArrayValue = this.atomsFastBitArray.get(i);
+			if(thisAtomsFastBitArrayValue) thisAtomsFastBitArrayCardinality++;
+			if(currentAtomsFastBitArrayValue) currentAtomsFastBitArrayCardinality++;
+			if(!thisAtomsFastBitArrayValue && currentAtomsFastBitArrayValue) return false;
 		}
-		if(thisAtomsBitArrayCardinality == currentAtomsBitArrayCardinality) return false;
+		if(thisAtomsFastBitArrayCardinality == currentAtomsFastBitArrayCardinality) return false;
 		return true;
 	}
 
 	public boolean isSubStructure(IFragment molecularStructure) {
-		BitArray currentAtomsBitArray = ((DefaultBitArrayFragment)molecularStructure).getAtomsBitArray();
-		if(currentAtomsBitArray.getSize() != this.atomsBitArray.getSize()) return false; 
-		for(int i = 0; i < this.atomsBitArray.getSize(); i++) {
-			boolean currentAtomsBitArrayValue = currentAtomsBitArray.get(i);
-			boolean thisAtomsBitArrayValue = this.atomsBitArray.get(i);
-			if(!thisAtomsBitArrayValue && currentAtomsBitArrayValue) return false;
+		FastBitArray currentAtomsFastBitArray = ((DefaultBitArrayFragment)molecularStructure).getAtomsFastBitArray();
+		if(currentAtomsFastBitArray.getSize() != this.atomsFastBitArray.getSize()) return false; 
+		for(int i = 0; i < this.atomsFastBitArray.getSize(); i++) {
+			boolean currentAtomsFastBitArrayValue = currentAtomsFastBitArray.get(i);
+			boolean thisAtomsFastBitArrayValue = this.atomsFastBitArray.get(i);
+			if(!thisAtomsFastBitArrayValue && currentAtomsFastBitArrayValue) return false;
 		}
 		return true;
 	}
 	
 	public int[] getUniqueBrokenBondIndeces(IFragment molecularStructure) {
-		BitArray currentBrokenBondBitArray = ((DefaultBitArrayFragment)molecularStructure).getBrokenBondsBitArray();
+		FastBitArray currentBrokenBondFastBitArray = ((DefaultBitArrayFragment)molecularStructure).getBrokenBondsFastBitArray();
 		int numUniqueBondsSet = 0;
-		for(int i = 0; i < currentBrokenBondBitArray.getSize(); i++) {
-			if(currentBrokenBondBitArray.get(i) && !this.brokenBondsBitArray.get(i))
+		for(int i = 0; i < currentBrokenBondFastBitArray.getSize(); i++) {
+			if(currentBrokenBondFastBitArray.get(i) && !this.brokenBondsFastBitArray.get(i))
 				numUniqueBondsSet++;
 		}
 		int[] uniqueBrokenBondIndeces = new int[numUniqueBondsSet];
-		for(int i = 0; i < currentBrokenBondBitArray.getSize(); i++) {
+		for(int i = 0; i < currentBrokenBondFastBitArray.getSize(); i++) {
 			int index = 0;
-			if(currentBrokenBondBitArray.get(i) && !this.brokenBondsBitArray.get(i)) {
+			if(currentBrokenBondFastBitArray.get(i) && !this.brokenBondsFastBitArray.get(i)) {
 				uniqueBrokenBondIndeces[index] = i;
 			}	
 		}
@@ -436,17 +530,53 @@ public class DefaultBitArrayFragment extends AbstractFragment {
 
 	@Override
 	public String getAtomsInfo() {
-		return this.atomsBitArray.toString();
+		return this.atomsFastBitArray.toString();
 	}
 
+	public IFragment getDifferenceFragment(IMolecularStructure precursorMolecule, IFragment molecularStructure) {
+		FastBitArray diffFastBitArray = this.getAtomsFastBitArray().getDiff(((DefaultBitArrayFragment)molecularStructure).getAtomsFastBitArray());
+		DefaultBitArrayFragment diffFragment = new DefaultBitArrayFragment((BitArrayPrecursor)precursorMolecule, diffFastBitArray);
+		if(!diffFragment.isConnected(precursorMolecule)) return null;
+		return diffFragment;
+	}
+
+	public IFragment getDifferenceFragment(IMolecularStructure precursorMolecule) {
+		FastBitArray complete = new FastBitArray(this.getAtomsFastBitArray().getSize(), true);
+		FastBitArray diffFastBitArray = complete.getDiff(this.getAtomsFastBitArray());
+		DefaultBitArrayFragment diffFragment = 
+				new DefaultBitArrayFragment((BitArrayPrecursor)precursorMolecule, diffFastBitArray);
+		if(!diffFragment.isConnected(precursorMolecule)) return null;
+		return diffFragment;
+	}
+	
+	public boolean isConnected(IMolecularStructure precursorMolecule) {
+		if(this.atomsFastBitArray.cardinality() == 1) return true;
+		BitArrayPrecursor pre = (BitArrayPrecursor)precursorMolecule;
+		FastBitArray foundAtoms = new FastBitArray(this.atomsFastBitArray.getSize(), false);
+		java.util.LinkedList<Integer> toCheck = new java.util.LinkedList<Integer>();
+		toCheck.add(this.atomsFastBitArray.getFirstSetBit());
+		while(toCheck.size() != 0) {
+			int currentAtomIndex = toCheck.poll();
+			short[] neighbors = pre.getConnectedAtomIndecesOfAtomIndex((short)currentAtomIndex);
+			for(int k = 0; k < neighbors.length; k++) {
+				if(this.atomsFastBitArray.get(neighbors[k]) && !foundAtoms.get(neighbors[k])) { 
+					foundAtoms.set(neighbors[k]);
+					toCheck.add((int)neighbors[k]);
+				}
+			}
+		}
+		if(foundAtoms.equals(this.atomsFastBitArray)) return true;
+		return false;
+	}
+	
 	@Override
 	public String getBondsInfo() {
-		return this.bondsBitArray.toString();
+		return this.bondsFastBitArray.toString();
 	}
 
 	@Override
 	public String getBrokenBondsInfo() {
-		return this.brokenBondsBitArray.toString();
+		return this.brokenBondsFastBitArray.toString();
 	}
 
 }

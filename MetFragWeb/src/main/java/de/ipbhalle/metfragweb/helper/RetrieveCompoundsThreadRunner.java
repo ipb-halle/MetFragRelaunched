@@ -22,6 +22,7 @@ public class RetrieveCompoundsThreadRunner extends ThreadRunner {
 		if (this.beanSettingsContainer.isCompoundsRetrieved()) {
 			this.beanSettingsContainer.initialiseAvailableDatabaseScores();
 			this.beanSettingsContainer.initialiseAvailableCandidatePartitioningCoefficients();
+			this.beanSettingsContainer.resetSelectedAvailableDatabaseScores();
 		}
 
 	}

@@ -93,7 +93,7 @@ public class HDByteMolecularFormula extends ByteMolecularFormula {
 		}
 		monoisotopicMass += Constants.getMonoisotopicMassOfAtom("H") * (this.numberHydrogens - this.numberDeuterium);
 		monoisotopicMass += Constants.getMonoisotopicMassOfAtom("D") * (this.numberDeuterium);
-		return MathTools.round(monoisotopicMass, Constants.DEFAULT_NUMBER_OF_DIGITS_AFTER_ROUNDING);
+		return MathTools.round(monoisotopicMass);
 	}
 	
 	/**
@@ -104,8 +104,8 @@ public class HDByteMolecularFormula extends ByteMolecularFormula {
 	protected void initialise(String molecularFormula) throws de.ipbhalle.metfraglib.exceptions.AtomTypeNotKnownFromInputListException {
 		org.openscience.cdk.interfaces.IMolecularFormula cdkMolecularFormula = MolecularFormulaManipulator.getMolecularFormula(molecularFormula, new ChemObject().getBuilder());
 		java.util.Iterator<org.openscience.cdk.interfaces.IIsotope> elements = cdkMolecularFormula.isotopes().iterator();
-		java.util.Vector<String> elementSymbols = new java.util.Vector<String>();
-		java.util.Vector<Short> elementSymbolNumbers = new java.util.Vector<Short>();
+		java.util.ArrayList<String> elementSymbols = new java.util.ArrayList<String>();
+		java.util.ArrayList<Short> elementSymbolNumbers = new java.util.ArrayList<Short>();
 		this.numberHydrogens = 0;
 		while(elements.hasNext()) {
 			org.openscience.cdk.interfaces.IIsotope currentIsotope = elements.next();

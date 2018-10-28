@@ -21,7 +21,7 @@
 						<h:outputLabel value="Database:" id="selectDatabaseLabel"/>
 						<h:panelGrid columns="3">
 							<p:selectOneMenu id="selectDatabase"
-								value="#{metFragWebBean.database}">
+								value="#{metFragWebBean.database}" converter="omnifaces.SelectItemsConverter" style="width: 150px;">
 								<f:selectItems value="#{metFragWebBean.availableDatabases}" />
 								<p:ajax update="mainForm:mainAccordion" />
 							</p:selectOneMenu>
@@ -39,7 +39,19 @@
 								</p:selectBooleanCheckbox>
 							</h:panelGrid>
 						</h:panelGrid>
-
+						<h:outputLabel value="" id="databaseWarningLabel" rendered="#{metFragWebBean.isWarningMessage('databaseWarning')}"/>
+						<h:panelGroup id="databaseWarning" style="padding-top: 10px"
+								layout="block" styleClass="ui-messages ui-widget"
+								rendered="#{metFragWebBean.isWarningMessage('databaseWarning')}">
+								<h:panelGroup styleClass="ui-messages-warning-user ui-corner-all"
+									layout="block">
+									<h:panelGrid columns="2">
+										<h:panelGroup styleClass="ui-messages-warning-icon-user" />
+										<h:outputText styleClass="ui-messages-warning-detail-user"
+											value="#{metFragWebBean.getWarningMessage('databaseWarning')}" />
+									</h:panelGrid>
+								</h:panelGroup>
+						</h:panelGroup>
 						<h:outputLabel value="Upload File:"
 							rendered="#{metFragWebBean.localDatabaseDefined}" id="candidateFileUploadLabel"/>
 						<h:panelGrid columns="2" width="100%"

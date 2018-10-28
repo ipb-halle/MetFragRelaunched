@@ -24,11 +24,16 @@ import de.ipbhalle.metfraglib.list.MatchList;
 import de.ipbhalle.metfraglib.list.ScoredCandidateList;
 import de.ipbhalle.metfraglib.list.SortedScoredCandidateList;
 import de.ipbhalle.metfraglib.parameter.Constants;
+import de.ipbhalle.metfraglib.parameter.VariableNames;
+import de.ipbhalle.metfraglib.settings.Settings;
 
 public class CandidateListWriterExtendedFragmentsXLS implements IWriter {
 
-	public boolean write(IList list, String filename, String path)
-			throws Exception {
+	public boolean write(IList list, String filename, String path, Settings settings) throws Exception {
+		return this.write(list, filename, path);
+	}
+	
+	public boolean writeFile(File xlsFile, IList list, Settings settings) throws Exception {
 		CandidateList candidateList = null;
 		int numberOfPeaksUsed = 0;
 		if (list instanceof ScoredCandidateList
@@ -46,6 +51,8 @@ public class CandidateListWriterExtendedFragmentsXLS implements IWriter {
 		for (int i = 0; i < candidateList.getNumberElements(); i++) {
 			int countExplainedPeaks = 0;
 			ICandidate scoredCandidate = candidateList.getElement(i);
+			if(settings != null) scoredCandidate.setUseSmiles((Boolean)settings.get(VariableNames.USE_SMILES_NAME));
+			scoredCandidate.initialisePrecursorCandidate();
 			if (scoredCandidate.getMatchList() != null) {
 				MatchList matchList = scoredCandidate.getMatchList();
 				for (int l = 0; l < matchList.getNumberElements(); l++) {
@@ -74,7 +81,7 @@ public class CandidateListWriterExtendedFragmentsXLS implements IWriter {
 					}
 					String formula = scoredCandidate.getMatchList()
 							.getElement(ii)
-							.getModifiedFormulaStringOfBestMatchedFragment();
+							.getModifiedFormulaStringOfBestMatchedFragment(scoredCandidate.getPrecursorMolecule());
 					sumFormulasOfFragmentsExplainedPeaks += scoredCandidate
 							.getMatchList().getElement(ii).getMatchedPeak()
 							.getMass()
@@ -103,9 +110,6 @@ public class CandidateListWriterExtendedFragmentsXLS implements IWriter {
 
 		boolean withImages = true;
 		boolean withFragments = true;
-
-		File xlsFile = new File(path + Constants.OS_SPECIFIC_FILE_SEPARATOR
-				+ filename + "_extendedFragments.xls");
 
 		xlsFile.createNewFile();
 		WritableWorkbook workbook = Workbook.createWorkbook(xlsFile);
@@ -168,8 +172,7 @@ public class CandidateListWriterExtendedFragmentsXLS implements IWriter {
 						sheet2.addImage(wi);
 					}
 				}
-				sheet2.addCell(new Label(4, (i * rowHeightAdd) + 1,
-						candidateList.getElement(i).getIdentifier() + ""));
+				sheet2.addCell(new Label(4, (i * rowHeightAdd) + 1, ((String)candidateList.getElement(i).getIdentifier()).replaceAll("\\|[0-9]+", "")));
 			}
 
 		}
@@ -267,7 +270,7 @@ public class CandidateListWriterExtendedFragmentsXLS implements IWriter {
 				MatchList matchList = candidateList.getElement(i)
 						.getMatchList();
 				for (int k = 0; k < matchList.getNumberElements(); k++) {
-					currentList.add(imageGenerator.generateImage(matchList
+					currentList.add(imageGenerator.generateImage(candidateList.getElement(i).getPrecursorMolecule(), matchList
 							.getElement(k).getBestMatchedFragment()));
 				}
 			}
@@ -279,5 +282,21 @@ public class CandidateListWriterExtendedFragmentsXLS implements IWriter {
 	public void nullify() {
 
 	}
+
+	@Override
+	public boolean write(IList list, String filename) throws Exception {
+		return this.writeFile(new File(filename), list);
+	}
+
+	@Override
+	public boolean write(IList list, String filename, String path) throws Exception {
+		return this.writeFile(new File(path + Constants.OS_SPECIFIC_FILE_SEPARATOR + filename + "_extendedFragments.xls"), list);
+	}
+
+	@Override
+	public boolean writeFile(File file, IList list) throws Exception {
+		return this.writeFile(file, list, null);
+	}
+
 
 }

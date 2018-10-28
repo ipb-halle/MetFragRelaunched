@@ -10,6 +10,11 @@
 		<managed-bean-scope>session</managed-bean-scope>
 	</managed-bean>
 	<managed-bean>
+		<managed-bean-name>compareSpectraD3JSBean</managed-bean-name>
+		<managed-bean-class>de.ipbhalle.metfragweb.controller.CompareSpectraD3JSBean</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+	</managed-bean>
+	<managed-bean>
 		<managed-bean-name>metFragLandingBean</managed-bean-name>
 		<managed-bean-class>de.ipbhalle.metfragweb.controller.MetFragLandingBean</managed-bean-class>
 		<managed-bean-scope>request</managed-bean-scope>

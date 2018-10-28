@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>de.ipbhalle.metfrag</groupId>
 		<artifactId>MetFrag</artifactId>
-		<version>2.3.1</version>
+		<version>2.4.5</version>
 	</parent>
 	<packaging>jar</packaging>
 	<groupId>de.ipbhalle.metfraglib</groupId>
@@ -16,7 +16,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<cdk.version>1.5.12</cdk.version>
+		<cdk.version>2.1</cdk.version>
 	</properties>
 
 
@@ -26,10 +26,29 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.4</version>
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>1.8</source>
+					<target>1.8</target>
 					<compilerArgument></compilerArgument>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
@@ -41,9 +60,14 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-    		<groupId>org.apache.commons</groupId>
-    		<artifactId>commons-csv</artifactId>
-    		<version>1.2</version>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.5.5</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-csv</artifactId>
+			<version>1.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openscience.cdk</groupId>
@@ -81,6 +105,11 @@
 			<version>3.1</version>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.sling</groupId>
+			<artifactId>org.apache.sling.scripting.api</artifactId>
+			<version>2.1.6</version>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.woden</groupId>
 			<artifactId>woden-api</artifactId>
 			<version>1.0M9</version>
@@ -94,6 +123,11 @@
 			<groupId>net.sf.jni-inchi</groupId>
 			<artifactId>jni-inchi</artifactId>
 			<version>0.8</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openscience.cdk</groupId>
+			<artifactId>cdk-data</artifactId>
+			<version>${cdk.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.openscience.cdk</groupId>
@@ -200,6 +234,11 @@
 			<artifactId>hierarchical-clustering</artifactId>
 			<version>1.1.0</version>
 		</dependency>
+		<dependency>
+			<groupId>org.javolution</groupId>
+			<artifactId>javolution-core-java</artifactId>
+			<version>6.0.0</version>
+		</dependency>
 	</dependencies>
 
 	<repositories>
@@ -226,7 +265,7 @@
 			<id>centralmaven</id>
 			<url>http://mvnrepository.com</url>
 			<releases>
-				<enabled>false</enabled>
+				<enabled>true</enabled>
 			</releases>
 		</repository>
 	</repositories>

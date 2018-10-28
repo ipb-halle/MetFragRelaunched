@@ -1,6 +1,6 @@
 package de.ipbhalle.metfraglib.match;
 
-import de.ipbhalle.metfraglib.BitArray;
+import de.ipbhalle.metfraglib.FastBitArray;
 import de.ipbhalle.metfraglib.fragment.AbstractTopDownBitArrayFragment;
 import de.ipbhalle.metfraglib.interfaces.IFragment;
 import de.ipbhalle.metfraglib.interfaces.IMatch;
@@ -8,13 +8,13 @@ import de.ipbhalle.metfraglib.interfaces.IPeak;
 
 public class FragmentMassToPeakMatch extends DefaultFragmentToPeakMatch {
 	
-	protected java.util.Vector<Double> matchedFragmentMassesToTandemMassPeak;
+	protected java.util.ArrayList<Double> matchedFragmentMassesToTandemMassPeak;
 	protected double matchedFragmentMassOfBestFragment;
 	
 	public FragmentMassToPeakMatch(IPeak matchedPeak) {
 		super(matchedPeak);
-		this.matchedFragmentMassesToTandemMassPeak = new java.util.Vector<Double>();
-		this.numberOfHydrogensDifferToPeakMass = new java.util.Vector<Byte>();
+		this.matchedFragmentMassesToTandemMassPeak = new java.util.ArrayList<Double>();
+		this.numberOfHydrogensDifferToPeakMass = new java.util.ArrayList<Byte>();
 	}
 
 	public double getBestMatchFragmentMass() {
@@ -47,10 +47,10 @@ public class FragmentMassToPeakMatch extends DefaultFragmentToPeakMatch {
 	public void addToMatch(IMatch match) {
 		FragmentMassToPeakMatch currentMatch = (FragmentMassToPeakMatch)match;
 		
-		BitArray atomsBitArrayOfCurrentFragment = ((AbstractTopDownBitArrayFragment)currentMatch.getMatchedFragmentList().getElement(0)).getAtomsBitArray();
+		FastBitArray atomsFastBitArrayOfCurrentFragment = ((AbstractTopDownBitArrayFragment)currentMatch.getMatchedFragmentList().getElement(0)).getAtomsFastBitArray();
 		for(int i = 0; i < this.matchedFragmentsList.getNumberElements(); i++) {
 			AbstractTopDownBitArrayFragment tmpFragment = (AbstractTopDownBitArrayFragment)this.matchedFragmentsList.getElement(i);
-			if(tmpFragment.getAtomsBitArray().equals(atomsBitArrayOfCurrentFragment))
+			if(tmpFragment.getAtomsFastBitArray().equals(atomsFastBitArrayOfCurrentFragment))
 					return;
 		}
 		if(match.getBestMatchedFragment() != null) {

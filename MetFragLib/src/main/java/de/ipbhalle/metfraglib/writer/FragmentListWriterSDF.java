@@ -10,6 +10,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomContainerSet;
 import org.openscience.cdk.io.SDFWriter;
 
+import de.ipbhalle.metfraglib.exceptions.AtomTypeNotKnownFromInputListException;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.interfaces.IList;
 import de.ipbhalle.metfraglib.interfaces.IWriter;
@@ -17,36 +18,46 @@ import de.ipbhalle.metfraglib.list.MatchList;
 import de.ipbhalle.metfraglib.list.ScoredCandidateList;
 import de.ipbhalle.metfraglib.parameter.Constants;
 import de.ipbhalle.metfraglib.precursor.BitArrayPrecursor;
+import de.ipbhalle.metfraglib.settings.Settings;
 
 public class FragmentListWriterSDF implements IWriter {
 
+	public boolean write(IList list, String filename, String path, Settings settings) throws Exception {
+		return this.write(list, filename, path);
+	}
+	
 	public boolean write(IList list, String filename, String path) {
-		if(list instanceof MatchList) {
-			MatchList matchList = (MatchList) list;
-			return this.writeSingleMatchList(matchList, path + Constants.OS_SPECIFIC_FILE_SEPARATOR + filename + ".sdf");
-		}
 		if(list instanceof ScoredCandidateList) {
 			ScoredCandidateList scoredCandidateList = (ScoredCandidateList) list;
 			for(int i = 0; i < scoredCandidateList.getNumberElements(); i++) {
 				ICandidate candidate = scoredCandidateList.getElement(i);
-				if(!this.writeSingleMatchList(candidate.getMatchList(), path + Constants.OS_SPECIFIC_FILE_SEPARATOR + filename + "_" + candidate.getIdentifier() + ".sdf"))
+				try {
+					candidate.initialisePrecursorCandidate();
+				} catch (AtomTypeNotKnownFromInputListException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				if(!this.writeSingleMatchList(candidate, candidate.getMatchList(), path + Constants.OS_SPECIFIC_FILE_SEPARATOR + filename + "_" + candidate.getIdentifier() + ".sdf"))
 					System.err.println("Warning: Could not write fragments of candidate " + i + ": " + candidate.getIdentifier());
 			}
 		}
 		return false;
 	}
 
-	private boolean writeSingleMatchList(MatchList matchList, String completeFilePath) {
+	private boolean writeSingleMatchList(ICandidate candidate, MatchList matchList, String completeFilePath) {
 		IAtomContainerSet set = new AtomContainerSet();
 		for(int i = 0; i < matchList.getNumberElements(); i++) {
-			IAtomContainer fragmentAtomContainer = matchList.getElement(i).getBestMatchedFragment().getStructureAsIAtomContainer();
-			fragmentAtomContainer.setProperty("MolecularFormula", matchList.getElement(i).getModifiedFormulaStringOfBestMatchedFragment().toString());
+			IAtomContainer fragmentAtomContainer = matchList.getElement(i).getBestMatchedFragment().getStructureAsIAtomContainer(candidate.getPrecursorMolecule());
+			fragmentAtomContainer.setProperty("MolecularFormula", matchList.getElement(i).getModifiedFormulaStringOfBestMatchedFragment(candidate.getPrecursorMolecule()).toString());
 			String brokenBonds = "";
 			int[] brokenBondIndeces = matchList.getElement(i).getBestMatchedFragment().getBrokenBondIndeces();
 			String bondStrings = "";
 			for(int index : brokenBondIndeces) {
 				brokenBonds += index + ";";
-				bondStrings += ((BitArrayPrecursor)matchList.getElement(i).getBestMatchedFragment().getPrecursorMolecule()).getBondAsString((short)index) + ";";
+				bondStrings += ((BitArrayPrecursor)candidate.getPrecursorMolecule()).getBondAsString((short)index) + ";";
 			}
 			if(bondStrings.length() != 0) bondStrings = bondStrings.substring(0, bondStrings.length() - 1);
 			if(brokenBonds.length() != 0) brokenBonds = brokenBonds.substring(0, brokenBonds.length() - 1);
@@ -72,6 +83,24 @@ public class FragmentListWriterSDF implements IWriter {
 	
 	public void nullify() {
 		return;
+	}
+
+	@Override
+	public boolean write(IList list, String filename) throws Exception {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean writeFile(File file, IList list, Settings settings) throws Exception {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean writeFile(File file, IList list) throws Exception {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

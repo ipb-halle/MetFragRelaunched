@@ -1,175 +1,167 @@
 package de.ipbhalle.metfraglib.database;
 
-import java.util.Vector;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 
 import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.io.iterator.IteratingSDFReader;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
-import de.ipbhalle.metfraglib.additionals.MathTools;
 import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
 import de.ipbhalle.metfraglib.candidate.TopDownPrecursorCandidate;
 import de.ipbhalle.metfraglib.exceptions.AtomTypeNotKnownFromInputListException;
-import de.ipbhalle.metfraglib.exceptions.DatabaseIdentifierNotFoundException;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
-import de.ipbhalle.metfraglib.list.CandidateList;
-import de.ipbhalle.metfraglib.molecularformula.ByteMolecularFormula;
+
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.settings.Settings;
 
-public class LocalSDFDatabase extends AbstractDatabase {
-
-	private java.util.Vector<ICandidate> candidates;
+public class LocalSDFDatabase extends AbstractFileDatabase {
 
 	public LocalSDFDatabase(Settings settings) {
 		super(settings);
 	}
 
-	public java.util.Vector<String> getCandidateIdentifiers() throws Exception {
-		if (this.candidates == null)
-			this.readCandidatesFromFile();
-		if (this.settings.get(VariableNames.PRECURSOR_DATABASE_IDS_NAME) != null)
-			return this.getCandidateIdentifiers((String[]) settings.get(VariableNames.PRECURSOR_DATABASE_IDS_NAME));
-		if (this.settings.get(VariableNames.PRECURSOR_MOLECULAR_FORMULA_NAME) != null)
-			return this.getCandidateIdentifiers((String) settings.get(VariableNames.PRECURSOR_MOLECULAR_FORMULA_NAME));
-		if (this.settings.get(VariableNames.DATABASE_RELATIVE_MASS_DEVIATION_NAME) != null)
-			return this.getCandidateIdentifiers((Double) settings.get(VariableNames.PRECURSOR_NEUTRAL_MASS_NAME), (Double) settings.get(VariableNames.DATABASE_RELATIVE_MASS_DEVIATION_NAME));
-		Vector<String> identifiers = new Vector<String>();
-		for (ICandidate candidate : candidates)
-			identifiers.add(candidate.getIdentifier());
-		return identifiers;
-	}
-
-	public Vector<String> getCandidateIdentifiers(double monoisotopicMass, double relativeMassDeviation) throws Exception {
-		if (this.candidates == null)
-			this.readCandidatesFromFile();
-		Vector<String> identifiers = new Vector<String>();
-		double mzabs = MathTools.calculateAbsoluteDeviation(monoisotopicMass, relativeMassDeviation);
-		double lowerLimit = monoisotopicMass - mzabs;
-		double upperLimit = monoisotopicMass + mzabs;
-		for (int i = 0; i < this.candidates.size(); i++) {
-			double currentMonoisotopicMass = (Double) this.candidates.get(i).getProperty(VariableNames.MONOISOTOPIC_MASS_NAME);
-			if (lowerLimit <= currentMonoisotopicMass && currentMonoisotopicMass <= upperLimit)
-				identifiers.add(this.candidates.get(i).getIdentifier());
-		}
-		return identifiers;
-	}
-
-	public Vector<String> getCandidateIdentifiers(String molecularFormula) throws Exception {
-		if (this.candidates == null)
-			this.readCandidatesFromFile();
-		Vector<String> identifiers = new Vector<String>();
-		ByteMolecularFormula queryFormula = new ByteMolecularFormula(molecularFormula);
-		for (int i = 0; i < this.candidates.size(); i++) {
-			ByteMolecularFormula currentFormula = null;
-			try {
-				currentFormula = new ByteMolecularFormula((String)this.candidates.get(i).getProperty(VariableNames.MOLECULAR_FORMULA_NAME));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			if (queryFormula.compareTo(currentFormula))
-				identifiers.add(this.candidates.get(i).getIdentifier());
-		}
-		return identifiers;
-	}
-
-	public Vector<String> getCandidateIdentifiers(Vector<String> identifiers) throws Exception {
-		if (this.candidates == null)
-			this.readCandidatesFromFile();
-		Vector<String> verifiedIdentifiers = new Vector<String>();
-		for (int i = 0; i < identifiers.size(); i++) {
-			try {
-				this.getCandidateByIdentifier(identifiers.get(i));
-			} catch (DatabaseIdentifierNotFoundException e) {
-				logger.warn("Candidate identifier " + identifiers.get(i) + " not found.");
-				continue;
-			}
-			verifiedIdentifiers.add(identifiers.get(i));
-		}
-		return verifiedIdentifiers;
-
-	}
-
-	public ICandidate getCandidateByIdentifier(String identifier) throws DatabaseIdentifierNotFoundException {
-		int index = this.indexOfIdentifier(identifier);
-		if (index == -1)
-			throw new DatabaseIdentifierNotFoundException(identifier);
-		return this.candidates.get(index);
-	}
-
-	public CandidateList getCandidateByIdentifier(Vector<String> identifiers) {
-		CandidateList candidateList = new CandidateList();
-		for (int i = 0; i < identifiers.size(); i++) {
-			ICandidate candidate = null;
-			try {
-				candidate = this.getCandidateByIdentifier(identifiers.get(i));
-			} catch (DatabaseIdentifierNotFoundException e) {
-				logger.warn("Candidate identifier " + identifiers.get(i) + " not found.");
-			}
-			if (candidate != null)
-				candidateList.addElement(candidate);
-		}
-		return candidateList;
-	}
-
-	public void nullify() {}
-
 	/**
 	 * @throws Exception
 	 * 
 	 */
-	private void readCandidatesFromFile() throws Exception {
-		this.candidates = new java.util.Vector<ICandidate>();
-		java.io.File f = new java.io.File((String) this.settings.get(VariableNames.LOCAL_DATABASE_PATH_NAME));
-		java.util.Vector<String> identifiers = new java.util.Vector<String>();
+	protected void readCandidatesFromFile() throws Exception {
+		this.candidates = new java.util.ArrayList<ICandidate>();
+		java.io.File f = this.curateSDF((String) this.settings.get(VariableNames.LOCAL_DATABASE_PATH_NAME));
 		if (f.isFile()) {
-			IteratingSDFReader reader = new IteratingSDFReader(new java.io.FileReader(f), DefaultChemObjectBuilder.getInstance());
-			int index = 1;
+			
+			java.util.HashMap<String, String> nameToInputName = new java.util.HashMap<String, String>();
+			nameToInputName.put(VariableNames.IDENTIFIER_NAME_3, VariableNames.IDENTIFIER_NAME);
+			nameToInputName.put(VariableNames.IDENTIFIER_NAME_2, VariableNames.IDENTIFIER_NAME);
+			nameToInputName.put(VariableNames.IDENTIFIER_NAME, VariableNames.IDENTIFIER_NAME);
+			nameToInputName.put(VariableNames.MONOISOTOPIC_MASS_NAME_2, VariableNames.MONOISOTOPIC_MASS_NAME);
+			nameToInputName.put(VariableNames.MONOISOTOPIC_MASS_NAME, VariableNames.MONOISOTOPIC_MASS_NAME);
+			nameToInputName.put(VariableNames.INCHI_NAME_2, VariableNames.INCHI_NAME);
+			nameToInputName.put(VariableNames.INCHI_NAME, VariableNames.INCHI_NAME);
+			nameToInputName.put(VariableNames.MOLECULAR_FORMULA_NAME_2, VariableNames.MOLECULAR_FORMULA_NAME);
+			nameToInputName.put(VariableNames.MOLECULAR_FORMULA_NAME, VariableNames.MOLECULAR_FORMULA_NAME);
+			nameToInputName.put(VariableNames.SMILES_NAME_2, VariableNames.SMILES_NAME);
+			nameToInputName.put(VariableNames.SMILES_NAME, VariableNames.SMILES_NAME);
+			nameToInputName.put(VariableNames.INCHI_KEY_NAME_2, VariableNames.INCHI_KEY_NAME);
+			nameToInputName.put(VariableNames.INCHI_KEY_NAME, VariableNames.INCHI_KEY_NAME);
+			nameToInputName.put(VariableNames.COMPOUND_NAME_NAME_2, VariableNames.COMPOUND_NAME_NAME);
+			nameToInputName.put(VariableNames.COMPOUND_NAME_NAME, VariableNames.COMPOUND_NAME_NAME);
+			
+			String[] possibleIdentifierNames = {VariableNames.IDENTIFIER_NAME_3, VariableNames.IDENTIFIER_NAME_2, VariableNames.IDENTIFIER_NAME};
+			
+			IteratingSDFReader reader = new IteratingSDFReader(new java.io.FileReader(f), DefaultChemObjectBuilder.getInstance(), true);
+			java.util.LinkedHashSet<String> properties = new java.util.LinkedHashSet<String>();
+			
+			int index = 0;
 			while (reader.hasNext()) {
 				IAtomContainer molecule = reader.next();
-				String identifier = molecule.getID();
-				if (molecule.getProperty("Identifier") != null)
-					identifier = (String) molecule.getProperty("Identifier");
+				MoleculeFunctions.prepareAtomContainer(molecule, false);
+				if(molecule.getAtomCount() == 0) continue;
+				index++;
+				molecule.removeProperty("cdk:Title");
+				java.util.Map<Object, Object> props =  molecule.getProperties();
+				String identifier = String.valueOf(index);
+				for(String identifierName : possibleIdentifierNames) {
+					if(props.containsKey(identifierName) && props.get(identifierName) != null) {
+						identifier = props.get(identifierName) + "|" + identifier;
+						break;
+					}
+				}
 				molecule = MoleculeFunctions.convertImplicitToExplicitHydrogens(molecule);
 				AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(molecule);
-
-				if (identifier == null || identifier.length() == 0)
-					identifier = String.valueOf(index);
-				if(identifiers.contains(identifier)) throw new Exception();
-				identifiers.add(identifier);
 				String[] inchiInfo = MoleculeFunctions.getInChIInfoFromAtomContainer(molecule);
 				ICandidate precursorCandidate = new TopDownPrecursorCandidate(inchiInfo[0], identifier);
+				
+				java.util.Iterator<String> keys = nameToInputName.keySet().iterator();
+				for(String curKey : this.preparedPropertyNames) {
+					curKey = keys.next();
+					String inputName = nameToInputName.get(curKey);
+					if(!precursorCandidate.hasDefinedProperty(inputName) && props.containsKey(curKey) && props.get(curKey) != null) 
+						precursorCandidate.setProperty(inputName, props.get(curKey));
+				}
+				
+				java.util.Iterator<Object> it = props.keySet().iterator();
+				while (it.hasNext()) {
+					String key = (String) it.next();
+					if(!precursorCandidate.hasDefinedProperty(key)) precursorCandidate.setProperty(key, props.get(key));
+					properties.add(key);
+				}
+				
+				if(!precursorCandidate.hasDefinedProperty(VariableNames.INCHI_KEY_1_NAME)) precursorCandidate.setProperty(VariableNames.INCHI_KEY_1_NAME, inchiInfo[1].split("-")[0]);
+				if(!precursorCandidate.hasDefinedProperty(VariableNames.INCHI_KEY_2_NAME)) precursorCandidate.setProperty(VariableNames.INCHI_KEY_2_NAME, inchiInfo[1].split("-")[1]);
+				if(!precursorCandidate.hasDefinedProperty(VariableNames.MOLECULAR_FORMULA_NAME)) precursorCandidate.setProperty(VariableNames.MOLECULAR_FORMULA_NAME, inchiInfo[0].split("/")[1]);
+				if(!precursorCandidate.hasDefinedProperty(VariableNames.SMILES_NAME)) precursorCandidate.setProperty(VariableNames.SMILES_NAME, MoleculeFunctions.generateSmiles(molecule));
 
-				java.util.Iterator<Object> properties = molecule.getProperties().keySet().iterator();
-				while (properties.hasNext()) {
-					String key = (String) properties.next();
-					if (key != null && molecule.getProperty(key) != null)
-						precursorCandidate.setProperty(key, molecule.getProperty(key));
+				if(!precursorCandidate.hasDefinedProperty(VariableNames.MONOISOTOPIC_MASS_NAME)) {
+					try {
+						precursorCandidate.setProperty(VariableNames.MONOISOTOPIC_MASS_NAME, precursorCandidate.getMolecularFormula().getMonoisotopicMass());
+					} catch (AtomTypeNotKnownFromInputListException e) {
+						continue;
+					}
+				} else precursorCandidate.setProperty(VariableNames.MONOISOTOPIC_MASS_NAME, Double.parseDouble((String)precursorCandidate.getProperty(VariableNames.MONOISOTOPIC_MASS_NAME)));
+				
+				if(!this.addInChIFromSmiles(precursorCandidate)) continue;
+				if(!this.addSMILESFromInChI(precursorCandidate)) continue;
+				if(!this.addInChIKeyFromSmiles(precursorCandidate)) continue;
+				if(!this.setInChIValues(precursorCandidate)) continue;
+				
+
+				if(this.checkFilter(precursorCandidate)) {
+					this.identifiers.add(precursorCandidate.getIdentifier());
+					this.candidates.add(precursorCandidate);
 				}
-				precursorCandidate.setProperty(VariableNames.INCHI_KEY_1_NAME, inchiInfo[1].split("-")[0]);
-				precursorCandidate.setProperty(VariableNames.INCHI_KEY_2_NAME, inchiInfo[1].split("-")[1]);
-				precursorCandidate.setProperty(VariableNames.MOLECULAR_FORMULA_NAME, inchiInfo[0].split("/")[1]);
-				try {
-					precursorCandidate.setProperty(VariableNames.MONOISOTOPIC_MASS_NAME, precursorCandidate.getMolecularFormula().getMonoisotopicMass());
-				} catch (AtomTypeNotKnownFromInputListException e) {
-					continue;
-				}
-				this.candidates.add(precursorCandidate);
-				index++;
 			}
+
+			for(int i = 0; i < this.candidates.size(); i++) {
+				java.util.Iterator<String> keys = properties.iterator();
+				while(keys.hasNext()) {
+					String curKey = keys.next();
+					if(!this.candidates.get(i).hasDefinedProperty(curKey)) this.candidates.get(i).setProperty(curKey, "-");
+					if(((String)this.candidates.get(i).getProperty(curKey)).equals("")) this.candidates.get(i).setProperty(curKey, "-");
+				}
+			}
+			
+			reader.close();
+			f.delete();
 		}
 	}
 
-	/**
-	 * 
-	 * @param identifier
-	 * @return
-	 */
-	private int indexOfIdentifier(String identifier) {
-		for (int i = 0; i < this.candidates.size(); i++)
-			if (this.candidates.get(i).getIdentifier().equals(identifier))
-				return i;
-		return -1;
+	private java.io.File curateSDF(String filename) throws IOException {
+		BufferedReader breader = new BufferedReader(new FileReader(new java.io.File(filename)));
+		java.io.File f = java.io.File.createTempFile("curated_sdf_file", ".sdf");
+		BufferedWriter bwriter = new BufferedWriter(new FileWriter(f));
+		String line = "";
+		boolean skipNextEmpytLine = false;
+		while((line = breader.readLine()) != null) {
+			line = line.replaceAll("\\s+$", "");
+			if(line.equals("") && skipNextEmpytLine) {
+				skipNextEmpytLine = false;
+				continue;
+			} else if(skipNextEmpytLine) {
+				skipNextEmpytLine = false;
+			}
+			if(line.equals("M  END")) skipNextEmpytLine = true;
+			bwriter.write(line);
+			bwriter.newLine();
+		}
+		bwriter.close();
+		breader.close();
+		return f;
 	}
+	
+	public static void main(String[] args) throws Exception {
+		Settings settings = new Settings();
+		settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, "/home/cruttkie/Documents/PhD/MetFrag/debugs/emma/msready/v2.0.16-msready/MetFragWeb_Parameters_sdf_2/ChemistryDashboard-Batch-Search_2018-03-03_09_08_54.sdf");
+		//settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, "/tmp/test2.sdf");
+		LocalSDFDatabase db = new LocalSDFDatabase(settings);
+		System.out.println(db.getCandidateIdentifiers().size());
+		
+		System.out.println(db.getCandidateByIdentifier(db.getCandidateIdentifiers().get(0)).getProperty(VariableNames.MOLECULAR_FORMULA_NAME));
+		
+	}
+	
 }

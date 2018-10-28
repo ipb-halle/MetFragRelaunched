@@ -27,5 +27,9 @@ public class ExactMoNASpectralSimilarityInitialiser implements IScoreInitialiser
 			return;
 		}
 	}
+	
+	public void postProcessScoreParameters(Settings settings) {
+		return;
+	}
 
 }

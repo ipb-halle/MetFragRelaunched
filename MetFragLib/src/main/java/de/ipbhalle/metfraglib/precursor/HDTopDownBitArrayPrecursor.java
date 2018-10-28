@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 import org.openscience.cdk.interfaces.IAtomContainer;
 
-import de.ipbhalle.metfraglib.BitArray;
+import de.ipbhalle.metfraglib.FastBitArray;
 import de.ipbhalle.metfraglib.exceptions.AtomTypeNotKnownFromInputListException;
 import de.ipbhalle.metfraglib.molecularformula.HDByteMolecularFormula;
 import de.ipbhalle.metfraglib.parameter.Constants;
@@ -18,6 +18,7 @@ public class HDTopDownBitArrayPrecursor extends TopDownBitArrayPrecursor {
 
 	public HDTopDownBitArrayPrecursor(IAtomContainer precursorMolecule, byte numberOverallDeuteriums) throws AtomTypeNotKnownFromInputListException {
 		super(precursorMolecule);
+		this.initialiseNumberHydrogens();
 		this.numberOverallDeuteriums = numberOverallDeuteriums;
 	}
 	
@@ -28,7 +29,7 @@ public class HDTopDownBitArrayPrecursor extends TopDownBitArrayPrecursor {
 		this.neutralMonoisotopicMass = this.molecularFormula.getMonoisotopicMass();
 		this.initiliseAtomIndexToConnectedAtomIndeces();
 		this.initiliseBondIndexToConnectedAtomIndeces();
-		this.initialiseRingBondsBitArray();
+		this.initialiseRingBondsFastBitArray();
 		this.initialiseAtomAdjacencyList();
 	}
 
@@ -39,7 +40,7 @@ public class HDTopDownBitArrayPrecursor extends TopDownBitArrayPrecursor {
 	protected void initialise() {
 		int[] posToExchange = this.searchForDeuteriumExchangeablePositions(Constants.EXCHANGEABLE_DEUTERIUM_POSITIONS);
 		this.numberExchangeableHydrogens = (byte)posToExchange.length;
-		BitArray atomsWithDeuterium = new BitArray(this.getNonHydrogenAtomCount());
+		FastBitArray atomsWithDeuterium = new FastBitArray(this.getNonHydrogenAtomCount());
 		//just one molecule needs to be generated
 		if(this.numberOverallDeuteriums == 0 || posToExchange.length <= this.numberOverallDeuteriums) {	
 			this.numberDeuteriums = new short[1][this.getNonHydrogenAtomCount()];
@@ -102,7 +103,7 @@ public class HDTopDownBitArrayPrecursor extends TopDownBitArrayPrecursor {
 	}
 	
 	public int[] searchForDeuteriumExchangeablePositions(String[] elementsToExchange) {
-		java.util.Vector<Integer> positionsToExchange = new java.util.Vector<Integer>();
+		java.util.ArrayList<Integer> positionsToExchange = new java.util.ArrayList<Integer>();
 		for (int i = 0; i < this.getNonHydrogenAtomCount(); i++) {
 			String symbol = this.getAtomSymbol(i);
 			if (symbol.equals("H"))
@@ -125,7 +126,7 @@ public class HDTopDownBitArrayPrecursor extends TopDownBitArrayPrecursor {
 	}
 	
 	public int[][] getExchangeCombinations(int[] toExchange, int numToDraw) {
-		java.util.Vector<String> results = new java.util.Vector<String>();
+		java.util.ArrayList<String> results = new java.util.ArrayList<String>();
 		String[] toDrawFrom = new String[toExchange.length];
 		for(int i = 0; i < toDrawFrom.length; i++) toDrawFrom[i] = String.valueOf(toExchange[i]);
 		
@@ -141,7 +142,7 @@ public class HDTopDownBitArrayPrecursor extends TopDownBitArrayPrecursor {
 		return combinations;
 	}
 	
-	public void combinations(String[] arr, int len, int startPosition, String[] result, java.util.Vector<String> finalResults){
+	public void combinations(String[] arr, int len, int startPosition, String[] result, java.util.ArrayList<String> finalResults){
         if (len == 0){
         	String stringResult = Arrays.toString(result);
          	if(!finalResults.contains(stringResult)) finalResults.add(stringResult);

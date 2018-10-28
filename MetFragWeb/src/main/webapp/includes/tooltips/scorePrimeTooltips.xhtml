@@ -29,8 +29,11 @@
 	</p:tooltip>
 	 -->
 	<p:tooltip styleClass="tooltip" escape="false" id="spectralSimilarityScoreLabelTooltip" for="spectralSimilarityScoreLabel" >
-		<h:outputText escape="false" value="Score candidates by spectral similarity based on cosine similarity. 
-			The query spectrum is matched against spectra from MassBank of North America (MoNA)."/>
+		<h:outputText escape="false" value="Score candidates by spectral and structural similarity based on cosine similarity known from the MetFusion approach."/>
+	</p:tooltip>
+	<p:tooltip styleClass="tooltip" escape="false" id="exactSpectralSimilarityScoreLabelTooltip" for="exactSpectralSimilarityScoreLabel" >
+		<h:outputText escape="false" value="Score candidates by spectral similarity based on cosine similarity. The database spectra
+			are selected by the first part of the candidate structure's InChIKey. This score is not normalized."/>
 	</p:tooltip>
 	<p:tooltip styleClass="tooltip" escape="false" id="suspectListInclusionScoreLabelTooltip" for="suspectListInclusionScoreLabel" >
 		<h:outputText value="Score candidates by the presence in defined

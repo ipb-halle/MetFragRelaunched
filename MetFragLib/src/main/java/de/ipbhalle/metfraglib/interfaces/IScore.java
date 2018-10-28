@@ -4,6 +4,8 @@ import de.ipbhalle.metfraglib.settings.Settings;
 
 public interface IScore {
 
+	public boolean isCandidatePropertyScore();
+	
 	public Double getValue();
 	
 	public void setValue(double value);
@@ -25,6 +27,14 @@ public interface IScore {
 	 */
 	public void calculate() throws Exception;
 
+	/**
+	 * re-calculated score after all candidates have been processed
+	 * performed in CombinedMetFragProcess
+	 * 
+	 * @throws Exception
+	 */
+	public void singlePostCalculate() throws Exception;
+	
 	/**
 	 * delete all objects
 	 */

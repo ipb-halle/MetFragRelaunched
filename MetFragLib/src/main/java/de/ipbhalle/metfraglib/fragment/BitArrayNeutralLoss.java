@@ -1,26 +1,23 @@
 package de.ipbhalle.metfraglib.fragment;
 
-import de.ipbhalle.metfraglib.BitArray;
+import de.ipbhalle.metfraglib.FastBitArray;
 import de.ipbhalle.metfraglib.additionals.NeutralLosses;
-import de.ipbhalle.metfraglib.interfaces.IMolecularStructure;
 import de.ipbhalle.metfraglib.precursor.DefaultPrecursor;
 
 public class BitArrayNeutralLoss {
 
-	private BitArray[] neutralLossAtoms;
-	private final DefaultPrecursor precursorMolecule;
+	private FastBitArray[] neutralLossAtoms;
 	/*
 	 * relates to de.ipbhalle.metfrag.additionals.NeutralLosses
 	 */
 	private byte neutralLossIndex;
 	
 	public BitArrayNeutralLoss(int numberNeutralLosses, byte neutralLossIndex, DefaultPrecursor precursorMolecule) {
-		this.neutralLossAtoms = new BitArray[numberNeutralLosses];
-		this.precursorMolecule = precursorMolecule;
+		this.neutralLossAtoms = new FastBitArray[numberNeutralLosses];
 		this.neutralLossIndex = neutralLossIndex;
 	}
 	
-	public BitArray getNeutralLossAtomBitArray(int index) {
+	public FastBitArray getNeutralLossAtomFastBitArray(int index) {
 		return this.neutralLossAtoms[index];
 	}
 	
@@ -28,7 +25,7 @@ public class BitArrayNeutralLoss {
 		return this.neutralLossAtoms.length;
 	}
 	
-	public void setNeutralLoss(int index, BitArray neutralLossAtoms) {
+	public void setNeutralLoss(int index, FastBitArray neutralLossAtoms) {
 		this.neutralLossAtoms[index] = neutralLossAtoms;
 	}
 	
@@ -37,15 +34,11 @@ public class BitArrayNeutralLoss {
 	}
 	
 	public double getMassDifference() {
-		return NeutralLosses.getMassDifference(this.neutralLossIndex);
+		return new NeutralLosses().getMassDifference(this.neutralLossIndex);
 	}
 	
-	public byte getHydrogenDiffeence() {
-		return NeutralLosses.getHydrogenDifference(this.neutralLossIndex);
-	}
-	
-	public IMolecularStructure getPrecursorMolecule() {
-		return this.precursorMolecule;
+	public byte getHydrogenDifference() {
+		return new NeutralLosses().getHydrogenDifference(this.neutralLossIndex);
 	}
 	
 }

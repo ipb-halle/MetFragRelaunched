@@ -31,12 +31,12 @@ public class NewFragmenterUniqueFormulaScore extends NewFragmenterScore {
 		this.matchList = (MatchList)settings.get(VariableNames.MATCH_LIST_NAME);
 		this.value = new Double(0);
 		
-		java.util.Vector<Double> scores = new java.util.Vector<Double>();
-		java.util.Vector<Integer> fragmentIds = new java.util.Vector<Integer>();
-		java.util.Vector<Integer> fragmentIndeces = new java.util.Vector<Integer>();
-		java.util.Vector<IFragment> fragments = new java.util.Vector<IFragment>();
-		java.util.Vector<DefaultFragmentToPeakMatch> matches = new java.util.Vector<DefaultFragmentToPeakMatch>();
-		java.util.Vector<Byte> hydrogenDifferences = new java.util.Vector<Byte>();
+		java.util.ArrayList<Double> scores = new java.util.ArrayList<Double>();
+		java.util.ArrayList<Integer> fragmentIds = new java.util.ArrayList<Integer>();
+		java.util.ArrayList<Integer> fragmentIndeces = new java.util.ArrayList<Integer>();
+		java.util.ArrayList<IFragment> fragments = new java.util.ArrayList<IFragment>();
+		java.util.ArrayList<DefaultFragmentToPeakMatch> matches = new java.util.ArrayList<DefaultFragmentToPeakMatch>();
+		java.util.ArrayList<Byte> hydrogenDifferences = new java.util.ArrayList<Byte>();
 		
 		for(int i = 0; i < this.matchList.getNumberElements(); i++) {
 			DefaultFragmentToPeakMatch currentMatch = null;
@@ -95,7 +95,7 @@ public class NewFragmenterUniqueFormulaScore extends NewFragmenterScore {
 			}
 		}
 
-		java.util.Vector<Integer> validAndBestFragmentMatches = new java.util.Vector<Integer>();
+		java.util.ArrayList<Integer> validAndBestFragmentMatches = new java.util.ArrayList<Integer>();
 		for(int i = 0; i < scores.size(); i++) {
 			boolean validAndBestMatch = true;
 			for(int k = 0; k < validAndBestFragmentMatches.size(); k++) {

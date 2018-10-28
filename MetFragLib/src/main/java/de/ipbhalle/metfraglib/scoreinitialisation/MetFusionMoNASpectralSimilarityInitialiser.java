@@ -2,13 +2,13 @@ package de.ipbhalle.metfraglib.scoreinitialisation;
 
 import org.openscience.cdk.fingerprint.IBitFingerprint;
 
+import de.ipbhalle.metfraglib.fingerprint.TanimotoSimilarity;
 import de.ipbhalle.metfraglib.functions.MoNARestWebService;
 import de.ipbhalle.metfraglib.interfaces.IScoreInitialiser;
 import de.ipbhalle.metfraglib.list.CandidateList;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.process.ProcessingStatus;
 import de.ipbhalle.metfraglib.settings.Settings;
-import de.ipbhalle.metfraglib.similarity.TanimotoSimilarity;
 
 public class MetFusionMoNASpectralSimilarityInitialiser implements IScoreInitialiser {
 
@@ -37,4 +37,8 @@ public class MetFusionMoNASpectralSimilarityInitialiser implements IScoreInitial
 			
 	}
 
+	public void postProcessScoreParameters(Settings settings) {
+		return;
+	}
+	
 }
