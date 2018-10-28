@@ -2,7 +2,6 @@ package de.ipbhalle.metfraglib.database;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -32,6 +31,7 @@ public class LocalPropertyFileDatabase extends AbstractFileDatabase {
 
 	protected void readCandidatesFromFile() throws Exception {
 		this.candidates = new java.util.ArrayList<ICandidate>();
+
 		java.io.File f = new java.io.File((String) this.settings.get(VariableNames.LOCAL_DATABASE_PATH_NAME));
 		java.util.List<String> propertyNames = new java.util.ArrayList<String>();
 		
@@ -132,7 +132,6 @@ public class LocalPropertyFileDatabase extends AbstractFileDatabase {
 		}
 		throw new Exception();
 	}
-
 	public static void main(String[] args) throws Exception {
 		Settings settings = new Settings();
 		settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, "/home/cruttkie/Documents/PhD/MetFrag/debugs/emma/msready/v2.0.16-msready/Eawag_rt_inchi.csv");

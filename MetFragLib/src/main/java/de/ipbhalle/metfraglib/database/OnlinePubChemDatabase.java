@@ -150,7 +150,7 @@ public class OnlinePubChemDatabase extends AbstractDatabase {
 				/*
 				 * if not fetch the url stream again
 				 */
-				stream = HelperFunctions.getInputStreamFromURL(urlname);
+				stream = HelperFunctions.getInputStreamFromURL(urlname, this.settings.get(VariableNames.PUBCHEM_PROXY_SERVER), this.settings.get(VariableNames.PUBCHEM_PROXY_PORT));
 				breader = new java.io.BufferedReader(new java.io.InputStreamReader(stream));
 				try {
 					Thread.sleep(1000);

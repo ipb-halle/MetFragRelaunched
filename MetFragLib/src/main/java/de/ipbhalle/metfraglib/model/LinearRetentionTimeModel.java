@@ -43,7 +43,6 @@ public class LinearRetentionTimeModel extends AbstractModel {
 	 */
 	private void initialise() {
 		String modelFileName = (String)this.settings.get(VariableNames.RETENTION_TIME_TRAINING_FILE_NAME);
-	
 		Settings settings = new Settings();
 		settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, modelFileName);
 		if(this.settings.containsKey(VariableNames.USER_LOG_P_VALUE_NAME) && this.settings.get(VariableNames.USER_LOG_P_VALUE_NAME) != null)

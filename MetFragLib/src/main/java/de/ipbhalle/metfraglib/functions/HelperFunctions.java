@@ -3,7 +3,9 @@ package de.ipbhalle.metfraglib.functions;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
+import java.net.Proxy;
 import java.net.URL;
 
 public class HelperFunctions {
@@ -68,6 +70,47 @@ public class HelperFunctions {
 		
 		return stream;
 	}
+
+	/**
+	 * 
+	 * @param urlname
+	 * @return
+	 */
+	public static InputStream getInputStreamFromURL(String urlname, Object proxyServer, Object proxyPort) throws Exception {
+		InputStream stream = null;
+		
+		try {
+			URL url = new URL(urlname);
+			java.net.HttpURLConnection connection = null;
+			Proxy proxy = null;
+			try {
+				if(proxyServer != null && proxyPort != null) {
+					proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress((String)proxyServer, (Integer)proxyPort));
+				}
+			}
+			catch(Exception e1) {
+				System.err.println("Could not set proxy. Check settings.");
+			}
+				
+			if(proxy == null) connection = (HttpURLConnection) url.openConnection();
+			else connection = (HttpURLConnection) url.openConnection(proxy);
+			
+			if (connection.getResponseCode() != 200 && connection.getResponseCode() != 404 && connection.getResponseCode() != 202) {
+				throw new IOException(connection.getResponseMessage());
+			}
+			stream = connection.getInputStream();
+		} catch(MalformedURLException mue) {
+			System.err.println("Error: Could create URL object!");
+			throw new Exception();
+		} catch (IOException e) {
+			System.err.println("Error: Could not open URL connection!");
+			System.err.println(urlname);
+			throw new Exception();
+		}
+		
+		return stream;
+	}
+	
 	
 	public static String stringArrayToString(String[] stringArray) {
 		if(stringArray == null) return "";

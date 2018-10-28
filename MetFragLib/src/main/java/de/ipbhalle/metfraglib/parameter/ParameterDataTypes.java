@@ -61,7 +61,6 @@ public class ParameterDataTypes {
 		parameterDatatypes.put(	VariableNames.MONA_PRESENT_INCHIKEYS_FILE_NAME, 						"String"	);
 		parameterDatatypes.put(	VariableNames.SMARTS_PEAK_ANNOTATION_FILE_NAME, 						"String"	);
 		parameterDatatypes.put( VariableNames.OFFLINE_SPECTRAL_DATABASE_FILE_NAME, 						"String"	);
-		
 		/*
 		 * candidate filters
 		 */

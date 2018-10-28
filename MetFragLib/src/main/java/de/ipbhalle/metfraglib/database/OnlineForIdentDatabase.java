@@ -36,6 +36,7 @@ public class OnlineForIdentDatabase extends AbstractDatabase {
 	public java.util.ArrayList<String> getCandidateIdentifiers(String molecularFormula) throws Exception {
 		logger.info("Fetching candidates from FOR-IDENT");
 		java.util.ArrayList<String> cids = new java.util.ArrayList<String>();
+
 		this.candidateList = this.forIdentRestWebService.getCandidatesByMolecularFormula(molecularFormula);
 		for(int i = 0; i < this.candidateList.getNumberElements(); i++) {
 			cids.add(this.candidateList.getElement(i).getIdentifier());

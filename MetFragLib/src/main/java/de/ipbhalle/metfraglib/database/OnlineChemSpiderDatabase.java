@@ -48,7 +48,6 @@ public class OnlineChemSpiderDatabase extends AbstractDatabase {
 		super(settings);
 		this.chemSpiderToken = (String)settings.get(VariableNames.CHEMSPIDER_TOKEN_NAME);
 		Logger.getLogger("org.apache.axiom.util.stax.dialect.StAXDialectDetector").setLevel(Level.ERROR);
-		logger.info("Fetching candidates from ChemSpider");
 	}
 
 	/**
@@ -109,7 +108,6 @@ public class OnlineChemSpiderDatabase extends AbstractDatabase {
 			this.logger.error("Error: Could not perform database query. This could be caused by a temporal database timeout. Try again later.");
 			throw new Exception();
 		}
-		System.out.println(molecularFormula);
         SearchByFormulaAsync sbfa = new SearchByFormulaAsync();
         sbfa.setFormula(molecularFormula);
         sbfa.setToken(this.chemSpiderToken);

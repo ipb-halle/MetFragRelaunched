@@ -192,9 +192,9 @@
 									<h:outputText
 										rendered="#{not metFragResult.inChIKeyLinkAvailable}"
 										value="#{metFragResult.inchikey1}" />
-									<p:link rendered="#{metFragResult.inChIKeyLinkAvailable}"
+									<p:link target="_blank" rendered="#{metFragResult.inChIKeyLinkAvailable}"
 										href="#{metFragResult.inChIKeyLink}"
-										value="#{metFragResult.inchikey1}" target="_blank" />
+										value="#{metFragResult.inchikey1}"/>
 								</p:column>
 	
 								<p:column id="mass" width="100" headerText="Mass"

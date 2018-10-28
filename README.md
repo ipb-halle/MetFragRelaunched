@@ -1,3 +1,6 @@
+[![Build
+Status](https://travis-ci.org/c-ruttkies/MetFragRelaunched.svg?branch=master)](https://travis-ci.org/c-ruttkies/MetFragRelaunched)
+
 MetFrag relaunched
 ==================
 
@@ -29,7 +32,7 @@ MetFragCommandLine
 
 ##### Basics
 - MetFrag commandline version depends on MetFragLib
-- for a short tutorial visit http://c-ruttkies.github.io/MetFrag/projects/metfrag22cl/
+- for a short tutorial visit http://c-ruttkies.github.io/MetFrag/projects/metfragcl/
 
 ##### Build
 ```bash
@@ -129,7 +132,7 @@ mvn clean tomcat7:run-war -pl MetFragWeb -DskipTests
 ```
 
 - after the successful build Tomcat web server runs on port 8080<br>
-- MetFragWeb can be accessed via pointing to http://localhost:8080 in the web browser<br>
+- MetFragWeb can be accessed via pointing to http://localhost:8080/index.xhtml in the web browser<br>
 
 - you can change the port by adding -Dmaven.tomcat.port=...<br>
 
@@ -149,7 +152,7 @@ mvn package -pl MetFragWeb
 mvn tomcat7:run-war-only -pl MetFragWeb
 ```
 
-- point your browser to http://localhost:8080 to use the running MetFragWeb instance
+- point your browser to http://localhost:8080/index.xhtml to use the running MetFragWeb instance
 
 Additionals
 -----------
