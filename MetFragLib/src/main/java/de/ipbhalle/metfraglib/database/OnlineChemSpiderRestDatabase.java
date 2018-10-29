@@ -16,7 +16,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.openscience.cdk.exception.CDKException;
 
 import com.google.common.primitives.Ints;
 
@@ -165,42 +164,45 @@ public class OnlineChemSpiderRestDatabase extends AbstractDatabase {
 		this.addToCandidateList(identifiers.subList(Math.min(identifiers.size(), 100), identifiers.size()), candidateList);
 	}
 	
-	protected ICandidate generateCandidate(JSONObject jsonObject) throws CDKException, Exception {
-		
-		String smiles = ((String)jsonObject.get("smiles")).replaceAll("\\n", "");
-		Double mass = (Double)jsonObject.get("monoisotopicMass");
-		Long dataSourceCount = (Long)jsonObject.get("dataSourceCount");
-		String commonName = (String)jsonObject.get("commonName");
-		Long referenceCount = (Long)jsonObject.get("referenceCount");
-		String formula = (String)jsonObject.get("formula");
-		Long pubMedCount = (Long)jsonObject.get("pubMedCount");
-		Long rscCount = (Long)jsonObject.get("rscCount");
-		String id = String.valueOf((long)jsonObject.get("id"));
-		
-		String[] inchi = null;
+	protected ICandidate generateCandidate(JSONObject jsonObject) {
 		try {
-			inchi = MoleculeFunctions.getInChIInfoFromSmiles(smiles);
-		} catch (Exception e) {
+			String smiles = ((String)jsonObject.get("smiles")).replaceAll("\\n", "");
+			Double mass = (Double)jsonObject.get("monoisotopicMass");
+			Long dataSourceCount = (Long)jsonObject.get("dataSourceCount");
+			String commonName = (String)jsonObject.get("commonName");
+			Long referenceCount = (Long)jsonObject.get("referenceCount");
+			String formula = (String)jsonObject.get("formula");
+			Long pubMedCount = (Long)jsonObject.get("pubMedCount");
+			Long rscCount = (Long)jsonObject.get("rscCount");
+			String id = String.valueOf((long)jsonObject.get("id"));
+			
+			String[] inchi = null;
+			try {
+				inchi = MoleculeFunctions.getInChIInfoFromSmiles(smiles);
+			} catch (Exception e) {
+				return null;
+			}
+		
+			ICandidate candidate = new TopDownPrecursorCandidate(inchi[0], id);
+			candidate.setProperty(VariableNames.INCHI_KEY_NAME, inchi[1]);
+			String[] tmp = inchi[1].split("-");
+			candidate.setProperty(VariableNames.INCHI_KEY_1_NAME, tmp[0]);
+			candidate.setProperty(VariableNames.INCHI_KEY_2_NAME, tmp[1]);
+			candidate.setProperty(VariableNames.INCHI_KEY_3_NAME, tmp[2]);
+			
+			candidate.setProperty(VariableNames.CHEMSPIDER_DATA_SOURCE_COUNT, (double)Ints.checkedCast(dataSourceCount));
+			candidate.setProperty(VariableNames.CHEMSPIDER_NUMBER_PUBMED_REFERENCES_NAME, (double)Ints.checkedCast(pubMedCount));
+			candidate.setProperty(VariableNames.CHEMSPIDER_REFERENCE_COUNT, (double)Ints.checkedCast(referenceCount));
+			candidate.setProperty(VariableNames.CHEMSPIDER_RSC_COUNT, (double)Ints.checkedCast(rscCount));
+			candidate.setProperty(VariableNames.MONOISOTOPIC_MASS_NAME, mass);
+			candidate.setProperty(VariableNames.COMPOUND_NAME_NAME, commonName);
+			candidate.setProperty(VariableNames.SMILES_NAME, smiles);
+			candidate.setProperty(VariableNames.MOLECULAR_FORMULA_NAME, this.processFormula(formula));
+			
+			return candidate;
+		} catch(Exception e) {
 			return null;
 		}
-
-		ICandidate candidate = new TopDownPrecursorCandidate(inchi[0], id);
-		candidate.setProperty(VariableNames.INCHI_KEY_NAME, inchi[1]);
-		String[] tmp = inchi[1].split("-");
-		candidate.setProperty(VariableNames.INCHI_KEY_1_NAME, tmp[0]);
-		candidate.setProperty(VariableNames.INCHI_KEY_2_NAME, tmp[1]);
-		candidate.setProperty(VariableNames.INCHI_KEY_3_NAME, tmp[2]);
-		
-		candidate.setProperty(VariableNames.CHEMSPIDER_DATA_SOURCE_COUNT, (double)Ints.checkedCast(dataSourceCount));
-		candidate.setProperty(VariableNames.CHEMSPIDER_NUMBER_PUBMED_REFERENCES_NAME, (double)Ints.checkedCast(pubMedCount));
-		candidate.setProperty(VariableNames.CHEMSPIDER_REFERENCE_COUNT, (double)Ints.checkedCast(referenceCount));
-		candidate.setProperty(VariableNames.CHEMSPIDER_RSC_COUNT, (double)Ints.checkedCast(rscCount));
-		candidate.setProperty(VariableNames.MONOISOTOPIC_MASS_NAME, mass);
-		candidate.setProperty(VariableNames.COMPOUND_NAME_NAME, commonName);
-		candidate.setProperty(VariableNames.SMILES_NAME, smiles);
-		candidate.setProperty(VariableNames.MOLECULAR_FORMULA_NAME, this.processFormula(formula));
-		
-		return candidate;
 	}
 
 	private String processFormula(String preFormula) {
