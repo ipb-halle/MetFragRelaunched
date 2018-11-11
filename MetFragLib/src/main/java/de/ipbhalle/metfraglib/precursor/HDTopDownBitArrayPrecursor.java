@@ -24,15 +24,10 @@ public class HDTopDownBitArrayPrecursor extends TopDownBitArrayPrecursor {
 	
 	@Override
 	public void preprocessPrecursor() throws AtomTypeNotKnownFromInputListException, Exception {
+		super.preprocessPrecursor();
 		this.initialise();
-		this.initialiseMolecularFormula();
-		this.neutralMonoisotopicMass = this.molecularFormula.getMonoisotopicMass();
-		this.initiliseAtomIndexToConnectedAtomIndeces();
-		this.initiliseBondIndexToConnectedAtomIndeces();
-		this.initialiseRingBondsFastBitArray();
-		this.initialiseAtomAdjacencyList();
 	}
-
+	
 	protected void initialiseMolecularFormula() throws AtomTypeNotKnownFromInputListException {
 		this.molecularFormula = new HDByteMolecularFormula(this);
 	}

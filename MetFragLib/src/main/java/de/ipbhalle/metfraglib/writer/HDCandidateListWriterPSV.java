@@ -96,6 +96,7 @@ public class HDCandidateListWriterPSV implements IWriter {
 				vec.add(candidate);
 				hdGroupedCandidates.put((String)candidate.getProperty(VariableNames.HD_GROUP_FLAG_NAME), vec);
 			}
+			candidate.getProperties().remove(VariableNames.HD_GROUP_FLAG_NAME);
 		}
 		java.util.ArrayList<String> propertyNames = new java.util.ArrayList<String>();
 		java.util.Iterator<?> it = (java.util.Iterator<?>)hdGroupedCandidates.keys();
@@ -131,12 +132,13 @@ public class HDCandidateListWriterPSV implements IWriter {
 			if(propertyNames.size() >= 1) {
 				String key = propertyNames.get(0);
 				if(i == 0) heading += key;
-				lines[i] = "" + checkEmptyProperty(scoredCandidate.getProperty(key));
+				lines[i] = "" + checkEmptyProperty(scoredCandidate.getProperty(key), key);
 			}
 			for(int k = 1; k < propertyNames.size(); k++) { 
 				String key = propertyNames.get(k);
 				if(i == 0) heading += "|" + key;
-				lines[i] += "|" + checkEmptyProperty(scoredCandidate.getProperty(key));
+				String prop = checkEmptyProperty(scoredCandidate.getProperty(key), key).toString();
+				lines[i] += "|" + prop;
 			}
 		}
 		
@@ -152,10 +154,12 @@ public class HDCandidateListWriterPSV implements IWriter {
 		return true;
 	}
 	
-	private Object checkEmptyProperty(Object prop) {
+	private Object checkEmptyProperty(Object prop, String key) {
 		try {
 			String value = (String)prop;
 			if(value.trim().length() == 0) return "NA";
+			if(key.equals(VariableNames.IDENTIFIER_NAME)) return value.split("|")[0];
+			if(key.equals(VariableNames.HD_GROUP_FLAG_NAME)) return value.split("|")[1];
 		}
 		catch(Exception e) {
 			return prop;

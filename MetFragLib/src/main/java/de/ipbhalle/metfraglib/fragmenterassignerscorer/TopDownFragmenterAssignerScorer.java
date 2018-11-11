@@ -51,9 +51,9 @@ public class TopDownFragmenterAssignerScorer extends AbstractFragmenterAssignerS
 		this.candidates[0].setProperty(VariableNames.MAXIMUM_TREE_DEPTH_NAME, maximumTreeDepth);
 		//read peaklist
 		SortedTandemMassPeakList tandemMassPeakList = (SortedTandemMassPeakList)settings.get(VariableNames.PEAK_LIST_NAME);
-		tandemMassPeakList.initialiseMassLimits((Double)settings.get(VariableNames.RELATIVE_MASS_DEVIATION_NAME), (Double)settings.get(VariableNames.ABSOLUTE_MASS_DEVIATION_NAME));
-		Integer precursorIonType = (Integer)settings.get(VariableNames.PRECURSOR_ION_MODE_NAME);
-		Boolean positiveMode = (Boolean)settings.get(VariableNames.IS_POSITIVE_ION_MODE_NAME);
+		tandemMassPeakList.initialiseMassLimits((Double)this.settings.get(VariableNames.RELATIVE_MASS_DEVIATION_NAME), (Double)settings.get(VariableNames.ABSOLUTE_MASS_DEVIATION_NAME));
+		Integer precursorIonType = (Integer)this.settings.get(VariableNames.PRECURSOR_ION_MODE_NAME);
+		Boolean positiveMode = (Boolean)this.settings.get(VariableNames.IS_POSITIVE_ION_MODE_NAME);
 		int precursorIonTypeIndex = Constants.ADDUCT_NOMINAL_MASSES.indexOf(precursorIonType);
 		this.fragmenter.setMinimumFragmentMassLimit(this.fragmenter.getMinimumFragmentMassLimit() - Constants.ADDUCT_MASSES.get(precursorIonTypeIndex));
 		

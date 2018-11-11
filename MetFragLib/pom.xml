@@ -19,7 +19,6 @@
 		<cdk.version>2.1</cdk.version>
 	</properties>
 
-
 	<build>
 		<plugins>
 			<plugin>

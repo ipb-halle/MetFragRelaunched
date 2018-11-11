@@ -71,8 +71,8 @@ public class HDTopDownBitArrayFragmentWrapper extends AbstractTopDownBitArrayFra
 	public byte matchToPeak(IMolecularStructure precursorMolecule, IPeak peak, int precursorIonTypeIndex, boolean isPositive, IMatch[] fragmentPeakMatch) {
 		if(fragmentPeakMatch == null || fragmentPeakMatch.length != 1) return -1;
 		double[] ionisationTypeMassCorrection = new double [] {
-				Constants.getIonisationTypeMassCorrection(precursorIonTypeIndex, isPositive),
-				Constants.getIonisationTypeMassCorrection(0, isPositive)
+			Constants.getIonisationTypeMassCorrection(precursorIonTypeIndex, isPositive),
+			Constants.getIonisationTypeMassCorrection(0, isPositive)
 		};
 		//count number deuteriums of current fragment
 		byte numberDeuteriums = 0;
