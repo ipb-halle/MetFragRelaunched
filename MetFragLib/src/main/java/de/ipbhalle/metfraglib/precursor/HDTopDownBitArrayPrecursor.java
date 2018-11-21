@@ -63,6 +63,10 @@ public class HDTopDownBitArrayPrecursor extends TopDownBitArrayPrecursor {
 		}
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public int getNumberDeuteratedCombinations() {
 		return this.numberDeuteriums.length;
 	}

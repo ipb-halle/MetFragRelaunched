@@ -495,8 +495,10 @@ public class HDTopDownFragmenterAssignerScorer extends TopDownFragmenterAssigner
 			/*
 			 * calculate match
 			 */
-			if(tempPeakPointer >= 0) 
-				matched = currentFragmentWrapper.matchToPeak(this.candidates[precursorIndex].getPrecursorMolecule(), currentPeak, this.precursorIonTypeIndexHD, this.positiveMode, match);
+			if(tempPeakPointer >= 0)
+				matched = currentFragmentWrapper.matchToPeak(this.candidates[precursorIndex].getPrecursorMolecule(), 
+					currentPeak, this.precursorIonTypeIndexHD, this.positiveMode, match);
+				
 			/*
 			 * check whether match has occurred
 			 */

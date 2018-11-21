@@ -17,7 +17,7 @@ public class HDPrecursorCandidateWrapper {
 				new HDTopDownBitArrayPrecursor(
 						this.candidate.getImplicitHydrogenAtomContainer(), 
 						this.candidate.getProperty(VariableNames.HD_NUMBER_EXCHANGED_HYDROGENS) != null ? (Byte)this.candidate.getProperty(VariableNames.HD_NUMBER_EXCHANGED_HYDROGENS) : (byte)0));
-		this.candidate.getPrecursorMolecule().preprocessPrecursor();	
+		this.candidate.getPrecursorMolecule().preprocessPrecursor();
 	}
 
 	public void setProperty(String key, Object object) {
