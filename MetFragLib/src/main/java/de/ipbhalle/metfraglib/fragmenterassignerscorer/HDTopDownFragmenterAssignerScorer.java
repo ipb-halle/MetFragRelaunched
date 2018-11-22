@@ -183,6 +183,7 @@ public class HDTopDownFragmenterAssignerScorer extends TopDownFragmenterAssigner
 		deuteratedCandidates[0] = this.candidates[0];
 		for(int i = 1; i < deuteratedCandidateNumber; i++) {
 			deuteratedCandidates[i] = new TopDownPrecursorCandidate(this.candidates[0].getInChI(), this.candidates[0].getIdentifier());
+			deuteratedCandidates[i].setPrecursorMolecule(candidatePrecursor);
 		}
 		
 		this.calculateFragmenterScores(peakIndexToPeakMatch, singleScores, summedScores);
@@ -496,7 +497,7 @@ public class HDTopDownFragmenterAssignerScorer extends TopDownFragmenterAssigner
 			 * calculate match
 			 */
 			if(tempPeakPointer >= 0)
-				matched = currentFragmentWrapper.matchToPeak(this.candidates[precursorIndex].getPrecursorMolecule(), 
+				matched = currentFragmentWrapper.matchToPeak(this.candidates[0].getPrecursorMolecule(), 
 					currentPeak, this.precursorIonTypeIndexHD, this.positiveMode, match);
 				
 			/*
