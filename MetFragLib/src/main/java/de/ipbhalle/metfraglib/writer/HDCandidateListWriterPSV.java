@@ -158,8 +158,8 @@ public class HDCandidateListWriterPSV implements IWriter {
 		try {
 			String value = (String)prop;
 			if(value.trim().length() == 0) return "NA";
-			if(key.equals(VariableNames.IDENTIFIER_NAME)) return value.split("|")[0];
-			if(key.equals(VariableNames.HD_GROUP_FLAG_NAME)) return value.split("|")[1];
+			if(key.equals(VariableNames.IDENTIFIER_NAME)) return value.split("\\|")[0];
+			if(key.equals(VariableNames.HD_GROUP_FLAG_NAME)) return value.split("\\|")[1];
 		}
 		catch(Exception e) {
 			return prop;

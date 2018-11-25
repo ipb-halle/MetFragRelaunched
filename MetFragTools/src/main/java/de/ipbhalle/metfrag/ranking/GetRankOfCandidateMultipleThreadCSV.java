@@ -418,7 +418,6 @@ public class GetRankOfCandidateMultipleThreadCSV {
 
 			for (int i = 0; i < candidates.getNumberElements(); i++) {
 				String currentInChIKey1 = (String) candidates.getElement(i).getProperty(VariableNames.INCHI_KEY_1_NAME);
-
 				double[] scores = new double[scoringPropertyNames.length];
 				// get score and check for maximum
 				for (int k = 0; k < scores.length; k++) {

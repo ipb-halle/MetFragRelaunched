@@ -134,12 +134,12 @@ public class HDCandidateListWriterExtendedPSV implements IWriter {
 			if(propertyNames.size() >= 1) {
 				String key = propertyNames.get(0);
 				if(i == 0) heading += key;
-				lines[i] = "" + checkEmptyProperty(scoredCandidate.getProperty(key));
+				lines[i] = "" + checkEmptyProperty(scoredCandidate.getProperty(key), key);
 			}
 			for(int k = 1; k < propertyNames.size(); k++) { 
 				String key = propertyNames.get(k);
 				if(i == 0) heading += "|" + key;
-				lines[i] += "|" + checkEmptyProperty(scoredCandidate.getProperty(key));
+				lines[i] += "|" + checkEmptyProperty(scoredCandidate.getProperty(key), key);
 			}
 		}
 		
@@ -155,9 +155,10 @@ public class HDCandidateListWriterExtendedPSV implements IWriter {
 		return true;
 	}
 	
-	private Object checkEmptyProperty(Object prop) {
+	private Object checkEmptyProperty(Object prop, String key) {
 		try {
 			String value = (String)prop;
+			if(key.equals(VariableNames.IDENTIFIER_NAME)) return value.split("\\|")[0];
 			if(value.trim().length() == 0) return "NA";
 		}
 		catch(Exception e) {
