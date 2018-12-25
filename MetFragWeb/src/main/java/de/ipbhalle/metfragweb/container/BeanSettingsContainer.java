@@ -142,6 +142,12 @@ public class BeanSettingsContainer {
 	protected boolean dsstoxSuspectListScoreEnabled = false;
 	
 	/*
+	 * for ChemSpider REST
+	 */
+	protected String chemSpiderRestToken = "";
+	
+	
+	/*
 	 * fragmentation parameters
 	 */
 	protected String relativeMassDeviation = "5";
@@ -199,7 +205,6 @@ public class BeanSettingsContainer {
 	 * initialization
 	 */
 	public BeanSettingsContainer(String rootSessionDir) {
-		System.out.println("init BeanSettingsContainer");
 		this.rootSessionDir = rootSessionDir;
 		this.init();
 	}
@@ -673,6 +678,14 @@ public class BeanSettingsContainer {
 		return this.retrievedCandidateList;
 	}
 	
+	public String getChemSpiderRestToken() {
+		return this.chemSpiderRestToken;
+	}
+
+	public void setChemSpiderRestToken(String chemSpiderRestToken) {
+		this.chemSpiderRestToken = chemSpiderRestToken;
+	}
+
 	/*
 	 * filter settings
 	 */
@@ -875,6 +888,9 @@ public class BeanSettingsContainer {
 		this.setMetFragSettings(new MetFragGlobalSettings());
 		this.prepareDatabaseSettings();
 		this.metFragSettings.includeSettings(this.metFragSettingsFile, true, this.database.equals("ChemSpider") ? null : new String[] {"ChemSpiderToken"});
+
+		if(((String)this.database).equals("ChemSpiderRest")) 
+			this.metFragSettings.set(VariableNames.CHEMSPIDER_REST_TOKEN_NAME, this.chemSpiderRestToken);
 		/*
 		 * init the new combinedMetFragProcess
 		 */
@@ -1216,7 +1232,6 @@ public class BeanSettingsContainer {
 	 * overall settings processing
 	 */
 	private void prepareDatabaseSettings() throws ParameterNotKnownException {
-		System.out.println("prepareDatabaseSettings");
 		Object database = this.database;
 		String metchemLibrary = "";
 		if(!this.metChemDatabaseDefined) {
@@ -1259,7 +1274,6 @@ public class BeanSettingsContainer {
 		}
 		// if database is from type AdditionalFileDatabase
 		if(database instanceof AdditionalFileDatabase) {
-			System.out.println("AdditionalFileDatabase selected");
 			this.getMetFragSettings().set(VariableNames.METFRAG_DATABASE_TYPE_NAME, ((AdditionalFileDatabase)database).getType());
 			this.getMetFragSettings().set(VariableNames.LOCAL_DATABASE_PATH_NAME, ((AdditionalFileDatabase)database).getFilename());
 		} else { // else it's from type string

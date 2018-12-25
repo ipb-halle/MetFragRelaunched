@@ -75,7 +75,7 @@ import de.ipbhalle.metfragweb.validator.SmartsValidator;
 @SessionScoped
 public class MetFragWebBean {
 
-	private final String version = "v2.0.20";
+	private final String version = "v2.1";
 	/*
 	 * combines all the settings
 	 */
@@ -177,7 +177,6 @@ public class MetFragWebBean {
     	java.util.Map<String, Object> sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
         if(sessionMap.containsKey("landingBean"))
         {
-        	System.out.println("updating values");
             MetFragLandingBean landingBean = (MetFragLandingBean) sessionMap.get("landingBean");
             java.util.List<Parameter> params = landingBean.getParameters();
             for(Parameter param : params) {
@@ -220,7 +219,6 @@ public class MetFragWebBean {
 				}
 			}
 			//generate new folder structure
-			System.out.println("generate session folders");
 			new java.io.File(root + Constants.OS_SPECIFIC_FILE_SEPARATOR + "suspectlistsscore").mkdirs();
 			new java.io.File(root + Constants.OS_SPECIFIC_FILE_SEPARATOR + "suspectlistsfilter").mkdirs();
 			new java.io.File(root + Constants.OS_SPECIFIC_FILE_SEPARATOR + "retentiontimescore").mkdirs();
@@ -264,7 +262,6 @@ public class MetFragWebBean {
 	 * @param event
 	 */
 	public void parametersUploadListener(org.primefaces.event.FileUploadEvent event) {
-		System.out.println("parametersUploadListener");
 		FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("metFragWebBean");
 		this.errorMessages.removeKey("updateParametersError");
 		this.errorMessages.removeKey("buttonDownloadCompoundsError");
@@ -364,8 +361,10 @@ public class MetFragWebBean {
 		this.errorMessages = new Messages();
 		this.infoMessages = new Messages();
 		this.warningMessages = new Messages();
-		if(database.equals("ChemSpider") || database.equals("ChemSpiderRest")) this.warningMessages.setMessage("databaseWarning", "ChemSpider uses an online query which slows down the candidate retrieval.");
-		else if(database.equals("LocalSDF")) this.warningMessages.setMessage("databaseWarning", "Molecules with aromatic bond order type (4) are discarded as not yet supported by CDK.");
+		if(database.equals("ChemSpider") || database.equals("ChemSpiderRest")) 
+			this.warningMessages.setMessage("databaseWarning", "ChemSpider uses an online query which slows down the candidate retrieval.");
+		else if(database.equals("LocalSDF")) 
+			this.warningMessages.setMessage("databaseWarning", "Molecules with aromatic bond order type (4) are discarded as not yet supported by CDK.");
 		this.processedPeaklistObject = null;
 		this.beanSettingsContainer.setDatabase(database);
 		this.candidateStatistics.setShowPointLabels(false);
@@ -403,6 +402,21 @@ public class MetFragWebBean {
 		}
 		finally {
 			this.beanSettingsContainer.setFormula(formula);
+		}
+	}
+	
+	public String getChemSpiderRestToken() {
+		return this.beanSettingsContainer.getChemSpiderRestToken() == null ? "" : this.beanSettingsContainer.getChemSpiderRestToken();
+	}
+	
+	public void setChemSpiderRestToken(String chemSpiderRestToken) {
+		if (chemSpiderRestToken != null && chemSpiderRestToken.trim().length() != 0) {
+			this.errorMessages.removeKey("inputChemSpiderRestTokenError");
+			this.beanSettingsContainer.setChemSpiderRestToken(chemSpiderRestToken);
+		}
+		else {
+			this.errorMessages.removeKey("inputChemSpiderRestTokenError");
+			this.validMolecularFormulaDefined = false;
 		}
 	}
 	
@@ -596,6 +610,11 @@ public class MetFragWebBean {
 				checksFine = false;
 				this.errorMessages.setMessage("inputFormulaError", "Invalid molecular formula value.");
 			}
+		}
+		// check chemspider database and token
+		if (((String)this.beanSettingsContainer.getDatabase()).equals("ChemSpiderRest") && (this.beanSettingsContainer.getChemSpiderRestToken() == null || this.beanSettingsContainer.getChemSpiderRestToken().equals(""))) {
+			checksFine = false;
+			this.errorMessages.setMessage("inputChemSpiderRestTokenError", "Error: ChemSpider token required.");
 		}
 		return checksFine;
 	}

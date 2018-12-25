@@ -382,24 +382,6 @@
 	        			<h:outputText style="padding-left: 10px" id="availableDatabaseScoresMenuLabel" value="#{metFragWebBean.availableDatabaseScoresMenuLabel}" />
 	        		</h:panelGrid>
         		</h:panelGroup>
-				<!-- 
-				<h:panelGroup layout="block" style="padding-left: 2px;">
-					<h:dataTable styleClass="availableScoreTable"
-						id="availableDatabaseScoresTable"
-						value="#{metFragWebBean.availableDatabaseScores}"
-						var="availableScore"
-						rendered="#{metFragWebBean.availableDatabaseScoresExist}">
-						<h:column style="padding-top: 5px;">
-							<p:selectBooleanCheckbox value="#{availableScore.selected}">
-								<p:ajax />
-							</p:selectBooleanCheckbox>
-						</h:column>
-						<h:column>
-							#{availableScore.label}
-						</h:column>
-					</h:dataTable>
-				</h:panelGroup>
-				 -->
 			</h:panelGrid>
 
 			<ui:insert name="scorePrimeTooltips">

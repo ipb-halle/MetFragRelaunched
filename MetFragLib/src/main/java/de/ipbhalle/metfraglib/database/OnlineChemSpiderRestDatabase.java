@@ -135,7 +135,7 @@ public class OnlineChemSpiderRestDatabase extends AbstractDatabase {
 		
 		HttpPost httpPost = new HttpPost("https://api.rsc.org/compounds/v1/records/batch");
 		
-		String json = "{\"recordIds\": [" + recordIds + "], \"fields\": [\"SMILES,MonoisotopicMass,Formula,CommonName,ReferenceCount,DataSourceCount,PubMedCount,RSCCount\"] }";
+		String json = "{\"recordIds\": [" + recordIds + "], \"fields\": [\"SMILES\",\"MonoisotopicMass\",\"Formula\",\"CommonName\",\"ReferenceCount\",\"DataSourceCount\",\"PubMedCount\",\"RSCCount\"] }";
 
 		StringEntity entity = new StringEntity(json);
 		entity.setContentType("application/json");
@@ -219,7 +219,7 @@ public class OnlineChemSpiderRestDatabase extends AbstractDatabase {
 		while(!this.checkStatus(queryid)) {
 			trials++;
 			try {
-				Thread.sleep(2000);
+				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				if(trials >= MAX_TRIALS) throw new Exception();
 				continue;

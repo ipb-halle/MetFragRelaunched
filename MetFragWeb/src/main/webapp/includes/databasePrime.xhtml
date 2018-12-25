@@ -88,7 +88,30 @@
 								</h:panelGroup>
 							</h:panelGrid>
 						</h:panelGrid>
-
+						
+						<h:outputLabel rendered="#{metFragWebBean.database == 'ChemSpiderRest'}" 
+							value="Token:" width="15%" id="inputChemSpiderTokenLabel"/>
+						<h:panelGrid columns="2"
+							rendered="#{metFragWebBean.database == 'ChemSpiderRest'}">
+							<p:inputText id="inputChemSpiderToken" required="false"
+								value="#{metFragWebBean.chemSpiderRestToken}"
+								rendered="#{metFragWebBean.database == 'ChemSpiderRest'}">
+								<p:ajax event="blur" update="databaseParameters" />
+							</p:inputText>
+							<h:panelGroup id="inputChemSpiderRestTokenError" layout="block"
+								styleClass="ui-messages ui-widget"
+								rendered="#{metFragWebBean.isErrorMessage('inputChemSpiderRestTokenError')}">
+								<h:panelGroup styleClass="ui-messages-error-user ui-corner-all"
+									layout="block">
+									<h:panelGrid columns="2">
+										<h:panelGroup styleClass="ui-messages-error-icon-user" />
+										<h:outputText styleClass="ui-messages-error-detail-user"
+											value="#{metFragWebBean.getErrorMessage('inputChemSpiderRestTokenError')}" />
+									</h:panelGrid>
+								</h:panelGroup>
+							</h:panelGroup>
+						</h:panelGrid>
+						
 						<h:outputLabel value="Neutral Mass:" width="15%" id="inputNeutralMonoisotopicMassLabel"/>
 						<h:panelGrid columns="2">
 							<h:panelGroup>
