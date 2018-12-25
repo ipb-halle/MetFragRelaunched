@@ -131,11 +131,12 @@ public class UserOutputDataHandler {
 				this.beanSettingsContainer.getMetFragSettings().set(VariableNames.CHEMSPIDER_TOKEN_NAME, "");
 			else 
 				this.beanSettingsContainer.getMetFragSettings().remove(VariableNames.CHEMSPIDER_TOKEN_NAME);
-			
+			/*
 			if(this.beanSettingsContainer.getDatabase().equals("ChemSpiderRest")) 
 				this.beanSettingsContainer.getMetFragSettings().set(VariableNames.CHEMSPIDER_REST_TOKEN_NAME, "");
 			else 
 				this.beanSettingsContainer.getMetFragSettings().remove(VariableNames.CHEMSPIDER_REST_TOKEN_NAME);
+			*/
 			// in case local database is defined, set the parameter to the
 			// candidates
 			if (this.beanSettingsContainer.isLocalDatabaseDefined()) {

@@ -888,9 +888,6 @@ public class BeanSettingsContainer {
 		this.setMetFragSettings(new MetFragGlobalSettings());
 		this.prepareDatabaseSettings();
 		this.metFragSettings.includeSettings(this.metFragSettingsFile, true, this.database.equals("ChemSpider") ? null : new String[] {"ChemSpiderToken"});
-
-		if(((String)this.database).equals("ChemSpiderRest")) 
-			this.metFragSettings.set(VariableNames.CHEMSPIDER_REST_TOKEN_NAME, this.chemSpiderRestToken);
 		/*
 		 * init the new combinedMetFragProcess
 		 */
@@ -1271,6 +1268,9 @@ public class BeanSettingsContainer {
 				database = "MetChem";
 			}
 			this.getMetFragSettings().set(VariableNames.LOCAL_METCHEM_DATABASE_LIBRARY_NAME, metchemLibrary);
+		}
+		if(database.equals("ChemSpiderRest")) {
+			this.getMetFragSettings().set(VariableNames.CHEMSPIDER_REST_TOKEN_NAME, this.chemSpiderRestToken);
 		}
 		// if database is from type AdditionalFileDatabase
 		if(database instanceof AdditionalFileDatabase) {
