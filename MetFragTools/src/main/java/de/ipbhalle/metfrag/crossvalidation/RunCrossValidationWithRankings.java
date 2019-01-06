@@ -23,7 +23,7 @@ public class RunCrossValidationWithRankings {
 	public static int number_folds = 63;
 	public static int number_queries = 1;
 	//public static String only_metfrag_filename = "rankings_1001.txt";
-	public static String only_metfrag_filename = "rankings_1001.txt";
+	public static String only_metfrag_filename = "rankings_100.txt";
 	//public static String given_folds_filename = "/home/cruttkie/Dokumente/PhD/MetFrag/substructure_training/cross_validation/eawag_02_new/folds.txt";
 	//public static String given_folds_filename = "/home/chrisr/Documents/PhD/MetFrag/hdx/2018-11-10/rankings_chemspider_final/folds_neg_100.txt";
 	public static String given_folds_filename = null;
