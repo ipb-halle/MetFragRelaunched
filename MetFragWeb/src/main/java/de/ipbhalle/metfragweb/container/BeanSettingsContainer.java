@@ -197,6 +197,11 @@ public class BeanSettingsContainer {
 	protected String processCompoundsDialogHeader = "";
 	
 	/*
+	 * maximum candidate to process
+	 */
+	protected Integer candidateLimit = 10000;
+	
+	/*
 	 * results
 	 */
 	protected List<Weight> weights;
@@ -219,7 +224,10 @@ public class BeanSettingsContainer {
 		/*
 		 * read settings from external file
 		 */
-		this.metFragSettingsFile = this.readDatabaseConfigFromFile();
+		this.metFragSettingsFile = this.readConfigFromFile();
+		if(this.metFragSettingsFile.containsKey(VariableNames.CANDIDATE_LIMIT_WEB)) 
+			this.candidateLimit = (Integer)this.metFragSettingsFile.get(VariableNames.CANDIDATE_LIMIT_WEB);
+		
 		this.availableParameters.initAddititionalDatabases(this.metFragSettingsFile);
 
 		//init filters
@@ -869,6 +877,10 @@ public class BeanSettingsContainer {
 		this.scoreValidMap.put("retentionTimeTrainingFile", false);
 		this.availablePartitioningCoefficients = null;
 		this.experimentalRetentionTimeValue = "0.0";
+	}
+	
+	public boolean isCandidateLimitReached() {
+		return this.candidateLimit < this.retrievedCandidateList.getNumberElements();
 	}
 	
 	public void retrieveCompounds(Messages infoMessages, Messages errorMessages) throws Exception {
@@ -1846,6 +1858,10 @@ public class BeanSettingsContainer {
 			this.filterEnabledMap.put(filterName, value);
 		}
 	}
+
+	public Integer getCandidateLimit() {
+		return this.candidateLimit;
+	}
 	
 	public boolean isScoreValid(String scoreName) {
 		return this.scoreValidMap.get(scoreName);
@@ -1920,7 +1936,7 @@ public class BeanSettingsContainer {
 	 /*
 	  * read settings from settings.properties
 	  */
-	public MetFragGlobalSettings readDatabaseConfigFromFile() {
+	public MetFragGlobalSettings readConfigFromFile() {
 		try {
 			ServletContext servletContext = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
 			this.bondEnergyLipidMapsFilePath = servletContext.getRealPath("/resources/BondEnergiesLipidMaps.txt");

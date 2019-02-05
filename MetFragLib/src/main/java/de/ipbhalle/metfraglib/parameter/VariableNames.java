@@ -370,6 +370,8 @@ public class VariableNames {
 	public static final String CORRECT_MASSES_FOR_FINGERPRINT_ANNOTATION_NAME		=	"CorrectMassesForFingerprintAnnotation";
 	public static final String LOCAL_DATABASES_FOLDER_FOR_WEB							=	"LocalDatabasesFolderForWeb";
 	
+	public static final String CANDIDATE_LIMIT_WEB							=	"CandidateLimitWeb";
+	
 	/*
 	 * proxy settings
 	 */

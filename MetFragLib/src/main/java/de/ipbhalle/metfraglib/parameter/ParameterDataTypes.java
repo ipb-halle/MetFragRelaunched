@@ -240,6 +240,9 @@ public class ParameterDataTypes {
 		parameterDatatypes.put(	VariableNames.CORRECT_MASSES_FOR_FINGERPRINT_ANNOTATION_NAME, 		"Boolean"	);
 		parameterDatatypes.put(	VariableNames.LOCAL_DATABASES_FOLDER_FOR_WEB,						"String"	);
 		
+		parameterDatatypes.put(	VariableNames.CANDIDATE_LIMIT_WEB,						"Integer"	);
+		
+		
 	}
 	
 	/*
