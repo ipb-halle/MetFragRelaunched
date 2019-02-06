@@ -1,5 +1,6 @@
 [![Build
 Status](https://travis-ci.org/c-ruttkies/MetFragRelaunched.svg?branch=master)](https://travis-ci.org/c-ruttkies/MetFragRelaunched)
+[![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat-square)](http://bioconda.github.io/recipes/metfrag/README.html)
 
 MetFrag relaunched
 ==================
