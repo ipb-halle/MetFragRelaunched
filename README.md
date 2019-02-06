@@ -1,5 +1,4 @@
-[![Build
-Status](https://travis-ci.org/c-ruttkies/MetFragRelaunched.svg?branch=master)](https://travis-ci.org/c-ruttkies/MetFragRelaunched)
+[![Build Status](https://travis-ci.org/sneumann/MetFragRelaunched.svg?branch=master)](https://travis-ci.org/sneumann/MetFragRelaunched)
 [![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat-square)](http://bioconda.github.io/recipes/metfrag/README.html)
 
 MetFrag relaunched
@@ -12,7 +11,7 @@ MetFrag relaunched
 ##### Sources
 - download sources by cloning git repository<br>
 ```bash
-git clone https://github.com/c-ruttkies/MetFragRelaunched.git
+git clone https://github.com/ipb-halle/MetFragRelaunched.git
 ```
 
 MetFragLib
@@ -78,7 +77,7 @@ library(metfRag)
 - all earlier steps can be skipped by installing the pre-compiled R package from GitHub<br>
 ```R
 library(devtools)
-install_github("c-ruttkies/MetFragR/metfRag")
+install_github("ipb-halle/MetFragR/metfRag")
 ```
 
 MetFragWeb

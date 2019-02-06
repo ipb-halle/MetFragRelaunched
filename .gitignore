@@ -4,3 +4,4 @@ target
 .classpath
 bin
 settings.properties
+*~
