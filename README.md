@@ -32,7 +32,7 @@ MetFragCommandLine
 
 ##### Basics
 - MetFrag commandline version depends on MetFragLib
-- for a short tutorial visit http://c-ruttkies.github.io/MetFrag/projects/metfragcl/
+- for a short tutorial visit http://ipb-halle.github.io/MetFrag/projects/metfragcl/
 
 ##### Build
 ```bash
@@ -49,7 +49,7 @@ MetFragR
 
 ##### Basics
 - MetFrag R package depends on MetFragLib<br>
-- for a short tutorial visit http://c-ruttkies.github.io/MetFrag/projects/metfragr/
+- for a short tutorial visit http://ipb-halle.github.io/MetFrag/projects/metfragr/
 
 ##### Build
 ```bash
