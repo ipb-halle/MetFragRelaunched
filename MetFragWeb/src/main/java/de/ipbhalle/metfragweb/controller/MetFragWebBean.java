@@ -612,9 +612,16 @@ public class MetFragWebBean {
 			}
 		}
 		// check chemspider database and token
-		if (((String)this.beanSettingsContainer.getDatabase()).equals("ChemSpiderRest") && (this.beanSettingsContainer.getChemSpiderRestToken() == null || this.beanSettingsContainer.getChemSpiderRestToken().equals(""))) {
-			checksFine = false;
-			this.errorMessages.setMessage("inputChemSpiderRestTokenError", "Error: ChemSpider token required.");
+		try {
+			if (((String)this.beanSettingsContainer.getDatabase()).equals("ChemSpiderRest") 
+					&& 
+					(this.beanSettingsContainer.getChemSpiderRestToken() == null 
+					|| this.beanSettingsContainer.getChemSpiderRestToken().equals(""))) {
+				checksFine = false;
+				this.errorMessages.setMessage("inputChemSpiderRestTokenError", "Error: ChemSpider token required.");
+			}
+		} catch(java.lang.ClassCastException e) {
+			
 		}
 		return checksFine;
 	}
@@ -683,6 +690,10 @@ public class MetFragWebBean {
 		
 	}	
 	
+	public boolean isCandidateLimitReached() {
+		return this.beanSettingsContainer.isCandidateLimitReached();
+	}
+	
 	public String getRetrieveCandidatesDialogHeader() {
 		return this.beanSettingsContainer.getRetrieveCompoundsDialogHeader();
 	}
@@ -705,6 +716,15 @@ public class MetFragWebBean {
 					System.out.println(this.beanSettingsContainer.getRetrievedCandidateList().getNumberElements() + " compound(s)");
 					if(this.beanSettingsContainer.getRetrievedCandidateList().getNumberElements() == 0) 
 						RequestContext.getCurrentInstance().execute("PF('mainAccordion').unselect(1)");
+					/*
+					 * show error if candidate limit is reached
+					 */
+					if(this.beanSettingsContainer.isCandidateLimitReached()) 
+						this.errorMessages.setMessage("buttonProcessCompoundsError", 
+							"Candidate limit (" + this.beanSettingsContainer.getCandidateLimit() + ") "
+									+ "prevents processing of the retrieved candidate list. Consider using MetFragCL or reduce "
+									+ "number of candidates.");
+					else this.errorMessages.removeKey("buttonProcessCompoundsError");
 				}
 				else {
 					this.beanSettingsContainer.setNumberCompoundsLabel("");
@@ -2037,6 +2057,13 @@ public class MetFragWebBean {
 	}
 	
 	public void processCompounds(ActionEvent event) {
+		if(this.beanSettingsContainer.isCandidateLimitReached()) {
+			this.errorMessages.setMessage("buttonProcessCompoundsError", 
+					"Candidate limit (" + this.beanSettingsContainer.getCandidateLimit() + ") "
+							+ "prevents processing of the retrieved candidate list. Consider using MetFragCL or reduce "
+							+ "number of candidates.");
+			return;
+		}
 		RequestContext.getCurrentInstance().execute("PF('processCandidatesProgressDialog').show();");
 		this.isCandidateProcessing = true;
 		this.errorMessages.removeKey("buttonDownloadParametersFilterError");
@@ -3151,7 +3178,7 @@ public class MetFragWebBean {
 			addMsg += "Session: no" + ls;
 		}
 		try {
-			MetFragGlobalSettings emailSettings = this.beanSettingsContainer.readDatabaseConfigFromFile();
+			MetFragGlobalSettings emailSettings = this.beanSettingsContainer.readConfigFromFile();
 			MultiPartEmail email = new MultiPartEmail();
 			email.setSubject("MetFrag Feedback");
 			if(emailSettings.containsKey(VariableNames.FEEDBACK_EMAIL_HOST)) email.setHostName((String)emailSettings.get(VariableNames.FEEDBACK_EMAIL_HOST));

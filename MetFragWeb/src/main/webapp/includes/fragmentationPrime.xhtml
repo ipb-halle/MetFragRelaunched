@@ -131,7 +131,7 @@
 							<p:commandButton value="Process Candidates"
 								actionListener="#{metFragWebBean.processCompounds}"
 								id="processCompounds" 
-								disabled="#{metFragWebBean.numberCompoundsRetrieved == 0}"
+								disabled="#{metFragWebBean.numberCompoundsRetrieved == 0 || metFragWebBean.candidateLimitReached}"
 								update="processCompoundsPanel downloadParametersPanel">
 							</p:commandButton>
 							<h:panelGroup id="buttonProcessCompoundsError" layout="block"
