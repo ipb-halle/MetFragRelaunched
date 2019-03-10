@@ -92,7 +92,6 @@ public class MetFragGlobalSettings extends Settings {
 		this.defaults.put(VariableNames.LOCAL_METCHEM_DATABASE_LIBRARY_NAME, Constants.DEFAULT_LOCAL_METCHEM_DATABASE_LIBRARY_NAME);
 		
 		this.defaults.put(VariableNames.CORRECT_MASSES_FOR_FINGERPRINT_ANNOTATION_NAME, Constants.DEFAULT_CORRECT_MASSES_FOR_FINGERPRINT_ANNOTATION_NAME);;
-
 	}
 
 	public void writeSettingsFile(String filename) throws IOException {
