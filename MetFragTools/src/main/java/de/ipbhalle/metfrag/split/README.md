@@ -63,8 +63,8 @@ df
 ##### 01 - Find carbon(s) at the end of PFAS chain
 - find atoms in the given PFAS ('smiles') matching with end chain carbon SMARTS ('eccs')
 - filter matches that contain a carbon which 
--- has at least two fluorine atoms connected
--- is connected to only one other carbon which is connected to fluorines
+ - has at least two fluorine atoms connected
+ - is connected to only one other carbon which is connected to fluorines
 - this carbon is considered as a PFAS end chain carbon
 
 ##### 02 - Find bonds to split by given SMARTS ('smartspath')
