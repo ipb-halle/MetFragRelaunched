@@ -38,23 +38,26 @@ java -jar MetFragTools/target/MetFragTools-2.4.5-jar-with-dependencies.jar
 
 #### Parameters
 
-smiles    	- SMILES of input PFAS
+smiles    	
+ - SMILES of input PFAS
 
-smartspath	- file containing SMARTS (one per line)
-          	- for empty SMARTS just include empty line
-          	- order marks priotity
-          	- if not given, default "" is used
+smartspath	
+ - file containing SMARTS (one per line)
+ - for empty SMARTS just include empty line
+ - order marks priotity
+ - if not given, default "" is used
 
-image     	- create image of bonds broken (default 'no')
+image     	
+ - create image of bonds broken (default 'no')
 
-eccs		- SMARTS to find carbon of the end of the PFAS chain
-			- (eccs: end chain carbon SMARTS)
-			- (default: FC(F)([C,F])[!$(C(F)(F));!$(F)])
+eccs		
+ - SMARTS to find carbon of the end of the PFAS chain
+ - (eccs: end chain carbon SMARTS)
+ - (default: FC(F)([C,F])[!$(C(F)(F));!$(F)])
 
-df     		- debug folder where structure images are written
-   			- used for debugging (doesn't effect 'image' parameter)
-
-
+df     		
+ - debug folder where structure images are written
+ - used for debugging (doesn't effect 'image' parameter)
 
 #### How it works
 ##### 01 - Find carbon(s) at the end of PFAS chain
