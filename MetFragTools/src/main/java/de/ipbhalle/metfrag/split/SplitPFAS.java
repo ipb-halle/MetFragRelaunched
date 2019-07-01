@@ -14,12 +14,15 @@ public class SplitPFAS {
 
 	public static String[] extendedChainSmarts = {""}; 
 	public static java.util.Hashtable<String, String> argsHash;
+	public static String endChainCarbonSmarts = "FC(F)([C,F])[!$(C(F)(F));!$(F)]";
+	public static String debugFolder = null;
 	
 	public static void main(String[] args) throws AtomTypeNotKnownFromInputListException, Exception {
 		if(!getArgs(args)) {
 			System.out.println("Error: Could not read arguments properly.");
 			System.out.println("Usage:");
-			System.out.println("\tjava -cp NAME.jar de.ipbhalle.metfrag.split.SplitPFAS smiles='SMILES' [smartspath='FILEPATH'] [image='yes or no']");
+			System.out.println("\tjava -cp NAME.jar de.ipbhalle.metfrag.split.SplitPFAS smiles='SMILES' "
+					+ "[smartspath='FILEPATH'] [image='yes or no'] [eccs='SMARTS'] [df='FOLDERPATH']");
 			System.out.println("");
 			System.out.println("\tsmiles    \t- SMILES of input PFAS");
 			System.out.println("");
@@ -29,6 +32,13 @@ public class SplitPFAS {
 			System.out.println("\t          \t- if not given, default \"\" is used");
 			System.out.println("");
 			System.out.println("\timage     \t- create image of bonds broken (default 'no')");
+			System.out.println("");
+			System.out.println("\teccs	\t- SMARTS to find carbon of the end of the PFAS chain");
+			System.out.println("		\t- (eccs: end chain carbon SMARTS)");
+			System.out.println("		\t- (default: FC(F)([C,F])[!$(C(F)(F));!$(F)])");
+			System.out.println("");
+			System.out.println("\tdf     	\t- debug folder where structure images are written");
+			System.out.println("     		\t- used for debugging (doesn't effect 'image' parameter)");
 			System.out.println("");
 			System.exit(1);
 		}
@@ -59,18 +69,42 @@ public class SplitPFAS {
 				System.exit(4);
 			}
 		}
+		if(argsHash.containsKey("eccs")) {
+			endChainCarbonSmarts = argsHash.get("eccs");
+			System.out.println("End chain carbon SMARTS set to " + endChainCarbonSmarts);
+		}
+		if(argsHash.containsKey("df")) {
+			debugFolder = argsHash.get("df");
+			File debugFolderObj = new File(debugFolder);
+ 			if(!debugFolderObj.exists()) {
+				System.err.println("Error: Debug folder (df) " + debugFolder + " not found.");
+				System.exit(5);
+ 			}
+ 			if(!debugFolderObj.isDirectory())  {
+				System.err.println("Error: Debug folder (df) " + debugFolder + " is no directory.");
+				System.exit(6);
+ 			}
+ 			System.out.println("Debug folder set to " + debugFolder);
+ 			if(debugFolderObj.listFiles().length != 0)
+ 				System.err.println("Warning: Debug folder (df) " + debugFolder + " contains files. You should remove them before using this tool.");
+		}
 		
-		int[] endChainCarbonIndexes = pfas.findEndChainCarbons();
+		System.out.println("# Step 01");
+		int[] endChainCarbonIndexes = pfas.findEndChainCarbons(endChainCarbonSmarts, debugFolder);
 
+		System.out.println("# Step 02");
 		List<List<Integer>> bondIndexesToSplitForAllSmarts = new ArrayList<List<Integer>>();
 		try {	
 			for(int ii = 0; ii < extendedChainSmarts.length; ii++) {
-				bondIndexesToSplitForAllSmarts.add(pfas.getBondIndexAfterEndChain(endChainCarbonIndexes, extendedChainSmarts[ii]));
+				List<Integer> bondIndexesAfterEndChain = pfas.getBondIndexAfterEndChain(endChainCarbonIndexes, 
+					extendedChainSmarts[ii], ii, debugFolder);
+				bondIndexesToSplitForAllSmarts.add(bondIndexesAfterEndChain);
 			}
 		} catch(java.lang.IndexOutOfBoundsException e) {
 			System.err.println("Error: The initial match for the PFAS chain ending seemed to cause an error. Check your input SMILES.");
 			System.exit(6);
 		}
+		System.out.println("# Step 03");
 		int numberFoundToSplit = 0;
 		boolean fragmentFound = false;
 		for(int ii = 0; ii < bondIndexesToSplitForAllSmarts.size(); ii++) {
@@ -127,7 +161,8 @@ public class SplitPFAS {
 		for (String arg : args) {
 			arg = arg.trim();
 			String[] tmp = arg.split("=");
-			if (!tmp[0].equals("smiles") && !tmp[0].equals("smartspath") && !tmp[0].equals("image")) {
+			if (!tmp[0].equals("smiles") && !tmp[0].equals("smartspath") && !tmp[0].equals("image")
+					 && !tmp[0].equals("df") && !tmp[0].equals("eccs")) {
 				System.err.println("property " + tmp[0] + " not known.");
 				return false;
 			}
