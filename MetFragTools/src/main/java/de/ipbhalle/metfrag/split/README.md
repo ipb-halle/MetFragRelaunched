@@ -65,7 +65,7 @@ df
 - filter matches that contain a carbon which (1) has at least two fluorine atoms connected (2) is connected to only one other carbon which is connected to fluorines
 - this carbon is considered as a PFAS end chain carbon
 
-##### 02 - Find bonds to split by given SMARTS ('smartspath')
+##### 02 - Find bonds to split by given SMARTS ('smartspath') TODO
 - if 'smartspath' is given each smarts is used to find matches in the given PFAS ('smiles')
 - get those end chain carbon atoms from Step-01 which are connected to a carbon of a match found in Step-02
 - the bond between this end chain carbon atom and the connected atom is marked for splitting
