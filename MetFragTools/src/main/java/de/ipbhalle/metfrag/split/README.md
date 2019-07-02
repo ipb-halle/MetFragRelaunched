@@ -68,7 +68,7 @@ df
 ##### 02 - Find bonds to split by given SMARTS ('smartspath') TODO
 - if 'smartspath' is given each smarts is used to find matches in the given PFAS ('smiles')
 - get those end chain carbon atoms from Step-01 which are connected to a carbon of a match found in Step-02
-- the bond between this end chain carbon atom and the connected atom is marked for splitting
+- bonds that connect the match of Step-02 to another residue that the PFAS chain are marked for a split
 
 #### 03 - Splitting marked bonds
 -  marked bonds are split 
