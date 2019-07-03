@@ -47,7 +47,7 @@ public class PFAS {
 		List<List<Integer>> matchAtomIndeces = this.getMatchesBySmarts(endChainCarbonSm, con);
 		// generate images with highlighted matches
 		if(debugFolder != null) {
-			System.out.println("Found " + matchAtomIndeces.size() + " match(es) using end chain SMARTS (eccs)");
+			System.out.println("Found " + matchAtomIndeces.size() + " match(es) using end chain SMARTS (pacs)");
 			HighlightSubStructureImageGenerator s = new HighlightSubStructureImageGenerator(new Font("Verdana", Font.BOLD, 18));
 			for (int i = 0; i < matchAtomIndeces.size(); i++) {
 				FastBitArray bitArrayAtoms = this.generateAndSetBitString(con.getAtomCount(), 
@@ -59,7 +59,7 @@ public class PFAS {
 				s.setStrokeRation(1.2);
 				RenderedImage img = s.generateImage(bitArrayAtoms, bitArrayBonds, con);
 				ImageIO.write((RenderedImage) img, "PNG", 
-					new java.io.File(debugFolder + Constants.OS_SPECIFIC_FILE_SEPARATOR + "01a-eccs-match-" + (i+1) + ".png"));
+					new java.io.File(debugFolder + Constants.OS_SPECIFIC_FILE_SEPARATOR + "01a-pacs-match-" + (i+1) + ".png"));
 			}
 		}
 		
@@ -92,7 +92,7 @@ public class PFAS {
 				RenderedImage img = s.generateImage(bitArrayAtoms, bitArrayBonds, con);
 				ImageIO.write((RenderedImage) img, "PNG", 
 					new java.io.File(debugFolder + Constants.OS_SPECIFIC_FILE_SEPARATOR 
-						+ "01b-end-chain-carbon-" + (i+1) + ".png"));
+						+ "01b-pfas-alpha-carbon-" + (i+1) + ".png"));
 				
 				
 			}
@@ -232,23 +232,28 @@ public class PFAS {
 		abstractTopDownBitArrayFragments.add(root);
 		int bondsBroken = 0;
 		List<AbstractTopDownBitArrayFragment> createdFragments = new ArrayList<AbstractTopDownBitArrayFragment>();
+		// store atoms 
+		List<short[]> indecesOfBondConnectedAtomsList = new ArrayList<short[]>();
 		for(int i = 0; i < bondIndexes.size(); i++) {
 			int bondIndex = bondIndexes.get(i);
 			newAbstractTopDownBitArrayFragments = new LinkedList<AbstractTopDownBitArrayFragment>();
 			while(!abstractTopDownBitArrayFragments.isEmpty()) {
 				AbstractTopDownBitArrayFragment currentFragment = abstractTopDownBitArrayFragments.remove();
 				if(currentFragment.getBondsFastBitArray().get(bondIndex)) {
-					AbstractTopDownBitArrayFragment[] fragments = this.split((short)bondIndex, currentFragment);
+					short[] indecesOfBondConnectedAtoms = new short[2];
+					AbstractTopDownBitArrayFragment[] fragments = this.split((short)bondIndex, currentFragment, indecesOfBondConnectedAtoms);
 					if(fragments.length != 1) bondsBroken++;
 					for(int ii = 0; ii < fragments.length; ii++) {
 						newAbstractTopDownBitArrayFragments.add(fragments[ii]);
 						createdFragments.add(fragments[ii]);
+						indecesOfBondConnectedAtomsList.add(indecesOfBondConnectedAtoms);
 					}
 				}
 			}
 			abstractTopDownBitArrayFragments = newAbstractTopDownBitArrayFragments;
 		}
-
+		
+		List<short[]> cleanedIndecesOfBondConnectedAtomsList = new ArrayList<short[]>();
 		List<AbstractTopDownBitArrayFragment> cleanedCreatedFragments = new ArrayList<AbstractTopDownBitArrayFragment>();
 		for(int i = 0; i < createdFragments.size(); i++) {	
 			boolean bondFound = false;
@@ -257,13 +262,17 @@ public class PFAS {
 					bondFound = true;
 				}
 			}
-			if(!bondFound) cleanedCreatedFragments.add(createdFragments.get(i));
+			if(!bondFound) {
+				cleanedCreatedFragments.add(createdFragments.get(i));
+				cleanedIndecesOfBondConnectedAtomsList.add(indecesOfBondConnectedAtomsList.get(i));
+			}
 		}
 
 		boolean[] containsEndChainCarbon = new boolean[cleanedCreatedFragments.size()];
 		for(int i = 0; i < cleanedCreatedFragments.size(); i++) {
 			for(int ii = 0; ii < endChainCarbonIndexes.length; ii++) {
-				if(cleanedCreatedFragments.get(i).getAtomsFastBitArray().get(endChainCarbonIndexes[ii])) containsEndChainCarbon[i] = true;
+				if(cleanedCreatedFragments.get(i).getAtomsFastBitArray().get(endChainCarbonIndexes[ii])) 
+					containsEndChainCarbon[i] = true;
 			}
 		}
 		
@@ -276,15 +285,22 @@ public class PFAS {
 		}
 		
 		for(int i = 0; i < containsEndChainCarbon.length; i++)
-			if(!containsEndChainCarbon[i]) return new FragmentPFAS(cleanedCreatedFragments, containsEndChainCarbon, bondsBroken, this.pfasStructure);
+			if(!containsEndChainCarbon[i]) 
+				return new FragmentPFAS(cleanedCreatedFragments, 
+					cleanedIndecesOfBondConnectedAtomsList, 
+					containsEndChainCarbon, bondsBroken, this.pfasStructure);
 	
 		return null;
 	}
 	
-	protected AbstractTopDownBitArrayFragment[] split(short bondIndex, AbstractTopDownBitArrayFragment fragment) {
-		short[] indecesOfBondConnectedAtoms = ((BitArrayPrecursor)this.pfasStructure.getPrecursorMolecule()).getConnectedAtomIndecesOfBondIndex(bondIndex);
-		AbstractTopDownBitArrayFragment[] fragments = fragment.traverseMolecule(this.pfasStructure.getPrecursorMolecule(), bondIndex, indecesOfBondConnectedAtoms);
-	
+	protected AbstractTopDownBitArrayFragment[] split(short bondIndex, AbstractTopDownBitArrayFragment fragment, short[] indecesOfBondConnectedAtoms) {
+		short[] curIndecesOfBondConnectedAtoms = ((BitArrayPrecursor)this.pfasStructure.getPrecursorMolecule())
+			.getConnectedAtomIndecesOfBondIndex(bondIndex);
+		indecesOfBondConnectedAtoms[0] = curIndecesOfBondConnectedAtoms[0];
+		indecesOfBondConnectedAtoms[1] = curIndecesOfBondConnectedAtoms[1];
+		AbstractTopDownBitArrayFragment[] fragments = 
+			fragment.traverseMolecule(this.pfasStructure.getPrecursorMolecule(), bondIndex, indecesOfBondConnectedAtoms);
+		
 		return fragments;
 	}
 

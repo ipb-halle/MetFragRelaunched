@@ -38,37 +38,37 @@ java -jar MetFragTools/target/MetFragTools-2.4.5-jar-with-dependencies.jar
 
 #### Parameters
 
-smiles    	
- - SMILES of input PFAS
+smiles    	- SMILES of input PFAS
 
-smartspath	
- - file containing SMARTS (one per line)
- - for empty SMARTS just include empty line
- - order marks priotity
- - if not given, default "" is used
+smartspath	- file containing SMARTS (one per line)
+          	- for empty SMARTS just include empty line
+          	- order marks priotity
+          	- if not given, default "" is used
 
-image     	
- - create image of bonds broken (default 'no')
+image     	- create image of bonds broken
+          	- use: 'yes' or 'no' (default 'no')
 
-eccs		
- - SMARTS to find carbon of the end of the PFAS chain
- - (eccs: end chain carbon SMARTS)
- - (default: FC(F)([C,F])[!$(C(F)(F));!$(F)])
+pacs		- PFAS alpha carbon SMARTS used to find putative positions of the alpha carbon of the PFAS chain
+			- (default: FC(F)([C,F])[!$(C(F)(F));!$(F)])
 
-df     		
- - debug folder where structure images are written
- - used for debugging (doesn't effect 'image' parameter)
+df     		- debug folder where structure images are written
+ 			- used for debugging (doesn't effect 'image' parameter)
+
+addC     	- add carbon (addC) to the residue (R) where bond was split
+     		- use: 'yes' or 'no' (default: 'no')
 
 #### How it works
-##### 01 - Find carbon(s) at the end of PFAS chain
-- find atoms in the given PFAS ('smiles') matching with end chain carbon SMARTS ('eccs')
-- filter matches that contain a carbon which (1) has at least two fluorine atoms connected (2) is connected to only one other carbon which is connected to fluorines
-- this carbon is considered as a PFAS end chain carbon
+##### 01 - Find PFAS alpha carbon(s)
+- find atoms in the given PFAS ('smiles') matching with PFAS alpha carbon SMARTS ('pacs')
+- filter matches that contain a carbon which 
+-- has at least two fluorine atoms connected
+-- is connected to only one other carbon which is connected to fluorines
+- this carbon is considered as a PFAS alpha carbon
 
-##### 02 - Find bonds to split by given SMARTS ('smartspath') TODO
+##### 02 - Find bonds to split by given SMARTS ('smartspath')
 - if 'smartspath' is given each smarts is used to find matches in the given PFAS ('smiles')
-- get those end chain carbon atoms from Step-01 which are connected to a carbon of a match found in Step-02
-- bonds that connect the match of Step-02 to another residue that the PFAS chain are marked for a split
+- get those PFAS alpha carbon atoms from Step-01 which are connected to a carbon of a match found in Step-02
+- the bond between this PFAS alpha carbon atom and the connected atom is marked for splitting
 
 #### 03 - Splitting marked bonds
 -  marked bonds are split 

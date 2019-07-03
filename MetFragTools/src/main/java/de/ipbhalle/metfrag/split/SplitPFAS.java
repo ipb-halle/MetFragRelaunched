@@ -16,6 +16,7 @@ public class SplitPFAS {
 	public static java.util.Hashtable<String, String> argsHash;
 	public static String endChainCarbonSmarts = "FC(F)([C,F])[!$(C(F)(F));!$(F)]";
 	public static String debugFolder = null;
+	public static boolean addCarbonToResidue = false;
 	
 	public static void main(String[] args) throws AtomTypeNotKnownFromInputListException, Exception {
 		if(!getArgs(args)) {
@@ -31,14 +32,17 @@ public class SplitPFAS {
 			System.out.println("\t          \t- order marks priotity");
 			System.out.println("\t          \t- if not given, default \"\" is used");
 			System.out.println("");
-			System.out.println("\timage     \t- create image of bonds broken (default 'no')");
+			System.out.println("\timage     \t- create image of bonds broken");
+			System.out.println("\t          \t- use: 'yes' or 'no' (default 'no')");
 			System.out.println("");
-			System.out.println("\teccs	\t- SMARTS to find carbon of the end of the PFAS chain");
-			System.out.println("		\t- (eccs: end chain carbon SMARTS)");
+			System.out.println("\tpacs	\t- PFAS alpha carbon SMARTS used to find putative positions of the alpha carbon of the PFAS chain");
 			System.out.println("		\t- (default: FC(F)([C,F])[!$(C(F)(F));!$(F)])");
 			System.out.println("");
 			System.out.println("\tdf     	\t- debug folder where structure images are written");
 			System.out.println("     		\t- used for debugging (doesn't effect 'image' parameter)");
+			System.out.println("");
+			System.out.println("\taddC     \t- add carbon (addC) to the residue (R) where bond was split");
+			System.out.println("     		\t- use: 'yes' or 'no' (default: 'no')");
 			System.out.println("");
 			System.exit(1);
 		}
@@ -69,9 +73,9 @@ public class SplitPFAS {
 				System.exit(4);
 			}
 		}
-		if(argsHash.containsKey("eccs")) {
-			endChainCarbonSmarts = argsHash.get("eccs");
-			System.out.println("End chain carbon SMARTS set to " + endChainCarbonSmarts);
+		if(argsHash.containsKey("pacs")) {
+			endChainCarbonSmarts = argsHash.get("pacs");
+			System.out.println("PFAS alpha carbon SMARTS (pacs) set to " + endChainCarbonSmarts);
 		}
 		if(argsHash.containsKey("df")) {
 			debugFolder = argsHash.get("df");
@@ -89,10 +93,10 @@ public class SplitPFAS {
  				System.err.println("Warning: Debug folder (df) " + debugFolder + " contains files. You should remove them before using this tool.");
 		}
 		
-		System.out.println("# Step 01");
+		if(debugFolder != null) System.out.println("# Step 01");
 		int[] endChainCarbonIndexes = pfas.findEndChainCarbons(endChainCarbonSmarts, debugFolder);
 
-		System.out.println("# Step 02");
+		if(debugFolder != null) System.out.println("# Step 02");
 		List<List<Integer>> bondIndexesToSplitForAllSmarts = new ArrayList<List<Integer>>();
 		try {	
 			for(int ii = 0; ii < extendedChainSmarts.length; ii++) {
@@ -101,10 +105,10 @@ public class SplitPFAS {
 				bondIndexesToSplitForAllSmarts.add(bondIndexesAfterEndChain);
 			}
 		} catch(java.lang.IndexOutOfBoundsException e) {
-			System.err.println("Error: The initial match for the PFAS chain ending seemed to cause an error. Check your input SMILES.");
+			System.err.println("Error: The initial match for the PFAS alpha carbon seemed to cause an error. Check your input SMILES.");
 			System.exit(6);
 		}
-		System.out.println("# Step 03");
+		if(debugFolder != null) System.out.println("# Step 03");
 		int numberFoundToSplit = 0;
 		boolean fragmentFound = false;
 		for(int ii = 0; ii < bondIndexesToSplitForAllSmarts.size(); ii++) {
@@ -122,7 +126,7 @@ public class SplitPFAS {
 				
 				if(fragment != null) {
 					numberFoundToSplit++;
-					System.out.println(fragment.toString() + " smarts='" + extendedChainSmarts[ii] + "'");
+					System.out.println(fragment.toString(addCarbonToResidue) + " smarts='" + extendedChainSmarts[ii] + "'");
 					fragmentFound = true;
 				}
 			}
@@ -162,7 +166,7 @@ public class SplitPFAS {
 			arg = arg.trim();
 			String[] tmp = arg.split("=");
 			if (!tmp[0].equals("smiles") && !tmp[0].equals("smartspath") && !tmp[0].equals("image")
-					 && !tmp[0].equals("df") && !tmp[0].equals("eccs")) {
+					 && !tmp[0].equals("df") && !tmp[0].equals("pacs") && !tmp[0].equals("addC")) {
 				System.err.println("property " + tmp[0] + " not known.");
 				return false;
 			}
@@ -178,6 +182,10 @@ public class SplitPFAS {
 		}
 		if (!argsHash.containsKey("image")) {
 			argsHash.put("image", "no");
+		}
+		if (argsHash.containsKey("addC")) {
+			if(argsHash.get("addC").toLowerCase().equals("yes"))
+				addCarbonToResidue = true;
 		}
 		return true;
 	}

@@ -306,9 +306,13 @@ public class DefaultBitArrayFragment extends AbstractFragment {
 		}
 		return smiles;
 	}
-
+	
 	public String getPreparedSmiles(IMolecularStructure precursorMolecule) throws CDKException {
-		IAtomContainer molecule = this.getStructureAsIAtomContainer(precursorMolecule);
+		return this.getPreparedSmiles(precursorMolecule, null, null);
+	}
+	
+	public String getPreparedSmiles(IMolecularStructure precursorMolecule, IAtom atomToAdd, Integer atomPositionToAdd) throws CDKException {
+		IAtomContainer molecule = this.getStructureAsIAtomContainer(precursorMolecule, atomToAdd, atomPositionToAdd);
 
 		MoleculeFunctions.prepareAtomContainer(molecule, false);
 		CDKHydrogenAdder adder = CDKHydrogenAdder.getInstance(molecule.getBuilder());
@@ -323,61 +327,33 @@ public class DefaultBitArrayFragment extends AbstractFragment {
 		}
 		return smiles;
 	}
-
-	/**
-	public String getAromaticSmiles(IMolecularStructure precursorMolecule) {
-		IAtomContainer molecule = this.getStructureAsAromaticIAtomContainer(precursorMolecule);
-		SmilesGenerator sg = new SmilesGenerator(SmiFlavor.UseAromaticSymbols);
-		String smiles = null;
-		try {
-			smiles = sg.create(molecule);
-		} catch (CDKException e) {
-			e.printStackTrace();
-		}
-		return smiles;
-	}
-
-	public IAtomContainer getStructureAsAromaticIAtomContainer(IMolecularStructure precursorMolecule) {
-		IChemObjectBuilder builder = DefaultChemObjectBuilder.getInstance();
-		IAtomContainer fragmentStructure = builder.newInstance(IAtomContainer.class);
-		if(this.atomsFastBitArray.cardinality() == 1) {
-			fragmentStructure.addAtom(precursorMolecule.getStructureAsIAtomContainer().getAtom(this.atomsFastBitArray.getFirstSetBit()));
-			if(precursorMolecule.getStructureAsIAtomContainer().getAtom(this.atomsFastBitArray.getFirstSetBit()).isAromatic())
-				fragmentStructure.getAtom(0).setIsAromatic(true);
-			else 
-				fragmentStructure.getAtom(0).setIsAromatic(false);
-			return fragmentStructure;
-		}
-		for(int i = 0; i < this.bondsFastBitArray.getSize(); i++) {
-			if(this.bondsFastBitArray.get(i)) {
-				IBond curBond = precursorMolecule.getStructureAsIAtomContainer().getBond(i);
-				if(precursorMolecule.isAromaticBond(i)) curBond.setIsAromatic(true);
-				for(IAtom atom : curBond.atoms()) {
-					atom.setImplicitHydrogenCount(0);
-					if(precursorMolecule.isAromaticBond(i)) atom.setIsAromatic(true);
-					fragmentStructure.addAtom(atom);
-				}
-				fragmentStructure.addBond(curBond);
-			}
-		}
-	//	loss of hydrogens
-	//	MoleculeFunctions.prepareAtomContainer(fragmentStructure);
-		
-		return fragmentStructure;
-	}
-	**/
 	
 	public IAtomContainer getStructureAsIAtomContainer(IMolecularStructure precursorMolecule) {
+		return this.getStructureAsIAtomContainer(precursorMolecule, null, null);
+	}
+
+	public IAtomContainer getStructureAsIAtomContainer(IMolecularStructure precursorMolecule, IAtom atomToAdd, Integer atomPositionToAdd) {
 		IChemObjectBuilder builder = DefaultChemObjectBuilder.getInstance();
 		IAtomContainer fragmentStructure = builder.newInstance(IAtomContainer.class);
 		if(this.atomsFastBitArray.cardinality() == 1) {
-			fragmentStructure.addAtom(precursorMolecule.getStructureAsIAtomContainer().getAtom(this.atomsFastBitArray.getFirstSetBit()));
+			IAtom curAtom = precursorMolecule.getStructureAsIAtomContainer().getAtom(this.atomsFastBitArray.getFirstSetBit());
+			if(atomToAdd != null && precursorMolecule.getStructureAsIAtomContainer().indexOf(curAtom) == atomPositionToAdd) {
+				IBond newBond = new Bond(curAtom, atomToAdd);
+				fragmentStructure.addAtom(atomToAdd);
+				fragmentStructure.addBond(newBond);
+			}	
+			fragmentStructure.addAtom(curAtom);
 			return fragmentStructure;
 		}
 		for(int i = 0; i < this.bondsFastBitArray.getSize(); i++) {
 			if(this.bondsFastBitArray.get(i)) {
 				IBond curBond = precursorMolecule.getStructureAsIAtomContainer().getBond(i);
 				for(IAtom atom : curBond.atoms()) {
+					if(atomToAdd != null && precursorMolecule.getStructureAsIAtomContainer().indexOf(atom) == atomPositionToAdd) {
+						IBond newBond = new Bond(atom, atomToAdd);
+						fragmentStructure.addAtom(atomToAdd);
+						fragmentStructure.addBond(newBond);
+					}	
 					fragmentStructure.addAtom(atom);
 				}
 				fragmentStructure.addBond(curBond);
@@ -424,11 +400,10 @@ public class DefaultBitArrayFragment extends AbstractFragment {
 		for(IAtom atom : atomsToAdd) fragmentStructure.addAtom(atom);
 		//MoleculeFunctions.removeHydrogens(fragmentStructure);
 		
-		
 		fragmentStructure = MoleculeFunctions.convertExplicitToImplicitHydrogens(fragmentStructure);
 		return fragmentStructure;
 	}
-
+	
 	public int getNonHydrogenAtomCount() {
 		return this.atomsFastBitArray.cardinality();
 	}

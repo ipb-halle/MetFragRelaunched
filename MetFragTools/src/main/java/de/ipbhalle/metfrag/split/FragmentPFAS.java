@@ -3,8 +3,10 @@ package de.ipbhalle.metfrag.split;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.openscience.cdk.Atom;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.exception.InvalidSmilesException;
+import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
@@ -14,25 +16,36 @@ import de.ipbhalle.metfraglib.fragment.AbstractTopDownBitArrayFragment;
 public class FragmentPFAS {
 
 	private List<AbstractTopDownBitArrayFragment> createdFragments;
+	private List<short[]> cleanedIndecesOfBondConnectedAtomsList;
 	private boolean[] isChainPFAS;
 	protected TopDownPrecursorCandidate pfasStructure;
 	protected int numberBrokenBonds;
 	
-	public FragmentPFAS(List<AbstractTopDownBitArrayFragment> createdFragments, boolean[] isChainPFAS, int numberBrokenBonds, TopDownPrecursorCandidate pfasStructure) {
+	public FragmentPFAS(List<AbstractTopDownBitArrayFragment> createdFragments, List<short[]> cleanedIndecesOfBondConnectedAtomsList, boolean[] isChainPFAS, int numberBrokenBonds, TopDownPrecursorCandidate pfasStructure) {
 		this.createdFragments = createdFragments;
 		this.isChainPFAS = isChainPFAS;
 		this.pfasStructure = pfasStructure;
 		this.numberBrokenBonds = numberBrokenBonds;
+		this.cleanedIndecesOfBondConnectedAtomsList = cleanedIndecesOfBondConnectedAtomsList;
 	}
 	
-	public String getFunctionalGroupsSmiles() throws CDKException {
+	public String getFunctionalGroupsSmiles(boolean addC) throws CDKException {
 		StringBuilder stringBuilder = new StringBuilder();
+		IAtom cAtom = addC ? new Atom("C") : null;
 		for(int i = 0; i < this.isChainPFAS.length; i++) {
 			if(!this.isChainPFAS[i]) {
-				if(stringBuilder.length() == 0) stringBuilder.append(this.createdFragments.get(i).getPreparedSmiles(this.pfasStructure.getPrecursorMolecule()));
+				Integer atomPositionToAdd = null;
+				if(addC) atomPositionToAdd = 
+					this.createdFragments.get(i).getAtomBit((int)this.cleanedIndecesOfBondConnectedAtomsList.get(i)[0]) 
+						? (int)this.cleanedIndecesOfBondConnectedAtomsList.get(i)[0]
+						: (int)this.cleanedIndecesOfBondConnectedAtomsList.get(i)[1];
+				if(stringBuilder.length() == 0) 
+					stringBuilder.append(this.createdFragments.get(i)
+						.getPreparedSmiles(this.pfasStructure.getPrecursorMolecule(), cAtom, atomPositionToAdd));
 				else {
 					stringBuilder.append("|");
-					stringBuilder.append(this.createdFragments.get(i).getPreparedSmiles(this.pfasStructure.getPrecursorMolecule()));
+					stringBuilder.append(this.createdFragments.get(i)
+						.getPreparedSmiles(this.pfasStructure.getPrecursorMolecule(), cAtom, atomPositionToAdd));
 				}
 			}
 		}
@@ -72,9 +85,9 @@ public class FragmentPFAS {
 		return this.numberBrokenBonds;
 	}
 	
-	public String toString() {
+	public String toString(boolean addC) {
 		try {
-			return this.getFunctionalGroupsSmiles() + " " + this.getPfasSmiles() + " " + this.getNumberBrokenBonds();
+			return this.getFunctionalGroupsSmiles(addC) + " " + this.getPfasSmiles() + " " + this.getNumberBrokenBonds();
 		} catch (CDKException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
