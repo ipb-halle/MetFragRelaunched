@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import de.ipbhalle.metfraglib.exceptions.AtomTypeNotKnownFromInputListException;
@@ -23,7 +24,7 @@ public class SplitPFAS {
 			System.out.println("Error: Could not read arguments properly.");
 			System.out.println("Usage:");
 			System.out.println("\tjava -cp NAME.jar de.ipbhalle.metfrag.split.SplitPFAS smiles='SMILES' "
-					+ "[smartspath='FILEPATH'] [image='yes or no'] [eccs='SMARTS'] [df='FOLDERPATH']");
+					+ "smartspath='FILEPATH' [image='yes or no'] [eccs='SMARTS'] [df='FOLDERPATH']");
 			System.out.println("");
 			System.out.println("\tsmiles    \t- SMILES of input PFAS");
 			System.out.println("");
@@ -97,40 +98,51 @@ public class SplitPFAS {
 		int[] endChainCarbonIndexes = pfas.findEndChainCarbons(endChainCarbonSmarts, debugFolder);
 
 		if(debugFolder != null) System.out.println("# Step 02");
-		List<List<Integer>> bondIndexesToSplitForAllSmarts = new ArrayList<List<Integer>>();
+		List<List<List<Integer>>> bondIndexesToSplitForAllSmarts = new LinkedList<List<List<Integer>>>();
+		List<List<List<Integer>>> bondIndexesToSplitForAllSmartsXR = new LinkedList<List<List<Integer>>>();
 		try {	
 			for(int ii = 0; ii < extendedChainSmarts.length; ii++) {
-				List<Integer> bondIndexesAfterEndChain = pfas.getBondIndexAfterEndChain(endChainCarbonIndexes, 
+				List<List<List<Integer>>> bondIndexesAfterEndChain = pfas.getBondIndexAfterEndChain(endChainCarbonIndexes, 
 					extendedChainSmarts[ii], ii, debugFolder);
-				bondIndexesToSplitForAllSmarts.add(bondIndexesAfterEndChain);
+				bondIndexesToSplitForAllSmarts.add(bondIndexesAfterEndChain.get(0));
+				bondIndexesToSplitForAllSmartsXR.add(bondIndexesAfterEndChain.get(1));
 			}
 		} catch(java.lang.IndexOutOfBoundsException e) {
+			e.printStackTrace();
 			System.err.println("Error: The initial match for the PFAS alpha carbon seemed to cause an error. Check your input SMILES.");
 			System.exit(6);
 		}
 		if(debugFolder != null) System.out.println("# Step 03");
 		int numberFoundToSplit = 0;
 		boolean fragmentFound = false;
-		for(int ii = 0; ii < bondIndexesToSplitForAllSmarts.size(); ii++) {
+		for(int ii = 0; ii < bondIndexesToSplitForAllSmarts.get(0).size(); ii++) {
 			// favor smarts unequal "" in case of multiple matches
-			if(bondIndexesToSplitForAllSmarts.get(ii).size() == 0) continue;
+			if(bondIndexesToSplitForAllSmarts.get(0).get(ii).size() == 0) continue;
 			
 			if(numberFoundToSplit == 0) {
-				File file = File.createTempFile("pref", ".png", new File(Constants.OS_TEMP_DIR));
+				File file1 = File.createTempFile("pref", ".png", new File(Constants.OS_TEMP_DIR));
+				File file2 = File.createTempFile("pref", ".png", new File(Constants.OS_TEMP_DIR));
 				if(createImage) {
-					pfas.saveHighlightedBondsImage(bondIndexesToSplitForAllSmarts.get(ii), file.getAbsolutePath());
-					System.out.println("stored bond(s) to break highlighted in " + file.getAbsolutePath());
+					pfas.saveHighlightedBondsImage(bondIndexesToSplitForAllSmarts.get(0).get(ii), file1.getAbsolutePath());
+					pfas.saveHighlightedBondsImage(bondIndexesToSplitForAllSmartsXR.get(0).get(ii), file2.getAbsolutePath());
+					System.out.println("stored bond(s) to break highlighted in " + file1.getAbsolutePath());
+					System.out.println("stored bond(s) to break highlighted in " + file2.getAbsolutePath());
 				}
 				
-				FragmentPFAS fragment = pfas.getSplitResult(bondIndexesToSplitForAllSmarts.get(ii), endChainCarbonIndexes);
+				FragmentPFAS fragment = pfas.getSplitResult(bondIndexesToSplitForAllSmarts.get(0).get(ii), endChainCarbonIndexes);
+				FragmentPFAS fragmentXR = pfas.getSplitResult(bondIndexesToSplitForAllSmartsXR.get(0).get(ii), endChainCarbonIndexes);
 				
 				if(fragment != null) {
 					numberFoundToSplit++;
-					System.out.println(fragment.toString(addCarbonToResidue) + " smarts='" + extendedChainSmarts[ii] + "'");
+					System.out.println(
+						fragment.toString(addCarbonToResidue) + " "
+							+ fragmentXR.toString(addCarbonToResidue).replaceAll("\\s[0-9]*$", "")
+							+ " smarts='" + extendedChainSmarts[ii] + "' ");
 					fragmentFound = true;
 				}
 			}
 		}
+		
 		if(!fragmentFound) System.out.println("No splittable bond found for the input molecule " + smiles);
 		
 	}	
@@ -148,6 +160,11 @@ public class SplitPFAS {
 		String line = "";
 		while((line = breader.readLine()) != null) { 
 			line = line.trim();
+			if(line.isEmpty()) {
+				System.err.println("Error: Empty line found in SMARTS file.");
+				breader.close();
+				return false;
+			}
 			if(!smartsValues.contains(line)) smartsValues.add(line);
 		}
 		breader.close();
@@ -175,6 +192,10 @@ public class SplitPFAS {
 				return false;
 			}
 			argsHash.put(tmp[0], combineStringArray(tmp));
+		}
+		if (!argsHash.containsKey("smartspath")) {
+			System.err.println("Error: No smartspath defined");
+			return false;
 		}
 		if (!argsHash.containsKey("smiles")) {
 			System.err.println("Error: No smiles defined");

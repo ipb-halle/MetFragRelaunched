@@ -6,6 +6,7 @@ import java.awt.image.RenderedImage;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 
@@ -101,56 +102,57 @@ public class PFAS {
 		return matches;
 	}
 	
-	public List<Integer> getBondIndexAfterEndChain(int[] endChainCarbonIndexes, String smarts, Integer smartsIndex, 
+	public List<List<List<Integer>>> getBondIndexAfterEndChain(int[] endChainCarbonIndexes, String smarts, 
+			Integer smartsIndex, 
 			String debugFolder) throws Exception {
-		List<Integer> toBreakBondIndexes = new ArrayList<Integer>();
+		List<List<Integer>> toBreakBondIndexes = new LinkedList<List<Integer>>();
+		List<List<Integer>> toBreakBondIndexesXR = new LinkedList<List<Integer>>();
+		
 		IAtomContainer con = this.pfasStructure.getImplicitHydrogenAtomContainer();
 
-		List<List<Integer>> matchedAtomIndexes = null;
-		if(!smarts.equals("")) {
-			matchedAtomIndexes = this.getMatchesBySmarts(smarts, con);
-			if(debugFolder != null) System.out.println("Found " + matchedAtomIndexes.size() + " match(es) with " + smarts);
-		}
+		List<List<Integer>>	matchedAtomIndexes = this.getMatchesBySmarts(smarts, con);
+		if(debugFolder != null) System.out.println("Found " + matchedAtomIndexes.size() + " match(es) with " + smarts);
 		
 		for(int endChainCarbonIndex : endChainCarbonIndexes) {	
 			if(endChainCarbonIndex == -1) continue;
-			if(smarts.equals("")) {
-				List<Integer> bondsAfterMatch = findBondsAfterMatch(null, endChainCarbonIndex, con);
-				for(Integer bondAfterMatch : bondsAfterMatch)
-					toBreakBondIndexes.add(bondAfterMatch);
-			} else {
 				// generate structure image with matched atoms by given smarts
-				if(debugFolder != null) {
-					HighlightSubStructureImageGenerator s = new HighlightSubStructureImageGenerator(new Font("Verdana", Font.BOLD, 18));
-					FastBitArray bitArrayAtoms = this.generateAndSetBitStringMultiple(con.getAtomCount(), matchedAtomIndexes);
-					FastBitArray bitArrayBonds = new FastBitArray(con.getBondCount());
-					s.setHighlightColor(new Color(0x6495ED));
-					s.setImageHeight(1500);
-					s.setImageWidth(1500);
-					s.setStrokeRation(1.2);
-					RenderedImage img = s.generateImage(bitArrayAtoms, bitArrayBonds, con);
-					ImageIO.write((RenderedImage) img, "PNG", 
-						new java.io.File(debugFolder + Constants.OS_SPECIFIC_FILE_SEPARATOR + "02a-atoms-matched-by-smarts-" + (smartsIndex+1) + ".png"));
-				}
-				
-				for(List<Integer> matchedAtomIndex : matchedAtomIndexes) {
-					List<Integer> bondsAfterMatch = this.findBondsAfterMatch(matchedAtomIndex, endChainCarbonIndex, con);
-					for(Integer bondAfterMatch : bondsAfterMatch)
-						toBreakBondIndexes.add(bondAfterMatch);
-				}
+			if(debugFolder != null) {
+				HighlightSubStructureImageGenerator s = new HighlightSubStructureImageGenerator(new Font("Verdana", Font.BOLD, 18));
+				FastBitArray bitArrayAtoms = this.generateAndSetBitStringMultiple(con.getAtomCount(), matchedAtomIndexes);
+				FastBitArray bitArrayBonds = new FastBitArray(con.getBondCount());
+				s.setHighlightColor(new Color(0x6495ED));
+				s.setImageHeight(1500);
+				s.setImageWidth(1500);
+				s.setStrokeRation(1.2);
+				RenderedImage img = s.generateImage(bitArrayAtoms, bitArrayBonds, con);
+				ImageIO.write((RenderedImage) img, "PNG", 
+					new java.io.File(debugFolder + Constants.OS_SPECIFIC_FILE_SEPARATOR + "02a-atoms-matched-by-smarts-" + (smartsIndex+1) + ".png"));
+			}
+			
+			for(List<Integer> matchedAtomIndex : matchedAtomIndexes) {
+				List<Integer> bondsAfterMatch = this.findBondsAfterMatch(matchedAtomIndex, endChainCarbonIndex, con);
+				List<Integer> bondsNextMatch = this.findBondsNextToMatch(matchedAtomIndex, endChainCarbonIndex, con);
+				toBreakBondIndexes.add(bondsAfterMatch);
+				toBreakBondIndexesXR.add(bondsNextMatch);
 			}
 		}
-		return toBreakBondIndexes;
+		
+		List<List<List<Integer>>> toReturn = new LinkedList<List<List<Integer>>>();
+		toReturn.add(toBreakBondIndexes);
+		toReturn.add(toBreakBondIndexesXR);
+
+		return toReturn;
 	}
 	
-	protected List<Integer> findBondsAfterMatch(List<Integer> matchedAtomIndexes, int endChainCarbonIndex, IAtomContainer con) throws Exception {
+	protected List<Integer> findBondsAfterMatch(List<Integer> matchedAtomIndexes, int endChainCarbonIndex, 
+			IAtomContainer con) throws Exception {
 		List<Integer> bondIndexesAfterMatch = new ArrayList<Integer>();
 		IAtom endChainCarbon = con.getAtom(endChainCarbonIndex);
 		List<IAtom> connectedAtoms = con.getConnectedAtomsList(endChainCarbon);
 		if(matchedAtomIndexes == null) {
 			for(IAtom connectedAtom : connectedAtoms) { 
 				if((connectedAtom.getSymbol().equals("C") && this.countConnectedFluors(connectedAtom, con) >= 1) || connectedAtom.getSymbol().equals("F")) continue;
-				bondIndexesAfterMatch.add(con.indexOf(con.getBond(connectedAtom, endChainCarbon)));
+				bondIndexesAfterMatch.add(new Integer(con.indexOf(con.getBond(connectedAtom, endChainCarbon))));
 			}
 		} else {
 			// check whether end chain carbon is connected to the current Step-02 match 
@@ -166,12 +168,39 @@ public class PFAS {
 					if(!matchedAtomIndexes.contains(indexOfAtom) && indexOfAtom != endChainCarbonIndex 
 							&& (!atom.getSymbol().equals("C") || this.countConnectedFluors(atom, con) == 0) 
 							&& !atom.getSymbol().equals("F")) { 
-						bondIndexesAfterMatch.add(con.indexOf(con.getBond(atom, con.getAtom(matchedAtomIndex))));
+						bondIndexesAfterMatch.add(
+							con.indexOf(con.getBond(atom, con.getAtom(matchedAtomIndex)))
+						);
 					}
 				}
 			}
 		}
 		return bondIndexesAfterMatch;				
+	}
+	
+	/**
+	 * find bond that connects SMARTS match with PFAS alpha carbon
+	 * 
+	 * @param matchedAtomIndexes
+	 * @param endChainCarbonIndex
+	 * @param con
+	 * @return
+	 * @throws Exception
+	 */
+	protected List<Integer> findBondsNextToMatch(List<Integer> matchedAtomIndexes, int endChainCarbonIndex, 
+			IAtomContainer con) throws Exception {
+		IAtom endChainCarbon = con.getAtom(endChainCarbonIndex);
+		List<IAtom> connectedAtoms = con.getConnectedAtomsList(endChainCarbon);
+		List<Integer> bondsNextToAlphaCarbon = null;
+		try {
+			bondsNextToAlphaCarbon = connectedAtoms.stream().filter(connectedAtom -> 
+				matchedAtomIndexes.contains(con.indexOf(connectedAtom))
+			).map(atom -> con.indexOf(con.getBond(endChainCarbon, atom))).collect(Collectors.toList());
+		} catch(Exception e) {
+			return new LinkedList<Integer>();
+		}
+		
+		return bondsNextToAlphaCarbon;
 	}
 	
 	protected boolean isDisjunct(List<IAtom> connectedAtoms, List<Integer> matchedAtomIndexes, IAtomContainer con) {
@@ -391,7 +420,7 @@ public class PFAS {
 		}
 		return bitArray;
 	}
-	
+
 	protected FastBitArray generateAndSetBitStringMultiple(int size, List<List<Integer>> toSet) {
 		FastBitArray bitArray = new FastBitArray(size, false);
 		for(int i = 0; i < toSet.size(); i++) {
