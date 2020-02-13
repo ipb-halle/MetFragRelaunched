@@ -1,7 +1,8 @@
 FROM maven:latest AS builder
 WORKDIR /
 RUN git clone --depth 1 https://github.com/meier-rene/MetFragRelaunched.git
-RUN echo $'# local database file folder\nLocalDatabasesFolderForWeb = /vol/file_databases' > /MetFragRelaunched/MetFragWeb/src/main/webapp/resources/settings.properties
+RUN printf '# local database file folder \n\
+LocalDatabasesFolderForWeb = /vol/file_databases' > /MetFragRelaunched/MetFragWeb/src/main/webapp/resources/settings.properties
 RUN cat /MetFragRelaunched/MetFragWeb/src/main/webapp/resources/settings.properties
 RUN mvn -f MetFragRelaunched clean package -pl MetFragLib -pl MetFragWeb -am -DskipTests
 
@@ -21,4 +22,17 @@ RUN wget -q -O- https://msbi.ipb-halle.de/~sneumann/file_databases.tgz | tar -C 
         wget -q https://zenodo.org/record/3611238/files/PubChemLite_14Jan2020_tier0.csv; \
         wget -q https://zenodo.org/record/3611238/files/PubChemLite_14Jan2020_tier1.csv; \
         wget -q https://zenodo.org/record/3564602/files/BloodExposomeDB_03Dec2019.csv
+
+RUN printf '#!/bin/sh \n\
+if [ -f "/resources/settings.properties" ] \n\
+then \n\
+	jar uvf /usr/local/tomcat/webapps/MetFragWeb.war /resources/settings.properties \n\
+fi \n\
+if ! [ -z ${WEBPREFIX} ] \n\
+then \n\
+	mv /usr/local/tomcat/webapps/MetFragWeb.war /usr/local/tomcat/webapps/${WEBPREFIX}.war \n\
+fi \n\
+catalina.sh run' > /start.sh
+
+CMD [ "sh", "/start.sh" ]
 
