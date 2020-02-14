@@ -1,6 +1,6 @@
 FROM maven:latest AS builder
 WORKDIR /
-RUN git clone --depth 1 https://github.com/meier-rene/MetFragRelaunched.git
+RUN git clone --depth 1 https://github.com/ipb-halle/MetFragRelaunched.git
 RUN printf '# local database file folder \n\
 LocalDatabasesFolderForWeb = /vol/file_databases' > /MetFragRelaunched/MetFragWeb/src/main/webapp/resources/settings.properties
 RUN cat /MetFragRelaunched/MetFragWeb/src/main/webapp/resources/settings.properties
