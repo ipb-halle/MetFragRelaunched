@@ -14,6 +14,27 @@ MetFrag relaunched
 git clone https://github.com/ipb-halle/MetFragRelaunched.git
 ```
 
+MetFrag Webapp container
+------------------------
+
+This container packages the MetFrag (https://github.com/ipb-halle/MetFragRelaunched) webapp and some text databases based on the latest official tomcat docker container.
+
+##### Following options are supported:
+* environment variable JAVA_OPTS="-Xmx?g -Xms?g" to adjust jvm memory
+* environment variable WEBPREFIX to adjust the web app name
+* automatic use of a metfrag settings file if provided at /resources/settings.properties
+
+##### Examples:
+Run MetFrag at http://localhost:8888/MetFragWeb
+```
+docker run -it --rm -p 8888:8080 ipb-halle/metfragweb
+```
+Run Metfrag at http://localhost:8888/mymetfrag with 4GB JVM size using a settings file from `./settings.properties`
+```
+docker run -it --rm -e  JAVA_OPTS="-Xmx4g -Xms4g" -e WEBPREFIX=mymetfrag -v $(pwd)/settings.properties:/resources/settings.properties -p 8888:8080 ipbhalle/metfragweb
+```
+
+
 MetFragLib
 ----------
 
