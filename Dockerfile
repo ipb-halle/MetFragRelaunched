@@ -14,6 +14,7 @@ RUN wget -q -O- https://msbi.ipb-halle.de/~sneumann/file_databases.tgz | tar -C 
         wget -q https://zenodo.org/record/3375500/files/HMDB4_23Aug19.csv; \
         wget -q https://zenodo.org/record/3403530/files/WormJam_10Sept19.csv; \
         wget -q https://zenodo.org/record/3434579/files/YMDB2_17Sept2019.csv; \
+        wget -q https://zenodo.org/record/3735703/files/EColiMDB_11Nov2019.csv; \
         wget -q https://zenodo.org/record/3541624/files/Zebrafish_13Nov2019_Beta.csv; \
         wget -q https://zenodo.org/record/3472781/files/CompTox_07March19_WWMetaData.csv; \
         wget -q https://zenodo.org/record/3520106/files/NPAtlas_Aug2019.csv; \
