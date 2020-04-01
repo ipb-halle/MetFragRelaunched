@@ -1,6 +1,6 @@
-FROM maven:latest AS builder
+FROM maven:3-jdk-11 AS builder
 
-RUN yum -y install git 
+RUN yum -y install git
 
 WORKDIR /
 RUN git clone --depth 1 https://github.com/ipb-halle/MetFragRelaunched.git
