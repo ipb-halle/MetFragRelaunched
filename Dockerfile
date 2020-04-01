@@ -1,4 +1,7 @@
 FROM maven:latest AS builder
+
+RUN yum -y install git 
+
 WORKDIR /
 RUN git clone --depth 1 https://github.com/ipb-halle/MetFragRelaunched.git
 RUN printf '# local database file folder \n\
@@ -36,4 +39,3 @@ fi \n\
 catalina.sh run' > /start.sh
 
 CMD [ "sh", "/start.sh" ]
-
