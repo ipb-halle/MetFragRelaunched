@@ -1,6 +1,7 @@
 FROM maven:3-jdk-11 AS builder
 
-RUN yum -y install git
+# Needed on maven image with JDK 14 which is based on Oracle Linux
+# RUN yum -y install git
 
 WORKDIR /
 RUN git clone --depth 1 https://github.com/ipb-halle/MetFragRelaunched.git
