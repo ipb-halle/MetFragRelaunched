@@ -548,13 +548,13 @@ public class MetFragWebBean {
 			this.errorMessages.removeKey("buttonDownloadCompoundsError");
 			try {
 				double value = Double.parseDouble(this.beanSettingsContainer.getNeutralMonoisotopicMass());
-				if (value <= 0.0 || value > 1250)
+				if (value <= 0.0 || value > 2000)
 					throw new Exception();
 				else
 					this.errorMessages.removeKey("inputNeutralMonoisotopicMassError");
 			} catch (Exception e) {
 				checksFine = false;
-				this.errorMessages.setMessage("inputNeutralMonoisotopicMassError", "Error: Invalid mass value.");
+				this.errorMessages.setMessage("inputNeutralMonoisotopicMassError", "Error: Invalid mass value, has to be 0 < m < 2000.");
 			}
 		} else
 			this.errorMessages.removeKey("inputNeutralMonoisotopicMassError");
