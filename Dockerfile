@@ -1,4 +1,8 @@
-FROM maven:latest AS builder
+FROM maven:3-jdk-11 AS builder
+
+# Needed on maven image with JDK 14 which is based on Oracle Linux
+# RUN yum -y install git
+
 WORKDIR /
 RUN git clone --depth 1 https://github.com/ipb-halle/MetFragRelaunched.git
 RUN printf '# local database file folder \n\
@@ -38,4 +42,3 @@ fi \n\
 catalina.sh run' > /start.sh
 
 CMD [ "sh", "/start.sh" ]
-
