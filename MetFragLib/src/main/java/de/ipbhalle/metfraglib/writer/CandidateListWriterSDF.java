@@ -136,15 +136,15 @@ public class CandidateListWriterSDF implements IWriter {
 				candidateAtomContainer.setProperty("FragmentMolecularFormulas",
 						sumFormulasOfFragmentsExplainedPeaks);
 			}
-
-			java.util.Enumeration<String> keys = candidate.getProperties()
-					.keys();
-			while (keys.hasMoreElements()) {
+			
+			for (java.util.Enumeration<String> keys = candidate.getProperties().keys(); keys.hasMoreElements();)
+			{
 				String key = keys.nextElement();
-				String propertyValue = (String)checkEmptyProperty(candidate.getProperty(key));
+				String propertyValue = checkEmptyProperty(candidate.getProperty(key)).toString();
 				if(key.equals(VariableNames.IDENTIFIER_NAME)) propertyValue = propertyValue.replaceAll("\\|[0-9]+", "");
 				candidateAtomContainer.setProperty(key, propertyValue);
 			}
+
 			candidateAtomContainer.setProperty("NumberPeaksUsed",
 					numberOfPeaksUsed);
 
