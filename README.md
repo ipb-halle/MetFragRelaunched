@@ -33,6 +33,9 @@ Run Metfrag at http://localhost:8888/mymetfrag with 4GB JVM size using a setting
 ```
 docker run -it --rm -e  JAVA_OPTS="-Xmx4g -Xms4g" -e WEBPREFIX=mymetfrag -v $(pwd)/settings.properties:/resources/settings.properties -p 8888:8080 ipbhalle/metfragweb
 ```
+##### Container repositories
+See https://hub.docker.com/r/ipbhalle/metfragweb for automatic builds.
+
 
 
 MetFragLib
