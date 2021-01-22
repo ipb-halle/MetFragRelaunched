@@ -25,7 +25,7 @@ RUN wget -q -O- https://msbi.ipb-halle.de/~sneumann/file_databases.tgz | tar -C 
         wget -q https://zenodo.org/record/3548461/files/NORMANSusDat_20Nov2019.csv; \
         wget -q https://zenodo.org/record/3547718/files/COCONUT4MetFrag.csv; \
         wget -q https://zenodo.org/record/4432124/files/PubChemLite_01Jan2021_exposomics.csv; \
-        wget -q https://zenodo.org/record/4081057/files/PubChemLite_14Jan2020_tier1_CCSbase.csv; \
+        wget -q https://zenodo.org/record/4456208/files/PubChemLite_01Jan2021_exposomics_CCSbase.csv; \
         wget -q https://zenodo.org/record/3957497/files/HBM4EU_CECscreen_MF_1Jul2020.csv; \
         wget -q https://zenodo.org/record/3957497/files/HBM4EU_CECscreen_MF_1Jul2020_plusTPs.csv; \
         wget -q https://zenodo.org/record/3564602/files/BloodExposomeDB_03Dec2019.csv
