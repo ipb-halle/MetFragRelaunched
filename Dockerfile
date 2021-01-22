@@ -13,7 +13,7 @@ RUN mvn -q -f MetFragRelaunched clean package -pl MetFragLib -pl MetFragWeb -am 
 
 FROM tomcat:latest
 COPY --from=builder /MetFragRelaunched/MetFragWeb/target/MetFragWeb.war /usr/local/tomcat/webapps/
-RUN wget -q -O- https://msbi.ipb-halle.de/~sneumann/file_databases.tgz | tar -C / -xzf -
+RUN wget -O- https://msbi.ipb-halle.de/~sneumann/file_databases.tgz | tar -C / -xzvf -
 
 RUN     cd /vol/file_databases; \
         wget -q https://zenodo.org/record/3375500/files/HMDB4_23Aug19.csv; \
