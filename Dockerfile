@@ -10,13 +10,16 @@ LocalDatabasesFolderForWeb = /vol/file_databases' > /MetFragRelaunched/MetFragWe
 RUN cat /MetFragRelaunched/MetFragWeb/src/main/webapp/resources/settings.properties
 RUN mvn -q -f MetFragRelaunched clean package -pl MetFragLib -pl MetFragWeb -am -DskipTests
 
+ADD https://msbi.ipb-halle.de/~sneumann/file_databases.tgz /tmp
+RUN tar -C / -xzvf /tmp/file_databases.tgz 
 
 FROM tomcat:latest
 COPY --from=builder /MetFragRelaunched/MetFragWeb/target/MetFragWeb.war /usr/local/tomcat/webapps/
+COPY --from=builder /vol/file_databases/ /vol/file_databases/ 
 
 #RUN wget -q -O- https://msbi.ipb-halle.de/~sneumann/file_databases.tgz | tar -C / -tzvf -
 #RUN wget -q -O- https://msbi.ipb-halle.de/~sneumann/file_databases.tgz >/dev/null
-RUN curl https://msbi.ipb-halle.de/~sneumann/file_databases.tgz >/dev/null
+#RUN curl https://msbi.ipb-halle.de/~sneumann/file_databases.tgz >/dev/null
 #RUN curl -s https://msbi.ipb-halle.de/~sneumann/file_databases.tgz | tar -C / -xzvf -
 
 RUN     mkdir -p /vol/file_databases; cd /vol/file_databases; \
