@@ -15,7 +15,8 @@ FROM tomcat:latest
 COPY --from=builder /MetFragRelaunched/MetFragWeb/target/MetFragWeb.war /usr/local/tomcat/webapps/
 
 #RUN wget -q -O- https://msbi.ipb-halle.de/~sneumann/file_databases.tgz | tar -C / -tzvf -
-RUN wget -q -O- https://msbi.ipb-halle.de/~sneumann/file_databases.tgz >/dev/null
+#RUN wget -q -O- https://msbi.ipb-halle.de/~sneumann/file_databases.tgz >/dev/null
+RUN curl https://msbi.ipb-halle.de/~sneumann/file_databases.tgz >/dev/null
 #RUN curl -s https://msbi.ipb-halle.de/~sneumann/file_databases.tgz | tar -C / -xzvf -
 
 RUN     mkdir -p /vol/file_databases; cd /vol/file_databases; \
