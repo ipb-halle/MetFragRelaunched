@@ -21,6 +21,9 @@ COPY --from=builder /vol/file_databases/ /vol/file_databases/
 #RUN wget -q -O- https://msbi.ipb-halle.de/~sneumann/file_databases.tgz >/dev/null
 #RUN curl https://msbi.ipb-halle.de/~sneumann/file_databases.tgz >/dev/null
 #RUN curl -s https://msbi.ipb-halle.de/~sneumann/file_databases.tgz | tar -C / -xzvf -
+RUN wget -q -O- "https://www.dropbox.com/s/pm4957k2c8s4clo/file_databases.tgz?dl=0" | tar -C / -tzvf -
+
+
 
 RUN     mkdir -p /vol/file_databases; cd /vol/file_databases; \
         wget -q https://zenodo.org/record/3375500/files/HMDB4_23Aug19.csv; \
