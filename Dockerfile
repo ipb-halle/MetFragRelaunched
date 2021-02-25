@@ -26,7 +26,7 @@ RUN wget -q -O- "https://www.dropbox.com/s/pm4957k2c8s4clo/file_databases.tgz?dl
         wget -q https://zenodo.org/record/3520106/files/NPAtlas_Aug2019.csv; \
         wget -q https://zenodo.org/record/3548461/files/NORMANSusDat_20Nov2019.csv; \
         wget -q https://zenodo.org/record/3547718/files/COCONUT4MetFrag.csv; \
-        wget -q https://zenodo.org/record/4551529/files/CyanoMetDB_MetFrag_Feb2021.csv; \
+        wget -q https://zenodo.org/record/4562688/files/CyanoMetDB_MetFrag_Feb2021.csv; \
         wget -q https://zenodo.org/record/4432124/files/PubChemLite_01Jan2021_exposomics.csv; \
         wget -q https://zenodo.org/record/4456208/files/PubChemLite_01Jan2021_exposomics_CCSbase.csv; \
         wget -q https://zenodo.org/record/3957497/files/HBM4EU_CECscreen_MF_1Jul2020.csv; \
