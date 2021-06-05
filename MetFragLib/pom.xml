@@ -244,7 +244,7 @@
 		<repository>
 			<id>msbi</id>
 			<url>
-    			http://msbi.ipb-halle.de/~cruttkie/maven2
+    			https://msbi.ipb-halle.de/~cruttkie/maven2
 			</url>
 		</repository>
 		<repository>
