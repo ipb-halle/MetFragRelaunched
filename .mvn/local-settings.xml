@@ -6,7 +6,7 @@
             <id>nexus-ebi-release-repo-http-unblocker</id>
             <mirrorOf>nexus-ebi-release-repo</mirrorOf>
             <name></name>
-            <url>http://www.ebi.ac.uk/Tools/maven/repos/content/groups/ebi-repo/</url>
+            <url>https://www.ebi.ac.uk/Tools/maven/repos/content/groups/ebi-repo/</url>
             <blocked>false</blocked>
         </mirror>
     </mirrors>
