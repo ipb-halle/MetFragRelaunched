@@ -4,7 +4,7 @@ FROM maven:3-jdk-11 AS builder
 # RUN yum -y install git
 
 WORKDIR /
-RUN git clone --depth 1 https://github.com/ipb-halle/MetFragRelaunched.git
+RUN git clone --depth 1 https://github.com/ipb-halle/MetFragRelaunched.git ; ln -s MetFragRelaunched/.mvn .
 RUN printf '# local database file folder \n\
 LocalDatabasesFolderForWeb = /vol/file_databases' > /MetFragRelaunched/MetFragWeb/src/main/webapp/resources/settings.properties
 RUN cat /MetFragRelaunched/MetFragWeb/src/main/webapp/resources/settings.properties
