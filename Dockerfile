@@ -14,8 +14,8 @@ RUN mvn -f MetFragRelaunched clean package -pl MetFragLib -pl MetFragWeb -am -Ds
 FROM tomcat:latest
 COPY --from=builder /MetFragRelaunched/MetFragWeb/target/MetFragWeb.war /usr/local/tomcat/webapps/
 
-#RUN wget -q -O- https://msbi.ipb-halle.de/~sneumann/file_databases.tgz | tar -C / -xzf -; \
-RUN wget -q -O- "https://www.dropbox.com/s/pm4957k2c8s4clo/file_databases.tgz?dl=0" | tar -C / -xzf -; \
+#RUN wget -q -O- "https://www.dropbox.com/s/pm4957k2c8s4clo/file_databases.tgz?dl=0" | tar -C / -xzf -; \
+RUN wget -q -O- https://msbi.ipb-halle.de/~sneumann/file_databases.tgz | tar -C / -xzf -; \
         cd /vol/file_databases; \
         wget -q https://zenodo.org/record/3375500/files/HMDB4_23Aug19.csv; \
         wget -q https://zenodo.org/record/3403530/files/WormJam_10Sept19.csv; \
