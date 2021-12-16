@@ -148,6 +148,7 @@ public class CommandLineTool {
 				try {
 					candidateWriter.write(scoredCandidateList, (String)settings.get(VariableNames.SAMPLE_NAME), (String)settings.get(VariableNames.STORE_RESULTS_PATH_NAME), settings);
 				} catch (Exception e) {
+					logger.error(e.getMessage());
 					logger.error("Error: Could not write fragment files.");
 					System.exit(7);
 				}

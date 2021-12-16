@@ -381,8 +381,8 @@ public class DefaultBitArrayFragment extends AbstractFragment {
 				fragmentStructure.getAtom(i).setImplicitHydrogenCount(0);
 			}
 		}
-		for(IBond bond : bondsToAdd) fragmentStructure.addBond(bond);
 		for(IAtom atom : atomsToAdd) fragmentStructure.addAtom(atom);
+		for(IBond bond : bondsToAdd) fragmentStructure.addBond(bond);
 		atomsToAdd = new java.util.LinkedList<IAtom>();
 		bondsToAdd = new java.util.LinkedList<IBond>();
 		for(int i = 0; i < fragmentStructure.getAtomCount(); i++) {
@@ -396,8 +396,8 @@ public class DefaultBitArrayFragment extends AbstractFragment {
 				fragmentStructure.getAtom(i).setImplicitHydrogenCount(0);
 			}
 		}
-		for(IBond bond : bondsToAdd) fragmentStructure.addBond(bond);
 		for(IAtom atom : atomsToAdd) fragmentStructure.addAtom(atom);
+		for(IBond bond : bondsToAdd) fragmentStructure.addBond(bond);
 		//MoleculeFunctions.removeHydrogens(fragmentStructure);
 		
 		fragmentStructure = MoleculeFunctions.convertExplicitToImplicitHydrogens(fragmentStructure);
