@@ -1,9 +1,5 @@
 FROM maven:3-jdk-11 AS builder
 
-# Needed on maven image with JDK 14 which is based on Oracle Linux
-# RUN yum -y install git
-
-COPY .mvn /.mvn/
 COPY MetFragLib/ /MetFragRelaunched/MetFragLib/
 COPY MetFragCommandLine/ /MetFragRelaunched/MetFragCommandLine/
 COPY MetFragR/ /MetFragRelaunched/MetFragR/
@@ -18,7 +14,7 @@ LocalDatabasesFolderForWeb = /vol/file_databases' > /MetFragRelaunched/MetFragWe
 RUN mvn -f MetFragRelaunched clean package -pl MetFragLib -pl MetFragWeb -am -DskipTests
 
 
-FROM tomcat:latest
+FROM tomcat:9-jdk11
 COPY --from=builder /MetFragRelaunched/MetFragWeb/target/MetFragWeb.war /usr/local/tomcat/webapps/
 
 RUN wget -q -O- https://msbi.ipb-halle.de/~sneumann/file_databases.tgz | tar -C / -xzf -
