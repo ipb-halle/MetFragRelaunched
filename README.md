@@ -8,8 +8,8 @@ MetFrag relaunched
 - Java >= 1.6
 - Apache Maven ≥ 3.0.4
 ##### Requirements tested
-- Java >= openjdk11
-- Apache Maven ≥ 3.6
+- Java = openjdk11
+- Apache Maven = 3.8
 
 ##### Sources
 - download sources by cloning git repository<br>
@@ -150,36 +150,27 @@ LocalPubChemDatabaseCompoundNameColumn = ...
 
 ##### Build and Run
 ```bash
-mvn clean install cargo:run -pl MetFragWeb
+mvn clean install -pl MetFragLib
+mvn clean install org.codehaus.cargo:cargo-maven3-plugin:run -pl MetFragWeb
 ```
 
 - skipping test during build by<br>
 ```bash
-mvn clean install cargo:run -pl MetFragWeb -DskipTests
+mvn clean install -pl MetFragWeb -DskipTests
+mvn clean install org.codehaus.cargo:cargo-maven3-plugin:run -pl MetFragWeb
 ```
 
 - after the successful build Tomcat web server runs on port 8080<br>
 - MetFragWeb can be accessed via pointing to http://localhost:8080/index.xhtml in the web browser<br>
 
-- you can change the port by adding -Dmaven.tomcat.port=...<br>
-
 ##### Build
 - if you just want to build the war file to transfer it to another Tomcat instance, run:
 
 ```bash
-mvn package -pl MetFragWeb
+mvn clean package -pl MetFragWeb -am
 ```
 
 - after the successful build the war file is located in MetFragWeb/target/MetFragWeb.war
-
-##### Run
-- after the war file has been built once you can just run the embedded Tomcat server:
-
-```bash
-mvn cargo:run -pl MetFragWeb
-```
-
-- point your browser to http://localhost:8080/index.xhtml to use the running MetFragWeb instance
 
 Additionals
 -----------
