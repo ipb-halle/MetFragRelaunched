@@ -15,12 +15,23 @@
 		<finalName>MetFragWeb</finalName>
 		<plugins>
 			<plugin>
-				<groupId>org.apache.tomcat.maven</groupId>
-				<artifactId>tomcat7-maven-plugin</artifactId>
-				<version>2.2</version>
+				<groupId>org.codehaus.cargo</groupId>
+				<artifactId>cargo-maven3-plugin</artifactId>
+				<version>1.9.8</version>
 				<configuration>
-					<url>http://localhost:8080</url>
-					<path>/</path>
+					<container>
+						<containerId>tomcat9x</containerId>
+						<type>embedded</type>
+					</container>
+					<deployables>
+						<deployable>
+							<type>war</type>
+							<location>${project.build.directory}/${project.build.finalName}.war</location>
+							<properties>
+								<context>/</context>
+							</properties>
+						</deployable>
+					</deployables>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -75,6 +86,5 @@
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 		</dependency>
-
 	</dependencies>
 </project>
