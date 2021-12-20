@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.file.Files;
 import java.util.concurrent.ExecutionException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -29,8 +30,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.google.common.io.Files;
 
 import org.springframework.hateoas.Resource;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
@@ -73,9 +72,11 @@ public class MetFragRestController {
 	@RequestMapping(method = RequestMethod.POST, value = "", produces = { MediaType.APPLICATION_JSON_VALUE })
 	@ResponseBody
 	public ResponseEntity<Resource<ProcessAssembler>> process(@RequestBody ProcessArguments args) throws CouldNotWriteStatusException, CouldNotCreateProcessException {
-		File resFolder = Files.createTempDir();
-		String processid = resFolder.getName();
-		try {	
+		File resFolder;
+		String processid;
+		try {
+			resFolder = Files.createTempDirectory("java.io.tmpdir").toFile();
+			processid = resFolder.getName();
 			try {
 				MetFragGlobalSettings settings = args.getSettingsObject(resFolder);
 				// check settings

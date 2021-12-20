@@ -49,19 +49,9 @@
 				<version>2.11.0</version>
 			</dependency>
 			<dependency>
-				<groupId>backport-util-concurrent</groupId>
-				<artifactId>backport-util-concurrent</artifactId>
-				<version>3.1</version>
-			</dependency>
-			<dependency>
 				<groupId>org.openscience.cdk</groupId>
 				<artifactId>cdk-bundle</artifactId>
 				<version>${cdk.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.javolution</groupId>
-				<artifactId>javolution-core-java</artifactId>
-				<version>6.0.0</version>
 			</dependency>
 			<dependency>
 				<groupId>com.googlecode.json-simple</groupId>
@@ -242,8 +232,8 @@
 			<url>https://msbi.ipb-halle.de/~cruttkie/maven2</url>
 		</repository>
 		<repository>
-                        <id>nexus-ebi-release-repo</id>
-                        <url>https://www.ebi.ac.uk/Tools/maven/repos/content/groups/ebi-repo</url>
-                </repository>
+			<id>nexus-ebi-release-repo</id>
+			<url>https://www.ebi.ac.uk/Tools/maven/repos/content/groups/ebi-repo</url>
+		</repository>
 	</repositories>
 </project>

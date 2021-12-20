@@ -241,7 +241,7 @@ public class PeakToSmartsGroupListCollection extends DefaultList {
 			}
 		}
 		System.out.println();
-		this.maximumAnnotatedID = new Integer(maxAnnotatedId); 
+		this.maximumAnnotatedID = Integer.valueOf(maxAnnotatedId); 
 	}
 	
 	// calculate N^(s)

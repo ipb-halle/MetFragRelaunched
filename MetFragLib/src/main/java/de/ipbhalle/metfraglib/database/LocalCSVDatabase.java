@@ -67,12 +67,12 @@ public class LocalCSVDatabase extends AbstractFileDatabase {
 			java.util.HashMap<String, Boolean> nameToWasFound = new java.util.HashMap<String, Boolean>();
 			java.util.Iterator<String> keys = nameToInputName.keySet().iterator();
 			while(keys.hasNext())
-				nameToWasFound.put(keys.next(), new Boolean(false));
+				nameToWasFound.put(keys.next(), Boolean.valueOf(false));
 			
 			while(it.hasNext()) {
 				String colname = (String)it.next();
 				propertyNames.add(colname);
-				if(nameToInputName.containsKey(colname)) nameToWasFound.put(colname, new Boolean(true));
+				if(nameToInputName.containsKey(colname)) nameToWasFound.put(colname, Boolean.valueOf(true));
 			}
 			
 			String properIdentifierName = "";

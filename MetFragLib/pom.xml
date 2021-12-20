@@ -53,16 +53,8 @@
 			<artifactId>commons-io</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>backport-util-concurrent</groupId>
-			<artifactId>backport-util-concurrent</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.openscience.cdk</groupId>
 			<artifactId>cdk-bundle</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.javolution</groupId>
-			<artifactId>javolution-core-java</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.googlecode.json-simple</groupId>

@@ -2,6 +2,7 @@ package de.ipbhalle.metfragweb.container;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -35,7 +36,6 @@ import de.ipbhalle.metfragweb.helper.ProcessCompoundsThreadRunner;
 import de.ipbhalle.metfragweb.helper.SettingsInitialiser;
 import de.ipbhalle.metfragweb.helper.UserInputDataHandler;
 import de.ipbhalle.metfragweb.helper.UserOutputDataHandler;
-import edu.emory.mathcs.backport.java.util.Collections;
 import de.ipbhalle.metfraglib.peak.TandemMassPeak;
 import de.ipbhalle.metfraglib.peaklistreader.StringTandemMassPeakListReader;
 

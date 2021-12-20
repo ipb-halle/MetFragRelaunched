@@ -71,7 +71,7 @@ public class ScoredCandidateList extends CandidateList {
 		 */
 		SortedScoredCandidateList sortedScoredCandidateList = new SortedScoredCandidateList();
 		for(int i = 0; i < this.getNumberElements(); i++) {
-			Double combinedNormalisedValue = new Double(0);
+			Double combinedNormalisedValue = Double.valueOf(0);
 			for(int ii = 0; ii < normalisedValues.length; ii++) {
 				combinedNormalisedValue += normalisedValues[ii][i] * weights[ii];
 			} 

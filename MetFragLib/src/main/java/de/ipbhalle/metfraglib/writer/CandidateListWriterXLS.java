@@ -163,7 +163,7 @@ public class CandidateListWriterXLS implements IWriter {
 			while (propNames.hasNext()) {
 				String propName = (String) propNames.next();
 				if (!labels.containsKey(propName)) {
-					labels.put(propName, new Integer(numberCells));
+					labels.put(propName, Integer.valueOf(numberCells));
 					try {
 						sheet.addCell(new Label(labels.get(propName)
 								+ columnWidthAdd, 0, propName, arial10format));

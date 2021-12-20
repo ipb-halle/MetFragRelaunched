@@ -63,7 +63,7 @@ public class LocalPSVDatabase extends AbstractFileDatabase {
 			java.util.HashMap<String, Boolean> nameToWasFound = new java.util.HashMap<String, Boolean>();
 			java.util.Iterator<String> keys = nameToInputName.keySet().iterator();
 			while(keys.hasNext())
-				nameToWasFound.put(keys.next(), new Boolean(false));
+				nameToWasFound.put(keys.next(), Boolean.valueOf(false));
 			
 			/*
 			 * skip first line as header
@@ -78,7 +78,7 @@ public class LocalPSVDatabase extends AbstractFileDatabase {
 					throw new MultipleHeadersFoundInInputDatabaseException("Found " + colNames[i] + " several times in header!");
 				}
 				propNameToIndex.put(colNames[i], i);
-				if(nameToInputName.containsKey(colNames[i])) nameToWasFound.put(colNames[i], new Boolean(true));
+				if(nameToInputName.containsKey(colNames[i])) nameToWasFound.put(colNames[i], Boolean.valueOf(true));
 			}
 			
 			String properIdentifierName = "";

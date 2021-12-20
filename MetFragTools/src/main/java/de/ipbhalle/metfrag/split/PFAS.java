@@ -152,7 +152,7 @@ public class PFAS {
 		if(matchedAtomIndexes == null) {
 			for(IAtom connectedAtom : connectedAtoms) { 
 				if((connectedAtom.getSymbol().equals("C") && this.countConnectedFluors(connectedAtom, con) >= 1) || connectedAtom.getSymbol().equals("F")) continue;
-				bondIndexesAfterMatch.add(new Integer(con.indexOf(con.getBond(connectedAtom, endChainCarbon))));
+				bondIndexesAfterMatch.add(Integer.valueOf(con.indexOf(con.getBond(connectedAtom, endChainCarbon))));
 			}
 		} else {
 			// check whether end chain carbon is connected to the current Step-02 match 
