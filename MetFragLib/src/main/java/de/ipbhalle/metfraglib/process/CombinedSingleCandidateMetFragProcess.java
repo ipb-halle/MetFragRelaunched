@@ -121,7 +121,7 @@ public class CombinedSingleCandidateMetFragProcess implements Runnable {
 		//this.scoredPrecursorCandidates[0].nullify();
 		this.fas.shallowNullify();
 		//this line breaks MetFragR tests
-		//this.scoredPrecursorCandidates[0].resetPrecursorMolecule();
+		if((Boolean)this.settings.get(VariableNames.RESET_PRECURSOR_AFTER_PROCESSING)) this.scoredPrecursorCandidates[0].resetPrecursorMolecule();
 		this.wasSuccessful = true;
 	}
 	

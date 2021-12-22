@@ -147,6 +147,8 @@ public class VariableNames {
 	public static final String MATCH_LIST_NAME 				= 	"matchList";
 	public static final String CANDIDATE_NAME				=	"candidate";			
 	public static final String BOND_ENERGY_OBJECT_NAME		=	"BondEnergyObject";
+	// 
+	public static final String RESET_PRECURSOR_AFTER_PROCESSING = "ResetPrecurosrAfterProcessingOfCandidate";
 	
 	/*
 	 * processing values

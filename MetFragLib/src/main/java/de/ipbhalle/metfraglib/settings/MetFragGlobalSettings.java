@@ -27,6 +27,7 @@ public class MetFragGlobalSettings extends Settings {
 		this.defaults.put(VariableNames.PROCESS_CANDIDATES, Constants.DEFAULT_PROCESS_CANDIDATES);
 		this.defaults.put(VariableNames.USE_SMILES_NAME, Constants.DEFAULT_USE_SMILES);
 		this.defaults.put(VariableNames.FINGERPRINT_TYPE_NAME, Constants.DEFAULT_FINGERPRINT_TYPE);
+		this.defaults.put(VariableNames.RESET_PRECURSOR_AFTER_PROCESSING, Constants.DEFAULT_RESET_PRECURSOR_AFTER_PROCESSING);
 		/*
 		 * needs to be set externally
 		 */

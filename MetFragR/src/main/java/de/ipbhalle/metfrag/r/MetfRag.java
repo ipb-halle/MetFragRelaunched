@@ -217,6 +217,7 @@ class MetfRag {
 		settings.set(VariableNames.ABSOLUTE_MASS_DEVIATION_NAME, mzabs);
 		settings.set(VariableNames.IS_POSITIVE_ION_MODE_NAME, posCharge);
 		settings.set(VariableNames.PRECURSOR_ION_MODE_NAME, mode);
+		settings.set(VariableNames.RESET_PRECURSOR_AFTER_PROCESSING, false);
 
 		CombinedMetFragProcess mp = new CombinedMetFragProcess(settings);
 		
@@ -514,6 +515,7 @@ class MetfRag {
 		settings.set(VariableNames.PRECURSOR_ION_MODE_NAME, mode);
 		settings.set(VariableNames.PRECURSOR_NEUTRAL_MASS_NAME, exactMass);
 		settings.set(VariableNames.MAXIMUM_TREE_DEPTH_NAME, (byte)treeDepth);
+		settings.set(VariableNames.RESET_PRECURSOR_AFTER_PROCESSING, false);
 
 		CombinedMetFragProcess mp = new CombinedMetFragProcess(settings);
 
@@ -684,6 +686,7 @@ class MetfRag {
 		settings.set(VariableNames.PRECURSOR_ION_MODE_NAME, mode);
 		settings.set(VariableNames.PRECURSOR_NEUTRAL_MASS_NAME, exactMass);
 		settings.set(VariableNames.MAXIMUM_TREE_DEPTH_NAME, (byte)treeDepth);
+		settings.set(VariableNames.RESET_PRECURSOR_AFTER_PROCESSING, false);
 
 		CombinedMetFragProcess mp = new CombinedMetFragProcess(settings);
 

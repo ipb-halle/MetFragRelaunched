@@ -257,6 +257,8 @@ public class Constants {
 	public static final String 				DEFAULT_LOCAL_METCHEM_DATABASE_LIBRARY_NAME		= 	"pubchem";
 	public static final Boolean				DEFAULT_CORRECT_MASSES_FOR_FINGERPRINT_ANNOTATION_NAME	=	false;
 	
+	public static final Boolean 			DEFAULT_RESET_PRECURSOR_AFTER_PROCESSING = true;
+	
 	/*
 	 * 
 	 *			Functions
