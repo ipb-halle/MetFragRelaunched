@@ -40,7 +40,7 @@ public class NewFragmenterLipidScore extends AbstractScore {
 		super(settings);
 		this.scoredCandidate = (ICandidate)settings.get(VariableNames.CANDIDATE_NAME);
 //		this.maximumTreeDepth = (Byte)settings.get(VariableNames.MAXIMUM_TREE_DEPTH_NAME);
-		this.value = new Double(0);
+		this.value = Double.valueOf(0);
 		this.measuredPrecursorMass = (Double)settings.get(VariableNames.PRECURSOR_NEUTRAL_MASS_NAME);
 		this.interimResultsCalculated = false;
 		this.calculationFinished = true;

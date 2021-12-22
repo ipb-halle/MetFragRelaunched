@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import net.sf.jniinchi.JniInchiInput;
 import net.sf.jniinchi.JniInchiWrapper;
@@ -30,7 +31,6 @@ import de.ipbhalle.metfraglib.FastBitArray;
 import de.ipbhalle.metfraglib.inchi.InChIToStructure;
 import de.ipbhalle.metfraglib.molecularformula.HDByteMolecularFormula;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
-import edu.emory.mathcs.backport.java.util.Arrays;
 
 public class SDFDeuteriumGeneration {
 

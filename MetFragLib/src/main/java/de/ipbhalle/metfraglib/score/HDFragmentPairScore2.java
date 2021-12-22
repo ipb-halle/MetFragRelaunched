@@ -1,5 +1,7 @@
 package de.ipbhalle.metfraglib.score;
 
+import java.util.Arrays;
+
 import de.ipbhalle.metfraglib.FastBitArray;
 import de.ipbhalle.metfraglib.match.HDFragmentMassToPeakMatch;
 import de.ipbhalle.metfraglib.additionals.MathTools;
@@ -11,7 +13,6 @@ import de.ipbhalle.metfraglib.match.MatchFragmentNode;
 import de.ipbhalle.metfraglib.parameter.Constants;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.settings.Settings;
-import edu.emory.mathcs.backport.java.util.Arrays;
 
 public class HDFragmentPairScore2 extends AbstractScore {
 

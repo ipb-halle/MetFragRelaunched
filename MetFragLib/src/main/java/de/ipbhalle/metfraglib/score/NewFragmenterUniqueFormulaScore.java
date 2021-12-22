@@ -29,7 +29,7 @@ public class NewFragmenterUniqueFormulaScore extends NewFragmenterScore {
 	
 	public void calculate() {
 		this.matchList = (MatchList)settings.get(VariableNames.MATCH_LIST_NAME);
-		this.value = new Double(0);
+		this.value = Double.valueOf(0);
 		
 		java.util.ArrayList<Double> scores = new java.util.ArrayList<Double>();
 		java.util.ArrayList<Integer> fragmentIds = new java.util.ArrayList<Integer>();

@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import de.ipbhalle.metfraglib.additionals.MathTools;
@@ -17,7 +18,6 @@ import de.ipbhalle.metfraglib.list.CandidateList;
 import de.ipbhalle.metfraglib.parameter.Constants;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.settings.MetFragGlobalSettings;
-import edu.emory.mathcs.backport.java.util.Arrays;
 
 public class WriteMetFragToMAF {
 

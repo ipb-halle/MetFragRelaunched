@@ -60,7 +60,7 @@ public class FingerprintObservations {
 			}
 			if(this.fingerprints.get(i).compareTo(fingerprint) > 0) {
 				this.fingerprints.add(i, fingerprint);
-				this.observations.add(i, new Integer(1));
+				this.observations.add(i, Integer.valueOf(1));
 				return;
 			}
 		}

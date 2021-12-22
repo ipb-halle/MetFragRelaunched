@@ -15,7 +15,7 @@ public class MatchSpectrumCosineSimilarityScore extends AbstractScore {
 	
 	public MatchSpectrumCosineSimilarityScore(Settings settings) {
 		super(settings);
-		this.value = new Double(0);
+		this.value = Double.valueOf(0);
 		this.hasInterimResults = false;
 	}
 	

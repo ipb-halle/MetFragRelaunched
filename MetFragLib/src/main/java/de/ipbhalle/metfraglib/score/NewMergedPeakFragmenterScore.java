@@ -32,7 +32,7 @@ public class NewMergedPeakFragmenterScore extends NewFragmenterScore {
 	
 	public void calculate() {
 		this.matchList = (MatchList)settings.get(VariableNames.MATCH_LIST_NAME);
-		this.value = new Double(0);
+		this.value = Double.valueOf(0);
 		this.bestFragmentIndeces = new int[this.matchList.getNumberElements()];
 		this.optimalValues = new double[this.matchList.getNumberElements()];
 		for(int i = 0; i < this.matchList.getNumberElements(); i++) {

@@ -1,13 +1,13 @@
 package de.ipbhalle.metfraglib;
 
-import javolution.util.FastBitSet;
+import java.util.BitSet;
 
 public class FastBitArray {
 
 	/**
 	 * array to store bits
 	 */
-	private FastBitSet bitArray;
+	private BitSet bitArray;
 
 	private short size;
 	
@@ -15,7 +15,7 @@ public class FastBitArray {
 	 * 
 	 */
 	public FastBitArray() {
-		this.bitArray = new FastBitSet();
+		this.bitArray = new BitSet();
 		this.size = 0;
 	}
 	
@@ -30,8 +30,8 @@ public class FastBitArray {
 	/**
 	 * 
 	 */
-	public FastBitArray(FastBitSet bitArray, int size) {
-		FastBitSet copy = new FastBitSet();
+	public FastBitArray(BitSet bitArray, int size) {
+		BitSet copy = new BitSet();
 		copy.or(bitArray);
 		this.bitArray = copy;
 		this.size = (short)size;
@@ -43,7 +43,7 @@ public class FastBitArray {
 	 * @param array
 	 */
 	public FastBitArray(boolean[] array) {
-		this.bitArray = new FastBitSet();
+		this.bitArray = new BitSet();
 		for(int i = 0; i < array.length; i++)
 			this.bitArray.set(i, array[i]);
 		this.size = (short)array.length;
@@ -55,7 +55,7 @@ public class FastBitArray {
 	 * @param nbits
 	 */
 	public FastBitArray(int nbits) {
-		this.bitArray = new FastBitSet();
+		this.bitArray = new BitSet();
 		this.size = (short)nbits;
 	}
 
@@ -66,7 +66,7 @@ public class FastBitArray {
 	 * @param value
 	 */
 	public FastBitArray(int nbits, boolean value) {
-		this.bitArray = new FastBitSet();
+		this.bitArray = new BitSet();
 		if(value) this.bitArray.flip(0, nbits);
 		this.size = (short)nbits;
 	}
@@ -78,7 +78,7 @@ public class FastBitArray {
 	 * @param value
 	 */
 	public FastBitArray(String bitstring) {
-		this.bitArray = new FastBitSet();
+		this.bitArray = new BitSet();
 		for(int i = 0; i < bitstring.length(); i++) {
 			this.bitArray.set(i, bitstring.charAt(i) == '0' ? false : true);
 		}
@@ -200,7 +200,7 @@ public class FastBitArray {
 	 * @return
 	 */
 	public FastBitArray and(FastBitArray ar) {
-		FastBitSet copy = new FastBitSet();
+		BitSet copy = new BitSet();
 		copy.or(ar.getArray());
 		copy.and(this.bitArray);
 		return new FastBitArray(copy, this.size);
@@ -374,7 +374,7 @@ public class FastBitArray {
 		}
 	}
 	
-	public FastBitSet getArray() {
+	public BitSet getArray() {
 		return this.bitArray;
 	}
 	

@@ -117,7 +117,7 @@ public class WriteMetFragToMZtab {
 				// Common column: Id
 				column = candidateTable.getColumn(ColumnName.ID, null);
 				
-				currentRow.setData(column, new Integer(rownumber));
+				currentRow.setData(column, Integer.valueOf(rownumber));
 				// Common column: m/z
 				column = candidateTable.getColumn(ColumnName.MZ, null);
 				currentRow.setData(column, mz);

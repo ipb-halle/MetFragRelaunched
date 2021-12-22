@@ -17,8 +17,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import com.google.common.primitives.Ints;
-
 import de.ipbhalle.metfraglib.additionals.MathTools;
 import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
 import de.ipbhalle.metfraglib.candidate.TopDownPrecursorCandidate;
@@ -190,10 +188,10 @@ public class OnlineChemSpiderRestDatabase extends AbstractDatabase {
 			candidate.setProperty(VariableNames.INCHI_KEY_2_NAME, tmp[1]);
 			candidate.setProperty(VariableNames.INCHI_KEY_3_NAME, tmp[2]);
 			
-			candidate.setProperty(VariableNames.CHEMSPIDER_DATA_SOURCE_COUNT, (double)Ints.checkedCast(dataSourceCount));
-			candidate.setProperty(VariableNames.CHEMSPIDER_NUMBER_PUBMED_REFERENCES_NAME, (double)Ints.checkedCast(pubMedCount));
-			candidate.setProperty(VariableNames.CHEMSPIDER_REFERENCE_COUNT, (double)Ints.checkedCast(referenceCount));
-			candidate.setProperty(VariableNames.CHEMSPIDER_RSC_COUNT, (double)Ints.checkedCast(rscCount));
+			candidate.setProperty(VariableNames.CHEMSPIDER_DATA_SOURCE_COUNT, (double)Math.toIntExact(dataSourceCount));
+			candidate.setProperty(VariableNames.CHEMSPIDER_NUMBER_PUBMED_REFERENCES_NAME, (double)Math.toIntExact(pubMedCount));
+			candidate.setProperty(VariableNames.CHEMSPIDER_REFERENCE_COUNT, (double)Math.toIntExact(referenceCount));
+			candidate.setProperty(VariableNames.CHEMSPIDER_RSC_COUNT, (double)Math.toIntExact(rscCount));
 			candidate.setProperty(VariableNames.MONOISOTOPIC_MASS_NAME, mass);
 			candidate.setProperty(VariableNames.COMPOUND_NAME_NAME, commonName);
 			candidate.setProperty(VariableNames.SMILES_NAME, smiles);

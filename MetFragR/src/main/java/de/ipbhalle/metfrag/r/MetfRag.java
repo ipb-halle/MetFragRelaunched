@@ -203,7 +203,7 @@ class MetfRag {
 
 		Double[] scoreWeightsObject = new Double[scoreWeights.length];
 		for(int i = 0; i < scoreWeightsObject.length; i++)
-			scoreWeightsObject[i] = new Double(scoreWeights[i]);
+			scoreWeightsObject[i] = Double.valueOf(scoreWeights[i]);
 		
 		MetFragGlobalSettings settings = new MetFragGlobalSettings();
 		settings.set(VariableNames.PEAK_LIST_STRING_NAME, peaksString);
@@ -358,7 +358,7 @@ class MetfRag {
 		
 		Double[] scoreWeightsObject = new Double[scoreWeights.length];
 		for(int i = 0; i < scoreWeightsObject.length; i++)
-			scoreWeightsObject[i] = new Double(scoreWeights[i]);
+			scoreWeightsObject[i] = Double.valueOf(scoreWeights[i]);
 		
 		MetFragGlobalSettings settings = new MetFragGlobalSettings();
 		settings.set(VariableNames.MOLECULES_IN_MEMORY, atomContainerArray);

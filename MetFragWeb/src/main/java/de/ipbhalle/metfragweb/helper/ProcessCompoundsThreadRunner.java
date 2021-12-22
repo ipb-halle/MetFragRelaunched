@@ -136,7 +136,7 @@ public class ProcessCompoundsThreadRunner extends ThreadRunner {
 			}
 			if(scoreNames[i].equals("SimScore")) {
 				this.metFragResultsContainer.setSimScoreAvailable(true);
-				simScoreIndex = new Integer(i);
+				simScoreIndex = Integer.valueOf(i);
 			}
 			else {
 	    		this.weights.add(new Weight(name + " (" + (scoreForGraphNumber + 1) + end + ")" , 100));
