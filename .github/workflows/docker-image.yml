@@ -6,7 +6,7 @@ on:
 
 jobs:
 
-  push_to_registry:
+  docker:
 
     name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
@@ -32,6 +32,6 @@ jobs:
         with:
           context: .
           push: true
-          tags: latest
+          tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
