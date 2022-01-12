@@ -1,13 +1,10 @@
-[![Build Status](https://travis-ci.org/ipb-halle/MetFragRelaunched.svg?branch=master)](https://travis-ci.org/ipb-halle/MetFragRelaunched)
+![Build CI](https://github.com/ipb-halle/MetFragRelaunched/actions/workflows/maven.yml/badge.svg)
 [![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat-square)](http://bioconda.github.io/recipes/metfrag/README.html)
 
 MetFrag relaunched
 ==================
 
 ##### Requirements
-- Java >= 1.6
-- Apache Maven ≥ 3.0.4
-##### Requirements tested
 - Java = openjdk11
 - Apache Maven = 3.8
 
