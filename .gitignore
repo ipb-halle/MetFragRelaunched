@@ -1,8 +1,5 @@
 .settings
 .project
-target
 .classpath
-bin
-settings.properties
-*~
-/.metadata/
+target
+MetFragR/rpackage/metfRag/inst/

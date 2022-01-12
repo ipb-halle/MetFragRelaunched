@@ -15,7 +15,6 @@ RUN mvn -f MetFragRelaunched clean package -pl MetFragLib -pl MetFragWeb -am -Ds
 
 
 FROM tomcat:9-jdk11
-COPY --from=builder /MetFragRelaunched/MetFragWeb/target/MetFragWeb.war /usr/local/tomcat/webapps/
 
 RUN wget -q -O- https://msbi.ipb-halle.de/~sneumann/file_databases.tgz | tar -C / -xzf -
 RUN cd /vol/file_databases; \
@@ -36,6 +35,7 @@ RUN cd /vol/file_databases; \
         wget -q https://zenodo.org/record/3957497/files/HBM4EU_CECscreen_MF_1Jul2020_plusTPs.csv; \
         wget -q https://zenodo.org/record/3564602/files/BloodExposomeDB_03Dec2019.csv
 
+COPY --from=builder /MetFragRelaunched/MetFragWeb/target/MetFragWeb.war /usr/local/tomcat/webapps/
 RUN printf '#!/bin/sh \n\
 if [ -f "/resources/settings.properties" ] \n\
 then \n\
