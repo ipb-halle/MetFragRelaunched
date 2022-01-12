@@ -12,9 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out the repo
-        uses: actions/checkout@v2
-
+      
       - name: Log in to Docker Hub
         uses: docker/login-action@v1
         with:
@@ -32,6 +30,6 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-
+          tags: ipbhalle/metfragweb:latest
+          cache-from: type=registry,ref=ipbhalle/metfragweb:latest
+          cache-to: type=inline
