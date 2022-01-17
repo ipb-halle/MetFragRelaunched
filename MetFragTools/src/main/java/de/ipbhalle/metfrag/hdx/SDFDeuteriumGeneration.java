@@ -8,27 +8,26 @@ import java.util.Set;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import net.sf.jniinchi.JniInchiInput;
-import net.sf.jniinchi.JniInchiWrapper;
-
 import org.openscience.cdk.aromaticity.ElectronDonation;
 import org.openscience.cdk.AtomContainerSet;
 import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.aromaticity.Aromaticity;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.graph.Cycles;
+import org.openscience.cdk.inchi.InChIGenerator;
+import org.openscience.cdk.inchi.InChIGeneratorFactory;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomContainerSet;
 import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.io.SDFWriter;
+import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.smiles.SmiFlavor;
 import org.openscience.cdk.smiles.SmilesGenerator;
 import org.openscience.cdk.tools.CDKHydrogenAdder;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
 import de.ipbhalle.metfraglib.FastBitArray;
-import de.ipbhalle.metfraglib.inchi.InChIToStructure;
 import de.ipbhalle.metfraglib.molecularformula.HDByteMolecularFormula;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 
@@ -68,10 +67,9 @@ public class SDFDeuteriumGeneration {
 		CDKHydrogenAdder adder = CDKHydrogenAdder.getInstance(DefaultChemObjectBuilder.getInstance());
 		for (int j = 0; j < inchis.size(); j++) {
 			/*
-			 * build the jni inchi atom container
+			 * build the inchi atom container
 			 */
-			IAtomContainer its = new InChIToStructure(inchis.get(j),
-					DefaultChemObjectBuilder.getInstance()).getAtomContainer();
+			IAtomContainer its = InChIGeneratorFactory.getInstance().getInChIToStructure(inchis.get(j), SilentChemObjectBuilder.getInstance()).getAtomContainer();
 			AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(its);
 			try {
 				adder.addImplicitHydrogens(its);
@@ -107,8 +105,7 @@ public class SDFDeuteriumGeneration {
 				for (int k = 0; k < combs.length; k++) {
 					numberDeuteriumsEasilyExchanged = 0;
 					numberDeuteriums = 0;
-					IAtomContainer itsNew = new InChIToStructure(inchis.get(j),
-							DefaultChemObjectBuilder.getInstance()).getAtomContainer();
+					IAtomContainer itsNew = InChIGeneratorFactory.getInstance().getInChIToStructure(inchis.get(j), SilentChemObjectBuilder.getInstance()).getAtomContainer();
 					AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(itsNew);
 					adder.addImplicitHydrogens(itsNew);
 					AtomContainerManipulator.convertImplicitToExplicitHydrogens(itsNew);
@@ -138,13 +135,16 @@ public class SDFDeuteriumGeneration {
 					formula.setNumberHydrogens((short)formula.getNumberHydrogens());
 					formula.setNumberDeuterium((short) (int) numberDeuteriumsVec.get(k));
 					
+					InChIGenerator gen = InChIGeneratorFactory.getInstance().getInChIGenerator(con);
+					String inchiKey = gen.getInchiKey();
+					
 					con.setProperty(VariableNames.IDENTIFIER_NAME, identifiers.get(j) + "-" + (k+1));
 					con.setProperty(VariableNames.INCHI_NAME, inchi);
 					//con.setProperty(VariableNames.SMILES_NAME, sg.create(deuteratedStrutures.get(k)));
 					con.setProperty(VariableNames.MOLECULAR_FORMULA_NAME, formula.toString());
 					con.setProperty(VariableNames.MONOISOTOPIC_MASS_NAME, formula.getMonoisotopicMass());
-					con.setProperty(VariableNames.INCHI_KEY_1_NAME, JniInchiWrapper.getInchiKey(inchi).getKey().split("-")[0]);
-					con.setProperty(VariableNames.INCHI_KEY_2_NAME, JniInchiWrapper.getInchiKey(inchi).getKey().split("-")[1]);
+					con.setProperty(VariableNames.INCHI_KEY_1_NAME, inchiKey.split("-")[0]);
+					con.setProperty(VariableNames.INCHI_KEY_2_NAME, inchiKey.split("-")[1]);
 					con.setProperty("OSN-Deuteriums", numberDeuteriumsEasilyExchangedVec.get(k));
 					con.setProperty("AromaticDeuteriums", 0);
 					con.setProperty("MissedDeuteriums", (toExchange.length - numberToAddDeuteriums.get(j)));
@@ -153,7 +153,7 @@ public class SDFDeuteriumGeneration {
 					
 					System.out.println(identifiers.get(j) + "-" + (k+1) + "|" + inchi + "|" + sg.create(deuteratedStrutures.get(k)) + "|" 
 						+ formula.toString() + "|" + formula.getMonoisotopicMass() + "|"
-						+ JniInchiWrapper.getInchiKey(inchi).getKey().split("-")[0] + "|" + JniInchiWrapper.getInchiKey(inchi).getKey().split("-")[1] 
+						+ inchiKey.split("-")[0] + "|" + inchiKey.split("-")[1] 
 						+ "|" + numberDeuteriumsEasilyExchangedVec.get(k) + "|0|" + (toExchange.length - numberToAddDeuteriums.get(j)));
 				}
 				continue;
@@ -171,6 +171,8 @@ public class SDFDeuteriumGeneration {
 			}
 			
 			String inchi = inchis.get(j);
+			InChIGenerator gen = InChIGeneratorFactory.getInstance().getInChIGenerator(its);
+			String inchiKey = gen.getInchiKey();
 
 			HDByteMolecularFormula formula = null;
 			try {
@@ -187,15 +189,15 @@ public class SDFDeuteriumGeneration {
 			
 			if(numberToAddDeuteriums.size() == 0 || numberDeuteriums == numberToAddDeuteriums.get(j)) {
 				System.out.println(identifiers.get(j) + "|" + inchi + "|" + sg.create(its) + "|" + formula.toString() + "|" + formula.getMonoisotopicMass() + "|"
-					+ JniInchiWrapper.getInchiKey(inchi).getKey().split("-")[0] + "|" + JniInchiWrapper.getInchiKey(inchi).getKey().split("-")[1] + "|" + numberDeuteriumsEasilyExchanged + "|" + numberDeuteriumsAromaticExchanged + "|0");
+					+ inchiKey.split("-")[0] + "|" + inchiKey.split("-")[1] + "|" + numberDeuteriumsEasilyExchanged + "|" + numberDeuteriumsAromaticExchanged + "|0");
 
 				its.setProperty(VariableNames.IDENTIFIER_NAME, identifiers.get(j));
 				its.setProperty(VariableNames.INCHI_NAME, inchi);
 				//its.setProperty(VariableNames.SMILES_NAME, sg.create(its));
 				its.setProperty(VariableNames.MOLECULAR_FORMULA_NAME, formula.toString());
 				its.setProperty(VariableNames.MONOISOTOPIC_MASS_NAME, formula.getMonoisotopicMass());
-				its.setProperty(VariableNames.INCHI_KEY_1_NAME, JniInchiWrapper.getInchiKey(inchi).getKey().split("-")[0]);
-				its.setProperty(VariableNames.INCHI_KEY_2_NAME, JniInchiWrapper.getInchiKey(inchi).getKey().split("-")[1]);
+				its.setProperty(VariableNames.INCHI_KEY_1_NAME, inchiKey.split("-")[0]);
+				its.setProperty(VariableNames.INCHI_KEY_2_NAME, inchiKey.split("-")[1]);
 				its.setProperty("OSN-Deuteriums", numberDeuteriumsEasilyExchanged);
 				its.setProperty("AromaticDeuteriums", numberDeuteriumsAromaticExchanged);
 				its.setProperty("MissedDeuteriums", 0);
@@ -226,14 +228,6 @@ public class SDFDeuteriumGeneration {
 		}
 	}
 
-	public static void printInfo(JniInchiInput jios) {
-		for(int i = 0; i < jios.getNumAtoms(); i++) {
-			if(jios.getAtom(i).getImplicitDeuterium() > 0) {
-				System.out.println(jios.getAtom(i).getElementType() + " " + i + " H:" + jios.getAtom(i).getImplicitH() + " D:" + jios.getAtom(i).getImplicitDeuterium());
-			}
-		}
-	}
-	
 	public static double[] getAllMasses(HDByteMolecularFormula formula) {
 		short numberDeuterium = formula.getNumberDeuterium();
 		double[] masses = new double[numberDeuterium];

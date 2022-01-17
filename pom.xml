@@ -17,7 +17,6 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<cdk.version>2.6</cdk.version>
 	</properties>
 
 	<dependencyManagement>
@@ -51,7 +50,7 @@
 			<dependency>
 				<groupId>org.openscience.cdk</groupId>
 				<artifactId>cdk-bundle</artifactId>
-				<version>${cdk.version}</version>
+				<version>2.7.1</version>
 			</dependency>
 			<dependency>
 				<groupId>com.googlecode.json-simple</groupId>
