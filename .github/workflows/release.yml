@@ -2,9 +2,6 @@ name: Build cli for release
 
 on:
   push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
 
 jobs:
   build:
