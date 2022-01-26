@@ -2,6 +2,8 @@ name: Build cli for release
 
 on:
   push:
+    tags:
+      - *.*
 
 jobs:
   build:
@@ -16,9 +18,8 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - run: mvn package -pl MetFragCommandLine -am -DskipTests
-    - name: Publish
+    - name: Add asset to release
       uses: softprops/action-gh-release@v1
-      if: startsWith(github.ref, 'refs/tags/')
       with:
               files: 'MetFragCommandLine/target/MetFragCommandLine-*jar'
 
