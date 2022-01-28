@@ -147,14 +147,14 @@ LocalPubChemDatabaseCompoundNameColumn = ...
 
 ##### Build and Run
 ```bash
-mvn clean install -pl MetFragLib
-mvn clean install org.codehaus.cargo:cargo-maven3-plugin:run -pl MetFragWeb
+mvn clean install -pl MetFragWeb -am
+mvn org.codehaus.cargo:cargo-maven3-plugin:run -pl MetFragWeb
 ```
 
 - skipping test during build by<br>
 ```bash
-mvn clean install -pl MetFragWeb -DskipTests
-mvn clean install org.codehaus.cargo:cargo-maven3-plugin:run -pl MetFragWeb
+mvn clean install -pl MetFragWeb -am -DskipTests
+mvn org.codehaus.cargo:cargo-maven3-plugin:run -pl MetFragWeb
 ```
 
 - after the successful build Tomcat web server runs on port 8080<br>

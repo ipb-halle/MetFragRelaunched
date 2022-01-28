@@ -21,8 +21,7 @@
 				<version>1.9.8</version>
 				<configuration>
 					<container>
-						<containerId>tomcat9x</containerId>
-						<type>embedded</type>
+						<containerId>tomee8x</containerId>
 					</container>
 					<deployables>
 						<deployable>
