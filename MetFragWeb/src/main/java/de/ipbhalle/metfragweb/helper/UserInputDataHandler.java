@@ -2,7 +2,7 @@ package de.ipbhalle.metfragweb.helper;
 
 import java.io.File;
 
-import org.primefaces.model.UploadedFile;
+import org.primefaces.model.file.UploadedFile;
 
 import de.ipbhalle.metfraglib.exceptions.RetentionTimeNotFoundException;
 import de.ipbhalle.metfraglib.exceptions.TooFewCandidatesException;

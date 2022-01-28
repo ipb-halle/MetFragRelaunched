@@ -2,6 +2,8 @@ package de.ipbhalle.metfragweb.helper;
 
 import java.io.File;
 
+import org.primefaces.model.DefaultStreamedContent;
+
 import de.ipbhalle.metfraglib.candidate.PrecursorCandidate;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.interfaces.IWriter;
@@ -39,12 +41,12 @@ public class UserOutputDataHandler {
 	 * @throws Exception
 	 */
 	public org.primefaces.model.StreamedContent generatedCandidateDownloadFile(MetFragResult metfragResult, Settings settings) throws Exception {
-		org.primefaces.model.StreamedContent resource = new org.primefaces.model.DefaultStreamedContent(System.in, "application/vnd.ms-excel", "MetFragWeb_Candidate.xls" );
+		org.primefaces.model.StreamedContent resource = new DefaultStreamedContent(System.in, "application/vnd.ms-excel", "MetFragWeb_Candidate.xls" );
 		if(metfragResult == null) {
 			System.out.println("generatedCandidateDownloadFile null");
 			return resource;
 		}
-		resource = new org.primefaces.model.DefaultStreamedContent(System.in, "application/vnd.ms-excel", "MetFragWeb_Candidate_" + metfragResult.getIdentifier() + ".xls" );
+		resource = new DefaultStreamedContent(System.in, "application/vnd.ms-excel", "MetFragWeb_Candidate_" + metfragResult.getIdentifier() + ".xls" );
 		
 		//only main molecule is written to the output
 		Molecule root = metfragResult.getRoot();

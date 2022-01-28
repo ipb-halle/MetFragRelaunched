@@ -5,13 +5,13 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 import javax.faces.context.FacesContext;
 
-import org.primefaces.context.RequestContext;
-
 import de.ipbhalle.metfraglib.parameter.Constants;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfragweb.datatype.Parameter;
 
 import javax.servlet.http.HttpServletRequest;
+
+import org.primefaces.PrimeFaces;
 
 
 @ManagedBean
@@ -114,7 +114,7 @@ public class MetFragLandingBean {
 		/*
 		 * redirect to MetFrag
 		 */
-		RequestContext.getCurrentInstance().execute("window.setTimeout(function(){ window.location = \"index.xhtml\"; },3000)");		
+		PrimeFaces.current().executeScript("window.setTimeout(function(){ window.location = \"index.xhtml\"; },3000)");		
 	}
 
 	public java.util.List<Parameter> getParameters() {

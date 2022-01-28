@@ -12,7 +12,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ExceptionQueuedEvent;
 import javax.faces.event.ExceptionQueuedEventContext;
 
-import org.primefaces.context.RequestContext;
+import org.primefaces.PrimeFaces;
  
 public class ViewExpiredExceptionExceptionHandler extends ExceptionHandlerWrapper {
  
@@ -46,7 +46,7 @@ public class ViewExpiredExceptionExceptionHandler extends ExceptionHandlerWrappe
  
                     nav.handleNavigation(fc, null, "viewExpired");
                     fc.renderResponse();
-                    RequestContext.getCurrentInstance().execute("PF('expiredSessionDialog').show();");
+                    PrimeFaces.current().executeScript("PF('expiredSessionDialog').show();");
                 } finally {
                     i.remove();
                 }

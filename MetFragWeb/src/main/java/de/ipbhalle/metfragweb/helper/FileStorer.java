@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.primefaces.model.file.UploadedFile;
+
 import de.ipbhalle.metfraglib.parameter.Constants;
 import de.ipbhalle.metfragweb.container.Messages;
 
@@ -125,9 +127,9 @@ public class FileStorer {
 	 * @return
 	 * @throws IOException
 	 */
-	public java.io.File saveUploadedFile(org.primefaces.model.UploadedFile file, File path) throws IOException {
+	public java.io.File saveUploadedFile(UploadedFile file, File path) throws IOException {
 		java.io.File fileToStore = new java.io.File(path.getAbsoluteFile() + Constants.OS_SPECIFIC_FILE_SEPARATOR + file.getFileName());
-		java.io.InputStream is = file.getInputstream();
+		java.io.InputStream is = file.getInputStream();
 		java.io.OutputStream out = new java.io.FileOutputStream(fileToStore);
 		byte buf[] = new byte[1024];
 	    int len;

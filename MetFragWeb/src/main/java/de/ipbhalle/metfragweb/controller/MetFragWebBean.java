@@ -21,8 +21,8 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.mail.EmailAttachment;
 import org.apache.commons.mail.MultiPartEmail;
+import org.primefaces.PrimeFaces;
 import org.primefaces.component.organigram.OrganigramHelper;
-import org.primefaces.context.RequestContext;
 import org.primefaces.event.CloseEvent;
 import org.primefaces.event.ItemSelectEvent;
 import org.primefaces.event.SlideEndEvent;
@@ -369,7 +369,7 @@ public class MetFragWebBean {
 		this.beanSettingsContainer.setDatabase(database);
 		this.candidateStatistics.setShowPointLabels(false);
 		this.candidateStatistics.setSelectedCandidate(0);
-		RequestContext.getCurrentInstance().execute("PF('mainAccordion').unselect(1)");
+		PrimeFaces.current().executeScript("PF('mainAccordion').unselect(1)");
 	}
 	
 	public boolean isValidMolecularFormulaDefined() {
@@ -649,7 +649,7 @@ public class MetFragWebBean {
 	}
 	
 	public void retrieveCompounds(ActionEvent event) {
-		RequestContext.getCurrentInstance().execute("PF('retrieveCandidatesProgressDialog').show();");
+		PrimeFaces.current().executeScript("PF('retrieveCandidatesProgressDialog').show();");
 		
 		this.isDatabaseProcessing = true;
 		/*
@@ -665,13 +665,13 @@ public class MetFragWebBean {
 		 * check database settings before retrieving compounds
 		 */
 		if (!this.checkDatabaseSettings()) {
-			RequestContext.getCurrentInstance().execute("PF('retrieveCandidatesProgressDialog').hide();");
+			PrimeFaces.current().executeScript("PF('retrieveCandidatesProgressDialog').hide();");
 			this.isDatabaseProcessing = false;
 			System.out.println(this.errorMessages.getMessage("inputFormulaError"));
 			return;
 		}
-		RequestContext.getCurrentInstance().execute("PF('mainAccordion').unselect(1)");
-		RequestContext.getCurrentInstance().execute("PF('mainAccordion').unselect(5)");
+		PrimeFaces.current().executeScript("PF('mainAccordion').unselect(1)");
+		PrimeFaces.current().executeScript("PF('mainAccordion').unselect(5)");
 		this.beanSettingsContainer.setCompoundsRetrieved(false);
 		this.metFragResultsContainer = new MetFragResultsContainer();
 		this.filteredMetFragResultsContainer = new MetFragResultsContainer();
@@ -715,7 +715,7 @@ public class MetFragWebBean {
 						FacesContext.getCurrentInstance().addMessage("databaseGrowl", new FacesMessage("Candidate retrieval finished", "Got " + this.beanSettingsContainer.getRetrievedCandidateList().getNumberElements() + " candidate"));
 					System.out.println(this.beanSettingsContainer.getRetrievedCandidateList().getNumberElements() + " compound(s)");
 					if(this.beanSettingsContainer.getRetrievedCandidateList().getNumberElements() == 0) 
-						RequestContext.getCurrentInstance().execute("PF('mainAccordion').unselect(1)");
+						PrimeFaces.current().executeScript("PF('mainAccordion').unselect(1)");
 					/*
 					 * show error if candidate limit is reached
 					 */
@@ -731,10 +731,10 @@ public class MetFragWebBean {
 					this.errorMessages.setMessage("retrieveCompoundsError", "Error fetching candidates.");
 					FacesContext.getCurrentInstance().addMessage("databaseGrowl", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Database error",  "Failed to retrieve candidates"));
 					System.out.println("0 candidates (Error)");
-					RequestContext.getCurrentInstance().update("mainForm:mainAccordion");
+					PrimeFaces.current().ajax().update("mainForm:mainAccordion");
 					return;
 				}
-				RequestContext.getCurrentInstance().update("mainForm:mainAccordion");
+				PrimeFaces.current().ajax().update("mainForm:mainAccordion");
 			}
 			catch(Exception e) {
 				//error occured
@@ -743,7 +743,7 @@ public class MetFragWebBean {
 				this.errorMessages.setMessage("retrieveCompoundsError", "Error fetching candidates.");
 				FacesContext.getCurrentInstance().addMessage("databaseGrowl", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Database error",  "Failed to retrieve candidates"));
 				System.out.println("0 candidates (Error)");
-				RequestContext.getCurrentInstance().update("mainForm:mainAccordion");
+				PrimeFaces.current().ajax().update("mainForm:mainAccordion");
 				return;
 			}
 		}
@@ -2002,7 +2002,7 @@ public class MetFragWebBean {
 		if (!allSettingsFine) {
 			return;
 		}
-		RequestContext.getCurrentInstance().execute("PF('downloadParametersDialog').show();");
+		PrimeFaces.current().executeScript("PF('downloadParametersDialog').show();");
 	}
 	
 	public org.primefaces.model.StreamedContent getDownloadParameters() {
@@ -2021,12 +2021,12 @@ public class MetFragWebBean {
 	public void generateSpectrumModelViewListener(ActionEvent action) {
 		if(this.beanSettingsContainer.generateSpectrumModelView(this.errorMessages)) {
 			this.isSpectrumViewActive = true;
-			RequestContext.getCurrentInstance().update("spectrumViewDialog");
-			RequestContext.getCurrentInstance().execute("PF('spectrumViewDialog').show();");
+			PrimeFaces.current().ajax().update("spectrumViewDialog");
+			PrimeFaces.current().executeScript("PF('spectrumViewDialog').show();");
 		}
 		else {
 			this.isSpectrumViewActive = false;
-			RequestContext.getCurrentInstance().execute("PF('spectrumViewDialog').hide();");
+			PrimeFaces.current().executeScript("PF('spectrumViewDialog').hide();");
 		}
 	}
 	
@@ -2064,7 +2064,7 @@ public class MetFragWebBean {
 							+ "number of candidates.");
 			return;
 		}
-		RequestContext.getCurrentInstance().execute("PF('processCandidatesProgressDialog').show();");
+		PrimeFaces.current().executeScript("PF('processCandidatesProgressDialog').show();");
 		this.isCandidateProcessing = true;
 		this.errorMessages.removeKey("buttonDownloadParametersFilterError");
 		this.errorMessages.removeKey("buttonDownloadParametersScoreError");
@@ -2109,14 +2109,14 @@ public class MetFragWebBean {
 			allSettingsFine = false;
 		}
 		if (!allSettingsFine) {
-			RequestContext.getCurrentInstance().execute("PF('processCandidatesProgressDialog').hide();");
+			PrimeFaces.current().executeScript("PF('processCandidatesProgressDialog').hide();");
 			this.isCandidateProcessing = false;
 			return;
 		}
 		this.candidateStatistics = new CandidateStatistics();
 		this.candidateStatistics.setShowPointLabels(false);
 		this.candidateStatistics.setSelectedCandidate(0);
-		RequestContext.getCurrentInstance().execute("PF('mainAccordion').unselect(5)");
+		PrimeFaces.current().executeScript("PF('mainAccordion').unselect(5)");
 		System.out.println("start processing");
 		//create a thread that undertakes the processing
 		this.threadExecutionStarted = true;
@@ -2188,7 +2188,7 @@ public class MetFragWebBean {
 				}
 			if(this.clusterCompoundsThreadRunner != null) this.clusterCompoundsThreadRunner.reset();
 			//stop the thread
-			RequestContext.getCurrentInstance().update("mainForm:mainAccordion");
+			PrimeFaces.current().ajax().update("mainForm:mainAccordion");
 			//set the message
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Candidate retrieving stopped.",  ""));
 		} catch (InterruptedException e) {
@@ -2198,7 +2198,7 @@ public class MetFragWebBean {
 	
 	public void stopCompoundProcessingListener(ActionEvent event) {
 		this.beanSettingsContainer.setProcessCompoundsDialogHeader("Stopping Process");
-		RequestContext.getCurrentInstance().update("mainForm:mainAccordion:processCandidatesProgressDialog");
+		PrimeFaces.current().ajax().update("mainForm:mainAccordion:processCandidatesProgressDialog");
 	}
 	
 	public void stopCompoundProcessing() {
@@ -2227,7 +2227,7 @@ public class MetFragWebBean {
 			this.isCandidateProcessing = false;
 			this.metFragResultsContainer = new MetFragResultsContainer();
 			this.filteredMetFragResultsContainer = new MetFragResultsContainer();
-			RequestContext.getCurrentInstance().update("mainForm:mainAccordion");
+			PrimeFaces.current().ajax().update("mainForm:mainAccordion");
 			//set the message
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Processing stopped.",  ""));
 			this.beanSettingsContainer.setProcessCompoundsDialogHeader("");
@@ -2251,9 +2251,9 @@ public class MetFragWebBean {
 				this.threadExecutionStarted = false;
 				this.explainedPeaksFilter = new Integer[0];
 				this.infoMessages.removeKey("filterCompoundsInfo");
-			//	RequestContext.getCurrentInstance().execute("PF('MetFragResultsTable').filter()");
-				RequestContext.getCurrentInstance().update("mainForm:mainAccordion:MetFragResultsTable");
-				RequestContext.getCurrentInstance().update("mainForm:mainAccordion");
+			//	PrimeFaces.current().executeScript("PF('MetFragResultsTable').filter()");
+				PrimeFaces.current().ajax().update("mainForm:mainAccordion:MetFragResultsTable");
+				PrimeFaces.current().ajax().update("mainForm:mainAccordion");
 				this.weights = this.processCompoundsThreadRunner.getWeights();
 				this.metFragResultsContainer = this.processCompoundsThreadRunner.getResultsContainer();
 				this.filteredMetFragResultsContainer = new MetFragResultsContainer();
@@ -2263,7 +2263,7 @@ public class MetFragWebBean {
 				this.filteredMetFragResultsContainer.setNumberPeaksUsed(this.metFragResultsContainer.getNumberPeaksUsed());
 				this.filteredMetFragResultsContainer.setSimScoreAvailable(this.metFragResultsContainer.isSimScoreAvailable());
 				this.generateScoreDistributionModelView();
-				if(!this.isScoreDistributionModelAvailable()) RequestContext.getCurrentInstance().execute("PF('mainAccordion').unselect(3)");
+				if(!this.isScoreDistributionModelAvailable()) PrimeFaces.current().executeScript("PF('mainAccordion').unselect(3)");
 				//set processing infos
 				String detailedMessage = this.infoMessages.getMessage("processingProcessedCandidatesInfo"); 
 				if(this.infoMessages.containsKey("processingErrorCandidatesInfo")) {
@@ -2326,7 +2326,7 @@ public class MetFragWebBean {
 		if(this.clusterCompoundsThread == null) return;
 		if(this.clusterCompoundsThreadStarted && this.clusterCompoundsThreadRunner != null) {
 			if(this.clusterCompoundsThreadRunner.isReady()) {
-				RequestContext.getCurrentInstance().update("mainForm:mainAccordion:resultClusterPanel");
+				PrimeFaces.current().ajax().update("mainForm:mainAccordion:resultClusterPanel");
 				this.clusterCompoundsThreadStarted = false;
 			}
 		}
@@ -2357,7 +2357,7 @@ public class MetFragWebBean {
     				stackList.push(child);
     			}
     		}
-    	//	RequestContext.getCurrentInstance().update("mainForm:mainAccordion:compoundClusterTree");
+    	//	PrimeFaces.current().ajax().update("mainForm:mainAccordion:compoundClusterTree");
     	}
     }
     
@@ -2374,7 +2374,7 @@ public class MetFragWebBean {
     				stackList.push(child);
     			}
     		}
-    	//	RequestContext.getCurrentInstance().update("mainForm:mainAccordion:compoundClusterTree");
+    	//	PrimeFaces.current().ajax().update("mainForm:mainAccordion:compoundClusterTree");
     	}
     }
     
@@ -2402,17 +2402,17 @@ public class MetFragWebBean {
     		}
     		this.generateScoreDistributionModelView();
     		
-    		//RequestContext.getCurrentInstance().update("mainForm:mainAccordion:MetFragResultsTable");
-    		//RequestContext.getCurrentInstance().update("mainForm:mainAccordion:statistics");
-    		//RequestContext.getCurrentInstance().update("mainForm:mainAccordion:resultsTablePanel");
-    		//RequestContext.getCurrentInstance().update("mainForm:mainAccordion:statisticsPanel");
-    		//RequestContext.getCurrentInstance().update("mainForm:mainAccordion:statistics");
-    		if(!this.isScoreDistributionModelAvailable()) RequestContext.getCurrentInstance().execute("PF('mainAccordion').unselect(3)");
+    		//PrimeFaces.current().ajax().update("mainForm:mainAccordion:MetFragResultsTable");
+    		//PrimeFaces.current().ajax().update("mainForm:mainAccordion:statistics");
+    		//PrimeFaces.current().ajax().update("mainForm:mainAccordion:resultsTablePanel");
+    		//PrimeFaces.current().ajax().update("mainForm:mainAccordion:statisticsPanel");
+    		//PrimeFaces.current().ajax().update("mainForm:mainAccordion:statistics");
+    		if(!this.isScoreDistributionModelAvailable()) PrimeFaces.current().executeScript("PF('mainAccordion').unselect(3)");
     		this.infoMessages.removeKey("filterCompoundsInfo");
     		this.explainedPeaksFilter = new Integer[0];
     		FacesContext.getCurrentInstance().addMessage("resultsClusterGrowl", new FacesMessage("Filtered Candidates", "Filtered " + this.filteredMetFragResultsContainer.getMetFragResults().size() + " candidates remained in result table") );
-    		//RequestContext.getCurrentInstance().update("mainForm:mainAccordion:resultTable");
-    		//RequestContext.getCurrentInstance().update("mainForm:mainAccordion:scoreDistributionPlot");
+    		//PrimeFaces.current().ajax().update("mainForm:mainAccordion:resultTable");
+    		//PrimeFaces.current().ajax().update("mainForm:mainAccordion:scoreDistributionPlot");
     	}
     }
     
@@ -2478,7 +2478,7 @@ public class MetFragWebBean {
 		int candidateIndex = event.getItemIndex();
 		int page = (int)Math.floor(candidateIndex / 10);
 		int pos = candidateIndex % 10;
-		RequestContext.getCurrentInstance().execute(
+		PrimeFaces.current().executeScript(
 			"var jobs = 0;" +
 			"var span = $('#mainForm').children('div').eq(0).children('div').eq(9).children('span').eq(0);" +
 			"var container = span.children('div').eq(0).children('div').eq(0).children('div').eq(0).children('div').eq(0).children('div').eq(2);" +
@@ -2735,7 +2735,7 @@ public class MetFragWebBean {
 			{
 				this.isFragmentsViewActive = true;
 				System.out.println("update fragmentsViewDialog");
-				RequestContext.getCurrentInstance().update("fragmentsViewDialog");
+				PrimeFaces.current().ajax().update("fragmentsViewDialog");
 			}
 			else {
 				this.isFragmentsViewActive = false;
@@ -2887,7 +2887,7 @@ public class MetFragWebBean {
 	
 	public void fragmentsViewItemSelect(ItemSelectEvent event) {
 		if(this.numberMatchPeaksOfSelectedMolecule <= event.getSeriesIndex()) return;
-		RequestContext.getCurrentInstance().execute(
+		PrimeFaces.current().executeScript(
 				"var container = $('#fragmentsViewForm').children('span').eq(0).children('div').eq(1).children('div').eq(1);" +
 				"var scrollTo = container.children('ul').eq(0).children('li').eq(" + event.getSeriesIndex() + ");" +
 				"container.animate({scrollTop: scrollTo.offset().top - container.offset().top + container.scrollTop()});");
@@ -2943,15 +2943,15 @@ public class MetFragWebBean {
 		this.infoMessages.setMessage("filterCompoundsInfo", message);
 		this.generateScoreDistributionModelView();
 		 
-		//RequestContext.getCurrentInstance().update("mainForm:mainAccordion:MetFragResultsTable");
-		//RequestContext.getCurrentInstance().update("mainForm:mainAccordion:resultsTablePanel");
-		//RequestContext.getCurrentInstance().update("mainForm:mainAccordion:statisticsPanel");
-		//RequestContext.getCurrentInstance().update("mainForm:mainAccordion:statistics");
-		if(!this.isScoreDistributionModelAvailable()) RequestContext.getCurrentInstance().execute("PF('mainAccordion').unselect(3)");
-		RequestContext.getCurrentInstance().update("mainForm:mainAccordion:MetFragResultsTable");
-		RequestContext.getCurrentInstance().update("mainForm:mainAccordion:peakFilterPanel");
-		RequestContext.getCurrentInstance().update("mainForm:mainAccordion:scoreDistributionPlot");
-		//RequestContext.getCurrentInstance().update("mainForm:mainAccordion");
+		//PrimeFaces.current().ajax().update("mainForm:mainAccordion:MetFragResultsTable");
+		//PrimeFaces.current().ajax().update("mainForm:mainAccordion:resultsTablePanel");
+		//PrimeFaces.current().ajax().update("mainForm:mainAccordion:statisticsPanel");
+		//PrimeFaces.current().ajax().update("mainForm:mainAccordion:statistics");
+		if(!this.isScoreDistributionModelAvailable()) PrimeFaces.current().executeScript("PF('mainAccordion').unselect(3)");
+		PrimeFaces.current().ajax().update("mainForm:mainAccordion:MetFragResultsTable");
+		PrimeFaces.current().ajax().update("mainForm:mainAccordion:peakFilterPanel");
+		PrimeFaces.current().ajax().update("mainForm:mainAccordion:scoreDistributionPlot");
+		//PrimeFaces.current().ajax().update("mainForm:mainAccordion");
 	}
 	
 	//results download
@@ -3014,7 +3014,7 @@ public class MetFragWebBean {
         nav.handleNavigation(fc, null, "viewExpired");
         fc.renderResponse();
         
-        RequestContext.getCurrentInstance().execute("PF('expiredSessionDialog').show();");
+        PrimeFaces.current().executeScript("PF('expiredSessionDialog').show();");
 
         java.io.File sessionFolder = new java.io.File(this.beanSettingsContainer.getRootSessionFolder());
         if(sessionFolder.exists())
