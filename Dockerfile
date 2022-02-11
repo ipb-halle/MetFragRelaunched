@@ -39,11 +39,11 @@ COPY --from=builder /MetFragRelaunched/MetFragWeb/target/MetFragWeb.war /usr/loc
 RUN printf '#!/bin/sh \n\
 if [ -f "/resources/settings.properties" ] \n\
 then \n\
-	jar uvf /usr/local/tomcat/webapps/MetFragWeb.war /resources/settings.properties \n\
+	jar uvf /usr/local/tomee/webapps/MetFragWeb.war /resources/settings.properties \n\
 fi \n\
 if ! [ -z ${WEBPREFIX} ] \n\
 then \n\
-	mv /usr/local/tomcat/webapps/MetFragWeb.war /usr/local/tomcat/webapps/${WEBPREFIX}.war \n\
+	mv /usr/local/tomee/webapps/MetFragWeb.war /usr/local/tomee/webapps/${WEBPREFIX}.war \n\
 fi \n\
 catalina.sh run' > /start.sh
 
