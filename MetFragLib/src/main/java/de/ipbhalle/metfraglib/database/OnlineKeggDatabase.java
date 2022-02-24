@@ -164,7 +164,7 @@ public class OnlineKeggDatabase extends AbstractDatabase {
 		catch(Exception e) {
 			throw new Exception ();
 		}
-		
+		this.addSMILESFromInChI(precursorCandidate);
 		return precursorCandidate;
 	}
 
