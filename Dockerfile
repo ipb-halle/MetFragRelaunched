@@ -16,6 +16,13 @@ RUN mvn -f MetFragRelaunched clean package -pl MetFragLib -pl MetFragWeb -am -Ds
 
 FROM tomee:8
 
+RUN set -eux; \
+	apt-get update; \
+	apt-get install -y --no-install-recommends \
+		zip \
+        ; \
+	rm -rf /var/lib/apt/lists/*
+
 RUN wget -q -O- https://msbi.ipb-halle.de/~sneumann/file_databases.tgz | tar -C / -xzf -
 RUN cd /vol/file_databases; \
         wget -q https://zenodo.org/record/3375500/files/HMDB4_23Aug19.csv; \
@@ -42,7 +49,7 @@ COPY --from=builder /MetFragRelaunched/MetFragWeb/target/MetFragWeb.war /usr/loc
 RUN printf '#!/bin/sh \n\
 if [ -f "/resources/settings.properties" ] \n\
 then \n\
-	jar uvf /usr/local/tomee/webapps/MetFragWeb.war /resources/settings.properties \n\
+	zip -u /usr/local/tomee/webapps/MetFragWeb.war /resources/settings.properties \n\  
 fi \n\
 if ! [ -z ${WEBPREFIX} ] \n\
 then \n\
