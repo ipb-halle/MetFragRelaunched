@@ -33,7 +33,7 @@ import de.ipbhalle.metfraglib.interfaces.IMolecularStructure;
 import de.ipbhalle.metfraglib.parameter.Constants;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.precursor.HDTopDownBitArrayPrecursor;
-import net.sf.jniinchi.INCHI_RET;
+import io.github.dan2097.jnainchi.InchiStatus;
 
 public class MoleculeFunctions {
 
@@ -197,15 +197,14 @@ public class MoleculeFunctions {
 	 * @throws Exception 
 	 */
 	public static IAtomContainer getAtomContainerFromInChI(String inchi) throws Exception {
-		InChIGeneratorFactory inchiFactory = InChIGeneratorFactory.getInstance();
-		InChIToStructure its = inchiFactory.getInChIToStructure(inchi, SilentChemObjectBuilder.getInstance());
+		InChIToStructure its = InChIGeneratorFactory.getInstance().getInChIToStructure(inchi, SilentChemObjectBuilder.getInstance());
 		if(its == null) {
 			throw new Exception("InChI problem: " + inchi);
 		}
-		INCHI_RET ret = its.getReturnStatus();
-		if (ret == INCHI_RET.WARNING) {
+		InchiStatus ret = its.getStatus();
+		if (ret == InchiStatus.WARNING) {
 		//	logger.warn("InChI warning: " + its.getMessage());
-		} else if (ret != INCHI_RET.OKAY) {
+		} else if (ret == InchiStatus.ERROR) {
 			throw new Exception("InChI problem: " + inchi);
 		}
 		IAtomContainer molecule = its.getAtomContainer();
