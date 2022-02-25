@@ -1,8 +1,10 @@
 package de.ipbhalle.metfragweb.helper;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 
-import org.primefaces.model.file.UploadedFile;
+import org.primefaces.model.UploadedFile;
 
 import de.ipbhalle.metfraglib.exceptions.RetentionTimeNotFoundException;
 import de.ipbhalle.metfraglib.exceptions.TooFewCandidatesException;
@@ -59,7 +61,7 @@ public class UserInputDataHandler {
 		}
 	}
 	
-	public void handleLocalCandidateFile(java.io.File suspectListScoreFile, 
+	public void handleLocalCandidateFile(File suspectListScoreFile, 
 			Messages infoMessages, Messages errorMessages, String fileName, BeanSettingsContainer beanSettingsContainer) {
 		//check user input
 		if(suspectListScoreFile == null) {
@@ -112,7 +114,7 @@ public class UserInputDataHandler {
 		if(uploadFolder == null) return;
 		//store the file
 		java.util.zip.ZipFile zipFile = null;
-		java.io.File[] contentFiles = null; 
+		File[] contentFiles = null; 
 		try {
 			zipFile = new java.util.zip.ZipFile(this.fileStorer.saveUploadedFile(parameterZipFile, uploadFolder));
 			contentFiles = this.fileStorer.decompressZipFile(zipFile, uploadFolder);
@@ -241,7 +243,7 @@ public class UserInputDataHandler {
 	 * @param identifier
 	 * @return
 	 */
-	public boolean handleSuspectListFilterFile(java.io.File suspectListFilterFile, 
+	public boolean handleSuspectListFilterFile(File suspectListFilterFile, 
 			Messages infoMessages, Messages errorMessages, BeanSettingsContainer beanSettingsContainer) {
 		if(suspectListFilterFile == null) {
 			errorMessages.setMessage("suspectListsFilterError", "Error: Suspect list file was not saved.");
@@ -264,7 +266,7 @@ public class UserInputDataHandler {
 			//get file properties
 			java.net.URLConnection conn = new java.net.URL(uploadFolder.getAbsolutePath() + Constants.OS_SPECIFIC_FILE_SEPARATOR + suspectListFilterFile.getName()).openConnection();
 			String contentType = conn.getContentType();
-			java.io.FileInputStream fis = new java.io.FileInputStream(storedFile);
+			FileInputStream fis = new FileInputStream(storedFile);
 			long size = fis.getChannel().size();
 			fis.close();
 			//save file as UploadedSuspectListFile
@@ -369,7 +371,7 @@ public class UserInputDataHandler {
 			//get file properties
 			java.net.URLConnection conn = new java.net.URL(suspectListScoreFile.getAbsolutePath()).openConnection();
 			String contentType = conn.getContentType();
-			java.io.FileInputStream fis = new java.io.FileInputStream(storedFile);
+			FileInputStream fis = new FileInputStream(storedFile);
 			long size = fis.getChannel().size();
 			fis.close();
 			//save file as UploadedSuspectListFile
@@ -401,7 +403,7 @@ public class UserInputDataHandler {
 	 * @param fileName
 	 * @return
 	 */
-	public boolean handleSuspectListScoreFile(java.io.InputStream suspectListScoreFile, 
+	public boolean handleSuspectListScoreFile(InputStream suspectListScoreFile, 
 			Messages infoMessages, Messages errorMessages, String fileName, BeanSettingsContainer beanSettingsContainer) {
 		if(suspectListScoreFile == null) {
 			errorMessages.setMessage("suspectListsScoreError", "Error: Suspect list file was not saved.");
@@ -424,7 +426,7 @@ public class UserInputDataHandler {
 			//get file properties
 			java.net.URLConnection conn = new java.net.URL(uploadFolder.getAbsolutePath() + Constants.OS_SPECIFIC_FILE_SEPARATOR + fileName).openConnection();
 			String contentType = conn.getContentType();
-			java.io.FileInputStream fis = new java.io.FileInputStream(storedFile);
+			FileInputStream fis = new FileInputStream(storedFile);
 			long size = fis.getChannel().size();
 			fis.close();
 			//save file as UploadedSuspectListFile

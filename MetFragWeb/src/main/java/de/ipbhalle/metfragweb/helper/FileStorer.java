@@ -1,11 +1,15 @@
 package de.ipbhalle.metfragweb.helper;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.primefaces.model.file.UploadedFile;
+import org.primefaces.model.UploadedFile;
 
 import de.ipbhalle.metfraglib.parameter.Constants;
 import de.ipbhalle.metfragweb.container.Messages;
@@ -17,7 +21,7 @@ public class FileStorer {
 	}
 	
 	public File compressFolder(String folderName, String location, String[] excludeRegex) throws Exception {
-		java.io.FileOutputStream fos = new java.io.FileOutputStream(location);
+		FileOutputStream fos = new FileOutputStream(location);
 		java.util.zip.ZipOutputStream zos = new java.util.zip.ZipOutputStream(fos);
 		
 		java.util.Vector<String> files = new java.util.Vector<String>();
@@ -27,7 +31,7 @@ public class FileStorer {
 			byte[] buffer = new byte[1024];
 			java.util.zip.ZipEntry ze = new java.util.zip.ZipEntry(files.get(i));
 			zos.putNextEntry(ze);
-			java.io.FileInputStream inFile = new java.io.FileInputStream(files.get(i));
+			FileInputStream inFile = new FileInputStream(files.get(i));
 			int len;
 			while ((len = inFile.read(buffer)) > 0) {
 				zos.write(buffer, 0, len);
@@ -39,7 +43,7 @@ public class FileStorer {
 	}
 
 	public File compressFolder(String folderName, String location, String[] excludeRegex, String prefixToRemove) throws Exception {
-		java.io.FileOutputStream fos = new java.io.FileOutputStream(location);
+		FileOutputStream fos = new FileOutputStream(location);
 		java.util.zip.ZipOutputStream zos = new java.util.zip.ZipOutputStream(fos);
 		
 		java.util.Vector<String> files = new java.util.Vector<String>();
@@ -49,7 +53,7 @@ public class FileStorer {
 			byte[] buffer = new byte[1024];
 			java.util.zip.ZipEntry ze = new java.util.zip.ZipEntry(files.get(i).replaceFirst(".*" + prefixToRemove, ""));
 			zos.putNextEntry(ze);
-			java.io.FileInputStream inFile = new java.io.FileInputStream(files.get(i));
+			FileInputStream inFile = new FileInputStream(files.get(i));
 			int len;
 			while ((len = inFile.read(buffer)) > 0) {
 				zos.write(buffer, 0, len);
@@ -89,7 +93,7 @@ public class FileStorer {
 		java.util.List<File> fileList = new java.util.LinkedList<File>();
 		while(zipEntriesEnum.hasMoreElements()) {
 			java.util.zip.ZipEntry entry = (java.util.zip.ZipEntry)zipEntriesEnum.nextElement();
-			java.io.InputStream inputStream = zipFile.getInputStream(entry);
+			InputStream inputStream = zipFile.getInputStream(entry);
 			fileList.add(this.saveUploadedFile(inputStream, destination, entry.getName()));
 		}
 		File[] contentFiles = new File[fileList.size()];
@@ -110,7 +114,7 @@ public class FileStorer {
 	public File prepareFolder(String folderName, Messages errorMessages) {
 		File toDownloadTo = null;
 		try {
-			toDownloadTo = new java.io.File(folderName);
+			toDownloadTo = new File(folderName);
 			if (!toDownloadTo.exists())
 				toDownloadTo.mkdirs();
 		} catch (Exception e1) {
@@ -127,10 +131,10 @@ public class FileStorer {
 	 * @return
 	 * @throws IOException
 	 */
-	public java.io.File saveUploadedFile(UploadedFile file, File path) throws IOException {
-		java.io.File fileToStore = new java.io.File(path.getAbsoluteFile() + Constants.OS_SPECIFIC_FILE_SEPARATOR + file.getFileName());
-		java.io.InputStream is = file.getInputStream();
-		java.io.OutputStream out = new java.io.FileOutputStream(fileToStore);
+	public File saveUploadedFile(UploadedFile file, File path) throws IOException {
+		File fileToStore = new File(path.getAbsoluteFile() + Constants.OS_SPECIFIC_FILE_SEPARATOR + file.getFileName());
+		InputStream is = file.getInputstream();
+		OutputStream out = new FileOutputStream(fileToStore);
 		byte buf[] = new byte[1024];
 	    int len;
 	    while ((len = is.read(buf)) > 0)
@@ -148,11 +152,11 @@ public class FileStorer {
 	 * @return
 	 * @throws IOException
 	 */
-	public java.io.File saveUploadedFile(java.io.InputStream is, File path, String fileName) throws IOException {
-		java.io.File file = new java.io.File(path.getAbsoluteFile() + Constants.OS_SPECIFIC_FILE_SEPARATOR + fileName);
+	public File saveUploadedFile(InputStream is, File path, String fileName) throws IOException {
+		File file = new File(path.getAbsoluteFile() + Constants.OS_SPECIFIC_FILE_SEPARATOR + fileName);
 		File parent = file.getParentFile();
 		if(!parent.exists()) parent.mkdirs();
-		java.io.OutputStream out = new java.io.FileOutputStream(file);
+		OutputStream out = new FileOutputStream(file);
 		byte buf[] = new byte[1024];
 	    int len;
 	    while ((len = is.read(buf)) > 0)
@@ -168,10 +172,10 @@ public class FileStorer {
 	 * @return
 	 * @throws IOException
 	 */
-	public java.io.File saveUploadedFile(java.io.File file, File path) throws IOException {
-		java.io.File fileToStore = new java.io.File(path.getAbsolutePath() + Constants.OS_SPECIFIC_FILE_SEPARATOR + file.getName());
-		java.io.InputStream is = new java.io.FileInputStream(file);
-		java.io.OutputStream out = new java.io.FileOutputStream(fileToStore);
+	public File saveUploadedFile(File file, File path) throws IOException {
+		File fileToStore = new File(path.getAbsolutePath() + Constants.OS_SPECIFIC_FILE_SEPARATOR + file.getName());
+		InputStream is = new FileInputStream(file);
+		OutputStream out = new FileOutputStream(fileToStore);
 		byte buf[] = new byte[1024];
 	    int len;
 	    while ((len = is.read(buf)) > 0)
