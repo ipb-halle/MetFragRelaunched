@@ -13,7 +13,6 @@
 	<url>http://maven.apache.org</url>
 
 
-
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -66,6 +65,10 @@
 		<dependency>
 			<groupId>net.rforge</groupId>
 			<artifactId>REngine</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
 		</dependency>
 
 		<dependency>
