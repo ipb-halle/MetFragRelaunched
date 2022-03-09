@@ -2,6 +2,8 @@ package de.ipbhalle.metfraglib.settings;
 
 import java.io.IOException;
 
+import org.apache.logging.log4j.Logger;
+
 import de.ipbhalle.metfraglib.parameter.Constants;
 import de.ipbhalle.metfraglib.parameter.ParameterDataTypes;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
@@ -145,7 +147,7 @@ public class MetFragGlobalSettings extends Settings {
 		bwriter.close();
 	}
 
-	public static MetFragGlobalSettings readSettings(java.io.File parameterFile, org.apache.log4j.Logger logger) throws Exception {
+	public static MetFragGlobalSettings readSettings(java.io.File parameterFile, Logger logger) throws Exception {
 		MetFragGlobalSettings settings = new MetFragGlobalSettings();
 		java.util.ArrayList<String> setParameters = new java.util.ArrayList<String>();
 		java.io.BufferedReader parameterFileReader = new java.io.BufferedReader(new java.io.FileReader(parameterFile));
@@ -194,7 +196,7 @@ public class MetFragGlobalSettings extends Settings {
 		return settings;
 	}
 
-	public static MetFragGlobalSettings readSettings(java.util.Hashtable<String, String> arguments, org.apache.log4j.Logger logger) throws Exception {
+	public static MetFragGlobalSettings readSettings(java.util.Hashtable<String, String> arguments, Logger logger) throws Exception {
 		MetFragGlobalSettings settings = new MetFragGlobalSettings();
 		java.util.Enumeration<String> keys = arguments.keys();
 		while(keys.hasMoreElements()) {
@@ -207,7 +209,7 @@ public class MetFragGlobalSettings extends Settings {
 		return settings;
 	}
 
-	public static void readSettings(java.util.Hashtable<String, String> arguments, MetFragGlobalSettings settings, org.apache.log4j.Logger logger) throws Exception {
+	public static void readSettings(java.util.Hashtable<String, String> arguments, MetFragGlobalSettings settings, Logger logger) throws Exception {
 		java.util.Enumeration<String> keys = arguments.keys();
 		while(keys.hasMoreElements()) {
 			String currentKey = keys.nextElement();

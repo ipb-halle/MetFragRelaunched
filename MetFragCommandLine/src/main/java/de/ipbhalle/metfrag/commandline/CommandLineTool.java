@@ -4,7 +4,8 @@ import java.awt.image.RenderedImage;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.ipbhalle.metfrag.plugins.HydrogenDeuteriumPlugin;
 import de.ipbhalle.metfraglib.fragment.DefaultBitArrayFragment;
@@ -20,18 +21,17 @@ import de.ipbhalle.metfraglib.process.CombinedMetFragProcess;
 import de.ipbhalle.metfraglib.settings.MetFragGlobalSettings;
 
 public class CommandLineTool {
-	
+	private static final Logger logger = LogManager.getLogger("HelloWorld");
 	public static boolean printHelp = false;
 	
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		Logger logger = Logger.getLogger(CommandLineTool.class);
 		/*
 		 * read in commandline arguments
 		 */
-		java.util.Hashtable<String, String> commandLineArguments = processCommandLineArguments(args, logger);
+		java.util.Hashtable<String, String> commandLineArguments = processCommandLineArguments(args);
 		if(commandLineArguments == null) {
 			System.exit(1);
 		}
@@ -225,7 +225,7 @@ public class CommandLineTool {
 	 * @param logger
 	 * @return
 	 */
-	public static java.util.Hashtable<String, String> processCommandLineArguments(String[] args, Logger logger) {
+	public static java.util.Hashtable<String, String> processCommandLineArguments(String[] args) {
 		java.util.Hashtable<String, String> arguments = new java.util.Hashtable<String, String>();
 		if(args == null || args.length == 0) {
 			logger.error("Parameter file is missing!");
