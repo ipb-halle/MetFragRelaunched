@@ -19,7 +19,7 @@
 					<h:panelGrid columns="2" cellspacing="4" cellpadding="4"
 						style="vertical-align: top;" id="fragmenterParametersPanel"
 						columnClasses="firstColumnDatabase,secondColumnDatabase">
-						<h:outputLabel id="inputMzPpmLabel" value="Mzppm:" />
+						<h:outputText id="inputMzPpmLabel" value="Mzppm:" />
 						<h:panelGrid columns="2">
 							<p:inputText id="inputMzPpm" required="false"
 								value="#{metFragWebBean.relativeMassDeviation}" size="5">
@@ -39,7 +39,7 @@
 							</h:panelGroup>
 						</h:panelGrid>
 
-						<h:outputLabel id="inputMzAbsLabel" value="Mzabs:" />
+						<h:outputText id="inputMzAbsLabel" value="Mzabs:" />
 						<h:panelGrid columns="2">
 							<p:inputText id="inputMzAbs" required="false"
 								value="#{metFragWebBean.absoluteMassDeviation}" size="5">
@@ -59,7 +59,7 @@
 							</h:panelGroup>
 						</h:panelGrid>
 
-						<h:outputLabel id="modeLabel" value="Mode:" />
+						<h:outputText id="modeLabel" value="Mode:" />
 						<h:panelGrid columns="2">
 							<p:selectOneMenu id="selectMode" value="#{metFragWebBean.mode}"
 								immediate="true">
@@ -68,7 +68,7 @@
 							</p:selectOneMenu>
 						</h:panelGrid>
 						
-						<h:outputLabel id="treeDepthLabel" value="Tree depth:" />
+						<h:outputText id="treeDepthLabel" value="Tree depth:" />
 						<h:panelGrid columns="2">
 							<p:selectOneMenu id="selectTreeDepth" value="#{metFragWebBean.treeDepth}"
 								immediate="true">
@@ -77,7 +77,7 @@
 							</p:selectOneMenu>
 						</h:panelGrid>
 						
-						<h:outputLabel id="groupCandidatesLabel" value="Group candidates" />
+						<h:outputText id="groupCandidatesLabel" value="Group candidates" />
 						<h:panelGrid columns="2">
 							<p:selectBooleanCheckbox
 								id="groupCandidatesEnabled"

@@ -18,7 +18,7 @@
 						cellspacing="4" cellpadding="4"
 						columnClasses="firstColumnDatabase,secondColumnDatabase"
 						id="databaseParameters">
-						<h:outputLabel value="Database:" id="selectDatabaseLabel"/>
+						<h:outputText value="Database:" id="selectDatabaseLabel"/>
 						<h:panelGrid columns="3">
 							<p:selectOneMenu id="selectDatabase"
 								value="#{metFragWebBean.database}" converter="omnifaces.SelectItemsConverter" style="width: 150px;">
@@ -26,7 +26,7 @@
 								<p:ajax update="mainForm:mainAccordion" />
 							</p:selectOneMenu>
 							<h:panelGroup style="padding-bottom:  5px;">
-								<h:outputLabel value="Include references:"
+								<h:outputText value="Include references:"
 									style="padding-left: 10px"
 									rendered="#{metFragWebBean.database == 'PubChem'}" width="20%" />
 							</h:panelGroup>
@@ -39,7 +39,7 @@
 								</p:selectBooleanCheckbox>
 							</h:panelGrid>
 						</h:panelGrid>
-						<h:outputLabel value="" id="databaseWarningLabel" rendered="#{metFragWebBean.isWarningMessage('databaseWarning')}"/>
+						<h:outputText value="" id="databaseWarningLabel" rendered="#{metFragWebBean.isWarningMessage('databaseWarning')}"/>
 						<h:panelGroup id="databaseWarning" style="padding-top: 10px"
 								layout="block" styleClass="ui-messages ui-widget"
 								rendered="#{metFragWebBean.isWarningMessage('databaseWarning')}">
@@ -52,7 +52,7 @@
 									</h:panelGrid>
 								</h:panelGroup>
 						</h:panelGroup>
-						<h:outputLabel value="Upload File:"
+						<h:outputText value="Upload File:"
 							rendered="#{metFragWebBean.localDatabaseDefined}" id="candidateFileUploadLabel"/>
 						<h:panelGrid columns="2" width="100%"
 							rendered="#{metFragWebBean.localDatabaseDefined}">
@@ -89,7 +89,7 @@
 							</h:panelGrid>
 						</h:panelGrid>
 						
-						<h:outputLabel rendered="#{metFragWebBean.database == 'ChemSpiderRest'}" 
+						<h:outputText rendered="#{metFragWebBean.database == 'ChemSpiderRest'}" 
 							value="Token:" width="15%" id="inputChemSpiderTokenLabel"/>
 						<h:panelGrid columns="2"
 							rendered="#{metFragWebBean.database == 'ChemSpiderRest'}">
@@ -112,14 +112,14 @@
 							</h:panelGroup>
 						</h:panelGrid>
 						
-						<h:outputLabel value="Neutral Mass:" width="15%" id="inputNeutralMonoisotopicMassLabel"/>
+						<h:outputText value="Neutral Mass:" width="15%" id="inputNeutralMonoisotopicMassLabel"/>
 						<h:panelGrid columns="2">
 							<h:panelGroup>
 								<p:inputText id="inputNeutralMonoisotopicMass" required="false"
 									size="10" value="#{metFragWebBean.neutralMonoisotopicMass}">
 									<p:ajax event="blur" update="databaseParameters" />
 								</p:inputText>
-								<h:outputLabel id="inputDatabaseRelativeMassDeviationLabel" rendered="#{metFragWebBean.massSearchAvailable}"
+								<h:outputText id="inputDatabaseRelativeMassDeviationLabel" rendered="#{metFragWebBean.massSearchAvailable}"
 									value=" Search ppm: " />
 								<p:inputText id="inputDatabaseRelativeMassDeviation"
 									required="false" size="4"
@@ -157,7 +157,7 @@
 							</h:panelGrid>
 						</h:panelGrid>
 					
-						<h:outputLabel rendered="#{metFragWebBean.formulaSearchAvailable}"
+						<h:outputText rendered="#{metFragWebBean.formulaSearchAvailable}"
 							value="Formula:" id="inputFormulaLabel"/>
 						<h:panelGrid columns="2"
 							rendered="#{metFragWebBean.formulaSearchAvailable}">
@@ -181,7 +181,7 @@
 							</h:panelGroup>
 						</h:panelGrid>
 						
-						<h:outputLabel
+						<h:outputText
 							rendered="#{metFragWebBean.identifierSearchAvailable}"
 							value="Identifiers:" id="inputIdentifiersLabel" />
 						<h:panelGrid columns="2"
@@ -209,7 +209,7 @@
 				<div class="ui-grid-col-4-user">
 					<h:panelGrid columns="2" style="vertical-align:top;"
 						cellspacing="4" cellpadding="4" id="parentIonCalculationPanel">
-						<h:outputLabel value="Parent Ion:" id="inputMeasuredMassLabel" />
+						<h:outputText value="Parent Ion:" id="inputMeasuredMassLabel" />
 						<h:panelGrid columns="3">
 							<p:inputText id="inputMeasuredMass" required="false" size="10"
 								value="#{metFragWebBean.measuredMass}">

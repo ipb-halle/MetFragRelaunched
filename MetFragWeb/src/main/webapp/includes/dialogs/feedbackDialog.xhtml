@@ -19,7 +19,7 @@
 			<h:panelGrid columns="2" style="vertical-align:top;" cellspacing="4"
 				cellpadding="4"
 				columnClasses="firstColumnDatabase,secondColumnDatabase">
-				<h:outputLabel value="Email:" id="inputEmailLabel" />
+				<h:outputText value="Email:" id="inputEmailLabel" />
 				<h:panelGrid columns="1">
 					<p:inputText id="inputEmail" required="false" size="20"
 						value="#{metFragWebBean.feedbackEmail}" />
@@ -37,7 +37,7 @@
 					</h:panelGroup>
 				</h:panelGrid>
 
-				<h:outputLabel value="Comment:" id="inputCommentLabel" />
+				<h:outputText value="Comment:" id="inputCommentLabel" />
 				<h:panelGrid columns="1">
 					<p:inputTextarea rows="10" cols="30" autoResize="false"
 						required="false" style="resize: none" id="commentInput"
@@ -57,7 +57,7 @@
 					</h:panelGroup>
 				</h:panelGrid>
 
-				<h:outputLabel value="Type:" id="selectTypeLabel" />
+				<h:outputText value="Type:" id="selectTypeLabel" />
 				<h:panelGrid columns="1">
 					<p:selectOneMenu id="typeSelect"
 						value="#{metFragWebBean.feedbackType}" style="width:125px">

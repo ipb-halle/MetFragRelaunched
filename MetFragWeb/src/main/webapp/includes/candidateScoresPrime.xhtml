@@ -40,7 +40,7 @@
        				</h:panelGrid>
 					<h:panelGrid columns="1" id="additionalSmartsInclusionScorePanel">
 						<h:panelGrid columns="2">
-							<h:outputLabel value="Additional Substructures:" />
+							<h:outputText value="Additional Substructures:" />
 							<p:inputText id="includedScoreSmarts" required="false"
 								value="#{metFragWebBean.additionalSmartsScoreInclusion}">
 								<p:ajax event="blur" update="smartsInclusionScorePanel" />
@@ -95,7 +95,7 @@
        				</h:panelGrid>
 					<h:panelGrid columns="1" id="additionalSmartsExclusionScorePanel">
 						<h:panelGrid columns="2">
-							<h:outputLabel value="Additional Substructures:" />
+							<h:outputText value="Additional Substructures:" />
 							<p:inputText id="excludedScoreSmarts" required="false"
 								value="#{metFragWebBean.additionalSmartsScoreExclusion}">
 								<p:ajax event="blur" update="smartsExclusionScorePanel" />
@@ -139,7 +139,7 @@
 					cellpadding="4" styleClass="subPanel"
 					rendered="#{metFragWebBean.retentionTimeScoreEnabled}"
 					columnClasses="firstColumnScore,secondColumnScore">
-					<h:outputLabel id="retentionTimeScoreUploadFileLabel"
+					<h:outputText id="retentionTimeScoreUploadFileLabel"
 						value="Upload file:" />
 					<h:panelGrid columns="2">
 						<h:panelGrid columns="1">
@@ -184,7 +184,7 @@
 						</h:panelGrid>
 					</h:panelGrid>
 
-					<h:outputLabel id="experimentalRetentionTimeLabelLabel"
+					<h:outputText id="experimentalRetentionTimeLabelLabel"
 						value="Experimental RT (min): " />
 					<h:panelGrid columns="3" width="100%">
 						<p:inputText id="experimentalRetentionTime" required="false"
@@ -212,7 +212,7 @@
 						</h:panelGroup>
 					</h:panelGrid>
 
-					<h:outputLabel value="Partitioning Coefficient: "
+					<h:outputText value="Partitioning Coefficient: "
 						rendered="#{metFragWebBean.availablePartitioningCoefficientsExist}" />
 					<h:panelGrid columns="1">
 						<p:selectOneMenu id="selectPartitioningCoefficient" style="width:160px"

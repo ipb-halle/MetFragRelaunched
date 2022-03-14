@@ -14,7 +14,7 @@
 		<h:panelGroup id="statisticsPanel"
 			rendered="#{metFragWebBean.scoreDistributionModelAvailable}">
 			<h:panelGroup layout="block" style=" padding-bottom: 10px">
-				<h:outputLabel style="font-weight: bold;"
+				<h:outputText style="font-weight: bold;"
 					value="Candidate Score Distribution" />
 			</h:panelGroup>
 			<h:panelGrid style="width: 100%;"
@@ -117,11 +117,11 @@
 							<p:ajax
 								update="checkShowScoreDistributionPointLabels scoreDistributionPlot" />
 						</p:selectBooleanCheckbox>
-						<h:outputLabel value="Show Labels" />
+						<h:outputText value="Show Labels" />
 					</h:panelGrid>
 					<h:panelGrid columns="1" rendered="#{metFragWebBean.scoreNamesAvailable}"
 						style="padding-top: 10px;">
-						<h:outputLabel value="Display Score Graphs" />
+						<h:outputText value="Display Score Graphs" />
 						<p:selectCheckboxMenu id="showScoreGraphsSelectionMenu"
 							value="#{metFragWebBean.showScoreGraphs}"
 							showHeader="false" label="Scores">

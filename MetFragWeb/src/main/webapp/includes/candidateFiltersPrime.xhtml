@@ -22,7 +22,7 @@
 					value="#{metFragWebBean.elementInclusionFilterEnabled}">
 					<p:ajax update="elementInclusionFilterPanel" />
 				</p:selectBooleanCheckbox>
-				<h:outputLabel id="elementInclusionFilterLabel"
+				<h:outputText id="elementInclusionFilterLabel"
 					value="Element Inclusion" />
 			</h:panelGrid>
 			<h:panelGrid id="elementInclusionFilterPanel">
@@ -30,7 +30,7 @@
 					cellpadding="4" styleClass="subPanel"
 					rendered="#{metFragWebBean.elementInclusionFilterEnabled}">
 					<h:panelGrid columns="2">
-						<h:outputLabel value="Element List:" />
+						<h:outputText value="Element List:" />
 						<p:inputText id="includedFilterElements" required="false"
 							value="#{metFragWebBean.includedFilterElements}">
 							<p:ajax event="blur" update="elementInclusionFilterPanel" />
@@ -78,7 +78,7 @@
 					cellpadding="4" styleClass="subPanel"
 					rendered="#{metFragWebBean.elementExclusionFilterEnabled}">
 					<h:panelGrid columns="2">
-						<h:outputLabel value="Element List:" />
+						<h:outputText value="Element List:" />
 						<p:inputText id="excludedFilterElements"
 							value="#{metFragWebBean.excludedElements}" label="Element List"
 							labelPosition="left" required="false" indicatorPosition="right">
@@ -128,7 +128,7 @@
        				</h:panelGrid>
 					<h:panelGrid columns="1" id="additionalSmartsInclusionFilterPanel">
 						<h:panelGrid columns="2">
-							<h:outputLabel value="Additional Substructures:" />
+							<h:outputText value="Additional Substructures:" />
 							<p:inputText id="includedFilterSmarts" required="false"
 								value="#{metFragWebBean.additionalSmartsFilterInclusion}">
 								<p:ajax event="blur" update="smartsInclusionFilterPanel" />
@@ -183,7 +183,7 @@
        				</h:panelGrid>
 					<h:panelGrid columns="1" id="additionalSmartsExclusionFilterPanel">
 						<h:panelGrid columns="2">
-							<h:outputLabel value="Additional Substructures:" />
+							<h:outputText value="Additional Substructures:" />
 							<p:inputText id="excludedFilterSmarts" required="false"
 								value="#{metFragWebBean.additionalSmartsFilterExclusion}">
 								<p:ajax event="blur" update="smartsExclusionFilterPanel" />
@@ -228,7 +228,7 @@
 				<h:panelGrid columns="1" style="vertical-align:top;" cellspacing="4"
 					cellpadding="4" styleClass="subPanel" 
 					rendered="#{metFragWebBean.substructureInformationFilterEnabled}">
-					<h:outputLabel value="Substructure Expression:" />
+					<h:outputText value="Substructure Expression:" />
 					<h:panelGrid columns="2" columnClasses="firstColumnScoreSummary,secondColumnScoreSummary">
 						<h:panelGrid columns="1" id="substructureInformationFilterSubPanel">
 							<p:inputTextarea rows="10" cols="20" autoResize="false"
@@ -303,7 +303,7 @@
 					cellpadding="4" styleClass="subPanel"
 					rendered="#{metFragWebBean.elementMinimumElementsFilterEnabled}">
 					<h:panelGrid columns="2">
-						<h:outputLabel value="Sub-formula:" />
+						<h:outputText value="Sub-formula:" />
 						<p:inputText id="includedFilterMinimumElements"
 							value="#{metFragWebBean.includedMinimumElements}"
 							required="false"
@@ -345,7 +345,7 @@
 					cellpadding="4" styleClass="subPanel"
 					rendered="#{metFragWebBean.elementMaximumElementsFilterEnabled}">
 					<h:panelGrid columns="2">
-						<h:outputLabel value="Sub-formula:" />
+						<h:outputText value="Sub-formula:" />
 						<p:inputText id="includedFilterMaximumElements"
 							value="#{metFragWebBean.includedMaximumElements}"
 							label="Sub-formula" labelPosition="left" required="false"
