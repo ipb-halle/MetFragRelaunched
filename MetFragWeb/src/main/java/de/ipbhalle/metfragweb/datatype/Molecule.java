@@ -201,7 +201,7 @@ public class Molecule implements Serializable {
 			if(this.identifier.startsWith("DTXSID")) return "https://comptox.epa.gov/dashboard/dsstoxdb/results?search=" + this.getOriginalIdentifier();
 		} else {
 			if(database.equals("PubChem")) return "https://pubchem.ncbi.nlm.nih.gov/compound/" + this.getOriginalIdentifier();
-			else if(database.equals("KEGG")) return "http://www.kegg.jp/dbget-bin/www_bget?cpd:" + this.getOriginalIdentifier();
+			else if(database.equals("KEGG")) return "https://www.kegg.jp/entry/" + this.getOriginalIdentifier();
 			else if(database.equals("ChemSpider") || database.equals("ChemSpiderRest")) return "http://www.chemspider.com/Chemical-Structure." + this.getOriginalIdentifier() + ".html";
 			else if(database.equals("MetaCyc")) return "http://metacyc.org/META/NEW-IMAGE?type=COMPOUND&object=" + this.getOriginalIdentifier();
 			else if(database.equals("LipidMaps")) return "http://www.lipidmaps.org/data/LMSDRecord.php?LMID=" + this.getOriginalIdentifier();
