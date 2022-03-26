@@ -38,7 +38,8 @@ RUN cd /vol/file_databases; \
         wget -q https://zenodo.org/record/4562688/files/CyanoMetDB_MetFrag_Feb2021.csv; \
         wget -q https://zenodo.org/record/6034587/files/OntoChem_PFAS_CORE_20220209.csv; \
         wget -q https://zenodo.org/record/6034587/files/OntoChem_PFAS_Patents_20220209.csv; \
-        wget -q https://zenodo.org/record/5996098/files/PubChemLite_exposomics_20220128.csv; \
+        wget -q https://zenodo.org/record/6385954/files/PubChem_OECDPFAS_largerPFASparts_20220324.csv; \
+        wget -q https://zenodo.org/record/6383860/files/PubChemLite_exposomics_20220325.csv; \
         wget -q https://zenodo.org/record/4432124/files/PubChemLite_01Jan2021_exposomics.csv; \
         wget -q https://zenodo.org/record/4456208/files/PubChemLite_01Jan2021_exposomics_CCSbase.csv; \
         wget -q https://zenodo.org/record/3957497/files/HBM4EU_CECscreen_MF_1Jul2020.csv; \
