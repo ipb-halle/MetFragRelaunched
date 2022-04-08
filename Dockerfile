@@ -34,7 +34,7 @@ RUN cd /vol/file_databases; \
         wget -q https://zenodo.org/record/3520106/files/NPAtlas_Aug2019.csv; \
         wget -q https://zenodo.org/record/3548461/files/NORMANSusDat_20Nov2019.csv
 RUN cd /vol/file_databases; \
-        wget -q https://zenodo.org/record/3547718/files/COCONUT4MetFrag.csv; \
+        wget -q https://zenodo.org/record/5336447/files/COCONUT4MetFrag_april.csv; \
         wget -q https://zenodo.org/record/4562688/files/CyanoMetDB_MetFrag_Feb2021.csv; \
         wget -q https://zenodo.org/record/6034587/files/OntoChem_PFAS_CORE_20220209.csv; \
         wget -q https://zenodo.org/record/6034587/files/OntoChem_PFAS_Patents_20220209.csv; \
