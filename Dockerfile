@@ -23,7 +23,7 @@ RUN set -eux; \
         ; \
 	rm -rf /var/lib/apt/lists/*
 
-RUN wget -q -O- https://msbi.ipb-halle.de/~sneumann/file_databases.tgz | tar -C / -xzf -
+# RUN wget -q -O- https://msbi.ipb-halle.de/~sneumann/file_databases.tgz | tar -C / -xzf -
 RUN cd /vol/file_databases; \
         wget -q https://zenodo.org/record/3375500/files/HMDB4_23Aug19.csv; \
         wget -q https://zenodo.org/record/3403530/files/WormJam_10Sept19.csv; \
@@ -31,6 +31,8 @@ RUN cd /vol/file_databases; \
         wget -q https://zenodo.org/record/3735703/files/EColiMDB_11Nov2019.csv; \
         wget -q https://zenodo.org/record/3541624/files/Zebrafish_13Nov2019_Beta.csv; \
         wget -q https://zenodo.org/record/3472781/files/CompTox_07March19_WWMetaData.csv; \
+        wget -q https://zenodo.org/record/6475906/files/CompTox_07March19_SelectMetaData.csv; \
+        wget -q https://zenodo.org/record/3364464/files/CompTox_07March19_SmokingMetaData.csv; \
         wget -q https://zenodo.org/record/3520106/files/NPAtlas_Aug2019.csv; \
         wget -q https://zenodo.org/record/3548461/files/NORMANSusDat_20Nov2019.csv
 RUN cd /vol/file_databases; \
