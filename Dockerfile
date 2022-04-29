@@ -24,7 +24,7 @@ RUN set -eux; \
 	rm -rf /var/lib/apt/lists/*
 
 # RUN wget -q -O- https://msbi.ipb-halle.de/~sneumann/file_databases.tgz | tar -C / -xzf -
-RUN cd /vol/file_databases; \
+RUN mkdir /vol/file_databases; cd /vol/file_databases; \
         wget -q https://zenodo.org/record/3375500/files/HMDB4_23Aug19.csv; \
         wget -q https://zenodo.org/record/3403530/files/WormJam_10Sept19.csv; \
         wget -q https://zenodo.org/record/3434579/files/YMDB2_17Sept2019.csv; \
