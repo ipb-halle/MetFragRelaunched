@@ -356,8 +356,6 @@ public class MetFragRestController {
 	 * @return
 	 */
 	private String getResultFolderName(String processid) {
-		System.out.print("HIHIHIHIHIH123");
-		System.out.print(RESULTS_FOLDER + Constants.OS_SPECIFIC_FILE_SEPARATOR + processid);
 		return RESULTS_FOLDER + Constants.OS_SPECIFIC_FILE_SEPARATOR + processid;
 	}
 	
