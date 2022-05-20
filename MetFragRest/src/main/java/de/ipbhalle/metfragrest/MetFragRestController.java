@@ -57,7 +57,8 @@ import de.ipbhalle.model.StatusAssembler;
 public class MetFragRestController {
 
 	private Logger logger = Logger.getLogger(MetFragRestController.class);
-	private static final String RESULTS_FOLDER = System.getProperty("java.io.tmpdir");
+	// private static final String RESULTS_FOLDER = System.getProperty("java_io_tmpdir");
+	private static final String RESULTS_FOLDER = "/tmp";
 	private static final String STATUS_FILE_NAME = "status.txt";
 	private static final String HOST_FILE_NAME = "host.txt";
 	
@@ -75,7 +76,7 @@ public class MetFragRestController {
 		File resFolder;
 		String processid;
 		try {
-			resFolder = Files.createTempDirectory("java.io.tmpdir").toFile();
+			resFolder = Files.createTempDirectory("java_io_tmpdir").toFile();
 			processid = resFolder.getName();
 			try {
 				MetFragGlobalSettings settings = args.getSettingsObject(resFolder);
@@ -355,6 +356,8 @@ public class MetFragRestController {
 	 * @return
 	 */
 	private String getResultFolderName(String processid) {
+		System.out.print("HIHIHIHIHIH123");
+		System.out.print(RESULTS_FOLDER + Constants.OS_SPECIFIC_FILE_SEPARATOR + processid);
 		return RESULTS_FOLDER + Constants.OS_SPECIFIC_FILE_SEPARATOR + processid;
 	}
 	
