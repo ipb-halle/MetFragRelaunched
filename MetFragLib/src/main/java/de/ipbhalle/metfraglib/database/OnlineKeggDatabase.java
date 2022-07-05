@@ -38,7 +38,7 @@ public class OnlineKeggDatabase extends AbstractDatabase {
 		logger.info("Fetching candidates from KEGG");
 		java.util.ArrayList<String> cids = new java.util.ArrayList<String>();
 		double mzabs = MathTools.calculateAbsoluteDeviation(monoisotopicMass, relativeMassDeviation);
-		String urlname = "http://rest.kegg.jp/find/compound/" + (monoisotopicMass - mzabs) + "-" + (monoisotopicMass + mzabs) + "/exact_mass";
+		String urlname = "https://rest.kegg.jp/find/compound/" + (monoisotopicMass - mzabs) + "-" + (monoisotopicMass + mzabs) + "/exact_mass";
 		logger.trace(urlname);
 		java.io.InputStream stream = this.getInputStreamFromURL(urlname);
 		if(stream == null) return cids;
@@ -72,7 +72,7 @@ public class OnlineKeggDatabase extends AbstractDatabase {
 	public java.util.ArrayList<String> getCandidateIdentifiers(String molecularFormula) throws Exception {
 		logger.info("Fetching candidates from KEGG");
 		java.util.ArrayList<String> cids = new java.util.ArrayList<String>();
-		String urlname = "http://rest.kegg.jp/find/compound/" + molecularFormula + "/formula";
+		String urlname = "https://rest.kegg.jp/find/compound/" + molecularFormula + "/formula";
 		java.io.InputStream stream = this.getInputStreamFromURL(urlname);
 		logger.trace(urlname);
 		try {
@@ -108,7 +108,7 @@ public class OnlineKeggDatabase extends AbstractDatabase {
 	 * 
 	 */
 	public ICandidate getCandidateByIdentifier(String identifier) throws Exception {
-		String urlname = "http://rest.kegg.jp/get/" + identifier + "/mol";
+		String urlname = "https://rest.kegg.jp/get/" + identifier + "/mol";
 		java.io.InputStream stream = this.getInputStreamFromURL(urlname);
 		logger.trace(urlname);
 		if(stream == null) return null;
@@ -123,7 +123,7 @@ public class OnlineKeggDatabase extends AbstractDatabase {
 		} catch (java.io.IOException e) {
 			logger.error("Error: Reading mol information out of stream failed.");
 			throw new Exception();
-		} 
+		}
 		java.util.List<IAtomContainer> containersList;
 		
 		MDLV2000Reader reader = new MDLV2000Reader(new java.io.StringReader(sb.toString()));
@@ -175,7 +175,7 @@ public class OnlineKeggDatabase extends AbstractDatabase {
 	 * @throws Exception 
 	 */
 	protected String getNameIfIdentifier(String identifier) throws Exception {
-		String urlname = "http://rest.kegg.jp/find/compound/" + identifier;
+		String urlname = "https://rest.kegg.jp/find/compound/" + identifier;
 		java.io.InputStream stream = this.getInputStreamFromURL(urlname);
 		logger.trace(urlname);
 		if(stream == null) return null;
