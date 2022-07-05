@@ -23,7 +23,11 @@ public class MultipleTandemMassPeakListReader extends AbstractPeakListReader {
 		java.io.BufferedReader breader = new java.io.BufferedReader(new java.io.InputStreamReader(stream));
 		String line = "";
 		SpectralPeakListCollection spectralPeakListCollection = 
-				new SpectralPeakListCollection((Boolean)this.settings.get(VariableNames.IS_POSITIVE_ION_MODE_NAME), (Double)this.settings.get(VariableNames.ABSOLUTE_MASS_DEVIATION_NAME), (Double)this.settings.get(VariableNames.RELATIVE_MASS_DEVIATION_NAME));
+				new SpectralPeakListCollection(
+						(Boolean)this.settings.get(VariableNames.IS_POSITIVE_ION_MODE_NAME),
+						(Double)this.settings.get(VariableNames.ABSOLUTE_MASS_DEVIATION_NAME),
+						(Double)this.settings.get(VariableNames.RELATIVE_MASS_DEVIATION_NAME),
+						(Double)this.settings.get(VariableNames.MINIMUM_COSINE_SIMILARITY_LIMIT_NAME));
 		SortedSimilarityTandemMassPeakList peakList = null;
 		int precursorIonTypeIndex = 0;
 		while((line = breader.readLine()) != null) {
