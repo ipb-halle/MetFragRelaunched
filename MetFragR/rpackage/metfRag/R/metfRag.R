@@ -7,7 +7,7 @@ NULL
 require(rJava, quietly=TRUE)
 
 .onLoad<-function(libname, pkgname) {
-	jar.metfrag <- paste(libname, pkgname, "java", "MetFragR-2.4.2-jar-with-dependencies.jar", sep=.Platform$file.sep)	
+	jar.metfrag <- paste(libname, pkgname, "java", "MetFragR-2.4.5-jar-with-dependencies.jar", sep=.Platform$file.sep)	
 	.jinit(classpath=c(jar.metfrag))
 }
 
@@ -352,3 +352,63 @@ score.molecules.from.container<-function(molecules, mzs, ints, exact.mass,
   
   return(mols)
 }
+
+
+
+calculateFingerprintFromSmilesAndWriteToCSV <- function(pathToSmilesFile, pathToFingerprintCSV)
+{
+  obj = .jnew("de/ipbhalle/metfrag/r/FingerPrintR")
+  dummy <- .jcall(obj, "V", 
+                  'calculateFingerprintFromSmilesAndWriteToCSV',
+                  .jnew("java.lang.String", as.character(pathToSmilesFile)),
+                  .jnew("java.lang.String", as.character(pathToFingerprintCSV)))
+  obj = .jnull()
+  
+}
+
+
+
+calculateFingerprintFromSmiles <- function(smiles)
+{
+  obj = .jnew("de/ipbhalle/metfrag/r/FingerPrintR")
+  fp <- .jcall(obj, "S",  
+                'calculateFingerprintFromSmiles',
+                .jnew("java.lang.String", as.character(smiles)))
+  obj = .jnull()
+  return (fp)
+}
+
+calculateFingerprintFromSmilesAndWriteToCSV <- function(pathToSmilesFile, pathToFingerprintCSV)
+{
+  obj = .jnew("de/ipbhalle/metfrag/r/FingerPrintR")
+  .jcall(obj, "V", 
+         'calculateFingerprintFromSmilesAndWriteToCSV',
+         .jnew("java.lang.String", as.character(pathToSmilesFile)),
+         .jnew("java.lang.String", as.character(pathToFingerprintCSV)))  
+  obj = .jnull()
+}
+
+
+
+
+
+## (1) public static void
+## calculateFingerprintFromSmilesAndWriteToCSV(String pathToSmilesFile,
+## String pathToFingerprintCSV);
+
+## (2) public static String calculateFingerprintFromSmiles(String smiles);
+
+## (1) - Nimmt 2 Argumente.
+
+##      pathToSmilesFile: File mit SMILES strings (einer pro Zeile)
+
+##      pathToFingerprintCSV: Output-File in dem der Output als CSV
+## (SMILES,FP) geschrieben wird
+
+## (2) - Gibt dir zu einem SMILES den Fingerprint
+
+
+
+
+  
+  
