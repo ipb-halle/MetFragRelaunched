@@ -4,8 +4,11 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.apache.log4j.Logger;
 
 import de.ipbhalle.metfraglib.collection.SpectralPeakListCollection;
 import de.ipbhalle.metfraglib.interfaces.IScoreInitialiser;
@@ -14,7 +17,9 @@ import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.peaklistreader.MultipleTandemMassPeakListReader;
 import de.ipbhalle.metfraglib.settings.Settings;
 
+
 public class OfflineIndividualMoNASpectralSimilarityInitialiser implements IScoreInitialiser {
+	private Logger logger = Logger.getLogger(OfflineIndividualMoNASpectralSimilarityInitialiser.class);
 
 	@Override
 	public void initScoreParameters(Settings settings) throws Exception {
@@ -29,18 +34,23 @@ public class OfflineIndividualMoNASpectralSimilarityInitialiser implements IScor
 			}
 			
 			if (offlineSpectralFilePath !=null && Files.isRegularFile(offlineSpectralFilePath)) {
+				logger.info("Load reference data from file: " +offlineSpectralFilePath );
+				List<Path> libFiles = new ArrayList<Path>();
+				libFiles.add(offlineSpectralFilePath);
 				InputStream inStream = Files.newInputStream(offlineSpectralFilePath);
 				spectralPeakLists = multiplePeakListReader.readMultiple(inStream);
 			} else if (offlineSpectralFilePath !=null && Files.isDirectory(offlineSpectralFilePath)) {
+				logger.info("Load reference data from directory: " +offlineSpectralFilePath );
 				List<Path> libFiles = Files.walk(offlineSpectralFilePath)
 						.filter(Files::isRegularFile)
 						.filter(p -> p.getFileName().toString().endsWith(".mb"))
 						.collect(Collectors.toList());
 				spectralPeakLists = multiplePeakListReader.readMultiple(libFiles);
 			}
-			else { 
+			else {
+				logger.info("Load reference data from resource file \"MoNA-export-LC-MS.mb\".");
 				InputStream inStream = null;
-				inStream = OfflineMetFusionSpectralSimilarityScoreInitialiser.class.getResourceAsStream("/MoNA-export-LC-MS.mb");
+				inStream = OfflineIndividualMoNASpectralSimilarityInitialiser.class.getResourceAsStream("/MoNA-export-LC-MS.mb");
 				spectralPeakLists = multiplePeakListReader.readMultiple(inStream);
 				inStream.close();
 			}
