@@ -14,7 +14,7 @@
 }
 
 .ui-widget {
-    font-family: 'Lato', sans-serif' !important;
+    font-family: 'Lato', sans-serif, !important;
     font-size: 1.1em;
 }
 
@@ -571,48 +571,22 @@ html,body {
 	background: transparent !important;
 }
 
-.ui-dialog-user:hover {
-	-webkit-transition: width 0.5s ease-in-out;
-    -moz-transition: width 0.5s ease-in-out;
-    -o-transition: width 0.5s ease-in-out;
-    transition: width 0.5s ease-in-out;
+.feedback:hover {
     width: 40px !important;
-	padding:0;
-	box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.8);
-	border: 1px solid #A8A8A8;
-	border-radius: 3px;
-	border-right: none;
 }
 
-.log:hover {
-	-webkit-transition: width 0.5s ease-in-out;
-    -moz-transition: width 0.5s ease-in-out;
-    -o-transition: width 0.5s ease-in-out;
-    transition: width 0.5s ease-in-out;
-    width: 90% !important;
-	padding:0;
-	box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.8);
-	border: 1px solid #A8A8A8;
-	border-radius: 3px;
-	border-right: none;
+.about:hover {
+    width: 40px !important;
 }
 
-
-.log {
-	top: 1% !important;
-}
-
-.ui-dialog-user {
-	-webkit-transition: width 0.5s ease-in-out;
-    -moz-transition: width 0.5s ease-in-out;
-    -o-transition: width 0.5s ease-in-out;
+.feedback {
     transition: width 0.5s ease-in-out;
 	left: auto !important;
 	height: 100px !important;
 	position: fixed;
 	width: 30px;
 	right: 0px;
-	top: 50%;
+	top: 40%;
 	display: block !important;
 	background-color: #008000;
 	padding: 0;
@@ -620,7 +594,23 @@ html,body {
 	border: 1px solid #A8A8A8;
 	border-radius: 3px;
 	border-right: none;
-	/*background-image: url("#{resource['images/feedback.png']}");*/
+}
+
+.about {
+    transition: width 0.5s ease-in-out;
+	left: auto !important;
+	height: 77px !important;
+	position: fixed;
+	width: 30px;
+	right: 0px;
+	top: 60%;
+	display: block !important;
+	background-color: #008000;
+	padding: 0;
+	box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.8);
+	border: 1px solid #A8A8A8;
+	border-radius: 3px;
+	border-right: none;
 }
 
 .jqplot-point-label {
@@ -633,3 +623,4 @@ html,body {
 	-ms-transform: rotate(-45deg);
 	-o-transform: rotate(-45deg);
 }
+

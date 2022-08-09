@@ -7,7 +7,7 @@
 	xmlns:f="http://java.sun.com/jsf/core">
 
 <h:body>
-	<h:panelGroup columns="1" style="height: 100px; width: 30px;" styleClass="ui-dialog-user" layout="block">
+	<h:panelGroup styleClass="feedback" layout="block">
 		<h:form>
 			<p:commandLink actionListener="#{metFragWebBean.feedbackButtonListener}" update="feedbackDialogForm:feedbackDialog"
 				oncomplete="PF('feedbackDialog').show();">
@@ -15,6 +15,16 @@
    			</p:commandLink>
   		</h:form>
    	</h:panelGroup>
+   	<h:panelGroup styleClass="about" layout="block">
+		<h:form>
+			<p:commandLink oncomplete="PF('aboutDialog').show();">
+       			<p:graphicImage url="#{resource['images/about.png']}" />
+   			</p:commandLink>
+  		</h:form>
+   	</h:panelGroup>
 </h:body>
 
 </html>
+
+
+<!-- <p:commandButton value="View" icon="pi pi-home" action="#{dfView.viewProducts}" styleClass="mr-2" /> -->
