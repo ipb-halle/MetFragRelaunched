@@ -1,5 +1,10 @@
 package de.ipbhalle.metfragweb.container;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Hashtable;
 
 import javax.faces.model.SelectItem;
@@ -254,6 +259,13 @@ public class AvailableParameters {
 		this.databaseNeedsLocalFile.put("LocalSDF", true);
 	}
 	
+	private static final Comparator<File> lastModified = new Comparator<File>() {
+		@Override
+		public int compare(File o1, File o2) {
+			return o1.lastModified() == o2.lastModified() ? 0 : (o1.lastModified() < o2.lastModified() ? 1 : -1 ) ;
+		}
+	};
+	
 	public void initAddititionalDatabases(Settings settings) {
 		if(!settings.containsKey(VariableNames.LOCAL_DATABASES_FOLDER_FOR_WEB) || settings.get(VariableNames.LOCAL_DATABASES_FOLDER_FOR_WEB) == null) return;
 		String foldername = (String)settings.get(VariableNames.LOCAL_DATABASES_FOLDER_FOR_WEB);
@@ -262,6 +274,7 @@ public class AvailableParameters {
 		if(!folder.isDirectory()) return;
 		if(!folder.canRead()) return;
 		java.io.File[] files = folder.listFiles();
+		Arrays.sort(files, lastModified);
 		java.util.List<AdditionalFileDatabase> additionalDatabases = new java.util.LinkedList<AdditionalFileDatabase>();
 		// read all files in database folder and add them
 		long id = 0;
