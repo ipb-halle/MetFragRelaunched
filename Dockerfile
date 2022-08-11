@@ -25,6 +25,18 @@ RUN set -eux; \
 
 # RUN wget -q -O- https://msbi.ipb-halle.de/~sneumann/file_databases.tgz | tar -C / -xzf -
 RUN mkdir -p /vol/file_databases; cd /vol/file_databases; \
+        wget -q https://zenodo.org/record/5336447/files/COCONUT4MetFrag_april.csv; \
+        wget -q https://zenodo.org/record/4562688/files/CyanoMetDB_MetFrag_Feb2021.csv; \
+        wget -q https://zenodo.org/record/6474542/files/OntoChem_PFAS_CORE_20220420.csv; \
+        wget -q https://zenodo.org/record/6474542/files/OntoChem_PFAS_Patents_20220420.csv; \
+        wget -q https://zenodo.org/record/6385954/files/PubChem_OECDPFAS_largerPFASparts_20220324.csv; \
+        wget -q https://zenodo.org/record/6936117/files/PubChemLite_exposomics_20220729.csv; \
+        wget -q https://zenodo.org/record/4432124/files/PubChemLite_01Jan2021_exposomics.csv; \
+        wget -q https://zenodo.org/record/4456208/files/PubChemLite_01Jan2021_exposomics_CCSbase.csv; \
+        wget -q https://zenodo.org/record/3957497/files/HBM4EU_CECscreen_MF_1Jul2020.csv; \
+        wget -q https://zenodo.org/record/3957497/files/HBM4EU_CECscreen_MF_1Jul2020_plusTPs.csv; \
+        wget -q https://zenodo.org/record/3564602/files/BloodExposomeDB_03Dec2019.csv
+RUN cd /vol/file_databases; \
         wget -q https://zenodo.org/record/3375500/files/HMDB4_23Aug19.csv; \
         wget -q https://zenodo.org/record/3403530/files/WormJam_10Sept19.csv; \
         wget -q https://zenodo.org/record/3434579/files/YMDB2_17Sept2019.csv; \
@@ -35,18 +47,6 @@ RUN mkdir -p /vol/file_databases; cd /vol/file_databases; \
         wget -q https://zenodo.org/record/3364464/files/CompTox_07March19_SmokingMetaData.csv; \
         wget -q https://zenodo.org/record/3520106/files/NPAtlas_Aug2019.csv; \
         wget -q https://zenodo.org/record/3548461/files/NORMANSusDat_20Nov2019.csv
-RUN cd /vol/file_databases; \
-        wget -q https://zenodo.org/record/5336447/files/COCONUT4MetFrag_april.csv; \
-        wget -q https://zenodo.org/record/4562688/files/CyanoMetDB_MetFrag_Feb2021.csv; \
-        wget -q https://zenodo.org/record/6474542/files/OntoChem_PFAS_CORE_20220420.csv; \
-        wget -q https://zenodo.org/record/6474542/files/OntoChem_PFAS_Patents_20220420.csv; \
-        wget -q https://zenodo.org/record/6385954/files/PubChem_OECDPFAS_largerPFASparts_20220324.csv; \
-        wget -q https://zenodo.org/record/6759151/files/PubChemLite_exposomics_20220624.csv; \
-        wget -q https://zenodo.org/record/4432124/files/PubChemLite_01Jan2021_exposomics.csv; \
-        wget -q https://zenodo.org/record/4456208/files/PubChemLite_01Jan2021_exposomics_CCSbase.csv; \
-        wget -q https://zenodo.org/record/3957497/files/HBM4EU_CECscreen_MF_1Jul2020.csv; \
-        wget -q https://zenodo.org/record/3957497/files/HBM4EU_CECscreen_MF_1Jul2020_plusTPs.csv; \
-        wget -q https://zenodo.org/record/3564602/files/BloodExposomeDB_03Dec2019.csv
 
 COPY --from=builder /MetFragRelaunched/MetFragWeb/target/MetFragWeb.war /usr/local/tomee/webapps/
 RUN printf '#!/bin/sh \n\
