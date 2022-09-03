@@ -57,8 +57,8 @@ RUN cd /vol/file_databases; \
         touch PubChemLite_01Jan2021_exposomics_CCSbase.csv; \
 	wget -q https://zenodo.org/record/4432124/files/PubChemLite_01Jan2021_exposomics.csv; \
         touch PubChemLite_01Jan2021_exposomics.csv; \
-	wget -q https://zenodo.org/record/6936117/files/PubChemLite_exposomics_20220729.csv; \
-        touch PubChemLite_exposomics_20220729.csv; \
+	wget -q https://zenodo.org/record/7025297/files/PubChemLite_exposomics_20220826.csv; \
+        touch PubChemLite_exposomics_20220826.csv; \
 	wget -q https://zenodo.org/record/6385954/files/PubChem_OECDPFAS_largerPFASparts_20220324.csv; \
         touch PubChem_OECDPFAS_largerPFASparts_20220324.csv; \
 	wget -q https://zenodo.org/record/6474542/files/OntoChem_PFAS_Patents_20220420.csv; \
