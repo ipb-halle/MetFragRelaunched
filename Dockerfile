@@ -57,16 +57,16 @@ RUN cd /vol/file_databases; \
         touch PubChemLite_01Jan2021_exposomics_CCSbase.csv; \
 	wget -q https://zenodo.org/record/4432124/files/PubChemLite_01Jan2021_exposomics.csv; \
         touch PubChemLite_01Jan2021_exposomics.csv; \
-	wget -q https://zenodo.org/record/7025297/files/PubChemLite_exposomics_20220826.csv; \
-        touch PubChemLite_exposomics_20220826.csv; \
+	wget -q https://zenodo.org/record/4562688/files/CyanoMetDB_MetFrag_Feb2021.csv; \
+        touch CyanoMetDB_MetFrag_Feb2021.csv; \
 	wget -q https://zenodo.org/record/6385954/files/PubChem_OECDPFAS_largerPFASparts_20220324.csv; \
         touch PubChem_OECDPFAS_largerPFASparts_20220324.csv; \
 	wget -q https://zenodo.org/record/6474542/files/OntoChem_PFAS_Patents_20220420.csv; \
         touch OntoChem_PFAS_Patents_20220420.csv; \
 	wget -q https://zenodo.org/record/6474542/files/OntoChem_PFAS_CORE_20220420.csv; \
         touch OntoChem_PFAS_CORE_20220420.csv; \
-	wget -q https://zenodo.org/record/4562688/files/CyanoMetDB_MetFrag_Feb2021.csv; \
-        touch CyanoMetDB_MetFrag_Feb2021.csv; \
+	wget -q https://zenodo.org/record/7025297/files/PubChemLite_exposomics_20220826.csv; \
+        touch PubChemLite_exposomics_20220826.csv; \
 	wget -q https://zenodo.org/record/5336447/files/COCONUT4MetFrag_april.csv; \
         touch COCONUT4MetFrag_april.csv
 
