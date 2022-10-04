@@ -65,8 +65,8 @@ RUN cd /vol/file_databases; \
         touch OntoChem_PFAS_Patents_20220420.csv; \
 	wget -q https://zenodo.org/record/6474542/files/OntoChem_PFAS_CORE_20220420.csv; \
         touch OntoChem_PFAS_CORE_20220420.csv; \
-	wget -q https://zenodo.org/record/7025297/files/PubChemLite_exposomics_20220826.csv; \
-        touch PubChemLite_exposomics_20220826.csv; \
+	wget -q https://zenodo.org/record/7142160/files/PubChemLite_exposomics_20220930.csv; \
+        touch PubChemLite_exposomics_20220930.csv; \
 	wget -q https://zenodo.org/record/5336447/files/COCONUT4MetFrag_april.csv; \
         touch COCONUT4MetFrag_april.csv
 
