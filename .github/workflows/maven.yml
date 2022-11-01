@@ -21,5 +21,5 @@ jobs:
         java-version: '11'
         distribution: 'temurin'
         cache: maven
-    - run: mvn -B package --file pom.xml
+    - run: mvn -Dhttps.protocols=TLSv1.2 -B package --file pom.xml
 

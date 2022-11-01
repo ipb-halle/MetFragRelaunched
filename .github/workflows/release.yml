@@ -17,7 +17,7 @@ jobs:
         java-version: '11'
         distribution: 'temurin'
         cache: maven
-    - run: mvn package -pl MetFragCommandLine -am -DskipTests
+    - run: mvn -Dhttps.protocols=TLSv1.2 package -pl MetFragCommandLine -am -DskipTests
     - name: Add asset to release
       uses: softprops/action-gh-release@v1
       with:
