@@ -11,7 +11,7 @@ COPY pom.xml /MetFragRelaunched/
 RUN printf '# local database file folder \n\
 LocalDatabasesFolderForWeb = /vol/file_databases' > /MetFragRelaunched/MetFragWeb/src/main/webapp/resources/settings.properties
 
-RUN mvn -f MetFragRelaunched clean package -pl MetFragLib -pl MetFragWeb -am -DskipTests
+RUN mvn -Dhttps.protocols=TLSv1.2 -f MetFragRelaunched clean package -pl MetFragLib -pl MetFragWeb -am -DskipTests
 
 
 FROM tomee:8
