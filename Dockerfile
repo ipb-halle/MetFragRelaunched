@@ -67,8 +67,8 @@ RUN cd /vol/file_databases; \
         touch OntoChem_PFAS_CORE_20220420.csv; \
 	wget -q https://zenodo.org/record/5336447/files/COCONUT4MetFrag_april.csv; \
         touch COCONUT4MetFrag_april.csv; \
-	wget -q https://zenodo.org/record/7261187/files/PubChemLite_exposomics_20221028.csv; \
-        touch PubChemLite_exposomics_20221028.csv
+	wget -q https://zenodo.org/record/7498611/files/PubChemLite_exposomics_20221230.csv; \
+        touch PubChemLite_exposomics_20221230.csv
 
 COPY --from=builder /MetFragRelaunched/MetFragWeb/target/MetFragWeb.war /usr/local/tomee/webapps/
 RUN printf '#!/bin/sh \n\
