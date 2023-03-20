@@ -57,8 +57,7 @@ import de.ipbhalle.model.StatusAssembler;
 public class MetFragRestController {
 
 	private Logger logger = Logger.getLogger(MetFragRestController.class);
-	// private static final String RESULTS_FOLDER = System.getProperty("java_io_tmpdir");
-	private static final String RESULTS_FOLDER = "/tmp";
+	private static final String RESULTS_FOLDER = System.getProperty("java_io_tmpdir");
 	private static final String STATUS_FILE_NAME = "status.txt";
 	private static final String HOST_FILE_NAME = "host.txt";
 	
