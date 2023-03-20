@@ -1,7 +1,9 @@
 ## build/start app
 
+```
 mvn package
-java -Dserver.port=8090 -jar target/MetFragRest-2.4.4.jar
+java -Dserver.port=8090 -jar target/MetFragRest-2.4.8.jar
+```
 
 ## start app
 

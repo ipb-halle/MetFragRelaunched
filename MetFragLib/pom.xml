@@ -74,12 +74,5 @@
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
 		</dependency>
-
-		<dependency>
-			<groupId>com.chemspider.www</groupId>
-			<artifactId>chemspider_webservices</artifactId>
-			<version>1.0</version>
-		</dependency>
-
 	</dependencies>
 </project>
