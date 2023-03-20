@@ -14,7 +14,8 @@ LocalDatabasesFolderForWeb = /vol/file_databases' > /MetFragRelaunched/MetFragWe
 RUN mvn -Dhttps.protocols=TLSv1.2 -f MetFragRelaunched clean package -pl MetFragLib -pl MetFragRest -am -DskipTests
 
 
-FROM tomee:8
+#FROM tomee:8
+FROM maven:3-jdk-11 
 
 RUN set -eux; \
 	apt-get update; \
@@ -23,7 +24,9 @@ RUN set -eux; \
         ; \
 	rm -rf /var/lib/apt/lists/*
 
-COPY --from=builder /MetFragRelaunched/MetFragRest/target/MetFragRest-*.war /usr/local/tomee/webapps/
+RUN mkdir -p  /usr/local/tomee/webapps/
+
+COPY --from=builder /MetFragRelaunched/MetFragRest/target/MetFragRest-*.jar /usr/local/tomee/webapps/MetFragRest.jar
 RUN printf '#!/bin/sh \n\
 if [ -f "/resources/settings.properties" ] \n\
 then \n\
@@ -31,8 +34,11 @@ then \n\
 fi \n\
 if ! [ -z ${WEBPREFIX} ] \n\
 then \n\
-	mv /usr/local/tomee/webapps/MetFragRest.war /usr/local/tomee/webapps/${WEBPREFIX}.war \n\
+	mv /usr/local/tomee/webapps/MetFragRest.jar /usr/local/tomee/webapps/${WEBPREFIX}.jar \n\
 fi \n\
 catalina.sh run' > /start.sh
 
-CMD [ "sh", "/start.sh" ]
+#CMD [ "sh", "/start.sh" ]
+
+EXPOSE 8080
+CMD [ "java", "-Dserver.port=8080", "-jar", "/usr/local/tomee/webapps/MetFragRest.jar" ]
