@@ -67,7 +67,7 @@ RUN cd /vol/file_databases && \
         touch PubChem_OECDPFAS_largerPFASparts_20230319.csv && \
 	wget -q https://zenodo.org/record/5336447/files/COCONUT4MetFrag_april.csv && \
         touch COCONUT4MetFrag_april.csv && \
-	wget -q https://zenodo.org/record/7878471/files/PubChemLite_exposomics_20230428.csv && \
+	wget -q https://zenodo.org/record/7973696/files/PubChemLite_exposomics_20230526.csv && \
         touch PubChemLite_exposomics_20230428.csv
 
 COPY --from=builder /MetFragRelaunched/MetFragWeb/target/MetFragWeb.war /usr/local/tomee/webapps/
