@@ -53,7 +53,8 @@ import de.ipbhalle.model.StatusAssembler;
 
 @RestController
 @EnableAutoConfiguration
-@RequestMapping("/metfrag/api/v1")
+/**@RequestMapping("/metfrag/api/v1")**/
+@RequestMapping("/MetFrag-deNBI/api/v1")
 public class MetFragRestController {
 
 	private Logger logger = Logger.getLogger(MetFragRestController.class);
