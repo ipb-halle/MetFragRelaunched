@@ -11,7 +11,7 @@ mvn spring-boot:run
 
 # Using Docker
 
-It is also possible to build and use a Docker container for the MetFrag REST interface. 
+It is also possible to build and use a Docker container for the MetFrag REST interface.
 
 ## Building
 the container should be built from the `MetFragRelaunched` directory:
@@ -19,8 +19,8 @@ the container should be built from the `MetFragRelaunched` directory:
 docker build -t sneumann/metfragrest -f Dockerfile-REST .
 ```
 
-## Running 
-Then it is possible to launch the container with 
+## Running
+Then it is possible to launch the container with
 ```
 docker run --rm -it -p 8090:8080 sneumann/metfragrest:latest
 ```
@@ -29,8 +29,8 @@ An example query would be:
 ```
 
 curl -X POST -H "Content-Type: application/json" http://localhost:8090/metfrag/api/v1 -d \
-    '{ 
-        "fragmentpeakmatchabsolutemassdeviation": "0.001", 
+    '{
+        "fragmentpeakmatchabsolutemassdeviation": "0.001",
         "fragmentpeakmatchrelativemassdeviation": "5",
         "databasesearchrelativemassdeviation": "5",
         "metfragdatabasetype": "PubChem",
@@ -38,7 +38,7 @@ curl -X POST -H "Content-Type: application/json" http://localhost:8090/metfrag/a
     }'
 ```
 
-The return value include the processID, which is used to query the status: 
+The return value include the processID, which is used to query the status:
 ```
 curl http://localhost:8090/metfrag/api/v1/status/java_io_tmpdir5547995162586347505
 ```
@@ -47,3 +47,10 @@ and obtain the results:
 curl http://localhost:8090/metfrag/api/v1/result/java_io_tmpdir5547995162586347505
 ```
 
+## Configuration
+
+The REST API base URL can be configured. There is the file `src/main/ressources/application.properties` containing the default URL http://localhost:8090/metfrag/api/v1
+
+You can override the `metfragrest-controller.path` property by providing your own `application.properties` at runtime in the current working directory `./` or a `./config/` subdirectory, see [docs](https://docs.spring.io/spring-boot/docs/2.1.13.RELEASE/reference/html/boot-features-external-config.html#boot-features-external-config-application-property-files). 
+
+Finally, it is possible to override both defaults and the custom `applications.properties` on the command line at runtime. First using a system property: `java -Dmetfragrest-controller.path=mybaseurl/api/v1 -Dserver.port=8090 -jar target/MetFragRest-2.5.0.jar`, which in turn can be overriden by an application property: `java -Dserver.port=8090 -jar target/MetFragRest-2.5.0.jar --metfragrest-controller.path=commandline/api/v1` which in turn can be overridden by an environment variable: `METFRAGREST_CONTROLLER_PATH=overridemybaseurl mvn spring-boot:run`.

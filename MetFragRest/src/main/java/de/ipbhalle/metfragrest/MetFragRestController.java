@@ -54,19 +54,21 @@ import de.ipbhalle.model.StatusAssembler;
 @RestController
 @EnableAutoConfiguration
 /**@RequestMapping("/metfrag/api/v1")**/
-@RequestMapping("/MetFrag-deNBI/api/v1")
+/**@RequestMapping("/MetFrag-deNBI/api/v1")**/
+@RequestMapping("/${metfragrest-controller.path}")
+
 public class MetFragRestController {
 
 	private Logger logger = Logger.getLogger(MetFragRestController.class);
 //	https://github.com/ipb-halle/MetFragRelaunched/issues/115
-//	private static final String RESULTS_FOLDER = System.getProperty("java_io_tmpdir"); 
+//	private static final String RESULTS_FOLDER = System.getProperty("java_io_tmpdir");
 	private static final String RESULTS_FOLDER = "/tmp";
 	private static final String STATUS_FILE_NAME = "status.txt";
 	private static final String HOST_FILE_NAME = "host.txt";
-	
+
 	/**
 	 * runs a metfrag query
-	 * 
+	 *
 	 * @param args
 	 * @return
 	 * @throws CouldNotWriteStatusException
@@ -124,7 +126,7 @@ public class MetFragRestController {
 
 	/**
 	 * get the status of a running/finished query
-	 * 
+	 *
 	 * @param processid
 	 * @return
 	 * @throws CouldNotReadStatusException
@@ -138,7 +140,7 @@ public class MetFragRestController {
 
 	/**
 	 * get host on which the query was run
-	 * 
+	 *
 	 * @param processid
 	 * @return
 	 * @throws CouldNotReadHostException
@@ -152,7 +154,7 @@ public class MetFragRestController {
 
 	/**
 	 * get the result back (as CSV)
-	 * 
+	 *
 	 * @param processid
 	 * @return
 	 * @throws InterruptedException
@@ -176,7 +178,7 @@ public class MetFragRestController {
 
 	/**
 	 * get the result back (as ZIP)
-	 * 
+	 *
 	 * @param processId
 	 * @param response
 	 * @throws InterruptedException
@@ -188,7 +190,7 @@ public class MetFragRestController {
 		File resultFile = new File(this.getResultFileName(processId));
 		if (!resultFile.exists() || !resultFile.isFile() || !resultFile.canRead())
 			return;
-		FileSystemResource resource = new FileSystemResource(resultFile.getAbsolutePath()); 
+		FileSystemResource resource = new FileSystemResource(resultFile.getAbsolutePath());
 	    response.setContentType("application/zip");
 	    response.setHeader("Content-Disposition", "attachment; filename=file.zip");
 
@@ -205,12 +207,12 @@ public class MetFragRestController {
 	        zippedOut.finish();
 	    } catch (Exception e) {
 	        // Do something with Exception
-	    }        
+	    }
 	}
 
 	/**
 	 * delete the query after it was finished
-	 * 
+	 *
 	 * @param processid
 	 * @return
 	 * @throws CouldNotRemoveProcessException
@@ -225,13 +227,13 @@ public class MetFragRestController {
 		this.removeProcess(processid);
 		return new ResponseEntity<Void>(HttpStatus.OK);
 	}
-	
+
 	/*
 	 * some helper methods
 	 */
-	
+
 	/**
-	 * 
+	 *
 	 * @param processid
 	 * @throws CouldNotRemoveProcessException
 	 */
@@ -246,9 +248,9 @@ public class MetFragRestController {
 		}
 		System.out.println("Deleted " + file.getAbsolutePath());
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public String getServerName() {
@@ -261,9 +263,9 @@ public class MetFragRestController {
         }
         return hostname;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param status
 	 * @param processid
 	 * @throws IOException
@@ -281,7 +283,7 @@ public class MetFragRestController {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param processid
 	 * @throws IOException
 	 */
@@ -296,9 +298,9 @@ public class MetFragRestController {
 			bwriter.close();
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param processid
 	 * @return
 	 * @throws CouldNotReadStatusException
@@ -321,7 +323,7 @@ public class MetFragRestController {
     }
 
 	/**
-	 * 
+	 *
 	 * @param processid
 	 * @return
 	 * @throws CouldNotReadHostException
@@ -344,7 +346,7 @@ public class MetFragRestController {
     }
 
 	/**
-	 * 
+	 *
 	 * @param processid
 	 * @return
 	 */
@@ -353,17 +355,17 @@ public class MetFragRestController {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param processid
 	 * @return
 	 */
 	private String getResultFolderName(String processid) {
 		return RESULTS_FOLDER + Constants.OS_SPECIFIC_FILE_SEPARATOR + processid;
 	}
-	
+
 	/**
 	 * start controller
-	 * 
+	 *
 	 * @param args
 	 * @throws Exception
 	 */
