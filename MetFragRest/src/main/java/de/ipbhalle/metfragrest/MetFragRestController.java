@@ -53,9 +53,9 @@ import de.ipbhalle.model.StatusAssembler;
 
 @RestController
 @EnableAutoConfiguration
-/**@RequestMapping("/metfrag/api/v1")**/
+@RequestMapping("/metfrag/api/v1")
 /**@RequestMapping("/MetFrag-deNBI/api/v1")**/
-@RequestMapping("${metfragrest-controller.path}")
+/**@RequestMapping("${metfragrest-controller.path}")**/
 
 public class MetFragRestController {
 

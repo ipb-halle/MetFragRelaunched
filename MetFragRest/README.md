@@ -49,6 +49,8 @@ curl http://localhost:8090/metfrag/api/v1/result/java_io_tmpdir55479951625863475
 
 ## Configuration
 
+!! No, doesn't work yet. https://github.com/ipb-halle/MetFragRelaunched/issues/121 is still open. !! 
+
 The REST API base URL can be configured. There is the file `src/main/ressources/application.properties` containing the default URL http://localhost:8090/metfrag/api/v1
 
 You can override the `metfragrest-controller.path` property by providing your own `application.properties` at runtime in the current working directory `./` or a `./config/` subdirectory, see [docs](https://docs.spring.io/spring-boot/docs/2.1.13.RELEASE/reference/html/boot-features-external-config.html#boot-features-external-config-application-property-files).
