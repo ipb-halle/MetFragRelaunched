@@ -1,13 +1,13 @@
 package de.ipbhalle.model;
 
-import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.EntityModel;
 
-public class StatusAssembler extends ResourceAssembler {
+public class StatusAssembler extends RepresentationModelAssembler {
 
 	private final String status;
-	
+
 	public StatusAssembler(String name, String status) {
-		super(name);
+		super();
 		this.status = status;
 	}
 
@@ -16,9 +16,9 @@ public class StatusAssembler extends ResourceAssembler {
 	}
 
 	@Override
-	public Resource<StatusAssembler> toResource() {
-		Resource<StatusAssembler> resource = new Resource<StatusAssembler>(this);
+	public EntityModel<StatusAssembler> toModel() {
+		EntityModel<StatusAssembler> resource = new EntityModel<StatusAssembler>(this);
 		return resource;
 	}
-	
+
 }

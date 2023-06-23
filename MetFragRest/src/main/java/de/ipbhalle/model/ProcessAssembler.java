@@ -1,13 +1,13 @@
 package de.ipbhalle.model;
 
-import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.EntityModel;
 
-public class ProcessAssembler extends ResourceAssembler {
+public class ProcessAssembler extends RepresentationModelAssembler {
 
 	private final String processid;
-	
+
 	public ProcessAssembler(String name, String processid) {
-		super(name);
+		super();
 		this.processid = processid;
 	}
 
@@ -16,9 +16,9 @@ public class ProcessAssembler extends ResourceAssembler {
 	}
 
 	@Override
-	public Resource<ProcessAssembler> toResource() {
-		Resource<ProcessAssembler> resource = new Resource<ProcessAssembler>(this);
+	public EntityModel<ProcessAssembler> toModel() {
+		EntityModel<ProcessAssembler> resource = new EntityModel<ProcessAssembler>(this);
 		return resource;
 	}
-	
+
 }
