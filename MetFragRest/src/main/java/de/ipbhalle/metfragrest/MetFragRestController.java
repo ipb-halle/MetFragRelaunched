@@ -53,9 +53,10 @@ import de.ipbhalle.model.StatusAssembler;
 
 @RestController
 @EnableAutoConfiguration
-@RequestMapping("/metfrag/api/v1")
+/**@RequestMapping("/metfrag/api/v1")**/
 /**@RequestMapping("/MetFrag-deNBI/api/v1")**/
 /**@RequestMapping("${metfragrest-controller.path}")**/
+@RequestMapping()
 
 public class MetFragRestController {
 
@@ -74,7 +75,7 @@ public class MetFragRestController {
 	 * @throws CouldNotWriteStatusException
 	 * @throws CouldNotCreateProcessException
 	 */
-	@RequestMapping(method = RequestMethod.POST, value = "", produces = { MediaType.APPLICATION_JSON_VALUE })
+	@RequestMapping(method = RequestMethod.POST, value = "/process", produces = { MediaType.APPLICATION_JSON_VALUE })
 	@ResponseBody
 	public ResponseEntity<EntityModel<ProcessAssembler>> process(@RequestBody ProcessArguments args) throws CouldNotWriteStatusException, CouldNotCreateProcessException {
 		File resFolder;

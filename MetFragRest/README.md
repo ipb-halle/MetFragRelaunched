@@ -28,7 +28,7 @@ docker run --rm -it -p 8090:8080 sneumann/metfragrest:latest
 An example query would be:
 ```
 
-curl -X POST -H "Content-Type: application/json" http://localhost:8090/metfrag/api/v1 -d \
+curl -X POST -H "Content-Type: application/json" http://localhost:8090/metfrag/api/v1/process -d \
     '{
         "fragmentpeakmatchabsolutemassdeviation": "0.001",
         "fragmentpeakmatchrelativemassdeviation": "5",
@@ -49,7 +49,7 @@ curl http://localhost:8090/metfrag/api/v1/result/java_io_tmpdir55479951625863475
 
 ## Configuration
 
-!! No, doesn't work yet. https://github.com/ipb-halle/MetFragRelaunched/issues/121 is still open. !! 
+!! No, doesn't work yet. https://github.com/ipb-halle/MetFragRelaunched/issues/121 is still open. !!
 
 The REST API base URL can be configured. There is the file `src/main/ressources/application.properties` containing the default URL http://localhost:8090/metfrag/api/v1
 
