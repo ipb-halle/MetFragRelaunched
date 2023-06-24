@@ -31,8 +31,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import org.springframework.hateoas.Resource;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import org.springframework.hateoas.EntityModel;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 import de.ipbhalle.exception.CouldNotCreateProcessException;
 import de.ipbhalle.exception.CouldNotFetchResultsException;
@@ -53,9 +53,10 @@ import de.ipbhalle.model.StatusAssembler;
 
 @RestController
 @EnableAutoConfiguration
-@RequestMapping("/metfrag/api/v1")
+/**@RequestMapping("/metfrag/api/v1")**/
 /**@RequestMapping("/MetFrag-deNBI/api/v1")**/
 /**@RequestMapping("${metfragrest-controller.path}")**/
+@RequestMapping()
 
 public class MetFragRestController {
 
@@ -74,9 +75,9 @@ public class MetFragRestController {
 	 * @throws CouldNotWriteStatusException
 	 * @throws CouldNotCreateProcessException
 	 */
-	@RequestMapping(method = RequestMethod.POST, value = "", produces = { MediaType.APPLICATION_JSON_VALUE })
+	@RequestMapping(method = RequestMethod.POST, value = "/process", produces = { MediaType.APPLICATION_JSON_VALUE })
 	@ResponseBody
-	public ResponseEntity<Resource<ProcessAssembler>> process(@RequestBody ProcessArguments args) throws CouldNotWriteStatusException, CouldNotCreateProcessException {
+	public ResponseEntity<EntityModel<ProcessAssembler>> process(@RequestBody ProcessArguments args) throws CouldNotWriteStatusException, CouldNotCreateProcessException {
 		File resFolder;
 		String processid;
 		try {
@@ -115,13 +116,13 @@ public class MetFragRestController {
 		} catch(IOException e) {
 			throw new CouldNotWriteStatusException( e.getMessage() );
 		}
-		Resource<ProcessAssembler> resource = new ProcessAssembler("process", processid).toResource();
-		resource.add(linkTo(MetFragRestController.class).slash("process").withSelfRel());
-		resource.add(linkTo(MetFragRestController.class).slash("status").slash(processid).withRel("status"));
-		resource.add(linkTo(MetFragRestController.class).slash("host").slash(processid).withRel("host"));
-		resource.add(linkTo(MetFragRestController.class).slash("result").slash(processid).withRel("result"));
-		resource.add(linkTo(MetFragRestController.class).slash("resultzip").slash(processid).withRel("resultzip"));
-		return new ResponseEntity<Resource<ProcessAssembler>>(resource, HttpStatus.CREATED);
+		EntityModel<ProcessAssembler> entityoodel = new ProcessAssembler("process", processid).toModel();
+		entityoodel.add(linkTo(MetFragRestController.class).slash("process").withSelfRel());
+		entityoodel.add(linkTo(MetFragRestController.class).slash("status").slash(processid).withRel("status"));
+		entityoodel.add(linkTo(MetFragRestController.class).slash("host").slash(processid).withRel("host"));
+		entityoodel.add(linkTo(MetFragRestController.class).slash("result").slash(processid).withRel("result"));
+		entityoodel.add(linkTo(MetFragRestController.class).slash("resultzip").slash(processid).withRel("resultzip"));
+		return new ResponseEntity<EntityModel<ProcessAssembler>>(entityoodel, HttpStatus.CREATED);
 	}
 
 	/**
@@ -132,10 +133,10 @@ public class MetFragRestController {
 	 * @throws CouldNotReadStatusException
 	 */
 	@RequestMapping(method = RequestMethod.GET, value = "/status/{processid}", produces = { MediaType.APPLICATION_JSON_VALUE })
-	public ResponseEntity<Resource<StatusAssembler>> status(@PathVariable String processid) throws CouldNotReadStatusException {
-		Resource<StatusAssembler> resource = this.readStatus(processid).toResource();
-		resource.add(linkTo(MetFragRestController.class).slash("status").slash(processid).withSelfRel());
-		return new ResponseEntity<Resource<StatusAssembler>>(resource, HttpStatus.OK);
+	public ResponseEntity<EntityModel<StatusAssembler>> status(@PathVariable String processid) throws CouldNotReadStatusException {
+		EntityModel<StatusAssembler> entityoodel = this.readStatus(processid).toModel();
+		entityoodel.add(linkTo(MetFragRestController.class).slash("status").slash(processid).withSelfRel());
+		return new ResponseEntity<EntityModel<StatusAssembler>>(entityoodel, HttpStatus.OK);
 	}
 
 	/**
@@ -146,10 +147,10 @@ public class MetFragRestController {
 	 * @throws CouldNotReadHostException
 	 */
 	@RequestMapping(method = RequestMethod.GET, value = "/host/{processid}", produces = { MediaType.APPLICATION_JSON_VALUE })
-	public ResponseEntity<Resource<HostAssembler>> host(@PathVariable String processid) throws CouldNotReadHostException {
-		Resource<HostAssembler> resource = this.readHost(processid).toResource();
-		resource.add(linkTo(MetFragRestController.class).slash("host").slash(processid).withSelfRel());
-		return new ResponseEntity<Resource<HostAssembler>>(resource, HttpStatus.OK);
+	public ResponseEntity<EntityModel<HostAssembler>> host(@PathVariable String processid) throws CouldNotReadHostException {
+		EntityModel<HostAssembler> entityoodel = this.readHost(processid).toModel();
+		entityoodel.add(linkTo(MetFragRestController.class).slash("host").slash(processid).withSelfRel());
+		return new ResponseEntity<EntityModel<HostAssembler>>(entityoodel, HttpStatus.OK);
 	}
 
 	/**
