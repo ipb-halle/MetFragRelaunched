@@ -67,6 +67,8 @@ RUN cd /vol/file_databases && \
         touch PubChem_OECDPFAS_largerPFASparts_20230319.csv && \
 	wget -q https://zenodo.org/record/5336447/files/COCONUT4MetFrag_april.csv && \
         touch COCONUT4MetFrag_april.csv && \
+	wget -q https://zenodo.org/record/8144127/files/LIPIDMAPS_20230712.csv && \
+        touch LIPIDMAPS_20230712.csv && \
 	wget -q https://zenodo.org/record/8099155/files/PubChemLite_exposomics_20230630.csv && \
         touch PubChemLite_exposomics_20230630.csv
 
