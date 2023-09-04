@@ -21,16 +21,17 @@ public class ProcessArguments {
 	private String precursoriontype;
 	private String peakliststring;
 	private String metfragdatabasetype;
+	private String localdatabasepath;
 	private String maximumtreedepth;
 	private String samplename;
 	// local database
-	private String localmetchemdatabase; 
-	private String localmetchemdatabaseportnumber; 
+	private String localmetchemdatabase;
+	private String localmetchemdatabaseportnumber;
 	private String localmetchemdatabaseserverip;
-	private String localmetchemdatabaseuser; 
+	private String localmetchemdatabaseuser;
 	private String localmetchemdatabasepassword;
 	private String localmetchemdatabaselibrary;
-	
+
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		if(fragmentpeakmatchabsolutemassdeviation != null) builder.append("fragmentpeakmatchabsolutemassdeviation=" + fragmentpeakmatchabsolutemassdeviation + "\n");
@@ -41,33 +42,34 @@ public class ProcessArguments {
 		if(neutralprecursormass != null) builder.append("neutralprecursormass=" + neutralprecursormass + "\n");
 		if(neutralprecursormolecularformula != null) builder.append("neutralprecursormolecularformula=" + neutralprecursormolecularformula + "\n");
 		if(precursorionmode != null) builder.append("precursorionmode=" + precursorionmode + "\n");
-		if(precursoriontype != null) builder.append("precursoriontype=" + precursoriontype + "\n");								
-		if(peakliststring != null) builder.append("peakliststring=" + peakliststring + "\n");									
+		if(precursoriontype != null) builder.append("precursoriontype=" + precursoriontype + "\n");
+		if(peakliststring != null) builder.append("peakliststring=" + peakliststring + "\n");
 		if(metfragdatabasetype != null) builder.append("metfragdatabasetype=" + metfragdatabasetype + "\n");
+		if(localdatabasepath != null) builder.append("localdatabasepath=" + localdatabasepath + "\n");
 		if(maximumtreedepth != null) builder.append("maximumtreedepth=" + maximumtreedepth + "\n");
 		if(samplename != null) builder.append("samplename=" + samplename + "\n");
 		// local database
-		if(localmetchemdatabase != null) builder.append("localmetchemdatabase=" + localmetchemdatabase + "\n");					
-		if(localmetchemdatabaseportnumber != null) builder.append("localmetchemdatabaseportnumber=" + localmetchemdatabaseportnumber + "\n");					
-		if(localmetchemdatabaseserverip != null) builder.append("localmetchemdatabaseserverip=" + localmetchemdatabaseserverip + "\n");					
-		if(localmetchemdatabaseuser != null) builder.append("localmetchemdatabaseuser=" + localmetchemdatabaseuser + "\n");					
-		if(localmetchemdatabasepassword != null) builder.append("localmetchemdatabasepassword=" + localmetchemdatabasepassword + "\n");		
-		if(localmetchemdatabaselibrary != null) builder.append("localmetchemdatabaselibrary=" + localmetchemdatabaselibrary + "\n");		
-		
+		if(localmetchemdatabase != null) builder.append("localmetchemdatabase=" + localmetchemdatabase + "\n");
+		if(localmetchemdatabaseportnumber != null) builder.append("localmetchemdatabaseportnumber=" + localmetchemdatabaseportnumber + "\n");
+		if(localmetchemdatabaseserverip != null) builder.append("localmetchemdatabaseserverip=" + localmetchemdatabaseserverip + "\n");
+		if(localmetchemdatabaseuser != null) builder.append("localmetchemdatabaseuser=" + localmetchemdatabaseuser + "\n");
+		if(localmetchemdatabasepassword != null) builder.append("localmetchemdatabasepassword=" + localmetchemdatabasepassword + "\n");
+		if(localmetchemdatabaselibrary != null) builder.append("localmetchemdatabaselibrary=" + localmetchemdatabaselibrary + "\n");
+
 		return builder.toString();
 	}
-	
+
 	public MetFragGlobalSettings getSettingsObject(File resFolder) throws ParameterNotKnownException {
 		MetFragGlobalSettings settings = new MetFragGlobalSettings();
-		if(fragmentpeakmatchabsolutemassdeviation != null) 
+		if(fragmentpeakmatchabsolutemassdeviation != null)
 			settings.set(VariableNames.ABSOLUTE_MASS_DEVIATION_NAME, ParameterDataTypes.getParameter(fragmentpeakmatchabsolutemassdeviation, VariableNames.ABSOLUTE_MASS_DEVIATION_NAME));
-		if(fragmentpeakmatchrelativemassdeviation != null) 
+		if(fragmentpeakmatchrelativemassdeviation != null)
 			settings.set(VariableNames.RELATIVE_MASS_DEVIATION_NAME, ParameterDataTypes.getParameter(fragmentpeakmatchabsolutemassdeviation, VariableNames.RELATIVE_MASS_DEVIATION_NAME));
-		if(databasesearchrelativemassdeviation != null) 	
+		if(databasesearchrelativemassdeviation != null)
 			settings.set(VariableNames.DATABASE_RELATIVE_MASS_DEVIATION_NAME, ParameterDataTypes.getParameter(databasesearchrelativemassdeviation, VariableNames.DATABASE_RELATIVE_MASS_DEVIATION_NAME));
-		if(precursorcompoundids != null) 	
+		if(precursorcompoundids != null)
 			settings.set(VariableNames.PRECURSOR_DATABASE_IDS_NAME, ParameterDataTypes.getParameter(precursorcompoundids, VariableNames.PRECURSOR_DATABASE_IDS_NAME));
-		if(ionizedprecursormass != null) 
+		if(ionizedprecursormass != null)
 			settings.set(VariableNames.PRECURSOR_ION_MASS_NAME, ParameterDataTypes.getParameter(ionizedprecursormass, VariableNames.PRECURSOR_ION_MASS_NAME));
 		if(neutralprecursormass != null)
 			settings.set(VariableNames.PRECURSOR_NEUTRAL_MASS_NAME, ParameterDataTypes.getParameter(neutralprecursormass, VariableNames.PRECURSOR_NEUTRAL_MASS_NAME));
@@ -81,11 +83,13 @@ public class ProcessArguments {
 			settings.set(VariableNames.PEAK_LIST_STRING_NAME, ParameterDataTypes.getParameter(peakliststring, VariableNames.PEAK_LIST_STRING_NAME));
 		if(metfragdatabasetype != null)
 			settings.set(VariableNames.METFRAG_DATABASE_TYPE_NAME, ParameterDataTypes.getParameter(metfragdatabasetype, VariableNames.METFRAG_DATABASE_TYPE_NAME));
+		if(localdatabasepath != null)
+			settings.set(VariableNames.LOCAL_DATABASE_PATH_NAME, ParameterDataTypes.getParameter(localdatabasepath, VariableNames.LOCAL_DATABASE_PATH_NAME));
 		if(maximumtreedepth != null)
 			settings.set(VariableNames.MAXIMUM_TREE_DEPTH_NAME, ParameterDataTypes.getParameter(maximumtreedepth, VariableNames.MAXIMUM_TREE_DEPTH_NAME));
 		if(samplename != null)
 			settings.set(VariableNames.SAMPLE_NAME, ParameterDataTypes.getParameter(samplename, VariableNames.SAMPLE_NAME));
-		// local database 
+		// local database
 		if(localmetchemdatabase != null)
 			settings.set(VariableNames.LOCAL_METCHEM_DATABASE_NAME, ParameterDataTypes.getParameter(localmetchemdatabase, VariableNames.LOCAL_METCHEM_DATABASE_NAME));
 		if(localmetchemdatabaseportnumber != null)
@@ -98,31 +102,31 @@ public class ProcessArguments {
 			settings.set(VariableNames.LOCAL_METCHEM_DATABASE_PASSWORD_NAME, ParameterDataTypes.getParameter(localmetchemdatabasepassword, VariableNames.LOCAL_METCHEM_DATABASE_PASSWORD_NAME));
 		if(localmetchemdatabaselibrary != null)
 			settings.set(VariableNames.LOCAL_METCHEM_DATABASE_LIBRARY_NAME, ParameterDataTypes.getParameter(localmetchemdatabaselibrary, VariableNames.LOCAL_METCHEM_DATABASE_LIBRARY_NAME));
-		
-		
+
+
 		this.addAdditionalParameters(settings, resFolder);
 		return settings;
 	}
-	
+
 	private void addAdditionalParameters(MetFragGlobalSettings settings, File resFolder) {
 		settings.set(VariableNames.METFRAG_PEAK_LIST_READER_NAME, FilteredStringTandemMassPeakListReader.class.getName());
 		settings.set(VariableNames.STORE_RESULTS_PATH_NAME, resFolder.getAbsolutePath());
 		if(!settings.containsKey(VariableNames.SAMPLE_NAME)) settings.set(VariableNames.SAMPLE_NAME, resFolder.getName());
 		settings.set(VariableNames.METFRAG_CANDIDATE_WRITER_NAME, new String[] {"CSV"});
 	}
-	
+
 	public String getFragmentpeakmatchabsolutemassdeviation() {
 		return fragmentpeakmatchabsolutemassdeviation;
 	}
-	
+
 	public void setFragmentpeakmatchabsolutemassdeviation(String fragmentPeakMatchAbsoluteMassDeviation) {
 		fragmentpeakmatchabsolutemassdeviation = fragmentPeakMatchAbsoluteMassDeviation;
 	}
-	
+
 	public String getFragmentpeakmatchrelativemassdeviation() {
 		return fragmentpeakmatchrelativemassdeviation;
 	}
-	
+
 	public void setFragmentpeakmatchrelativemassdeviation(String fragmentPeakMatchRelativeMassDeviation) {
 		fragmentpeakmatchrelativemassdeviation = fragmentPeakMatchRelativeMassDeviation;
 	}
@@ -199,6 +203,14 @@ public class ProcessArguments {
 		this.metfragdatabasetype = metfragdatabasetype;
 	}
 
+	public String getLocaldatabasepath() {
+		return localdatabasepath;
+	}
+
+	public void setLocaldatabasepath(String localdatabasepath) {
+		this.localdatabasepath = localdatabasepath;
+	}
+
 	public String getLocalmetchemdatabase() {
 		return localmetchemdatabase;
 	}
@@ -262,5 +274,5 @@ public class ProcessArguments {
 	public void setSamplename(String samplename) {
 		this.samplename = samplename;
 	}
-	
+
 }
