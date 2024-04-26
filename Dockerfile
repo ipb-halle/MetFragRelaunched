@@ -53,10 +53,6 @@ RUN cd /vol/file_databases && \
 	touch HBM4EU_CECscreen_MF_1Jul2020_plusTPs.csv && \
 	wget -q https://zenodo.org/records/3957497/files/HBM4EU_CECscreen_MF_1Jul2020.csv && \
         touch HBM4EU_CECscreen_MF_1Jul2020.csv && \
-	wget -q https://zenodo.org/records/4456208/files/PubChemLite_01Jan2021_exposomics_CCSbase.csv && \
-        touch PubChemLite_01Jan2021_exposomics_CCSbase.csv && \
-	wget -q https://zenodo.org/records/4432124/files/PubChemLite_01Jan2021_exposomics.csv && \
-        touch PubChemLite_01Jan2021_exposomics.csv && \
 	wget -q https://zenodo.org/records/6474542/files/OntoChem_PFAS_Patents_20220420.csv && \
         touch OntoChem_PFAS_Patents_20220420.csv && \
 	wget -q https://zenodo.org/records/6474542/files/OntoChem_PFAS_CORE_20220420.csv && \
@@ -69,8 +65,10 @@ RUN cd /vol/file_databases && \
         touch COCONUT4MetFrag_april.csv && \
 	wget -q https://zenodo.org/records/8144127/files/LIPIDMAPS_20230712.csv && \
         touch LIPIDMAPS_20230712.csv && \
-	wget -q https://zenodo.org/records/10893998/files/PubChemLite_exposomics_20240329.csv && \
-        touch PubChemLite_exposomics_20240329.csv
+	wget -q https://zenodo.org/records/11057827/files/PubChemLite_CCSbase_20240329.csv && \
+        touch PubChemLite_CCSbase_20240329.csv && \
+	wget -q https://zenodo.org/records/11070224/files/PubChemLite_exposomics_20240426.csv && \
+        touch PubChemLite_exposomics_20240426.csv
 
 COPY --from=builder /MetFragRelaunched/MetFragWeb/target/MetFragWeb.war /usr/local/tomee/webapps/
 RUN printf '#!/bin/sh \n\
