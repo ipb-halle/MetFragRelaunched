@@ -65,8 +65,8 @@ RUN cd /vol/file_databases && \
         touch COCONUT4MetFrag_april.csv && \
 	wget -q https://zenodo.org/records/8144127/files/LIPIDMAPS_20230712.csv && \
         touch LIPIDMAPS_20230712.csv && \
-	wget -q https://zenodo.org/records/11057827/files/PubChemLite_CCSbase_20240329.csv && \
-        touch PubChemLite_CCSbase_20240329.csv && \
+	wget -q https://zenodo.org/records/11128114/files/PubChemLite_CCSbase_20240426.csv && \
+        touch PubChemLite_CCSbase_20240426.csv && \
 	wget -q https://zenodo.org/records/11070224/files/PubChemLite_exposomics_20240426.csv && \
         touch PubChemLite_exposomics_20240426.csv
 
