@@ -65,10 +65,10 @@ RUN cd /vol/file_databases && \
         touch COCONUT4MetFrag_april.csv && \
 	wget -q https://zenodo.org/records/8144127/files/LIPIDMAPS_20230712.csv && \
         touch LIPIDMAPS_20230712.csv && \
-	wget -q https://zenodo.org/records/11128114/files/PubChemLite_CCSbase_20240426.csv && \
-        touch PubChemLite_CCSbase_20240426.csv && \
-	wget -q https://zenodo.org/records/11439560/files/PubChemLite_exposomics_20240531.csv && \
-        touch PubChemLite_exposomics_20240531.csv
+	wget -q https://zenodo.org/records/11656456/files/PubChemLite_CCSbase_20240531.csv && \
+        touch PubChemLite_CCSbase_20240531.csv && \
+	wget -q https://zenodo.org/records/12578095/files/PubChemLite_exposomics_20240628.csv && \
+        touch PubChemLite_exposomics_20240628.csv
 
 COPY --from=builder /MetFragRelaunched/MetFragWeb/target/MetFragWeb.war /usr/local/tomee/webapps/
 RUN printf '#!/bin/sh \n\
