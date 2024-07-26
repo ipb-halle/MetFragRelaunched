@@ -59,8 +59,8 @@ RUN cd /vol/file_databases && \
         touch OntoChem_PFAS_CORE_20220420.csv && \
 	wget -q https://zenodo.org/records/7922070/files/CyanoMetDB_v02_2023_MetFrag.csv && \
         touch CyanoMetDB_v02_2023_MetFrag.csv && \
-	wget -q https://zenodo.org/records/7750267/files/PubChem_OECDPFAS_largerPFASparts_20230319.csv && \
-        touch PubChem_OECDPFAS_largerPFASparts_20230319.csv && \
+	wget -q https://zenodo.org/records/12908412/files/PubChem_OECDPFAS_largerPFASparts_20240726.csv && \
+        touch PubChem_OECDPFAS_largerPFASparts_20240726.csv && \
 	wget -q https://zenodo.org/records/5336447/files/COCONUT4MetFrag_april.csv && \
         touch COCONUT4MetFrag_april.csv && \
 	wget -q https://zenodo.org/records/8144127/files/LIPIDMAPS_20230712.csv && \
