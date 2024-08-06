@@ -27,8 +27,6 @@ RUN set -eux; \
 RUN mkdir -p /vol/file_databases; cd /vol/file_databases && \
 	wget -q https://zenodo.org/records/3548461/files/NORMANSusDat_20Nov2019.csv && \
         touch NORMANSusDat_20Nov2019.csv && \
-	wget -q https://zenodo.org/records/3520106/files/NPAtlas_Aug2019.csv && \
-        touch NPAtlas_Aug2019.csv && \
         wget -q https://zenodo.org/records/3364464/files/CompTox_07March19_SmokingMetaData.csv && \
         touch CompTox_07March19_SmokingMetaData.csv && \
         wget -q https://zenodo.org/records/6475906/files/CompTox_07March19_SelectMetaData.csv && \
@@ -45,10 +43,10 @@ RUN mkdir -p /vol/file_databases; cd /vol/file_databases && \
         touch WormJam_10Sept19.csv && \
         wget -q https://zenodo.org/records/3375500/files/HMDB4_23Aug19.csv && \
         touch HMDB4_23Aug19.csv
+		wget -q https://zenodo.org/records/3564602/files/BloodExposomeDB_03Dec2019.csv && \
+		touch BloodExposomeDB_03Dec2019.csv && \
 
 RUN cd /vol/file_databases && \
-	wget -q https://zenodo.org/records/3564602/files/BloodExposomeDB_03Dec2019.csv && \
-	touch BloodExposomeDB_03Dec2019.csv && \
 	wget -q https://zenodo.org/records/3957497/files/HBM4EU_CECscreen_MF_1Jul2020_plusTPs.csv && \
 	touch HBM4EU_CECscreen_MF_1Jul2020_plusTPs.csv && \
 	wget -q https://zenodo.org/records/3957497/files/HBM4EU_CECscreen_MF_1Jul2020.csv && \
@@ -59,12 +57,14 @@ RUN cd /vol/file_databases && \
         touch OntoChem_PFAS_CORE_20220420.csv && \
 	wget -q https://zenodo.org/records/7922070/files/CyanoMetDB_v02_2023_MetFrag.csv && \
         touch CyanoMetDB_v02_2023_MetFrag.csv && \
-	wget -q https://zenodo.org/records/12908412/files/PubChem_OECDPFAS_largerPFASparts_20240726.csv && \
-        touch PubChem_OECDPFAS_largerPFASparts_20240726.csv && \
 	wget -q https://zenodo.org/records/5336447/files/COCONUT4MetFrag_april.csv && \
         touch COCONUT4MetFrag_april.csv && \
 	wget -q https://zenodo.org/records/8144127/files/LIPIDMAPS_20230712.csv && \
         touch LIPIDMAPS_20230712.csv && \
+	wget -q https://zenodo.org/records/12908412/files/PubChem_OECDPFAS_largerPFASparts_20240726.csv && \
+        touch PubChem_OECDPFAS_largerPFASparts_20240726.csv && \
+	wget -q https://zenodo.org/records/13148840/files/NPAtlas_2024_03.csv && \
+        touch NPAtlas_2024_03.csv && \
 	wget -q https://zenodo.org/records/12730936/files/PubChemLite_CCSbase_20240628.csv && \
         touch PubChemLite_CCSbase_20240628.csv && \
 	wget -q https://zenodo.org/records/12899991/files/PubChemLite_exposomics_20240726.csv && \
