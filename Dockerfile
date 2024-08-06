@@ -42,9 +42,9 @@ RUN mkdir -p /vol/file_databases; cd /vol/file_databases && \
         wget -q https://zenodo.org/records/3403530/files/WormJam_10Sept19.csv && \
         touch WormJam_10Sept19.csv && \
         wget -q https://zenodo.org/records/3375500/files/HMDB4_23Aug19.csv && \
-        touch HMDB4_23Aug19.csv
-		wget -q https://zenodo.org/records/3564602/files/BloodExposomeDB_03Dec2019.csv && \
-		touch BloodExposomeDB_03Dec2019.csv && \
+        touch HMDB4_23Aug19.csv && \
+	wget -q https://zenodo.org/records/3564602/files/BloodExposomeDB_03Dec2019.csv && \
+	touch BloodExposomeDB_03Dec2019.csv
 
 RUN cd /vol/file_databases && \
 	wget -q https://zenodo.org/records/3957497/files/HBM4EU_CECscreen_MF_1Jul2020_plusTPs.csv && \
