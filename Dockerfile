@@ -65,10 +65,10 @@ RUN cd /vol/file_databases && \
         touch PubChem_OECDPFAS_largerPFASparts_20240726.csv && \
 	wget -q https://zenodo.org/records/13148840/files/NPAtlas_2024_03.csv && \
         touch NPAtlas_2024_03.csv && \
-	wget -q https://zenodo.org/records/13221289/files/PubChemLite_CCSbase_20240726.csv && \
-        touch PubChemLite_CCSbase_20240726.csv && \
-	wget -q https://zenodo.org/records/13589676/files/PubChemLite_exposomics_20240830.csv && \
-        touch PubChemLite_exposomics_20240830.csv
+	wget -q https://zenodo.org/records/13641886/files/PubChemLite_CCSbase_20240830.csv && \
+        touch PubChemLite_CCSbase_20240830.csv && \
+	wget -q https://zenodo.org/records/13848602/files/PubChemLite_exposomics_20240927.csv && \
+        touch PubChemLite_exposomics_20240927.csv
 
 COPY --from=builder /MetFragRelaunched/MetFragWeb/target/MetFragWeb.war /usr/local/tomee/webapps/
 RUN printf '#!/bin/sh \n\
