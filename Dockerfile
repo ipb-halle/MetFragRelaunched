@@ -55,8 +55,6 @@ RUN cd /vol/file_databases && \
         touch OntoChem_PFAS_Patents_20220420.csv && \
 	wget -q https://zenodo.org/records/6474542/files/OntoChem_PFAS_CORE_20220420.csv && \
         touch OntoChem_PFAS_CORE_20220420.csv && \
-	wget -q https://zenodo.org/records/7922070/files/CyanoMetDB_v02_2023_MetFrag.csv && \
-        touch CyanoMetDB_v02_2023_MetFrag.csv && \
 	wget -q https://zenodo.org/records/5336447/files/COCONUT4MetFrag_april.csv && \
         touch COCONUT4MetFrag_april.csv && \
 	wget -q https://zenodo.org/records/8144127/files/LIPIDMAPS_20230712.csv && \
@@ -65,6 +63,8 @@ RUN cd /vol/file_databases && \
         touch PubChem_OECDPFAS_largerPFASparts_20240726.csv && \
 	wget -q https://zenodo.org/records/13148840/files/NPAtlas_2024_03.csv && \
         touch NPAtlas_2024_03.csv && \
+	wget -q https://zenodo.org/records/13854577/files/CyanoMetDB_V03_2024_MetFrag.csv && \
+        touch CyanoMetDB_V03_2024_MetFrag.csv && \
 	wget -q https://zenodo.org/records/13641886/files/PubChemLite_CCSbase_20240830.csv && \
         touch PubChemLite_CCSbase_20240830.csv && \
 	wget -q https://zenodo.org/records/13848602/files/PubChemLite_exposomics_20240927.csv && \
