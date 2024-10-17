@@ -14,7 +14,7 @@ LocalDatabasesFolderForWeb = /vol/file_databases' > /MetFragRelaunched/MetFragWe
 RUN mvn -Dhttps.protocols=TLSv1.2 -f MetFragRelaunched clean package -pl MetFragLib -pl MetFragWeb -am -DskipTests
 
 
-FROM tomee:8
+FROM tomee:9
 
 RUN set -eux; \
 	apt-get update; \
