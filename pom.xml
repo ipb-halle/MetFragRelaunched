@@ -24,7 +24,7 @@
 			<dependency>
 				<groupId>de.ipbhalle.metfraglib</groupId>
 				<artifactId>MetFragLib</artifactId>
-				<version>2.5.0</version>
+				<version>2.5.1</version>
 			</dependency>
 			<dependency>
 				<groupId>junit</groupId>
@@ -131,12 +131,6 @@
 				<version>8.0.0</version>
 				<scope>provided</scope>
 			</dependency>
-			<!--<dependency>
-			 https://stackoverflow.com/a/65265993 
-			  <groupId>org.openjdk.nashorn</groupId>
-			  <artifactId>nashorn-core</artifactId>
-			  <version>15.4</version>
-			</dependency>-->
 			<!-- MetFragTools -->
 			<dependency>
 				<groupId>io.github.msdk</groupId>
