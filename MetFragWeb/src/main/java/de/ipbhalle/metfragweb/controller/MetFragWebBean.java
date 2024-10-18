@@ -31,6 +31,7 @@ import org.primefaces.event.organigram.OrganigramNodeExpandEvent;
 import org.primefaces.event.organigram.OrganigramNodeSelectEvent;
 import org.primefaces.model.OrganigramNode;
 import org.primefaces.model.StreamedContent;
+import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.chart.AxisType;
 import org.primefaces.model.chart.LineChartModel;
 import org.primefaces.model.chart.LineChartSeries;
@@ -2013,7 +2014,11 @@ public class MetFragWebBean {
 		try {
 			resource = this.beanSettingsContainer.getUserOutputDataHandler().getDownloadParameters(this.errorMessages, pathToProperties);
 		} catch(Exception e) {
-			resource = new org.primefaces.model.DefaultStreamedContent(System.in, "application/zip", "MetFragWeb_Parameters.zip");
+			resource = new DefaultStreamedContent.builder()
+			.name("MetFragWeb_Parameters.zip")
+			.contentType("application/zip")
+			.stream(() -> System.in)
+			.build();
 		}
 		return resource;
 	}

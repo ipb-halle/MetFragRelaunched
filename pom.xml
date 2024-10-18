@@ -116,14 +116,14 @@
 				<version>1.5</version>
 			</dependency>
 			<dependency>
- 				<groupId>commons-fileupload</groupId>
+				<groupId>commons-fileupload</groupId>
 				<artifactId>commons-fileupload</artifactId>
-   				<version>1.5</version>
+				<version>1.5</version>
 			</dependency>
 			<dependency>
 				<groupId>org.primefaces</groupId>
 				<artifactId>primefaces</artifactId>
-				<version>8.0</version>
+				<version>10.0.23-LTS</version>
 			</dependency>
 			<dependency>
 				<groupId>jakarta.platform</groupId>
@@ -217,6 +217,12 @@
 			<name>Central Repository</name>
 			<url>https://repo.maven.apache.org/maven2</url>
 		</repository>
+		<repository>
+            <id>primefaces-maven-repository</id>
+            <name>PrimeFaces Maven Repository</name>
+            <url>https://repository.primefaces.org/</url>
+            <layout>default</layout>
+        </repository>
 		<repository>
 			<id>msbi</id>
 			<url>https://msbi.ipb-halle.de/~cruttkie/maven2</url>
