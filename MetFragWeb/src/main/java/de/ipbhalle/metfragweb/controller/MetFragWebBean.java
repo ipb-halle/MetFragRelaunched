@@ -31,9 +31,12 @@ import org.primefaces.event.organigram.OrganigramNodeExpandEvent;
 import org.primefaces.event.organigram.OrganigramNodeSelectEvent;
 import org.primefaces.model.OrganigramNode;
 import org.primefaces.model.StreamedContent;
+import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.chart.AxisType;
 import org.primefaces.model.chart.LineChartModel;
 import org.primefaces.model.chart.LineChartSeries;
+
+import org.primefaces.model.DefaultStreamedContent.Builder;
 
 import de.ipbhalle.metfraglib.additionals.MathTools;
 import de.ipbhalle.metfraglib.exceptions.AtomTypeNotKnownFromInputListException;
@@ -2013,7 +2016,11 @@ public class MetFragWebBean {
 		try {
 			resource = this.beanSettingsContainer.getUserOutputDataHandler().getDownloadParameters(this.errorMessages, pathToProperties);
 		} catch(Exception e) {
-			resource = new org.primefaces.model.DefaultStreamedContent(System.in, "application/zip", "MetFragWeb_Parameters.zip");
+			resource = DefaultStreamedContent.builder()
+			.name("MetFragWeb_Parameters.zip")
+			.contentType("application/zip")
+			.stream(() -> System.in)
+			.build();
 		}
 		return resource;
 	}
@@ -2702,7 +2709,12 @@ public class MetFragWebBean {
 	 * @return
 	 */
 	public org.primefaces.model.StreamedContent generateCandidateDownloadFile() {
-		org.primefaces.model.StreamedContent resource = new org.primefaces.model.DefaultStreamedContent(System.in, "application/vnd.ms-excel", "MetFragWeb_Candidate.xls" );
+		org.primefaces.model.StreamedContent resource = DefaultStreamedContent.builder()
+		.name("MetFragWeb_Candidate.xls")
+		.contentType("application/vnd.ms-excel")
+		.stream(() -> System.in)
+		.build();
+
 		try {
 			resource = this.beanSettingsContainer.getUserOutputDataHandler().generatedCandidateDownloadFile(this.currentScoreCandidate, this.beanSettingsContainer.getMetFragSettings());
 		} catch (Exception e1) {
