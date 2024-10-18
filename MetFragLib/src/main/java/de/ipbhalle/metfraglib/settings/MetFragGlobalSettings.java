@@ -167,7 +167,8 @@ public class MetFragGlobalSettings extends Settings {
 			 * check whether the current parameter has already been defined
 			 */
 			if (setParameters.contains(tmp[0].trim())) {
-				logger.error(tmp[0].trim() + " was already defined in the parameter file.");
+				if (logger != null)
+                	logger.error(tmp[0].trim() + " was already defined in the parameter file.");
 				parameterFileReader.close();
 				throw new Exception();
 			}
@@ -181,7 +182,8 @@ public class MetFragGlobalSettings extends Settings {
 				settings.set(tmp[0].trim(), ParameterDataTypes.getParameter(valueString.trim(), tmp[0].trim()));
 			}
 			catch(Exception e) {
-				logger.error("Error in parameter file at \"" + line + " \"");
+				if (logger != null)
+					logger.error("Error in parameter file at \"" + line + " \"");
 				parameterFileReader.close();
 				throw new Exception("Error in parameter file at \"" + line + " \"");
 			}

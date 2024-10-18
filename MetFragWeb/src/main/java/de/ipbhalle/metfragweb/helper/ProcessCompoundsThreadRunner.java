@@ -4,7 +4,7 @@ import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.faces.model.SelectItem;
+import jakarta.faces.model.SelectItem;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.io.FileUtils;

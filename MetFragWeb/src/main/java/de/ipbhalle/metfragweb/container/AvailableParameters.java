@@ -7,8 +7,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Hashtable;
 
-import javax.faces.model.SelectItem;
-import javax.faces.model.SelectItemGroup;
+import jakarta.faces.model.SelectItem;
+import jakarta.faces.model.SelectItemGroup;
 
 import de.ipbhalle.metfraglib.parameter.ClassNames;
 import de.ipbhalle.metfraglib.parameter.Constants;

@@ -1,6 +1,8 @@
 package de.ipbhalle.metfragweb.helper;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
 import org.primefaces.model.DefaultStreamedContent;
 
@@ -41,12 +43,12 @@ public class UserOutputDataHandler {
 	 * @throws Exception
 	 */
 	public org.primefaces.model.StreamedContent generatedCandidateDownloadFile(MetFragResult metfragResult, Settings settings) throws Exception {
-		org.primefaces.model.StreamedContent resource = new DefaultStreamedContent(System.in, "application/vnd.ms-excel", "MetFragWeb_Candidate.xls" );
+		org.primefaces.model.StreamedContent resource = DefaultStreamedContent.builder().contentType("application/vnd.ms-excel").name("MetFragWeb_Candidate.xls").stream(() -> System.in).build();
 		if(metfragResult == null) {
 			System.out.println("generatedCandidateDownloadFile null");
 			return resource;
 		}
-		resource = new DefaultStreamedContent(System.in, "application/vnd.ms-excel", "MetFragWeb_Candidate_" + metfragResult.getIdentifier() + ".xls" );
+		resource = DefaultStreamedContent.builder().contentType("application/vnd.ms-excel").name("MetFragWeb_Candidate_" + metfragResult.getIdentifier() + ".xls").stream(() -> System.in).build();
 		
 		//only main molecule is written to the output
 		Molecule root = metfragResult.getRoot();
@@ -77,8 +79,14 @@ public class UserOutputDataHandler {
 			System.out.println("generating resource");
 			if(writer.write(scoredCandidateListSingle, "MetFragWeb_Candidate_" + candidate.getIdentifier(), folder.getAbsolutePath(), settings)) {
 				String filePath = folder.getAbsolutePath() + Constants.OS_SPECIFIC_FILE_SEPARATOR + "MetFragWeb_Candidate_" + candidate.getIdentifier() + ".xls";
-				resource = new org.primefaces.model.DefaultStreamedContent(new java.io.FileInputStream(new java.io.File(filePath)), "application/vnd.ms-excel", "MetFragWeb_Candidate_" + candidate.getIdentifier() + ".xls");
-			}	
+				resource = DefaultStreamedContent.builder().contentType("application/vnd.ms-excel").name("MetFragWeb_Candidate_" + metfragResult.getIdentifier() + ".xls").stream(() -> {
+                    try {
+                        return new FileInputStream(new File(filePath));
+                    } catch (FileNotFoundException e) {
+                        throw new RuntimeException(e);
+                    }
+                }).build();
+			}
 			else return resource;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -96,7 +104,7 @@ public class UserOutputDataHandler {
 	 * @throws Exception
 	 */
 	public org.primefaces.model.StreamedContent getDownloadParameters(Messages errorMessages, String pathToProperties) throws Exception {
-		org.primefaces.model.StreamedContent resource = new org.primefaces.model.DefaultStreamedContent(System.in, "application/zip", "MetFragWeb_Parameters.zip");
+		org.primefaces.model.StreamedContent resource = DefaultStreamedContent.builder().contentType("application/zip").name("MetFragWeb_Parameters.zip").stream(() -> System.in).build();
 		//this.deactivateDownloadCandidatesButton();
 		try {
 			File storeFolder = this.fileStorer.prepareFolder(this.beanSettingsContainer.getRootSessionFolder() + Constants.OS_SPECIFIC_FILE_SEPARATOR + "downloads" + Constants.OS_SPECIFIC_FILE_SEPARATOR + "parameters", errorMessages);
@@ -249,7 +257,13 @@ public class UserOutputDataHandler {
 			inFile.close();
 			zos.closeEntry();
 			zos.close();
-			resource = new org.primefaces.model.DefaultStreamedContent(new java.io.FileInputStream(new java.io.File(storeFolder.getAbsolutePath() + Constants.OS_SPECIFIC_FILE_SEPARATOR + "MetFragWeb_Parameters.zip")), "application/zip", "MetFragWeb_Parameters.zip");
+			resource = DefaultStreamedContent.builder().contentType("application/zip").name("MetFragWeb_Parameters.zip").stream(() -> {
+				try {
+					return new FileInputStream(new File((storeFolder.getAbsolutePath() + Constants.OS_SPECIFIC_FILE_SEPARATOR + "MetFragWeb_Parameters.zip")));
+				} catch (FileNotFoundException e) {
+					throw new RuntimeException(e);
+				}
+			}).build();
 		} catch (Exception e) {
 			errorMessages.setMessage("buttonDownloadParametersDatabaseError", "Error when downloading parameters.");
 			errorMessages.removeKey("buttonDownloadParametersFilterError");
@@ -270,8 +284,7 @@ public class UserOutputDataHandler {
 		System.out.println("downloadCandidates " + format);
 		IWriter candidateWriter = null;
 		String filePath = "";
-		org.primefaces.model.StreamedContent resource = new org.primefaces.model.DefaultStreamedContent(System.in, "text/csv", "MetFragWeb_Candidates." + format);
-		
+		org.primefaces.model.StreamedContent resource = DefaultStreamedContent.builder().contentType("text/csv").name("MetFragWeb_Candidates." + format).stream(() -> System.in).build();
 		try {
 			java.io.File folder = new java.io.File(this.beanSettingsContainer.getRootSessionFolder() + Constants.OS_SPECIFIC_FILE_SEPARATOR + "downloads");
 			System.out.println("creating folder " + folder.getAbsolutePath());
@@ -295,7 +308,14 @@ public class UserOutputDataHandler {
 			}
 			candidateWriter.write(this.beanSettingsContainer.getRetrievedCandidateList(), "MetFragWeb_Candidates", folder.getAbsolutePath());
 			filePath = folder.getAbsolutePath() + Constants.OS_SPECIFIC_FILE_SEPARATOR + "MetFragWeb_Candidates." + format;
-			resource = new org.primefaces.model.DefaultStreamedContent(new java.io.FileInputStream(new java.io.File(filePath)), mimetype, "MetFragWeb_Candidates." + format);
+			String finalFilePath = filePath;
+			resource = DefaultStreamedContent.builder().contentType(mimetype).name("MetFragWeb_Candidates." + format).stream(() -> {
+				try {
+					return new FileInputStream(new File(finalFilePath));
+				} catch (FileNotFoundException e) {
+					throw new RuntimeException(e);
+				}
+			}).build();
 			errorMessages.removeKey("buttonDownloadCompoundsError");
 		} catch (Exception e) {
 			errorMessages.setMessage("buttonDownloadCompoundsError", "Error when downloading candidates.");
@@ -315,8 +335,7 @@ public class UserOutputDataHandler {
 		System.out.println("downloadResults " + format);
 		IWriter candidateWriter = null;
 		String filePath = "";
-		org.primefaces.model.StreamedContent resource = new org.primefaces.model.DefaultStreamedContent(System.in, "text/csv", "MetFragWeb_Candidates." + format);
-		
+		org.primefaces.model.StreamedContent resource = DefaultStreamedContent.builder().contentType("text/csv").name("MetFragWeb_Candidates." + format).stream(() -> System.in).build();
 		try {
 			java.io.File folder = new java.io.File(this.beanSettingsContainer.getRootSessionFolder() + Constants.OS_SPECIFIC_FILE_SEPARATOR + "downloads");
 			System.out.println("creating folder " + folder.getAbsolutePath());
@@ -341,7 +360,14 @@ public class UserOutputDataHandler {
 			
 			candidateWriter.write(metfragResults.getScoredCandidateList(), "MetFragWeb_Results", folder.getAbsolutePath());
 			filePath = folder.getAbsolutePath() + Constants.OS_SPECIFIC_FILE_SEPARATOR + "MetFragWeb_Results." + format;
-			resource = new org.primefaces.model.DefaultStreamedContent(new java.io.FileInputStream(new java.io.File(filePath)), mimetype, "MetFragWeb_Candidates." + format);
+			String finalFilePath = filePath;
+			resource = DefaultStreamedContent.builder().contentType(mimetype).name("MetFragWeb_Candidates." + format).stream(() -> {
+				try {
+					return new FileInputStream(new File(finalFilePath));
+				} catch (FileNotFoundException e) {
+					throw new RuntimeException(e);
+				}
+			}).build();
 			errorMessages.removeKey("buttonDownloadResultsError");
 		} catch (Exception e) {
 			e.printStackTrace();

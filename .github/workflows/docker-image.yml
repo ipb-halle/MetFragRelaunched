@@ -2,30 +2,43 @@ name: Docker Image
 
 on:
   push:
-    branches: [ master ]
+    branches:
+      - 'master'
+      - 'dev'
+    tags:
+      - 'v*'
 
 jobs:
   docker:
-
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Log in to Docker Hub
-        uses: docker/login-action@v1
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@v3
+        uses: docker/metadata-action@v5
         with:
           images: ipbhalle/metfragweb
+          tags: |
+            # tag event
+            type=ref,event=tag
+            # set latest tag for main branch and tags
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/') }}
+            # set dev tag for dev branch
+            type=raw,value=dev,enable=${{ github.ref == 'refs/heads/dev'}}
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v5
         with:
-          push: true
-          tags: ipbhalle/metfragweb:latest
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=registry,ref=ipbhalle/metfragweb:latest
           cache-to: type=inline

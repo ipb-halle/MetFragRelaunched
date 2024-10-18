@@ -6,9 +6,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.faces.context.FacesContext;
-import javax.faces.model.SelectItem;
-import javax.servlet.ServletContext;
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.model.SelectItem;
+import jakarta.servlet.ServletContext;
 
 import org.apache.log4j.Level;
 import org.primefaces.model.chart.AxisType;

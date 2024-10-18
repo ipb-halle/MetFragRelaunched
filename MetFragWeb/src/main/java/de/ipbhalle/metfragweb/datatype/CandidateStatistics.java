@@ -2,7 +2,7 @@ package de.ipbhalle.metfragweb.datatype;
 
 import java.util.List;
 
-import javax.faces.model.SelectItem;
+import jakarta.faces.model.SelectItem;
 
 import org.primefaces.model.chart.AxisType;
 import org.primefaces.model.chart.LineChartModel;
