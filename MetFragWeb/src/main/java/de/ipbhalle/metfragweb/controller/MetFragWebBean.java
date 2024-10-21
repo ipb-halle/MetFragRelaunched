@@ -36,6 +36,8 @@ import org.primefaces.model.chart.AxisType;
 import org.primefaces.model.chart.LineChartModel;
 import org.primefaces.model.chart.LineChartSeries;
 
+import org.primefaces.model.DefaultStreamedContent.Builder;
+
 import de.ipbhalle.metfraglib.additionals.MathTools;
 import de.ipbhalle.metfraglib.exceptions.AtomTypeNotKnownFromInputListException;
 import de.ipbhalle.metfraglib.imagegenerator.HighlightSubStructureImageGenerator;
@@ -76,7 +78,7 @@ import de.ipbhalle.metfragweb.validator.SmartsValidator;
 @SessionScoped
 public class MetFragWebBean {
 
-	private final String version = "v2.5.0";
+	private final String version = "v2.5.1";
 	/*
 	 * combines all the settings
 	 */
@@ -2014,7 +2016,11 @@ public class MetFragWebBean {
 		try {
 			resource = this.beanSettingsContainer.getUserOutputDataHandler().getDownloadParameters(this.errorMessages, pathToProperties);
 		} catch(Exception e) {
-			resource = DefaultStreamedContent.builder().contentType("application/zip").name("MetFragWeb_Parameters.zip").stream(() -> System.in).build();
+			resource = DefaultStreamedContent.builder()
+			.name("MetFragWeb_Parameters.zip")
+			.contentType("application/zip")
+			.stream(() -> System.in)
+			.build();
 		}
 		return resource;
 	}
@@ -2703,7 +2709,12 @@ public class MetFragWebBean {
 	 * @return
 	 */
 	public org.primefaces.model.StreamedContent generateCandidateDownloadFile() {
-		org.primefaces.model.StreamedContent resource = DefaultStreamedContent.builder().contentType("application/vnd.ms-excel").name("MetFragWeb_Candidate.xls").stream(() -> System.in).build();
+		org.primefaces.model.StreamedContent resource = DefaultStreamedContent.builder()
+		.name("MetFragWeb_Candidate.xls")
+		.contentType("application/vnd.ms-excel")
+		.stream(() -> System.in)
+		.build();
+
 		try {
 			resource = this.beanSettingsContainer.getUserOutputDataHandler().generatedCandidateDownloadFile(this.currentScoreCandidate, this.beanSettingsContainer.getMetFragSettings());
 		} catch (Exception e1) {
