@@ -105,7 +105,7 @@ public class SmartsExpressionValidator implements Validator {
 			}
 
 			try {
-				new ScriptEngineManager().getEngineByName("javascript").eval(formula);
+				new ScriptEngineManager().getEngineByName("nashorn").eval(formula);
 			} catch (ScriptException e) {
 				this.worked = false;
 				return;

@@ -64,7 +64,7 @@ public class PreProcessingCandidateSmartsFilter extends AbstractPreProcessingCan
 		}
 		boolean result = false;
 		try {
-			result = (Boolean) new ScriptEngineManager().getEngineByName("javascript").eval(replacedFormula);
+			result = (Boolean) new ScriptEngineManager().getEngineByName("nashorn").eval(replacedFormula);
 		} catch (ScriptException e) {
 			e.printStackTrace();
 			return false;
