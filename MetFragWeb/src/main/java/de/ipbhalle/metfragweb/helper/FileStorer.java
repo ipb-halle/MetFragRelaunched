@@ -9,7 +9,7 @@ import java.io.OutputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.primefaces.model.UploadedFile;
+import org.primefaces.model.file.UploadedFile;
 
 import de.ipbhalle.metfraglib.parameter.Constants;
 import de.ipbhalle.metfragweb.container.Messages;
@@ -133,7 +133,7 @@ public class FileStorer {
 	 */
 	public File saveUploadedFile(UploadedFile file, File path) throws IOException {
 		File fileToStore = new File(path.getAbsoluteFile() + Constants.OS_SPECIFIC_FILE_SEPARATOR + file.getFileName());
-		InputStream is = file.getInputstream();
+		InputStream is = file.getInputStream();
 		OutputStream out = new FileOutputStream(fileToStore);
 		byte buf[] = new byte[1024];
 	    int len;

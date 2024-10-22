@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 
-import org.primefaces.model.UploadedFile;
+import org.primefaces.model.file.UploadedFile;
 
 import de.ipbhalle.metfraglib.exceptions.RetentionTimeNotFoundException;
 import de.ipbhalle.metfraglib.exceptions.TooFewCandidatesException;

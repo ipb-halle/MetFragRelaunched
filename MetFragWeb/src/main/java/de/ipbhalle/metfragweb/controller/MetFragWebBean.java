@@ -29,6 +29,7 @@ import org.primefaces.event.SlideEndEvent;
 import org.primefaces.event.organigram.OrganigramNodeCollapseEvent;
 import org.primefaces.event.organigram.OrganigramNodeExpandEvent;
 import org.primefaces.event.organigram.OrganigramNodeSelectEvent;
+import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.OrganigramNode;
 import org.primefaces.model.StreamedContent;
 import org.primefaces.model.chart.AxisType;
@@ -2013,7 +2014,11 @@ public class MetFragWebBean {
 		try {
 			resource = this.beanSettingsContainer.getUserOutputDataHandler().getDownloadParameters(this.errorMessages, pathToProperties);
 		} catch(Exception e) {
-			resource = new org.primefaces.model.DefaultStreamedContent(System.in, "application/zip", "MetFragWeb_Parameters.zip");
+			resource = DefaultStreamedContent.builder()
+					.stream(() -> System.in)
+					.contentType("application/zip")
+					.name("MetFragWeb_Parameters.zip")
+					.build();
 		}
 		return resource;
 	}
@@ -2702,7 +2707,11 @@ public class MetFragWebBean {
 	 * @return
 	 */
 	public org.primefaces.model.StreamedContent generateCandidateDownloadFile() {
-		org.primefaces.model.StreamedContent resource = new org.primefaces.model.DefaultStreamedContent(System.in, "application/vnd.ms-excel", "MetFragWeb_Candidate.xls" );
+		org.primefaces.model.StreamedContent resource = DefaultStreamedContent.builder()
+				.stream(() -> System.in)
+				.contentType("application/vnd.ms-excel")
+				.name("MetFragWeb_Candidate.xls")
+				.build();
 		try {
 			resource = this.beanSettingsContainer.getUserOutputDataHandler().generatedCandidateDownloadFile(this.currentScoreCandidate, this.beanSettingsContainer.getMetFragSettings());
 		} catch (Exception e1) {
