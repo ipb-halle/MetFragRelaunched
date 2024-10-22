@@ -76,7 +76,7 @@ import de.ipbhalle.metfragweb.validator.SmartsValidator;
 @SessionScoped
 public class MetFragWebBean {
 
-	private final String version = "v2.5.0";
+	private final String version = "v2.5.1";
 	/*
 	 * combines all the settings
 	 */
