@@ -1,7 +1,7 @@
 package de.ipbhalle.metfragweb.exception;
 
-import javax.faces.context.ExceptionHandler;
-import javax.faces.context.ExceptionHandlerFactory;
+import jakarta.faces.context.ExceptionHandler;
+import jakarta.faces.context.ExceptionHandlerFactory;
 import de.ipbhalle.metfragweb.exception.ViewExpiredExceptionExceptionHandler;
 
 public class ViewExpiredExceptionExceptionHandlerFactory extends ExceptionHandlerFactory {

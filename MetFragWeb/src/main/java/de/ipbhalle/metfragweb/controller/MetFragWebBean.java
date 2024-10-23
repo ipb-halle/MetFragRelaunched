@@ -6,17 +6,17 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
-import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
-import javax.faces.model.SelectItem;
+import jakarta.annotation.PostConstruct;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.bean.ManagedBean;
+import jakarta.faces.bean.SessionScoped;
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.event.ActionEvent;
+import jakarta.faces.model.SelectItem;
 import javax.imageio.ImageIO;
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.mail.EmailAttachment;
@@ -277,7 +277,7 @@ public class MetFragWebBean {
 	/*
 	 * database search settings
 	 */
-	public java.util.List<javax.faces.model.SelectItem> getAvailableDatabases() {
+	public java.util.List<jakarta.faces.model.SelectItem> getAvailableDatabases() {
 		return this.beanSettingsContainer.getAvailableParameters().getDatabases();
 	}
 	
@@ -908,7 +908,7 @@ public class MetFragWebBean {
 	}
 	
 	//SMARTS inclusion
-	public java.util.List<javax.faces.model.SelectItem> getAvailableSubstructureSmarts() {
+	public java.util.List<jakarta.faces.model.SelectItem> getAvailableSubstructureSmarts() {
 		return this.beanSettingsContainer.getAvailableParameters().getSubstructureSmarts();
 	}
 	
@@ -1070,7 +1070,7 @@ public class MetFragWebBean {
 		this.beanSettingsContainer.setSelectedInformationSmarts(selectedSmarts);
 	}
 	
-	public java.util.List<javax.faces.model.SelectItem> getAvailableSubstructureInformationSmarts() {
+	public java.util.List<jakarta.faces.model.SelectItem> getAvailableSubstructureInformationSmarts() {
 		return this.beanSettingsContainer.getAvailableParameters().getSubstructureInformationSmarts();
 	}
 	
@@ -1814,11 +1814,11 @@ public class MetFragWebBean {
 	/*
 	 * fragmenter settings
 	 */	
-	public java.util.List<javax.faces.model.SelectItem> getPrecursorModes() {
+	public java.util.List<jakarta.faces.model.SelectItem> getPrecursorModes() {
 		return this.beanSettingsContainer.getAvailableParameters().getPrecursorModes();
 	}
 
-	public java.util.List<javax.faces.model.SelectItem> getTreeDepths() {
+	public java.util.List<jakarta.faces.model.SelectItem> getTreeDepths() {
 		return this.beanSettingsContainer.getAvailableParameters().getTreeDepths();
 	}
 	
@@ -3014,7 +3014,7 @@ public class MetFragWebBean {
 		System.out.println("session expired " + this.beanSettingsContainer.getRootSessionFolder());
 		FacesContext fc = FacesContext.getCurrentInstance();
         java.util.Map<String, Object> requestMap = fc.getExternalContext().getRequestMap();
-        javax.faces.application.NavigationHandler nav =
+		jakarta.faces.application.NavigationHandler nav =
                 fc.getApplication().getNavigationHandler();
         // Push some useful stuff to the request scope for
         // use in the page
