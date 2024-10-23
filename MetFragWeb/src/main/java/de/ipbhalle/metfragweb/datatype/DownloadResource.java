@@ -7,8 +7,8 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.faces.application.Resource;
-import javax.faces.context.FacesContext;
+import jakarta.faces.application.Resource;
+import jakarta.faces.context.FacesContext;
 
 public class DownloadResource extends Resource implements java.io.Serializable {
 

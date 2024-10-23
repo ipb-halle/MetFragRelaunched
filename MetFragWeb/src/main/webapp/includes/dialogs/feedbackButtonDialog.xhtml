@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
           "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
@@ -11,14 +11,14 @@
 		<h:form>
 			<p:commandLink actionListener="#{metFragWebBean.feedbackButtonListener}" update="feedbackDialogForm:feedbackDialog"
 				oncomplete="PF('feedbackDialog').show();">
-       			<p:graphicImage url="#{resource['images/feedback.png']}" />
+       			<p:graphicImage name="images/feedback.png" />
    			</p:commandLink>
   		</h:form>
    	</h:panelGroup>
    	<h:panelGroup styleClass="about" layout="block">
 		<h:form>
 			<p:commandLink oncomplete="PF('aboutDialog').show();">
-       			<p:graphicImage url="#{resource['images/about.png']}" />
+       			<p:graphicImage name="images/about.png" />
    			</p:commandLink>
   		</h:form>
    	</h:panelGroup>

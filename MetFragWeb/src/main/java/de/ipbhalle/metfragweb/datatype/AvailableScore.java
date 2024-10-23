@@ -2,7 +2,7 @@ package de.ipbhalle.metfragweb.datatype;
 
 import java.io.Serializable;
 
-import javax.faces.model.SelectItem;
+import jakarta.faces.model.SelectItem;
 
 public class AvailableScore extends SelectItem implements Serializable, Comparable<AvailableScore> {
 
