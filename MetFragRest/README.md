@@ -2,7 +2,7 @@
 
 ```
 mvn package
-java -Dserver.port=8090 -jar target/MetFragRest-2.5.1.jar
+java -Dserver.port=8090 -jar target/MetFragRest-2.6.0.jar
 ```
 
 ## start app
@@ -53,4 +53,4 @@ The REST API base URL can be configured. There is the file `src/main/ressources/
 
 You can override the `server.servlet.context-path` property by providing your own `application.properties` at runtime in the current working directory `./` or a `./config/` subdirectory, see [docs](https://docs.spring.io/spring-boot/docs/2.1.13.RELEASE/reference/html/boot-features-external-config.html#boot-features-external-config-application-property-files).
 
-Finally, it is possible to override both defaults and the custom `applications.properties` on the command line at runtime. First using a system property: `java -Dserver.servlet.context-path=/mybaseurl/api/v1 -Dserver.port=8090 -jar target/MetFragRest-2.5.1.jar`, which in turn can be overriden by an application property: `java -Dserver.port=8090 -jar target/MetFragRest-2.5.1.jar --server.servlet.context-path=/commandline/api/v1` which in turn can be overridden by an environment variable: `SERVER_SERVLET_CONTEXT_PATH=/overridemybaseurl mvn spring-boot:run`.
+Finally, it is possible to override both defaults and the custom `applications.properties` on the command line at runtime. First using a system property: `java -Dserver.servlet.context-path=/mybaseurl/api/v1 -Dserver.port=8090 -jar target/MetFragRest-2.6.0.jar`, which in turn can be overriden by an application property: `java -Dserver.port=8090 -jar target/MetFragRest-2.6.0.jar --server.servlet.context-path=/commandline/api/v1` which in turn can be overridden by an environment variable: `SERVER_SERVLET_CONTEXT_PATH=/overridemybaseurl mvn spring-boot:run`.

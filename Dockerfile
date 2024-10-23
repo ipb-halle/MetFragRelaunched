@@ -14,7 +14,7 @@ LocalDatabasesFolderForWeb = /vol/file_databases' > /MetFragRelaunched/MetFragWe
 RUN mvn -Dhttps.protocols=TLSv1.2 -f MetFragRelaunched clean package -pl MetFragLib -pl MetFragWeb -am -DskipTests
 
 
-FROM tomee:8
+FROM tomee:9
 
 RUN set -eux; \
 	apt-get update; \
@@ -38,7 +38,7 @@ RUN mkdir -p /vol/file_databases; cd /vol/file_databases && \
         wget -q https://zenodo.org/records/3735703/files/EColiMDB_11Nov2019.csv && \
         touch EColiMDB_11Nov2019.csv && \
         wget -q https://zenodo.org/records/3434579/files/YMDB2_17Sept2019.csv && \
-        touch YMDB2_17Sept2019.csv && \ 
+        touch YMDB2_17Sept2019.csv && \
         wget -q https://zenodo.org/records/3403530/files/WormJam_10Sept19.csv && \
         touch WormJam_10Sept19.csv && \
         wget -q https://zenodo.org/records/3375500/files/HMDB4_23Aug19.csv && \
