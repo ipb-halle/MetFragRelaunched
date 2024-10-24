@@ -232,7 +232,6 @@ public class MetFragWebBean {
 		catch(Exception e) {
 			e.printStackTrace();
 			System.err.println("error generating session folders");
-			return;
 		}
 	}
 	
@@ -339,7 +338,6 @@ public class MetFragWebBean {
 		} catch(Exception e) {
 			e.printStackTrace();
 			this.errorMessages.setMessage("inputMeasuredMassError", "Error: Error calculating mass value.");
-			return;
 		}
 	}
 	
@@ -3157,7 +3155,7 @@ public class MetFragWebBean {
 			FileStorer fileStorer = new FileStorer();
 			try {
 				StreamedContent zipContent = this.beanSettingsContainer.getUserOutputDataHandler().getDownloadParameters(this.errorMessages, null);
-				zipFileToAttach = fileStorer.saveUploadedFile(zipContent.getStream(), feedbackFolder.getAbsoluteFile(), "MetFragWeb_Parameters.zip");
+				zipFileToAttach = fileStorer.saveUploadedFile(zipContent.getStream().get(), feedbackFolder.getAbsoluteFile(), "MetFragWeb_Parameters.zip");
 				addMsg += "Zip: yes" + ls;
 			}
 			catch(Exception e) {
@@ -3242,7 +3240,7 @@ public class MetFragWebBean {
 	}
 	
 	public String getServerName() {
-        String hostname = "";
+        String hostname;
         try {
                 hostname = InetAddress.getLocalHost().getHostName();
         } catch (UnknownHostException e) {

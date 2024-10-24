@@ -44,15 +44,20 @@
 	<groupId>org.springframework.boot</groupId>
 	<artifactId>spring-boot-starter-hateoas</artifactId>
 </dependency>
-
-<!--		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-api</artifactId>
-		</dependency>
 		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
-		</dependency>-->
+			<groupId>jakarta.platform</groupId>
+			<artifactId>jakarta.jakartaee-api</artifactId>
+			<scope>compile</scope>
+		</dependency>
+
+		<!--		<dependency>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>log4j-api</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>log4j-core</artifactId>
+                </dependency>-->
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>

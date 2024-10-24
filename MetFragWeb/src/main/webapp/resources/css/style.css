@@ -313,14 +313,6 @@ html,body {
 .ui-messages-error-icon-user {
 	height: 24px;
 	width: 24px;
-	/*
-	background: transparent
-		url("/MetFragWeb/javax.faces.resource/messages/messages.png.xhtml?ln=primefaces&v=4_0_0_141104&v=5.3")
-		no-repeat scroll 0% 0%;
-	background-color: transparent;
-	background-image:
-		url("/MetFragWeb/javax.faces.resource/messages/messages.png.xhtml?ln=primefaces&v=4_0_0_141104&v=5.3");
-	*/
 	background-image: url("#{resource['images/icons/messages.png']}");
 	background-color: transparent;
 	background-repeat: no-repeat;
@@ -360,14 +352,6 @@ html,body {
 .ui-messages-info-icon-user {
 	height: 24px;
 	width: 24px;
-	/*
-	background: transparent
-		url("/MetFragWeb/javax.faces.resource/messages/messages.png.xhtml?ln=primefaces&v=4_0_0_141104&v=5.3")
-		no-repeat scroll 0% 0%;
-	background-color: transparent;
-	background-image:
-		url("/MetFragWeb/javax.faces.resource/messages/messages.png.xhtml?ln=primefaces&v=4_0_0_141104&v=5.3");
-	*/
 	background-image: url("#{resource['images/icons/messages.png']}");
 	background-color: transparent;
 	background-repeat: no-repeat;
@@ -407,14 +391,6 @@ html,body {
 .ui-messages-warning-icon-user {
 	height: 24px;
 	width: 24px;
-	/*
-	background: transparent
-		url("/MetFragWeb/javax.faces.resource/messages/messages.png.xhtml?ln=primefaces&v=4_0_0_141104&v=5.3")
-		no-repeat scroll 0% 0%;
-	background-color: transparent;
-	background-image:
-		url("/MetFragWeb/javax.faces.resource/messages/messages.png.xhtml?ln=primefaces&v=4_0_0_141104&v=5.3");
-	*/
 	background-image: url("#{resource['images/icons/messages.png']}");
 	background-color: transparent;
 	background-repeat: no-repeat;
