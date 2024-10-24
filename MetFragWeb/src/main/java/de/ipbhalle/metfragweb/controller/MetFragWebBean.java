@@ -2,18 +2,20 @@ package de.ipbhalle.metfragweb.controller;
 
 import java.awt.image.RenderedImage;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
-import jakarta.faces.bean.ManagedBean;
-import jakarta.faces.bean.SessionScoped;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.event.ActionEvent;
 import jakarta.faces.model.SelectItem;
 import javax.imageio.ImageIO;
+
+import jakarta.inject.Named;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -72,9 +74,9 @@ import de.ipbhalle.metfragweb.validator.PositiveDoubleValueValidator;
 import de.ipbhalle.metfragweb.validator.SmartsExpressionValidator;
 import de.ipbhalle.metfragweb.validator.SmartsValidator;
 
-@ManagedBean
+@Named
 @SessionScoped
-public class MetFragWebBean {
+public class MetFragWebBean implements Serializable {
 
 	private final String version = "v2.6.0";
 	/*

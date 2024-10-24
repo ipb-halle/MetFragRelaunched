@@ -1,32 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
 		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd"
-		 version="5.0">
+		 xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
+		 version = "6.0" metadata-complete = "false">
 	<display-name>MetFragWeb</display-name>
+
 	<welcome-file-list>
 		<welcome-file>index.xhtml</welcome-file>
 	</welcome-file-list>
 	<session-config>
-		<session-timeout>30</session-timeout>
+		<session-timeout>50</session-timeout>
 	</session-config>
-	<mime-mapping>
-		<extension>xhtml</extension>
-		<mime-type>application/xml</mime-type>
-	</mime-mapping>
-	<context-param>
+		<context-param>
 		<param-name>jakarta.faces.FACELETS_BUFFER_SIZE</param-name>
 		<param-value>65535</param-value> <!-- 64KB -->
 	</context-param>
 	<context-param>
-		<description>State saving method: 'client' or 'server' (=default). See JSF Specification 2.5.2</description>
 		<param-name>jakarta.faces.STATE_SAVING_METHOD</param-name>
 		<param-value>server</param-value>
 	</context-param>
-		<context-param>
-		<param-name>jakarta.servlet.jsp.jstl.fmt.LocalizationContext</param-name>
-		<param-value>resources.application</param-value>
-	</context-param>
+<!--	<context-param>-->
+<!--		<param-name>jakarta.servlet.jsp.jstl.fmt.LocalizationContext</param-name>-->
+<!--		<param-value>resources.application</param-value>-->
+<!--	</context-param>-->
 	<context-param>
 		<param-name>primefaces.THEME</param-name>
 		<param-value>aristo</param-value>
@@ -44,10 +40,6 @@
 		<servlet-name>Faces Servlet</servlet-name>
 		<url-pattern>*.xhtml</url-pattern>
 	</servlet-mapping>
-<!-- 	<context-param> -->
-<!-- 		<param-name>com.sun.faces.expressionFactory</param-name> -->
-<!-- 		<param-value>com.sun.el.ExpressionFactoryImpl</param-value> -->
-<!-- 	</context-param> -->
 	<context-param>
 		<param-name>jakarta.faces.FACELETS_SKIP_COMMENTS</param-name>
 		<param-value>true</param-value>

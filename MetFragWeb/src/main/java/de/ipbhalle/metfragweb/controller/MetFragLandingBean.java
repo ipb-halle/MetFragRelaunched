@@ -1,20 +1,20 @@
 package de.ipbhalle.metfragweb.controller;
 
 import jakarta.annotation.PostConstruct;
-import jakarta.faces.bean.ManagedBean;
-import jakarta.faces.bean.RequestScoped;
+import jakarta.enterprise.context.RequestScoped;
 import jakarta.faces.context.FacesContext;
 
 import de.ipbhalle.metfraglib.parameter.Constants;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfragweb.datatype.Parameter;
 
+import jakarta.inject.Named;
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.primefaces.PrimeFaces;
 
 
-@ManagedBean
+@Named
 @RequestScoped
 public class MetFragLandingBean {
 	

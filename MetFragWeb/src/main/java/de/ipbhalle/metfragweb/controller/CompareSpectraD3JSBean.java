@@ -2,13 +2,15 @@ package de.ipbhalle.metfragweb.controller;
 
 import java.awt.image.RenderedImage;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Random;
 
-import jakarta.faces.bean.ManagedBean;
-import jakarta.faces.bean.SessionScoped;
+import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.event.ActionEvent;
 import javax.imageio.ImageIO;
+
+import jakarta.inject.Named;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -36,9 +38,9 @@ import de.ipbhalle.metfraglib.peaklistreader.StringTandemMassPeakListReader;
 import de.ipbhalle.metfraglib.settings.MetFragGlobalSettings;
 import de.ipbhalle.metfraglib.settings.Settings;
 
-@ManagedBean
+@Named
 @SessionScoped
-public class CompareSpectraD3JSBean {
+public class CompareSpectraD3JSBean implements Serializable {
 
 	private String peakList1;
 	private String peakList2;
