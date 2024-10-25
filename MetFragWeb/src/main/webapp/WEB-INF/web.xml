@@ -44,8 +44,4 @@
 		<param-name>jakarta.faces.FACELETS_SKIP_COMMENTS</param-name>
 		<param-value>true</param-value>
 	</context-param>
-	<error-page>
-		<exception-type>jakarta.faces.application.ViewExpiredException</exception-type>
-		<location>/includes/errorpages/viewExpired.xhtml</location>
-	</error-page>
 </web-app>
