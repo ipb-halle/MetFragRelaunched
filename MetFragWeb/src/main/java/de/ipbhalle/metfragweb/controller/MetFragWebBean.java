@@ -78,7 +78,7 @@ import de.ipbhalle.metfragweb.validator.SmartsValidator;
 @SessionScoped
 public class MetFragWebBean implements Serializable {
 
-	private final String version = "v2.6.0";
+	private final String version = "v2.6.1";
 	/*
 	 * combines all the settings
 	 */

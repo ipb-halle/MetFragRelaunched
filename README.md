@@ -5,8 +5,8 @@ MetFrag relaunched
 ==================
 
 ##### Requirements
-- Java = openjdk11
-- Apache Maven = 3.8
+- Java 17
+- Apache Maven 3.8
 
 ##### Sources
 - download sources by cloning git repository<br>

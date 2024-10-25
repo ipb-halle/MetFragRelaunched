@@ -1,7 +1,7 @@
 Package: metfRag
 Type: Package
 Title: Identification of metabolites using mass spectrometry data
-Version: 2.6.0
+Version: 2.6.1
 Date: 2024-23-10
 Author: Christoph Ruttkies <cruttkie@ipb-halle.de>, Steffen Neumann <sneumann@ipb-halle.de>, Adrian Helmchen
 Maintainer: Christoph Ruttkies <cruttkie@ipb-halle.de>
