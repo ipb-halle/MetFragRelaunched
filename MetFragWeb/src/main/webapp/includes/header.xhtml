@@ -1,26 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-		"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"
-	  xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	  xmlns:h="http://xmlns.jcp.org/jsf/html">
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:ui="jakarta.faces.facelets"
+      xmlns:h="jakarta.faces.html">
 
 <h:body>
-		<ui:composition>
- 			
-			<h:panelGrid columns="2" width="100%" style="margin-bottom: 20px; margin-top: 10px; margin-left: 2%">
- 			<h:graphicImage alt="" name="images/MetLogoCube_Green.png" style="float: left; border: 0px;" height="120"/>
- 				
- 				<h:panelGroup>
-					<h:panelGrid columns="1" width="100%" >
- 						<h:outputText value="MetFrag" styleClass="texth1"/>
- 						<h:outputText value="In silico fragmentation for computer assisted identification of metabolite mass spectra" styleClass="texth2"/>
- 					</h:panelGrid>
- 				</h:panelGroup>
- 			</h:panelGrid>
-    		 
-	    </ui:composition>	
-
+    <ui:composition>
+        <h:panelGrid columns="2" styleClass="header-grid">
+            <h:graphicImage alt="" name="images/MetLogoCube_Green.png" styleClass="logo-image"/>
+            <h:panelGroup>
+                <h:panelGrid columns="1">
+                    <h:outputText value="MetFrag" styleClass="texth1"/>
+                    <h:outputText
+                            value="In silico fragmentation for computer assisted identification of metabolite mass spectra"
+                            styleClass="texth2"/>
+                </h:panelGrid>
+            </h:panelGroup>
+        </h:panelGrid>
+    </ui:composition>
 </h:body>
-
 </html>
