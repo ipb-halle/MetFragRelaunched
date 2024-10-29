@@ -11,7 +11,12 @@ COPY pom.xml /MetFragRelaunched/
 RUN printf '# local database file folder \n\
 LocalDatabasesFolderForWeb = /vol/file_databases' > /MetFragRelaunched/MetFragWeb/src/main/webapp/resources/settings.properties
 
-RUN --mount=type=cache,target=/root/.m2 mvn -f MetFragRelaunched clean package -pl MetFragWeb -am -DskipTests
+# Debug step to check cache contents
+RUN --mount=type=cache,target=/root/.m2 ls -la /root/.m2/repository
+
+# Cache Maven dependencies using a named cache
+RUN --mount=type=cache,target=/root/.m2,source=maven_cache mvn -f MetFragRelaunched clean package -pl MetFragWeb -am -DskipTests
+#RUN --mount=type=cache,target=/root/.m2 mvn -f MetFragRelaunched clean package -pl MetFragWeb -am -DskipTests
 
 FROM alpine:latest AS downloader
 
