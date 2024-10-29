@@ -15,13 +15,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Log in to Docker Hub
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      -
+        name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Extract metadata (tags, labels) for Docker
+      -
+        name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v5
         with:
@@ -35,10 +39,10 @@ jobs:
             type=raw,value=dev,enable=${{ github.ref == 'refs/heads/dev'}}
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=registry,ref=ipbhalle/metfragweb:latest
-          cache-to: type=inline
+          cache-from: type=registry,ref=ipbhalle/metfragweb:buildcache
+          cache-to: type=registry,ref=ipbhalle/metfragweb:buildcache,mode=max
