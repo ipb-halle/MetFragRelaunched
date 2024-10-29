@@ -320,10 +320,6 @@ html,body {
 	margin-bottom: 0px;
 	margin-left: 0px;
 	padding: 0px;
-	padding-top: 0px;
-	padding-right: 0px;
-	padding-bottom: 0px;
-	padding-left: 0px;
 	position: relative;
 }
 
@@ -460,8 +456,6 @@ html,body {
 
 /* overrides primefaces */
 .ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active {
-    /*background: -moz-linear-gradient(center top , rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.4)) repeat scroll 0 0 #2e8428 !important;*/
-
 	background: rgba(46,132,40,1);
 	background: -moz-linear-gradient(top, rgba(46,132,40,1) 0%, rgba(129,181,126,1) 100%);
 	background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(46,132,40,1)), color-stop(100%, rgba(129,181,126,1)));
@@ -477,11 +471,7 @@ html,body {
 }
 
 .ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus {
-    /*background: -moz-linear-gradient(center top , rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0)) repeat scroll 0 0 #32a42d;*/
-    
 	background: rgba(50,164,45,1);
-	
-	
 	background: -moz-linear-gradient(top, rgba(50,164,45,1) 0%, rgba(132,200,129,1) 100%);
 	background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(50,164,45,1)), color-stop(100%, rgba(132,200,129,1)));
 	background: -webkit-linear-gradient(top, rgba(50,164,45,1) 0%, rgba(132,200,129,1) 100%);
