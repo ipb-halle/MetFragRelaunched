@@ -3231,6 +3231,7 @@ public class MetFragWebBean implements Serializable {
 			}
 			email.send();
 		} catch(Exception e) {
+			e.printStackTrace();
 			this.errorMessages.setMessage("feedbackSubmitButtonError", "Error: Feedback could not be sent.");
 			return;
 		}
