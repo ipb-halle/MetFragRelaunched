@@ -13,7 +13,7 @@ LocalDatabasesFolderForWeb = /vol/file_databases' > /MetFragRelaunched/MetFragWe
 
 RUN mvn -Dhttps.protocols=TLSv1.2 -f MetFragRelaunched clean package -pl MetFragLib -pl MetFragWeb -am -DskipTests
 
-FROM alpine:latest as downloader
+FROM alpine:latest AS downloader
 
 RUN mkdir -p /vol/file_databases; cd /vol/file_databases && \
 	wget -q https://zenodo.org/records/3548461/files/NORMANSusDat_20Nov2019.csv && \

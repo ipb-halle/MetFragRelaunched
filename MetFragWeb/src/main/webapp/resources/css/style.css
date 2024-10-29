@@ -635,3 +635,8 @@ html,body {
  .footer-title {
 	 font-weight: bold;
  }
+
+ .landing-page-style {
+	 width: 90%;
+	 margin: 0 auto;
+ }
