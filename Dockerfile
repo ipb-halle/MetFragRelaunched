@@ -64,12 +64,20 @@ RUN cd /vol/file_databases && \
 
 FROM tomee:10
 
+RUN set -eux; \
+	apt-get update; \
+	apt-get install -y --no-install-recommends \
+		zip \
+        ; \
+	rm -rf /var/lib/apt/lists/*
+
+
 COPY --from=builder /MetFragRelaunched/MetFragWeb/target/MetFragWeb.war /usr/local/tomee/webapps/
 COPY --from=downloader /vol/file_databases/ /vol/file_databases/
 RUN printf '#!/bin/sh \n\
 if [ -f "/resources/settings.properties" ] \n\
 then \n\
-	jar uf /usr/local/tomee/webapps/MetFragWeb.war /resources/settings.properties \n\
+	zip -u /usr/local/tomee/webapps/MetFragWeb.war /resources/settings.properties \n\
 fi \n\
 if ! [ -z ${WEBPREFIX} ] \n\
 then \n\
