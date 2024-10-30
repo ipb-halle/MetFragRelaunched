@@ -3202,7 +3202,7 @@ public class MetFragWebBean {
 			if(emailSettings.containsKey(VariableNames.FEEDBACK_EMAIL_USER) && emailSettings.containsKey(VariableNames.FEEDBACK_EMAIL_PASS)) {
 				email.setAuthentication((String)emailSettings.get(VariableNames.FEEDBACK_EMAIL_USER), (String)emailSettings.get(VariableNames.FEEDBACK_EMAIL_PASS));
 			}
-			email.setStartTLSRequired(true);
+			//email.setStartTLSRequired(true);
 			email.addReplyTo(this.feedbackEmail);
 			email.setMsg("From: " + this.feedbackEmail + ls 
 					+ "Type: " + this.feedbackType + ls 
