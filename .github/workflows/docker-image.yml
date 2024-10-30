@@ -48,7 +48,8 @@ jobs:
       - name: inject go-build-cache into docker
         uses: reproducible-containers/buildkit-cache-dance@v3.1.0
         with:
-          cache-map: maven-cache
+          cache-map:
+              "maven-cache": "/root/.m2"
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
