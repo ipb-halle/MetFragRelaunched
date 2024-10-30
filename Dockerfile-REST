@@ -1,4 +1,4 @@
-FROM maven:3-jdk-11 AS builder
+FROM maven:3.8-eclipse-temurin-17 AS builder
 
 COPY MetFragLib/ /MetFragRelaunched/MetFragLib/
 COPY MetFragCommandLine/ /MetFragRelaunched/MetFragCommandLine/
@@ -11,11 +11,10 @@ COPY pom.xml /MetFragRelaunched/
 RUN printf '# local database file folder \n\
 LocalDatabasesFolderForWeb = /vol/file_databases' > /MetFragRelaunched/MetFragWeb/src/main/webapp/resources/settings.properties
 
-RUN mvn -Dhttps.protocols=TLSv1.2 -f MetFragRelaunched clean package -pl MetFragLib -pl MetFragRest -am -DskipTests
-
+RUN --mount=type=cache,target=/root/.m2 mvn -f MetFragRelaunched clean package -pl MetFragRest -am -DskipTests
 
 #FROM tomee:8
-FROM maven:3-jdk-11 
+FROM eclipse-temurin:17
 
 RUN set -eux; \
 	apt-get update; \

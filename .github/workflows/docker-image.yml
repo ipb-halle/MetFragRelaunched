@@ -39,13 +39,13 @@ jobs:
             # set dev tag for dev branch
             type=raw,value=dev,enable=${{ github.ref == 'refs/heads/dev'}}
       -
-        name: Go Build Cache for Docker
+        name: Maven Build Cache for Docker
         uses: actions/cache@v4
         with:
           path: maven-cache
           key: ${{ runner.os }}-maven-cache-${{ hashFiles('**/pom.xml') }}
-
-      - name: inject go-build-cache into docker
+      -
+        name: Inject Maven Build Cache into Docker
         uses: reproducible-containers/buildkit-cache-dance@v3.1.0
         with:
           cache-map: |
