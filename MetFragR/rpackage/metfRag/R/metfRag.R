@@ -7,7 +7,7 @@ NULL
 require(rJava, quietly=TRUE)
 
 .onLoad<-function(libname, pkgname) {
-	jar.metfrag <- paste(libname, pkgname, "java", "MetFragR-2.4.5-jar-with-dependencies.jar", sep=.Platform$file.sep)	
+	jar.metfrag <- paste(libname, pkgname, "java", "MetFragR-2.5.2-jar-with-dependencies.jar", sep=.Platform$file.sep)	
 	.jinit(classpath=c(jar.metfrag))
 }
 
