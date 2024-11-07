@@ -3160,7 +3160,7 @@ public class MetFragWebBean {
 			FileStorer fileStorer = new FileStorer();
 			try {
 				StreamedContent zipContent = this.beanSettingsContainer.getUserOutputDataHandler().getDownloadParameters(this.errorMessages, null);
-				zipFileToAttach = fileStorer.saveUploadedFile(zipContent.getStream().get(), feedbackFolder.getAbsoluteFile(), "MetFragWeb_Parameters.zip");
+				zipFileToAttach = fileStorer.saveUploadedFile(zipContent.getStream(), feedbackFolder.getAbsoluteFile(), "MetFragWeb_Parameters.zip");
 				addMsg += "Zip: yes" + ls;
 			}
 			catch(Exception e) {
