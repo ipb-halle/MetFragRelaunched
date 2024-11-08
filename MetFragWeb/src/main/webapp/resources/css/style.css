@@ -19,8 +19,7 @@
 	/* background: linear-gradient(to bottom, #1e5799 0%, #207cca 100%, #2989d8 100%, #7db9e8 100%);*/
  /*}*/
 
-/*.animated .ui-progressbar-value { */
-.animated {
+.animated .ui-progressbar-value {
 	background-image: url("#{resource['images/pbar-ani.gif']}");
 }
 
