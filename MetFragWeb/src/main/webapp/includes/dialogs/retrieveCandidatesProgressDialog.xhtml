@@ -1,28 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 		"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"
-	  xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	  xmlns:h="http://xmlns.jcp.org/jsf/html"
+<html xmlns:h="jakarta.faces.html"
 	  xmlns:p="http://primefaces.org/ui">
 
 <h:body>
-
-	<h:form>
-		<p:dialog visible="#{metFragWebBean.databaseProcessing}" id="retrieveCandidatesProgressDialog" 
-			header="#{metFragWebBean.retrieveCandidatesDialogHeader}" widgetVar="retrieveCandidatesProgressDialog" modal="true" 
-			resizable="false" closable="false">
-			<p:graphicImage name="images/ajaxloadingbar.gif"/>
-			<br />
-			<h:panelGroup style="padding-left: 0px;">
-				<p:commandButton style="height: 22px; font-size: 0.7em" value="Stop" id="stopRetrieveCompounds" rendered="false"
-					action="#{metFragWebBean.stopCompoundRetrieving}" actionListener="#{metFragWebBean.stopCompoundRetrievingListener}" onclick="PF('retrieveCompoundsDialog').hide()"/>
-			</h:panelGroup>
-			<br />
-			<p:poll interval="3" listener="#{metFragWebBean.checkDatabaseThread}" update="retrieveCandidatesProgressDialog"/>
-		</p:dialog>
-	</h:form>
-	
+    <h:form>
+        <p:dialog visible="#{metFragWebBean.databaseProcessing}" id="retrieveCandidatesProgressDialog"
+                  header="#{metFragWebBean.retrieveCandidatesDialogHeader}" widgetVar="retrieveCandidatesProgressDialog"
+                  modal="true" resizable="false" closable="false">
+            <p:graphicImage name="images/ajaxloadingbar.gif"/>
+            <br/>
+            <h:panelGroup style="padding-left: 0px;">
+                <p:commandButton style="height: 22px; font-size: 0.7em" value="Stop" id="stopRetrieveCompounds"
+                                 rendered="false"
+                                 action="#{metFragWebBean.stopCompoundRetrieving}"
+                                 actionListener="#{metFragWebBean.stopCompoundRetrievingListener}"
+                                 onclick="PF('retrieveCompoundsDialog').hide()"/>
+            </h:panelGroup>
+            <br/>
+            <p:poll interval="3" listener="#{metFragWebBean.checkDatabaseThread}"
+                    update="retrieveCandidatesProgressDialog"/>
+        </p:dialog>
+    </h:form>
 </h:body>
-
 </html>

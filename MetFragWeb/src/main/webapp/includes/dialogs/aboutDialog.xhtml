@@ -1,21 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-		"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"
-	  xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	  xmlns:h="http://xmlns.jcp.org/jsf/html"
-	  xmlns:f="http://xmlns.jcp.org/jsf/core"
-	  xmlns:p="http://primefaces.org/ui">
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui">
 
 <h:body>
-	<h:form id="aboutDialogForm">
-		<p:dialog id="aboutDialog" header="About MetFrag"
-			widgetVar="aboutDialog" modal="true" resizable="false"
-			closable="true" width="800" height="600">
-			<iframe src="https://ipb-halle.github.io/MetFragRelaunched/about.html"
-				width="780" height="580"> </iframe>
-		</p:dialog>
-	</h:form>
+    <h:form id="aboutDialogForm">
+        <p:dialog id="aboutDialog" header="About MetFrag"
+                  widgetVar="aboutDialog" modal="true" resizable="false"
+                  closable="true">
+            <iframe src="https://ipb-halle.github.io/MetFragRelaunched/about.html"
+                    width="780" height="580"></iframe>
+        </p:dialog>
+    </h:form>
 </h:body>
 
 </html>
