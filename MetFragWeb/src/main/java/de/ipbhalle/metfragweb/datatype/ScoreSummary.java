@@ -12,7 +12,8 @@ public class ScoreSummary {
 	protected boolean databaseScore;
 	protected String info;
 	protected boolean isAvailable;
-	
+	private String rowKey;
+
 	public ScoreSummary(String name, double value, double rawValue, String info, boolean databaseScore, boolean isAvailable) {
 		this.name = name;
 		this.value = value;
@@ -51,7 +52,7 @@ public class ScoreSummary {
 	public double getRoundedValue() {
 		return MathTools.round(this.value, 4);
 	}
-	
+
 	public double getValue() {
 		return this.value;
 	}
@@ -67,7 +68,7 @@ public class ScoreSummary {
 	public double getRoundedRawValue() {
 		return MathTools.round(this.rawValue, 4);
 	}
-	
+
 	public void setRawValue(double rawValue) {
 		this.rawValue = rawValue;
 	}
@@ -95,5 +96,13 @@ public class ScoreSummary {
 	public void setInfo(String info) {
 		this.info = info;
 	}
-	
+
+	public String getRowKey() {
+        return rowKey;
+    }
+
+    public void setRowKey(String rowKey) {
+        this.rowKey = rowKey;
+    }
+
 }

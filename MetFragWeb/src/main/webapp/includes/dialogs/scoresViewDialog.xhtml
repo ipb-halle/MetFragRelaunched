@@ -25,7 +25,7 @@
 					value="#{metFragWebBean.currentScoreCandidateIdentifier}" />
 			</h:panelGrid>
 			<br/>
-			<p:dataTable var="score" style="width: 620px" value="#{metFragWebBean.candidateScore}" scrollable="true" >
+			<p:dataTable var="score" style="width: 620px" value="#{metFragWebBean.candidateScore}" scrollable="true" rowKey="#{score.rowKey}">>
 				<p:column style="width:16px">
             		<p:rowToggler />
         		</p:column>

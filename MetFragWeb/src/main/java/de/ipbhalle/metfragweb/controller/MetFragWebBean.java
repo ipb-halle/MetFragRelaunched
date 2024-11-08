@@ -2666,10 +2666,14 @@ public class MetFragWebBean implements Serializable {
 	}
 
 	public java.util.Vector<ScoreSummary> getCandidateScore() {
-		java.util.Vector<ScoreSummary> scoreSummaries = new java.util.Vector<ScoreSummary>();
+		java.util.Vector<ScoreSummary> scoreSummaries = new java.util.Vector<>(this.currentCandidateScores == null ? 0 : this.currentCandidateScores.length);
 		if(this.currentCandidateScores == null) return scoreSummaries;
-		for(int i = 0; i < this.currentCandidateScores.length; i++)
-			if(this.currentCandidateScores[i].isUsedForScoring()) scoreSummaries.add(this.currentCandidateScores[i]);
+		for(int i = 0; i < this.currentCandidateScores.length; i++) {
+			if(this.currentCandidateScores[i].isUsedForScoring()) {
+				this.currentCandidateScores[i].setRowKey(String.valueOf(i));
+				scoreSummaries.add(this.currentCandidateScores[i]);
+			}
+		}
 		return scoreSummaries;
 	}
 	
