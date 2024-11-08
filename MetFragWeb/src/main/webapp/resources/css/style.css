@@ -131,14 +131,10 @@
 
 .firstColumnScoreSummary {
 	width: 160px;
-	min-width: 160px;
-	text-align: left;
-	vertical-align: top;
 }
 
 .secondColumnScoreSummary {
-	text-align: left;
-	vertical-align: top;
+	word-wrap: break-word;
 }
 
 .ui-input-label-left {
@@ -589,4 +585,25 @@ html,body {
 .upload-parameters-style {
 	width: 90%;
 	margin: 0 auto;
+}
+
+.togglerColumn {
+	width: 16px;
+}
+
+.nameColumn {
+	width: 300px;
+}
+
+.valueColumn, .rawScoreColumn {
+	width: 100px;
+	text-align: center;
+}
+
+.scoreDetails {
+	font-weight: bold;
+}
+
+.scoreDetailsText {
+	word-wrap: break-word;
 }

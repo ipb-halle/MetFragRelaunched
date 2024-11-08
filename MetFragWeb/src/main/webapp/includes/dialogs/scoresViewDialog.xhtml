@@ -1,55 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-		"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"
-	  xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	  xmlns:h="http://xmlns.jcp.org/jsf/html"
-	  xmlns:p="http://primefaces.org/ui"
-	  xmlns:f="http://xmlns.jcp.org/jsf/core">
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:h="jakarta.faces.html"
+      xmlns:p="http://primefaces.org/ui">
 
 <h:body>
-	<p:dialog width="655" dynamic="true" visible="#{metFragWebBean.scoresViewActive}"
-		id="scoresViewDialog" header="Scores View"
-		widgetVar="scoresViewDialog" modal="true" resizable="false"
-		position="center" showEffect="fade">
-		<p:ajax event="close" listener="#{metFragWebBean.closeScoresView}" />
-		<h:form id="scoresViewForm">
-			<h:panelGrid columnClasses="firstColumnScoreSummary,secondColumnScoreSummary" columns="2" style="word-wrap: break-word; ">
-				<h:outputText rendered="#{metFragWebBean.compoundNameAvailable}" 
-					value="Candidate Name: " />
-				<h:panelGroup style="word-wrap: break-word;" rendered="#{metFragWebBean.compoundNameAvailable}">
-					<h:outputText id="currentScoreCandidateName" value="#{metFragWebBean.currentScoreCandidateName}" />
-				</h:panelGroup>
-				<h:outputText value="Candidate Identifier: " />
-				<h:outputText id="currentScoreCandidateIdentifier" 
-					value="#{metFragWebBean.currentScoreCandidateIdentifier}" />
-			</h:panelGrid>
-			<br/>
-			<p:dataTable var="score" style="width: 620px" value="#{metFragWebBean.candidateScore}" scrollable="true" rowKey="#{score.rowKey}">>
-				<p:column style="width:16px">
-            		<p:rowToggler />
-        		</p:column>
-				<p:column id="name" headerText="Name" 
-					width="300" style="text-align: left; word-wrap: break-word; overflow-wrap: break-word;">
-					<h:outputText id="scoreNameCell" value="#{score.name}" />
-				</p:column>
-				<p:column id="value" headerText="Normalized Value"
-					width="100" style="text-align: center; ">
-					<h:outputText id="scoreValueCell" value="#{score.roundedValue}" />
-				</p:column>
-				<p:column id="rawScore" headerText="Raw Value"
-					width="100" style="text-align: center">
-					<h:outputText id="rawScoreCell" value="#{score.roundedRawValue}" />
-				</p:column>
-				<p:rowExpansion>
-   					<h:outputText value="Details" style="font-weight: bold;"/>
-					<p:outputPanel style="word-wrap: break-word;">
-   						<h:outputText value="#{score.info == 'NA' ? 'no further information available' : score.info}" />
-					</p:outputPanel>
-              	</p:rowExpansion>
-			</p:dataTable>
-		</h:form>
-	</p:dialog>
+    <p:dialog width="655" dynamic="true" visible="#{metFragWebBean.scoresViewActive}"
+              id="scoresViewDialog" header="Scores View"
+              widgetVar="scoresViewDialog" modal="true" resizable="false"
+              position="center" showEffect="fade">
+        <p:ajax event="close" listener="#{metFragWebBean.closeScoresView}"/>
+        <h:form id="scoresViewForm">
+            <h:panelGrid columnClasses="firstColumnScoreSummary,secondColumnScoreSummary" columns="2">
+                <h:outputText rendered="#{metFragWebBean.compoundNameAvailable}"
+                              value="Candidate Name: "/>
+                <h:panelGroup rendered="#{metFragWebBean.compoundNameAvailable}">
+                    <h:outputText id="currentScoreCandidateName" value="#{metFragWebBean.currentScoreCandidateName}"/>
+                </h:panelGroup>
+                <h:outputText value="Candidate Identifier: "/>
+                <h:outputText id="currentScoreCandidateIdentifier"
+                              value="#{metFragWebBean.currentScoreCandidateIdentifier}"/>
+            </h:panelGrid>
+            <br/>
+            <p:dataTable var="score" value="#{metFragWebBean.candidateScore}" scrollable="true" rowKey="#{score.rowKey}">
+                <p:column styleClass="togglerColumn">
+                    <p:rowToggler/>
+                </p:column>
+                <p:column id="name" headerText="Name" styleClass="nameColumn">
+                    <h:outputText id="scoreNameCell" value="#{score.name}"/>
+                </p:column>
+                <p:column id="value" headerText="Normalized Value" styleClass="valueColumn">
+                    <h:outputText id="scoreValueCell" value="#{score.roundedValue}"/>
+                </p:column>
+                <p:column id="rawScore" headerText="Raw Value" styleClass="rawScoreColumn">
+                    <h:outputText id="rawScoreCell" value="#{score.roundedRawValue}"/>
+                </p:column>
+                <p:rowExpansion>
+                    <h:outputText value="Details" styleClass="scoreDetails"/>
+                    <p:outputPanel styleClass="scoreDetailsText">
+                        <h:outputText value="#{score.info == 'NA' ? 'no further information available' : score.info}"/>
+                    </p:outputPanel>
+                </p:rowExpansion>
+            </p:dataTable>
+        </h:form>
+    </p:dialog>
 </h:body>
 
 </html>
