@@ -7,21 +7,16 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-java@v2
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        cache: maven
-    - run: mvn -Dhttps.protocols=TLSv1.2 package -pl MetFragCommandLine -am -DskipTests
-    - name: Add asset to release
-      uses: softprops/action-gh-release@v1
-      with:
-              files: 'MetFragCommandLine/target/MetFragCommandLine-*jar'
-
-             
-
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - run: mvn package -pl MetFragCommandLine -am -DskipTests
+      - name: Add asset to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: 'MetFragCommandLine/target/MetFragCommandLine-*jar'
