@@ -145,7 +145,7 @@
 						<h:panelGrid columns="1">
 							<p:fileUpload update="retentionTimeScorePanel"
 								id="retentionTimeTrainingFile"
-								fileUploadListener="#{metFragWebBean.retentionTimeFileUploadListener}"
+								listener="#{metFragWebBean.retentionTimeFileUploadListener}"
 								auto="true" mode="advanced" maxFileCount="10"
 								maxFileSize="20000000" autoUpload="true" multiple="false">
 							</p:fileUpload>
@@ -244,7 +244,7 @@
 					cellspacing="4" cellpadding="4" styleClass="subPanel"
 					rendered="#{metFragWebBean.suspectListInclusionScoreEnabled}">
 					<p:fileUpload id="suspectListsScore"
-						fileUploadListener="#{metFragWebBean.suspectListScoreUploadListener}"
+						listener="#{metFragWebBean.suspectListScoreUploadListener}"
 						auto="true" mode="advanced" maxFileCount="10"
 						maxFileSize="20000000" autoUpload="true" multiple="false"
 						required="false" update="suspectListInclusionScorePanel">
