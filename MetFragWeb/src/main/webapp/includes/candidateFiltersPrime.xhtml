@@ -388,7 +388,7 @@
 					cellspacing="4" cellpadding="4" styleClass="subPanel"
 					rendered="#{metFragWebBean.suspectListInclusionFilterEnabled}">
 					<p:fileUpload id="suspectListsFilter"
-						fileUploadListener="#{metFragWebBean.suspectListFilterUploadListener}"
+						listener="#{metFragWebBean.suspectListFilterUploadListener}"
 						auto="true" mode="advanced" maxFileCount="10"
 						maxFileSize="20000000" autoUpload="true" multiple="false"
 						required="false" update="suspectListInclusionFilterPanel">

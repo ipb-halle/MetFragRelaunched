@@ -121,7 +121,9 @@ public class LocalSDFDatabase extends AbstractFileDatabase {
 				while(keys.hasNext()) {
 					String curKey = keys.next();
 					if(!this.candidates.get(i).hasDefinedProperty(curKey)) this.candidates.get(i).setProperty(curKey, "-");
-					if(((String)this.candidates.get(i).getProperty(curKey)).equals("")) this.candidates.get(i).setProperty(curKey, "-");
+                    Object property = this.candidates.get(i).getProperty(curKey);
+                    if (property instanceof String && ((String) property).isEmpty())
+                        this.candidates.get(i).setProperty(curKey, "-");
 				}
 			}
 			

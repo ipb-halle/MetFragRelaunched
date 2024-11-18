@@ -20,7 +20,7 @@
 					value="Upload parameters as ZIP file" />
 				<br />
 				<p:fileUpload update="uploadParametersPanel" id="parametersUpload"
-					fileUploadListener="#{metFragWebBean.parametersUploadListener}"
+					listener="#{metFragWebBean.parametersUploadListener}"
 					auto="true" mode="advanced">
 				</p:fileUpload>
 				<h:panelGroup id="uploadParametersError" style="padding-top: 10px"

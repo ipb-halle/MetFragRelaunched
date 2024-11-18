@@ -57,7 +57,7 @@
                         <h:panelGrid columns="1"
                                      rendered="#{metFragWebBean.localDatabaseDefined}">
                             <p:fileUpload update="mainForm:mainAccordion" id="candidateFileUpload"
-                                          fileUploadListener="#{metFragWebBean.candidateFileUploadListener}"
+                                          listener="#{metFragWebBean.candidateFileUploadListener}"
                                           auto="true" mode="advanced">
                             </p:fileUpload>
                             <h:panelGroup id="candidateFileName" layout="block"
