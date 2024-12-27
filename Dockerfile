@@ -33,8 +33,8 @@ RUN mkdir -p /vol/file_databases; cd /vol/file_databases && \
         touch CompTox_07March19_SelectMetaData.csv && \
         wget -q https://zenodo.org/records/3472781/files/CompTox_07March19_WWMetaData.csv && \
         touch CompTox_07March19_WWMetaData.csv && \
-        wget -q https://zenodo.org/records/3541624/files/Zebrafish_13Nov2019_Beta.csv && \
-        touch Zebrafish_13Nov2019_Beta.csv && \
+        wget -q https://zenodo.org/records/14561114/files/Zebrafish_Metabolites_20241220.csv && \
+        touch Zebrafish_Metabolites_20241220.csv && \
         wget -q https://zenodo.org/records/3735703/files/EColiMDB_11Nov2019.csv && \
         touch EColiMDB_11Nov2019.csv && \
         wget -q https://zenodo.org/records/3434579/files/YMDB2_17Sept2019.csv && \
@@ -65,10 +65,10 @@ RUN cd /vol/file_databases && \
         touch NPAtlas_2024_03.csv && \
 	wget -q https://zenodo.org/records/13854577/files/CyanoMetDB_V03_2024_MetFrag.csv && \
         touch CyanoMetDB_V03_2024_MetFrag.csv && \
-	wget -q https://zenodo.org/records/14034886/files/PubChemLite_CCSbase_20241025.csv && \
-        touch PubChemLite_CCSbase_20241025.csv && \
-	wget -q https://zenodo.org/records/14246393/files/PubChemLite_exposomics_20241129.csv && \
-        touch PubChemLite_exposomics_20241129.csv
+	wget -q https://zenodo.org/records/14273340/files/PubChemLite_CCSbase_20241129.csv && \
+        touch PubChemLite_CCSbase_20241129.csv && \
+	wget -q https://zenodo.org/records/14560968/files/PubChemLite_exposomics_20241227.csv && \
+        touch PubChemLite_exposomics_20241227.csv
 
 COPY --from=builder /MetFragRelaunched/MetFragWeb/target/MetFragWeb.war /usr/local/tomee/webapps/
 RUN printf '#!/bin/sh \n\
