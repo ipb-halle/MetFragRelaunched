@@ -33,8 +33,8 @@ RUN mkdir -p /vol/file_databases; cd /vol/file_databases && \
         touch CompTox_07March19_SelectMetaData.csv && \
         wget -q https://zenodo.org/records/3472781/files/CompTox_07March19_WWMetaData.csv && \
         touch CompTox_07March19_WWMetaData.csv && \
-        wget -q https://zenodo.org/records/3541624/files/Zebrafish_13Nov2019_Beta.csv && \
-        touch Zebrafish_13Nov2019_Beta.csv && \
+        wget -q https://zenodo.org/records/14561114/files/Zebrafish_Metabolites_20241220.csv && \
+        touch Zebrafish_Metabolites_20241220.csv && \
         wget -q https://zenodo.org/records/3735703/files/EColiMDB_11Nov2019.csv && \
         touch EColiMDB_11Nov2019.csv && \
         wget -q https://zenodo.org/records/3434579/files/YMDB2_17Sept2019.csv && \
