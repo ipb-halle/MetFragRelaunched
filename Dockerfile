@@ -67,8 +67,8 @@ RUN cd /vol/file_databases && \
         touch CyanoMetDB_V03_2024_MetFrag.csv && \
 	wget -q https://zenodo.org/records/14273340/files/PubChemLite_CCSbase_20241129.csv && \
         touch PubChemLite_CCSbase_20241129.csv && \
-	wget -q https://zenodo.org/records/14246393/files/PubChemLite_exposomics_20241129.csv && \
-        touch PubChemLite_exposomics_20241129.csv
+	wget -q https://zenodo.org/records/14560968/files/PubChemLite_exposomics_20241227.csv && \
+        touch PubChemLite_exposomics_20241227.csv
 
 COPY --from=builder /MetFragRelaunched/MetFragWeb/target/MetFragWeb.war /usr/local/tomee/webapps/
 RUN printf '#!/bin/sh \n\
