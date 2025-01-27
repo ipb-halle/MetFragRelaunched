@@ -4,14 +4,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.ClassicHttpRequest;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -20,8 +20,6 @@ import org.json.simple.parser.ParseException;
 import de.ipbhalle.metfraglib.additionals.MathTools;
 import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
 import de.ipbhalle.metfraglib.candidate.TopDownPrecursorCandidate;
-import de.ipbhalle.metfraglib.exceptions.DatabaseIdentifierNotFoundException;
-import de.ipbhalle.metfraglib.exceptions.MultipleHeadersFoundInInputDatabaseException;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.list.CandidateList;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
@@ -42,7 +40,7 @@ public class OnlineChemSpiderRestDatabase extends AbstractDatabase {
 	
 	@Override
 	public ArrayList<String> getCandidateIdentifiers(double monoisotopicMass, double relativeMassDeviation)
-			throws MultipleHeadersFoundInInputDatabaseException, Exception {
+			throws Exception {
 
 		this.errors = 0;
 		double mzabs = MathTools.calculateAbsoluteDeviation(monoisotopicMass, relativeMassDeviation);
@@ -52,10 +50,9 @@ public class OnlineChemSpiderRestDatabase extends AbstractDatabase {
 		httpPost.addHeader("apikey", this.apikey);
 		
 		String json = "{\"mass\":" + monoisotopicMass + ", \"range\": " + mzabs + "}";
-	    
-		StringEntity entity = new StringEntity(json);
-	    entity.setContentType("application/json");
-	    
+
+		StringEntity entity = new StringEntity(json, ContentType.APPLICATION_JSON);
+
 	    httpPost.setEntity(entity);
 
 		ArrayList<String> identifiers = this.getIdentifieresByQueryID(this.getResults(httpPost));
@@ -72,9 +69,8 @@ public class OnlineChemSpiderRestDatabase extends AbstractDatabase {
 		httpPost.addHeader("apikey", this.apikey);
 		
 		String json = "{\"formula\": \"" + molecularFormula + "\"}";
-		
-		StringEntity entity = new StringEntity(json);
-	    entity.setContentType("application/json");
+
+		StringEntity entity = new StringEntity(json, ContentType.APPLICATION_JSON);
 	    
 	    httpPost.setEntity(entity);
 	    
@@ -85,7 +81,7 @@ public class OnlineChemSpiderRestDatabase extends AbstractDatabase {
 
 	@Override
 	public ArrayList<String> getCandidateIdentifiers(ArrayList<String> identifiers)
-			throws MultipleHeadersFoundInInputDatabaseException, Exception {
+			throws Exception {
 		this.errors = 0;
 		ArrayList<String> uniqueCsidArray = new ArrayList<String>();
         for(int i = 0; i < identifiers.size(); i++) {
@@ -97,7 +93,7 @@ public class OnlineChemSpiderRestDatabase extends AbstractDatabase {
 
 	@Override
 	public ICandidate getCandidateByIdentifier(String identifier)
-			throws DatabaseIdentifierNotFoundException, Exception {
+        throws Exception {
 		ArrayList<String> ids = new ArrayList<String>();
 		ids.add(identifier);
 		CandidateList candidates = this.getCandidateByIdentifier(ids);
@@ -121,11 +117,10 @@ public class OnlineChemSpiderRestDatabase extends AbstractDatabase {
 	 * 
 	 * @param identifiers
 	 * @param candidateList
-	 * @throws ClientProtocolException
 	 * @throws IOException
 	 * @throws ParseException
 	 */
-	protected void addToCandidateList(List<String> identifiers, CandidateList candidateList) throws ClientProtocolException, IOException, ParseException {
+	protected void addToCandidateList(List<String> identifiers, CandidateList candidateList) throws IOException, ParseException {
 		if(identifiers.size() == 0) return;
 		String recordIds = identifiers.get(0);
 		for(int i = 1; i < Math.min(identifiers.size(), 100); i++)
@@ -135,8 +130,7 @@ public class OnlineChemSpiderRestDatabase extends AbstractDatabase {
 		
 		String json = "{\"recordIds\": [" + recordIds + "], \"fields\": [\"SMILES\",\"MonoisotopicMass\",\"Formula\",\"CommonName\",\"ReferenceCount\",\"DataSourceCount\",\"PubMedCount\",\"RSCCount\"] }";
 
-		StringEntity entity = new StringEntity(json);
-		entity.setContentType("application/json");
+		StringEntity entity = new StringEntity(json, ContentType.APPLICATION_JSON);
 	
 		httpPost.setEntity(entity);
 		    
@@ -240,7 +234,7 @@ public class OnlineChemSpiderRestDatabase extends AbstractDatabase {
 		return identifiers;
 	}
 	
-	protected boolean checkStatus(String queryID) throws ClientProtocolException, IOException, ParseException {
+	protected boolean checkStatus(String queryID) throws IOException, ParseException {
 		HttpGet httpGet = new HttpGet("https://api.rsc.org/compounds/v1/filter/" + queryID + "/status");
 
 		JSONObject jsonObject = this.getResults(httpGet);
@@ -252,7 +246,7 @@ public class OnlineChemSpiderRestDatabase extends AbstractDatabase {
 		return false;
 	}
 	
-	protected JSONObject getResults(HttpRequestBase request) throws ClientProtocolException, IOException, ParseException {
+	protected JSONObject getResults(ClassicHttpRequest request) throws IOException, ParseException {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 
 		request.addHeader("apikey", this.apikey);

@@ -17,8 +17,7 @@ public class StatusAssembler extends RepresentationModelAssembler {
 
 	@Override
 	public EntityModel<StatusAssembler> toModel() {
-		EntityModel<StatusAssembler> resource = new EntityModel<StatusAssembler>(this);
-		return resource;
+        return EntityModel.of(this);
 	}
 
 }
