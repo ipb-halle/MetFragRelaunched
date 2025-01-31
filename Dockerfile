@@ -50,16 +50,16 @@ RUN cd /vol/file_databases && \
     touch COCONUT4MetFrag_april.csv && \
     wget -q https://zenodo.org/records/8144127/files/LIPIDMAPS_20230712.csv && \
     touch LIPIDMAPS_20230712.csv && \
-    wget -q https://zenodo.org/records/12908412/files/PubChem_OECDPFAS_largerPFASparts_20240726.csv && \
-    touch PubChem_OECDPFAS_largerPFASparts_20240726.csv && \
+    wget -q https://zenodo.org/records/14738325/files/PubChem_OECDPFAS_largerPFASparts_20250125.csv && \
+    touch PubChem_OECDPFAS_largerPFASparts_20250125.csv && \
     wget -q https://zenodo.org/records/13148840/files/NPAtlas_2024_03.csv && \
     touch NPAtlas_2024_03.csv && \
     wget -q https://zenodo.org/records/13854577/files/CyanoMetDB_V03_2024_MetFrag.csv && \
     touch CyanoMetDB_V03_2024_MetFrag.csv && \
     wget -q https://zenodo.org/records/14592473/files/PubChemLite_CCSbase_20241227.csv && \
     touch PubChemLite_CCSbase_20241227.csv && \
-    wget -q https://zenodo.org/records/14560968/files/PubChemLite_exposomics_20241227.csv && \
-    touch PubChemLite_exposomics_20241227.csv
+    wget -q https://zenodo.org/records/14781118/files/PubChemLite_exposomics_20250131.csv && \
+    touch PubChemLite_exposomics_20250131.csv
 
 FROM tomee:10
 
