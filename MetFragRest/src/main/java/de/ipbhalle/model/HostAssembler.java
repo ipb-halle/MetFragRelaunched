@@ -17,8 +17,7 @@ public class HostAssembler extends RepresentationModelAssembler {
 
 	@Override
 	public EntityModel<HostAssembler> toModel() {
-		EntityModel<HostAssembler> resource = new EntityModel<HostAssembler>(this);
-		return resource;
+        return EntityModel.of(this);
 	}
 
 }

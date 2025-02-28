@@ -17,8 +17,7 @@ public class ProcessAssembler extends RepresentationModelAssembler {
 
 	@Override
 	public EntityModel<ProcessAssembler> toModel() {
-		EntityModel<ProcessAssembler> resource = new EntityModel<ProcessAssembler>(this);
-		return resource;
+        return EntityModel.of(this);
 	}
 
 }

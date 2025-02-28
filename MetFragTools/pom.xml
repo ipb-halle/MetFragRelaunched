@@ -18,6 +18,10 @@
 			<artifactId>MetFragLib</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.openscience.cdk</groupId>
+			<artifactId>cdk-tautomer</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 		</dependency>
