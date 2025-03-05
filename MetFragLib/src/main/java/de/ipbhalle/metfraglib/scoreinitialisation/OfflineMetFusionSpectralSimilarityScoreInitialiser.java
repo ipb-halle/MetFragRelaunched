@@ -44,7 +44,7 @@ public class OfflineMetFusionSpectralSimilarityScoreInitialiser implements IScor
                         offlineSpectralFilePath = Paths.get((String) settings.get(VariableNames.OFFLINE_SPECTRAL_DATABASE_FILE_NAME));
                     } else {
                         logger.info("Load reference data from default resource \"MoNA-export-LC-MS.mb\".");
-                        URI uri = Objects.requireNonNull(getClass().getClassLoader().getResource("/MoNA-export-LC-MS.mb")).toURI();
+                        URI uri = Objects.requireNonNull(getClass().getClassLoader().getResource("MoNA-export-LC-MS.mb")).toURI();
                         if ("jar".equals(uri.getScheme())) {
                             try {
                                 FileSystems.getFileSystem(uri);

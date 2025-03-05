@@ -21,7 +21,7 @@ import de.ipbhalle.metfraglib.process.CombinedMetFragProcess;
 import de.ipbhalle.metfraglib.settings.MetFragGlobalSettings;
 
 public class CommandLineTool {
-	private static final Logger logger = LogManager.getLogger("HelloWorld");
+	private static final Logger logger = LogManager.getLogger(CommandLineTool.class);
 	public static boolean printHelp = false;
 	
 	/**

@@ -19,7 +19,7 @@ import de.ipbhalle.metfraglib.peaklistreader.MultipleTandemMassPeakListReader;
 import de.ipbhalle.metfraglib.settings.Settings;
 
 public class OfflineIndividualMoNASpectralSimilarityInitialiser implements IScoreInitialiser {
-	private Logger logger = Logger.getLogger(OfflineIndividualMoNASpectralSimilarityInitialiser.class);
+	private final Logger logger = Logger.getLogger(OfflineIndividualMoNASpectralSimilarityInitialiser.class);
 
 	private static volatile SpectralPeakListCollection spectralPeakLists = null;
 	private static final Object lock = new Object();
@@ -44,7 +44,7 @@ public class OfflineIndividualMoNASpectralSimilarityInitialiser implements IScor
 						offlineSpectralFilePath = Paths.get((String) settings.get(VariableNames.OFFLINE_SPECTRAL_DATABASE_FILE_NAME));
 					} else {
 						logger.info("Load reference data from default resource \"MoNA-export-LC-MS.mb\".");
-						URI uri = Objects.requireNonNull(getClass().getClassLoader().getResource("/MoNA-export-LC-MS.mb")).toURI();
+						URI uri = Objects.requireNonNull(getClass().getClassLoader().getResource("MoNA-export-LC-MS.mb")).toURI();
 						if ("jar".equals(uri.getScheme())) {
 							try {
 								FileSystems.getFileSystem(uri);
