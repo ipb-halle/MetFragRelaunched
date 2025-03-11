@@ -2,10 +2,12 @@ package de.ipbhalle.metfragweb.controller;
 
 import java.awt.image.RenderedImage;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
+import java.util.Properties;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
@@ -78,7 +80,8 @@ import de.ipbhalle.metfragweb.validator.SmartsValidator;
 @SessionScoped
 public class MetFragWebBean implements Serializable {
 
-	private final String version = "v2.6.1";
+	private final String version;
+
 	/*
 	 * combines all the settings
 	 */
@@ -143,6 +146,21 @@ public class MetFragWebBean implements Serializable {
 	 */
 	public MetFragWebBean() {
 		System.out.println("MetFragWebBean");
+		this.version = loadVersion();
+	}
+
+	private String loadVersion() {
+		Properties properties = new Properties();
+		try (InputStream input = getClass().getClassLoader().getResourceAsStream("application.properties")) {
+			if (input == null) {
+				throw new IOException("Unable to find application.properties");
+			}
+			properties.load(input);
+			return properties.getProperty("version");
+		} catch (IOException ex) {
+			ex.printStackTrace();
+			return "unknown";
+		}
 	}
 
 	@PostConstruct
