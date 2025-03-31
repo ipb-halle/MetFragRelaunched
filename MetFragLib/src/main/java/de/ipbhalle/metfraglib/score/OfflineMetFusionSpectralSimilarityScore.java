@@ -1,5 +1,7 @@
 package de.ipbhalle.metfraglib.score;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.openscience.cdk.fingerprint.IBitFingerprint;
 
 import de.ipbhalle.metfraglib.candidate.PrecursorCandidate;
@@ -22,11 +24,12 @@ import de.ipbhalle.metfraglib.settings.Settings;
  *
  */
 public class OfflineMetFusionSpectralSimilarityScore extends AbstractScore {
-
+	private final Logger logger = Logger.getLogger(OfflineMetFusionSpectralSimilarityScore.class);
 	protected ICandidate candidate;
 	
 	public OfflineMetFusionSpectralSimilarityScore(Settings settings) {
 		super(settings);
+		logger.setLevel(Level.toLevel("info"));
 		this.optimalValues = new double[1];
 		this.optimalValues[0] = 0.0;
 		this.hasInterimResults = false;
@@ -38,6 +41,7 @@ public class OfflineMetFusionSpectralSimilarityScore extends AbstractScore {
 		//beta = -9, gamma = 0.6
 		try {
 			SpectralPeakListCollection spectralPeakLists = (SpectralPeakListCollection)settings.get(VariableNames.OFFLINE_METFUSION_MONA_SPECTRAL_SIMILARITY_PEAK_LIST_COLLECTION_NAME);
+			logger.info("Using " + spectralPeakLists.getSize() + " reference spectra.");
 			//fingerprint of the current candidate
 			IBitFingerprint f2 = TanimotoSimilarity.calculateFingerPrint(this.candidate.getAtomContainer());
 			//calculate similarity score

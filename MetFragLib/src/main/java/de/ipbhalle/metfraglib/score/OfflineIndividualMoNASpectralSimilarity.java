@@ -4,7 +4,10 @@ import de.ipbhalle.metfraglib.collection.SpectralPeakListCollection;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.interfaces.IMatch;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
+import de.ipbhalle.metfraglib.scoreinitialisation.OfflineIndividualMoNASpectralSimilarityInitialiser;
 import de.ipbhalle.metfraglib.settings.Settings;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 /**
  * fetched spectra in case they are present in the MoNA database
@@ -16,11 +19,12 @@ import de.ipbhalle.metfraglib.settings.Settings;
  *
  */
 public class OfflineIndividualMoNASpectralSimilarity extends AbstractScore {
-
+	private final Logger logger = Logger.getLogger(OfflineIndividualMoNASpectralSimilarity.class);
 	protected ICandidate candidate;
 	
 	public OfflineIndividualMoNASpectralSimilarity(Settings settings) {
 		super(settings);
+		logger.setLevel(Level.toLevel("info"));
 		this.optimalValues = new double[1];
 		this.optimalValues[0] = 0.0;
 		this.hasInterimResults = false;
@@ -32,6 +36,7 @@ public class OfflineIndividualMoNASpectralSimilarity extends AbstractScore {
 		//beta = -9, gamma = 0.6
 		try {
 			SpectralPeakListCollection spectralPeakLists = (SpectralPeakListCollection)settings.get(VariableNames.OFFLINE_METFUSION_MONA_SPECTRAL_SIMILARITY_PEAK_LIST_COLLECTION_NAME);
+			logger.info("Using " + spectralPeakLists.getSize() + " reference spectra.");
 			Double bestSimilarityScore = spectralPeakLists.getInchikey1ToSimScore().get(this.candidate.getProperty(VariableNames.INCHI_KEY_1_NAME));
 			if(bestSimilarityScore != null) {
 				this.value = bestSimilarityScore;
