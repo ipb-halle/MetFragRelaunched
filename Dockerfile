@@ -56,8 +56,8 @@ RUN cd /vol/file_databases && \
     touch NPAtlas_2024_03.csv && \
     wget -q https://zenodo.org/records/13854577/files/CyanoMetDB_V03_2024_MetFrag.csv && \
     touch CyanoMetDB_V03_2024_MetFrag.csv && \
-    wget -q https://zenodo.org/records/14958971/files/PubChemLite_CCSbase_20250228.csv && \
-    touch PubChemLite_CCSbase_20250228.csv && \
+    wget -q https://zenodo.org/records/15129932/files/PubChemLite_CCSbase_20250328.csv && \
+    touch PubChemLite_CCSbase_20250328.csv && \
     wget -q https://zenodo.org/records/15100253/files/PubChemLite_exposomics_20250328.csv && \
     touch PubChemLite_exposomics_20250328.csv
 
