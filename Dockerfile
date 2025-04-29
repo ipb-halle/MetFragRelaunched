@@ -58,8 +58,8 @@ RUN cd /vol/file_databases && \
     touch CyanoMetDB_V03_2024_MetFrag.csv && \
     wget -q https://zenodo.org/records/15129932/files/PubChemLite_CCSbase_20250328.csv && \
     touch PubChemLite_CCSbase_20250328.csv && \
-    wget -q https://zenodo.org/records/15100253/files/PubChemLite_exposomics_20250328.csv && \
-    touch PubChemLite_exposomics_20250328.csv
+    wget -q https://zenodo.org/records/15301074/files/PubChemLite_exposomics_20250425.csv && \
+    touch PubChemLite_exposomics_20250425.csv
 
 FROM tomee:10-jre17-Temurin-microprofile
 
