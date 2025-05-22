@@ -45,7 +45,7 @@ jobs:
           key: ${{ runner.os }}-maven-cache-${{ hashFiles('**/pom.xml') }}
 
       - name: Inject Maven Build Cache into Docker
-        uses: reproducible-containers/buildkit-cache-dance@v3.1.0
+        uses: reproducible-containers/buildkit-cache-dance@v3.2.0
         with:
           cache-map: |
             {
