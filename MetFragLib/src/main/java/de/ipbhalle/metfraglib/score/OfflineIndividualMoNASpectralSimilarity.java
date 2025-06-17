@@ -33,18 +33,27 @@ public class OfflineIndividualMoNASpectralSimilarity extends AbstractScore {
 	
 	public void calculate() throws Exception {
 		this.value = 0.0;
+		logger.debug("Starte Berechnung der OfflineIndividualMoNASpectralSimilarity.");
 		//beta = -9, gamma = 0.6
 		try {
 			SpectralPeakListCollection spectralPeakLists = (SpectralPeakListCollection)settings.get(VariableNames.OFFLINE_METFUSION_MONA_SPECTRAL_SIMILARITY_PEAK_LIST_COLLECTION_NAME);
 			logger.info("Using " + spectralPeakLists.getSize() + " reference spectra.");
+			String inchikey = (String) this.candidate.getProperty(VariableNames.INCHI_KEY_1_NAME);
+			logger.info("Verwende InChIKey: " + inchikey);
 			Double bestSimilarityScore = spectralPeakLists.getInchikey1ToSimScore().get(this.candidate.getProperty(VariableNames.INCHI_KEY_1_NAME));
+			logger.info("Gefundener Similarity Score: " + bestSimilarityScore);
 			if(bestSimilarityScore != null) {
 				this.value = bestSimilarityScore;
+				logger.info("Similarity Score gesetzt: " + this.value);
+			} else {
+				logger.info("Kein Similarity Score gefunden, Wert bleibt 0.0");
 			}
 		} catch(Exception e) {
+			logger.error("Fehler bei der Berechnung der Similarity: ", e);
 			this.value = 0.0;
 		}
 		this.calculationFinished = true;
+		logger.info("Berechnung abgeschlossen. Finaler Wert: " + this.value);
 	}
 
 	public void setOptimalValues(double[] values) {
