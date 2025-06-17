@@ -61,7 +61,7 @@ RUN cd /vol/file_databases && \
     wget -q https://zenodo.org/records/15553218/files/PubChemLite_exposomics_20250530.csv && \
     touch PubChemLite_exposomics_20250530.csv
 
-FROM tomee:10-jre17-Temurin-microprofile
+FROM tomee:10.0.1-jre17-Temurin-microprofile
 
 RUN set -eux; \
     apt-get update; \
