@@ -1,6 +1,8 @@
 package de.ipbhalle.metfraglib.parameter;
 
 import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Level;
 
@@ -264,15 +266,44 @@ public class ParameterDataTypes {
 				values[i] = Double.parseDouble(tmp[i]);
 			return values;
 		}
-		if(type.equals("String[]")) {
-			String[] tmp = parameter.split(",");
-			for(int i = 0; i < tmp.length; i++)
-				tmp[i] = tmp[i].trim();
-			return tmp;
+		if (type.equals("String[]")) {
+			if (parameterName.contains("Smarts")) {
+				return splitSmartsString(parameter);
+			} else {
+				String[] tmp = parameter.split(",");
+				for (int i = 0; i < tmp.length; i++)
+					tmp[i] = tmp[i].trim();
+				return tmp;
+			}
 		}
 		return parameter;
 	}
-	
+
+	public static String[] splitSmartsString(String input) {
+		List<String> substrings = new ArrayList<>();
+		int start = 0;
+		int squareBracketCount = 0;
+		for (int i = 0; i < input.length(); i++) {
+			char c = input.charAt(i);
+			if (c == '[') {
+				squareBracketCount++;
+			} else if (c == ']') {
+				squareBracketCount--;
+			} else if (c == ',' && squareBracketCount == 0) {
+				String substring = input.substring(start, i).trim();
+				if (!substring.isEmpty()) {
+					substrings.add(substring);
+				}
+				start = i + 1;
+			}
+		}
+		String lastSubstring = input.substring(start).trim();
+		if (!lastSubstring.isEmpty()) {
+			substrings.add(lastSubstring);
+		}
+		return substrings.toArray(new String[substrings.size()]);
+	}
+
 	public static String getType(String parameterName) {
 		if(!parameterDatatypes.containsKey(parameterName)) return "";
 		return parameterDatatypes.get(parameterName);
