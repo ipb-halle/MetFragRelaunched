@@ -267,7 +267,9 @@ public class ParameterDataTypes {
 			return values;
 		}
 		if (type.equals("String[]")) {
-			if (parameterName.contains("Smarts")) {
+			// Special handling for SMARTS inclusion and exclusion lists
+			if (parameterName.equals(VariableNames.PRE_CANDIDATE_FILTER_SMARTS_INCLUSION_LIST_NAME)
+					|| parameterName.equals(VariableNames.PRE_CANDIDATE_FILTER_SMARTS_EXCLUSION_LIST_NAME)) {
 				return splitSmartsString(parameter);
 			} else {
 				String[] tmp = parameter.split(",");
@@ -279,10 +281,26 @@ public class ParameterDataTypes {
 		return parameter;
 	}
 
+	/**
+	 * Splits a string containing multiple SMARTS patterns separated by commas into an array of individual SMARTS patterns.
+	 * This method is designed to handle the complexity of SMARTS syntax, which may include commas as part of the pattern 
+	 * rather than separators.
+	 * 
+	 * Specifically, it ignores commas that are:
+	 * - Inside square brackets, which are used for atom specifications in SMARTS. 
+	 * - Surrounded by bond primitives (e.g., '-', '/', '\\', '?', '=', '#', ':', '~', '@') or the not operator '!', 
+	 *   as these commas are part of the SMARTS pattern. 
+	 *  
+	 * @param input A string containing multiple SMARTS patterns separated by commas.
+	 * @return An array of individual SMARTS patterns.
+	 */
 	public static String[] splitSmartsString(String input) {
+
 		List<String> substrings = new ArrayList<>();
 		int start = 0;
 		int squareBracketCount = 0;
+		String bondPrimitives = "-/\\?=#:~@!";
+
 		for (int i = 0; i < input.length(); i++) {
 			char c = input.charAt(i);
 			if (c == '[') {
@@ -290,6 +308,15 @@ public class ParameterDataTypes {
 			} else if (c == ']') {
 				squareBracketCount--;
 			} else if (c == ',' && squareBracketCount == 0) {
+
+				// Check if the comma is surrounded by bond primitives or the not operator "!".
+				// If so, skip this comma as it's part of the SMARTS pattern, not a separator.
+				if (i > 0 && i + 1 < input.length() // Check if the comma is not at the beginning or the end of the string
+						&& bondPrimitives.indexOf(input.charAt(i - 1)) != -1
+						&& bondPrimitives.indexOf(input.charAt(i + 1)) != -1) {
+					continue;
+				}
+
 				String substring = input.substring(start, i).trim();
 				if (!substring.isEmpty()) {
 					substrings.add(substring);

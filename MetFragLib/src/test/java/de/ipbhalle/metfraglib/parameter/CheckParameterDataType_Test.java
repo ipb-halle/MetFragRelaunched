@@ -38,6 +38,7 @@ public class CheckParameterDataType_Test {
 			String[] smartsListExpected = {
 					"C(=O)-O", // no comma in SMARTS
 					"[C,O]-c1ccccc1", // comma in a pair of square brackets 
+					"C-,=C@,!-N", // comma between bond primitives and not operator "!"
 					"[$(c1(-[O,N])ccccc1),$(c1c(-[O,N])cccc1)]-C(=O)-O", // comma in nested square brackets
 			};
 			String smartsListString = String.join(",", smartsListExpected);
