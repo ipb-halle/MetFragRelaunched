@@ -2,6 +2,9 @@ package de.ipbhalle.metfragweb.helper;
 
 import java.awt.image.RenderedImage;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 import jakarta.faces.model.SelectItem;
@@ -250,8 +253,14 @@ public class ProcessCompoundsThreadRunner extends ThreadRunner {
 			String identifier = candidate.getIdentifier();
 			Double mass = (Double)candidate.getProperty(VariableNames.MONOISOTOPIC_MASS_NAME);
 			String formula = (String)candidate.getProperty(VariableNames.MOLECULAR_FORMULA_NAME);
-			Molecule mol = new Molecule(identifier, mass, formula, 
-					this.weights, "/files/" + this.sessionId + "/images/candidates/" + candidate.getIdentifier() + ".png", 
+            String imageAddress = null;
+            try {
+                imageAddress = "/files/" + this.sessionId + "/images/candidates/" + URLEncoder.encode(candidate.getIdentifier(), StandardCharsets.UTF_8.toString()) + ".png";
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
+            Molecule mol = new Molecule(identifier, mass, formula,
+					this.weights, imageAddress,
 					scoreSummaries, candidate.getInChI(), (String)candidate.getProperty(VariableNames.SMILES_NAME),
 					(Boolean)this.beanSettingsContainer.getMetFragSettings().get(VariableNames.USE_SMILES_NAME));
 			if(simScoreIndex != null) mol.setSimScoreIndex(simScoreIndex);

@@ -25,6 +25,10 @@ import jakarta.servlet.http.HttpSession;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.mail.EmailAttachment;
 import org.apache.commons.mail.MultiPartEmail;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.primefaces.PrimeFaces;
 import org.primefaces.component.organigram.OrganigramHelper;
 import org.primefaces.event.CloseEvent;
@@ -79,6 +83,7 @@ import de.ipbhalle.metfragweb.validator.SmartsValidator;
 @Named
 @SessionScoped
 public class MetFragWebBean implements Serializable {
+    protected static final Logger logger = LogManager.getLogger();
 
 	private final String version;
 
@@ -257,7 +262,7 @@ public class MetFragWebBean implements Serializable {
 	
 	//disable talkative axis logger
 	protected void disableLogger() {
-		org.apache.log4j.Logger.getRootLogger().setLevel(org.apache.log4j.Level.OFF);
+		Configurator.setLevel(logger.getName(), Level.OFF);
 	}
 	
 	/*

@@ -1,20 +1,5 @@
 package de.ipbhalle.metfragweb.container;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-
-import jakarta.faces.context.FacesContext;
-import jakarta.faces.model.SelectItem;
-import jakarta.servlet.ServletContext;
-
-import org.apache.log4j.Level;
-import org.primefaces.model.chart.AxisType;
-import org.primefaces.model.chart.LineChartModel;
-import org.primefaces.model.chart.LineChartSeries;
-
 import de.ipbhalle.metfraglib.exceptions.ParameterNotKnownException;
 import de.ipbhalle.metfraglib.exceptions.RetentionTimeNotFoundException;
 import de.ipbhalle.metfraglib.exceptions.TooFewCandidatesException;
@@ -24,20 +9,29 @@ import de.ipbhalle.metfraglib.list.DefaultPeakList;
 import de.ipbhalle.metfraglib.parameter.Constants;
 import de.ipbhalle.metfraglib.parameter.ParameterDataTypes;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
+import de.ipbhalle.metfraglib.peak.TandemMassPeak;
+import de.ipbhalle.metfraglib.peaklistreader.StringTandemMassPeakListReader;
 import de.ipbhalle.metfraglib.process.CombinedMetFragProcess;
 import de.ipbhalle.metfraglib.process.ProcessingStatus;
 import de.ipbhalle.metfraglib.settings.MetFragGlobalSettings;
-import de.ipbhalle.metfragweb.datatype.AdditionalFileDatabase;
-import de.ipbhalle.metfragweb.datatype.AvailableScore;
-import de.ipbhalle.metfragweb.datatype.SuspectListFileContainer;
-import de.ipbhalle.metfragweb.datatype.UploadedSuspectListFile;
-import de.ipbhalle.metfragweb.datatype.Weight;
+import de.ipbhalle.metfragweb.datatype.*;
 import de.ipbhalle.metfragweb.helper.ProcessCompoundsThreadRunner;
 import de.ipbhalle.metfragweb.helper.SettingsInitialiser;
 import de.ipbhalle.metfragweb.helper.UserInputDataHandler;
 import de.ipbhalle.metfragweb.helper.UserOutputDataHandler;
-import de.ipbhalle.metfraglib.peak.TandemMassPeak;
-import de.ipbhalle.metfraglib.peaklistreader.StringTandemMassPeakListReader;
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.model.SelectItem;
+import jakarta.servlet.ServletContext;
+import org.apache.logging.log4j.Level;
+import org.primefaces.model.chart.AxisType;
+import org.primefaces.model.chart.LineChartModel;
+import org.primefaces.model.chart.LineChartSeries;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 
 public class BeanSettingsContainer {
 	

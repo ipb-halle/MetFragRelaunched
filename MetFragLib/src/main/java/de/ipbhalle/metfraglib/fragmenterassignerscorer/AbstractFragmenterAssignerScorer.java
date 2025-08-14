@@ -1,7 +1,10 @@
 package de.ipbhalle.metfraglib.fragmenterassignerscorer;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import de.ipbhalle.metfraglib.database.OnlinePubChemDatabase;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.config.Configurator;
 
 import de.ipbhalle.metfraglib.collection.ScoreCollection;
 import de.ipbhalle.metfraglib.exceptions.AtomTypeNotKnownFromInputListException;
@@ -30,7 +33,7 @@ public abstract class AbstractFragmenterAssignerScorer implements IFragmenterAss
 	//final scores is weighted sum of all scorecollection scores
 	protected double finalScore;
 
-	protected Logger logger = Logger.getLogger(AbstractFragmenterAssignerScorer.class);
+    protected static final Logger logger = LogManager.getLogger();
 	
 	/**
 	 * 
@@ -40,7 +43,7 @@ public abstract class AbstractFragmenterAssignerScorer implements IFragmenterAss
 	public AbstractFragmenterAssignerScorer(Settings settings, ICandidate candidate) {
 		this.settings = settings;
 		this.finalScore = 0;
-		this.logger.setLevel((Level)this.settings.get(VariableNames.LOG_LEVEL_NAME));
+        Configurator.setLevel(logger.getName(), (Level)this.settings.get(VariableNames.LOG_LEVEL_NAME));
 		this.candidates = new ICandidate[] {candidate};
 	}
 	

@@ -1,7 +1,5 @@
 package de.ipbhalle.metfraglib.score;
 
-import org.apache.log4j.Logger;
-
 import de.ipbhalle.metfraglib.additionals.MathTools;
 import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
@@ -12,12 +10,14 @@ import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.scoreinitialisation.RetentionTimeScoreInitialiser;
 import de.ipbhalle.metfraglib.settings.MetFragGlobalSettings;
 import de.ipbhalle.metfraglib.settings.Settings;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class RetentionTimeScore extends AbstractScore {
 
-	private Logger logger = Logger.getLogger(RetentionTimeScore.class);
-	
-	/*
+    protected static final Logger logger = LogManager.getLogger();
+
+    /*
 	 * the real logValue of the molecule which we want to predict with the linear model
 	 */
 	protected Double logValue;

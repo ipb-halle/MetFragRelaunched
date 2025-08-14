@@ -1,6 +1,7 @@
 package de.ipbhalle.metfraglib.functions;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -13,9 +14,9 @@ import de.ipbhalle.metfraglib.parameter.VariableNames;
 
 public class ForIdentRestWebService {
 
-	protected Logger logger = Logger.getLogger(this.getClass());
-	
-	/**
+    protected static final Logger logger = LogManager.getLogger();
+
+    /**
 	 * 
 	 * @return
 	 * @throws Exception

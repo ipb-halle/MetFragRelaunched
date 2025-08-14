@@ -1,13 +1,15 @@
 package de.ipbhalle.metfraglib.process;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 
 import de.ipbhalle.metfraglib.collection.PreProcessingCandidateFilterCollection;
 import de.ipbhalle.metfraglib.fragmenterassignerscorer.AbstractFragmenterAssignerScorer;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.settings.Settings;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 
 public class CombinedSingleCandidateMetFragProcess implements Runnable {
 	
@@ -21,10 +23,10 @@ public class CombinedSingleCandidateMetFragProcess implements Runnable {
 	private boolean wasSuccessful;
 	//reference to settings object
 	private Settings settings;
-	
-	private Logger logger = Logger.getLogger(CombinedSingleCandidateMetFragProcess.class);
-	
-	//fragments the candidate, assignes fragments to m/z peaks and scores
+
+    protected static final Logger logger = LogManager.getLogger();
+
+    //fragments the candidate, assignes fragments to m/z peaks and scores
 	private AbstractFragmenterAssignerScorer fas;
 	
 	/**
@@ -35,7 +37,7 @@ public class CombinedSingleCandidateMetFragProcess implements Runnable {
 	 */
 	public CombinedSingleCandidateMetFragProcess(Settings settings, ICandidate candidate) {
 		this.settings = settings;
-		this.logger.setLevel((Level)this.settings.get(VariableNames.LOG_LEVEL_NAME));
+        Configurator.setLevel(logger.getName(), (Level)this.settings.get(VariableNames.LOG_LEVEL_NAME));
 		this.scoredPrecursorCandidates = new ICandidate[] {candidate};
 	}
 	

@@ -1,15 +1,15 @@
 package de.ipbhalle.metfraglib.score;
 
-import org.apache.log4j.Logger;
-
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.interfaces.IMatch;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.settings.Settings;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class CombinedReferenceScore extends AbstractScore {
 
-	private Logger logger = Logger.getLogger(AbstractScore.class);
+    protected static final Logger logger = LogManager.getLogger();
 	
 	protected ICandidate scoredCandidate;
 	

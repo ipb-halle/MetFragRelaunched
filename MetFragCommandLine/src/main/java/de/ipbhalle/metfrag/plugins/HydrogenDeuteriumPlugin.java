@@ -7,11 +7,12 @@ import de.ipbhalle.metfraglib.parameter.Constants;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.peaklistreader.HDFilteredTandemMassPeakListReader;
 import de.ipbhalle.metfraglib.settings.Settings;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class HydrogenDeuteriumPlugin {
 
-	protected Logger logger = Logger.getLogger(HydrogenDeuteriumPlugin.class);
+    protected static final Logger logger = LogManager.getLogger();
 	protected boolean hd_defined = false;
 	
 	public boolean load(Settings settings) {

@@ -4,10 +4,11 @@ import de.ipbhalle.metfraglib.collection.SpectralPeakListCollection;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
 import de.ipbhalle.metfraglib.interfaces.IMatch;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
-import de.ipbhalle.metfraglib.scoreinitialisation.OfflineIndividualMoNASpectralSimilarityInitialiser;
 import de.ipbhalle.metfraglib.settings.Settings;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 
 /**
  * fetched spectra in case they are present in the MoNA database
@@ -19,13 +20,13 @@ import org.apache.log4j.Logger;
  *
  */
 public class OfflineIndividualMoNASpectralSimilarity extends AbstractScore {
-	private final Logger logger = Logger.getLogger(OfflineIndividualMoNASpectralSimilarity.class);
-	protected ICandidate candidate;
+    protected static final Logger logger = LogManager.getLogger();
+    protected ICandidate candidate;
 	
 	public OfflineIndividualMoNASpectralSimilarity(Settings settings) {
 		super(settings);
-		logger.setLevel(Level.toLevel("info"));
-		this.optimalValues = new double[1];
+        Configurator.setLevel(logger.getName(), Level.toLevel("info"));
+        this.optimalValues = new double[1];
 		this.optimalValues[0] = 0.0;
 		this.hasInterimResults = false;
 		this.candidate = (ICandidate)settings.get(VariableNames.CANDIDATE_NAME);

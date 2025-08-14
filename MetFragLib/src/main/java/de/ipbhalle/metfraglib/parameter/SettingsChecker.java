@@ -1,16 +1,17 @@
 package de.ipbhalle.metfraglib.parameter;
 
-import org.apache.log4j.Logger;
 
 import de.ipbhalle.metfraglib.molecularformula.ByteMolecularFormula;
 import de.ipbhalle.metfraglib.peaklistreader.FilteredStringTandemMassPeakListReader;
 import de.ipbhalle.metfraglib.settings.Settings;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class SettingsChecker {
 
-	protected Logger logger = Logger.getLogger(this.getClass());
-	
-	public boolean check(Settings settings) {
+    protected static final Logger logger = LogManager.getLogger();
+
+    public boolean check(Settings settings) {
 
 		if(!checkIonModeSettings(settings)) return false;
 		if(!checkPeakListFileSettings(settings)) return false;
