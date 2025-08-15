@@ -31,6 +31,6 @@ gh release create "v$RELEASE_VERSION" --title "Release v$RELEASE_VERSION" --note
 git checkout dev
 mvn versions:set -DnewVersion="$NEXT_SNAPSHOT_VERSION"
 mvn versions:commit
-git add pom.xml
+git add pom.xml */pom.xml
 git commit -m "Prepare for next development iteration: $NEXT_SNAPSHOT_VERSION"
 git push origin dev
