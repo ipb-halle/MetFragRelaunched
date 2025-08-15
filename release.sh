@@ -13,14 +13,14 @@ NEXT_SNAPSHOT_VERSION="$2"
 git checkout dev
 mvn versions:set -DnewVersion="$RELEASE_VERSION"
 mvn versions:commit
-git add pom.xml
+git add pom.xml */pom.xml
 git commit -m "Release version $RELEASE_VERSION"
 git push origin dev
 
 # 2. Nach main mergen
-git checkout main
+git checkout master
 git merge dev
-git push origin main
+git push origin master
 
 # 3. Release taggen und auf GitHub veröffentlichen
 git tag -a "v$RELEASE_VERSION" -m "Release version $RELEASE_VERSION"
