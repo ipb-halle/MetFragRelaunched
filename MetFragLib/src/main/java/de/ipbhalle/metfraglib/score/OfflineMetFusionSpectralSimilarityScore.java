@@ -1,9 +1,5 @@
 package de.ipbhalle.metfraglib.score;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.openscience.cdk.fingerprint.IBitFingerprint;
-
 import de.ipbhalle.metfraglib.candidate.PrecursorCandidate;
 import de.ipbhalle.metfraglib.collection.SpectralPeakListCollection;
 import de.ipbhalle.metfraglib.fingerprint.TanimotoSimilarity;
@@ -15,6 +11,11 @@ import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.peaklistreader.FilteredStringTandemMassPeakListReader;
 import de.ipbhalle.metfraglib.settings.MetFragGlobalSettings;
 import de.ipbhalle.metfraglib.settings.Settings;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.openscience.cdk.fingerprint.IBitFingerprint;
 
 /**
  * fetch spectra from offline spectral file
@@ -24,13 +25,13 @@ import de.ipbhalle.metfraglib.settings.Settings;
  *
  */
 public class OfflineMetFusionSpectralSimilarityScore extends AbstractScore {
-	private final Logger logger = Logger.getLogger(OfflineMetFusionSpectralSimilarityScore.class);
+    protected static final Logger logger = LogManager.getLogger();
 	protected ICandidate candidate;
 	
 	public OfflineMetFusionSpectralSimilarityScore(Settings settings) {
 		super(settings);
-		logger.setLevel(Level.toLevel("info"));
-		this.optimalValues = new double[1];
+        Configurator.setLevel(logger.getName(), Level.toLevel("info"));
+        this.optimalValues = new double[1];
 		this.optimalValues[0] = 0.0;
 		this.hasInterimResults = false;
 		this.candidate = (ICandidate)settings.get(VariableNames.CANDIDATE_NAME);

@@ -12,7 +12,8 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.exception.InvalidSmilesException;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -37,7 +38,7 @@ import de.ipbhalle.metfraglib.parameter.Constants;
 
 public class StandardSingleStructureImageGenerator implements IImageGenerator {
 
-	public Logger logger = Logger.getLogger(StandardSingleStructureImageGenerator.class);
+    protected static final Logger logger = LogManager.getLogger();
 
 	protected double strokeRatio = Constants.DEFAULT_STRUCTURE_STROKE_RATIO;
 	protected int imageWidth = Constants.DEFAULT_STRUCTURE_IMAGE_WIDTH;

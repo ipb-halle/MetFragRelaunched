@@ -1,12 +1,13 @@
 package de.ipbhalle.metfraglib.process;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.settings.Settings;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ProcessingStatus {
 
@@ -18,9 +19,9 @@ public class ProcessingStatus {
 	protected AtomicInteger numberErrorCandidates;
 	protected AtomicInteger numberPreFilteredCandidates;
 	protected AtomicInteger percentageValue;
-	protected Logger logger = Logger.getLogger(ProcessingStatus.class);
-	
-	public ProcessingStatus(Settings settings) {
+    protected static final Logger logger = LogManager.getLogger();
+
+    public ProcessingStatus(Settings settings) {
 		this.processStatusString = "Processing Candidates";
 		this.retrievingStatusString = "Retrieving Candidates";
 		this.nextPercentageValue = new AtomicInteger(1);
@@ -29,7 +30,7 @@ public class ProcessingStatus {
 		this.numberFinishedCandidates = new AtomicInteger(0);
 		this.numberErrorCandidates = new AtomicInteger(0);
 		this.numberPreFilteredCandidates = new AtomicInteger(0);
-		this.logger.setLevel((Level)settings.get(VariableNames.LOG_LEVEL_NAME));
+        Configurator.setLevel(logger.getName(), (Level)settings.get(VariableNames.LOG_LEVEL_NAME));
 	}
 
 	public synchronized void checkNumberFinishedCandidates() {

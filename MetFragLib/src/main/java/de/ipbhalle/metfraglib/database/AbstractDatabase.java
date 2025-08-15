@@ -1,8 +1,5 @@
 package de.ipbhalle.metfraglib.database;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-
 import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
 import de.ipbhalle.metfraglib.exceptions.MultipleHeadersFoundInInputDatabaseException;
 import de.ipbhalle.metfraglib.interfaces.ICandidate;
@@ -10,15 +7,19 @@ import de.ipbhalle.metfraglib.interfaces.IDatabase;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.process.ProcessingStatus;
 import de.ipbhalle.metfraglib.settings.Settings;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 
 public abstract class AbstractDatabase implements IDatabase {
 
 	protected Settings settings;
-	protected Logger logger = Logger.getLogger(this.getClass());
+    protected static final Logger logger = LogManager.getLogger();
 
-	public AbstractDatabase(Settings settings) {
+    public AbstractDatabase(Settings settings) {
 		this.settings = settings;
-		logger.setLevel((Level)this.settings.get(VariableNames.LOG_LEVEL_NAME));
+        Configurator.setLevel(logger.getName(), (Level)this.settings.get(VariableNames.LOG_LEVEL_NAME));
 	}
 	
 	public java.util.ArrayList<String> getCandidateIdentifiers() throws MultipleHeadersFoundInInputDatabaseException, Exception {

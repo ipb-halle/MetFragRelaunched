@@ -1,33 +1,25 @@
 package de.ipbhalle.metfraglib.process;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-
 import de.ipbhalle.metfraglib.additionals.BondEnergies;
 import de.ipbhalle.metfraglib.collection.PostProcessingCandidateFilterCollection;
 import de.ipbhalle.metfraglib.collection.PreProcessingCandidateFilterCollection;
 import de.ipbhalle.metfraglib.database.LocalPropertyFileDatabase;
 import de.ipbhalle.metfraglib.exceptions.ScorePropertyNotDefinedException;
-import de.ipbhalle.metfraglib.interfaces.ICandidate;
-import de.ipbhalle.metfraglib.interfaces.IDatabase;
-import de.ipbhalle.metfraglib.interfaces.IPeakListReader;
-import de.ipbhalle.metfraglib.interfaces.IPostProcessingCandidateFilter;
-import de.ipbhalle.metfraglib.interfaces.IPreProcessingCandidateFilter;
-import de.ipbhalle.metfraglib.interfaces.IScoreInitialiser;
-import de.ipbhalle.metfraglib.list.AbstractPeakList;
-import de.ipbhalle.metfraglib.list.CandidateList;
-import de.ipbhalle.metfraglib.list.DefaultPeakList;
-import de.ipbhalle.metfraglib.list.ScoredCandidateList;
-import de.ipbhalle.metfraglib.list.SortedScoredCandidateList;
+import de.ipbhalle.metfraglib.interfaces.*;
+import de.ipbhalle.metfraglib.list.*;
 import de.ipbhalle.metfraglib.parameter.ClassNames;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.settings.MetFragGlobalSettings;
 import de.ipbhalle.metfraglib.settings.MetFragSingleProcessSettings;
 import de.ipbhalle.metfraglib.settings.Settings;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.config.Configurator;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class CombinedMetFragProcess implements Runnable {
 
@@ -50,10 +42,10 @@ public class CombinedMetFragProcess implements Runnable {
 	private ProcessingStatus processingStatus;
 	
 	private ExecutorService executer;
-	
-	private Logger logger = Logger.getLogger(CombinedMetFragProcess.class);
-	
-	/**
+
+    protected static final Logger logger = LogManager.getLogger();
+
+    /**
 	 * constructore needs settings object
 	 * 
 	 * @param globalSettings
@@ -62,7 +54,7 @@ public class CombinedMetFragProcess implements Runnable {
 		this.processes = null;
 		this.globalSettings = globalSettings;
 		//set log level
-		this.logger.setLevel((Level)this.globalSettings.get(VariableNames.LOG_LEVEL_NAME));
+        Configurator.setLevel(logger.getName(), (Level)this.globalSettings.get(VariableNames.LOG_LEVEL_NAME));
 		//init processing status object
 		//inits database, peaklist reader
 		this.initialise();
@@ -108,7 +100,7 @@ public class CombinedMetFragProcess implements Runnable {
 	public void renewSettings(MetFragGlobalSettings globalSettings) {
 		this.processes = null;
 		this.globalSettings = globalSettings;
-		this.logger.setLevel((Level)this.globalSettings.get(VariableNames.LOG_LEVEL_NAME));
+        Configurator.setLevel(logger.getName(), (Level)this.globalSettings.get(VariableNames.LOG_LEVEL_NAME));
 		this.initialise();
 		this.initialiseCandidateFilters();
 	}

@@ -1,11 +1,5 @@
 package de.ipbhalle.metfraglib.parameter;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-
-import org.apache.log4j.Level;
-import org.openscience.cdk.interfaces.IAtomContainer;
-
 import de.ipbhalle.metfraglib.additionals.MoleculeFunctions;
 import de.ipbhalle.metfraglib.fragmenter.TopDownNeutralLossFragmenter;
 import de.ipbhalle.metfraglib.fragmenterassignerscorer.TopDownFragmenterAssignerScorer;
@@ -13,6 +7,11 @@ import de.ipbhalle.metfraglib.interfaces.IDatabase;
 import de.ipbhalle.metfraglib.list.DefaultPeakList;
 import de.ipbhalle.metfraglib.peaklistreader.FilteredTandemMassPeakListReader;
 import de.ipbhalle.metfraglib.writer.MolecularStructureImageListWriterPNG;
+import org.apache.logging.log4j.Level;
+import org.openscience.cdk.interfaces.IAtomContainer;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 
 public class Constants {
 

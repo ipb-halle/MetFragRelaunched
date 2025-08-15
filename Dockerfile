@@ -1,4 +1,4 @@
-FROM maven:3.8-eclipse-temurin-17 AS builder
+FROM maven:3-eclipse-temurin-21 AS builder
 
 COPY MetFragLib/ /MetFragRelaunched/MetFragLib/
 COPY MetFragCommandLine/ /MetFragRelaunched/MetFragCommandLine/
@@ -29,7 +29,7 @@ RUN mkdir -p /vol/file_databases; cd /vol/file_databases && \
     wget -q https://zenodo.org/records/3735703/files/EColiMDB_11Nov2019.csv && \
     touch EColiMDB_11Nov2019.csv && \
     wget -q https://zenodo.org/records/3434579/files/YMDB2_17Sept2019.csv && \
-    touch YMDB2_17Sept2019.csv && \ 
+    touch YMDB2_17Sept2019.csv && \
     wget -q https://zenodo.org/records/3403530/files/WormJam_10Sept19.csv && \
     touch WormJam_10Sept19.csv && \
     wget -q https://zenodo.org/records/3375500/files/HMDB4_23Aug19.csv && \
@@ -56,12 +56,12 @@ RUN cd /vol/file_databases && \
     touch NPAtlas_2024_03.csv && \
     wget -q https://zenodo.org/records/13854577/files/CyanoMetDB_V03_2024_MetFrag.csv && \
     touch CyanoMetDB_V03_2024_MetFrag.csv && \
-    wget -q https://zenodo.org/records/15129932/files/PubChemLite_CCSbase_20250328.csv && \
-    touch PubChemLite_CCSbase_20250328.csv && \
-    wget -q https://zenodo.org/records/15301074/files/PubChemLite_exposomics_20250425.csv && \
-    touch PubChemLite_exposomics_20250425.csv
+    wget -q https://zenodo.org/records/15798121/files/PubChemLite_CCSbase_20250702.csv && \
+    touch PubChemLite_CCSbase_20250702.csv && \
+    wget -q https://zenodo.org/records/16476420/files/PubChemLite_exposomics_20250725.csv && \
+    touch PubChemLite_exposomics_20250725.csv
 
-FROM tomee:10-jre17-Temurin-microprofile
+FROM tomee:10-jre21-Temurin-microprofile
 
 RUN set -eux; \
     apt-get update; \
@@ -71,6 +71,8 @@ RUN set -eux; \
 
 COPY --from=builder /MetFragRelaunched/MetFragWeb/target/MetFragWeb.war /usr/local/tomee/webapps/
 COPY --from=downloader /vol/file_databases/ /vol/file_databases/
+# see https://lists.apache.org/thread/hmjyh4k0d0s5m2msk60qvcf894j72g0x
+RUN sed -i 's/<Connector/<Connector maxPartCount="100" maxPartHeaderSize="1024"/' /usr/local/tomee/conf/server.xml
 RUN printf '#!/bin/sh \n\
 if [ -f "/resources/settings.properties" ] \n\
 then \n\

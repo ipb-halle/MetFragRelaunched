@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.ArrayList;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -27,7 +27,7 @@ public class OnlineExtendedPubChemDatabase extends OnlinePubChemDatabase {
 		super(settings);
 		this.cidToNumberOfPubMedReferences = new java.util.HashMap<String, Double>();
 		this.cidToNumberOfPatents = new java.util.HashMap<String, Double>();
-		Logger.getLogger("org.apache.axiom.util.stax.dialect.StAXDialectDetector").setLevel(Level.ERROR);
+        Configurator.setLevel("org.apache.axiom.util.stax.dialect.StAXDialectDetector", Level.ERROR);
 	}
 
 	public void nullify() {

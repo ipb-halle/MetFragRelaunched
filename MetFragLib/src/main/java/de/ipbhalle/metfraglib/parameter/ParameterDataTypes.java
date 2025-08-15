@@ -1,10 +1,10 @@
 package de.ipbhalle.metfraglib.parameter;
 
+import de.ipbhalle.metfraglib.exceptions.ParameterNotKnownException;
+import org.apache.logging.log4j.Level;
+
 import java.util.HashMap;
 
-import org.apache.log4j.Level;
-
-import de.ipbhalle.metfraglib.exceptions.ParameterNotKnownException;
 
 public class ParameterDataTypes {
 

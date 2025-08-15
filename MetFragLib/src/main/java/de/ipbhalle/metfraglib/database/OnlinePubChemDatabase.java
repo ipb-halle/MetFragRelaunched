@@ -6,8 +6,10 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.ArrayList;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -25,6 +27,8 @@ import de.ipbhalle.metfraglib.process.ProcessingStatus;
 import de.ipbhalle.metfraglib.settings.Settings;
 
 public class OnlinePubChemDatabase extends AbstractDatabase {
+
+    protected static final Logger logger = LogManager.getLogger();
 
 	protected java.util.HashMap<String, String> cidToInChIs = null;
 	protected java.util.HashMap<String, String> cidToInChIKeys = null;
@@ -47,8 +51,8 @@ public class OnlinePubChemDatabase extends AbstractDatabase {
 		this.cidToXlogP = new java.util.HashMap<String, Double>();
 		this.cidToIUPACNames = new java.util.HashMap<String, String>();
 		this.cidToTitleNames = new java.util.HashMap<String, String>();
-		
-		Logger.getLogger("org.apache.axiom.util.stax.dialect.StAXDialectDetector").setLevel(Level.ERROR);
+
+        Configurator.setLevel("org.apache.axiom.util.stax.dialect.StAXDialectDetector", Level.ERROR);
 	}
 
 	public java.util.ArrayList<String> getCandidateIdentifiers() throws Exception {

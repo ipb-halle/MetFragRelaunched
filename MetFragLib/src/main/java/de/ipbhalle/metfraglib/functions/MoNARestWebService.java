@@ -12,7 +12,8 @@ import java.net.Proxy;
 import java.net.URL;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -31,16 +32,16 @@ import de.ipbhalle.metfraglib.settings.Settings;
 
 public class MoNARestWebService implements Runnable {
 
+    protected static final Logger logger = LogManager.getLogger();
+
 	protected String processName = "";
 	protected Settings settings;
 	protected boolean isProcessingSuccessful;
 	protected boolean isProcessingFinished;
 	protected Object result;
-	protected Logger logger;
-	
+
 	public MoNARestWebService(Settings settings)  {
 		this.settings = settings;
-		this.logger = Logger.getLogger(MoNARestWebService.class);
 		this.isProcessingSuccessful = false;
 		this.isProcessingFinished = false;
 	}

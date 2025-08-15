@@ -15,7 +15,9 @@ import java.util.zip.ZipOutputStream;
 
 import jakarta.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -60,7 +62,7 @@ import de.ipbhalle.model.StatusAssembler;
 
 public class MetFragRestController {
 
-	private Logger logger = Logger.getLogger(MetFragRestController.class);
+    protected static final Logger logger = LogManager.getLogger();
 //	https://github.com/ipb-halle/MetFragRelaunched/issues/115
 //	private static final String RESULTS_FOLDER = System.getProperty("java_io_tmpdir");
 	private static final String RESULTS_FOLDER = "/tmp";

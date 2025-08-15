@@ -8,8 +8,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
 
 import de.ipbhalle.metfraglib.collection.SpectralPeakListCollection;
 import de.ipbhalle.metfraglib.interfaces.IScoreInitialiser;
@@ -17,16 +16,19 @@ import de.ipbhalle.metfraglib.list.SortedTandemMassPeakList;
 import de.ipbhalle.metfraglib.parameter.VariableNames;
 import de.ipbhalle.metfraglib.peaklistreader.MultipleTandemMassPeakListReader;
 import de.ipbhalle.metfraglib.settings.Settings;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 
 public class OfflineMetFusionSpectralSimilarityScoreInitialiser implements IScoreInitialiser {
-    private Logger logger = Logger.getLogger(OfflineMetFusionSpectralSimilarityScoreInitialiser.class);
+    protected static final Logger logger = LogManager.getLogger();
 
     private static volatile SpectralPeakListCollection spectralPeakLists = null;
     private static final Object lock = new Object();
 
     @Override
     public void initScoreParameters(Settings settings) throws Exception {
-        logger.setLevel(Level.toLevel("info"));
+        Configurator.setLevel(logger.getName(), Level.toLevel("info"));
 
         if (settings.containsKey(VariableNames.OFFLINE_METFUSION_MONA_SPECTRAL_SIMILARITY_PEAK_LIST_COLLECTION_NAME) &&
                 settings.get(VariableNames.OFFLINE_METFUSION_MONA_SPECTRAL_SIMILARITY_PEAK_LIST_COLLECTION_NAME) != null) {
