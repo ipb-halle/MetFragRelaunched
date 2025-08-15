@@ -1,4 +1,4 @@
-FROM maven:3.8-eclipse-temurin-17 AS builder
+FROM maven:3-eclipse-temurin-21 AS builder
 
 COPY MetFragLib/ /MetFragRelaunched/MetFragLib/
 COPY MetFragCommandLine/ /MetFragRelaunched/MetFragCommandLine/
@@ -13,31 +13,30 @@ LocalDatabasesFolderForWeb = /vol/file_databases' > /MetFragRelaunched/MetFragWe
 
 RUN --mount=type=cache,target=/root/.m2 mvn -f MetFragRelaunched clean package -pl MetFragRest -am -DskipTests
 
-#FROM tomee:8
-FROM eclipse-temurin:17
+FROM eclipse-temurin:21
 
-RUN set -eux; \
-	apt-get update; \
-	apt-get install -y --no-install-recommends \
-		zip \
-        ; \
-	rm -rf /var/lib/apt/lists/*
+#RUN set -eux; \
+#	apt-get update; \
+#	apt-get install -y --no-install-recommends \
+#		zip \
+#        ; \
+#	rm -rf /var/lib/apt/lists/*
 
-RUN mkdir -p  /usr/local/tomee/webapps/
+RUN mkdir -p  /usr/local/
 
-COPY --from=builder /MetFragRelaunched/MetFragRest/target/MetFragRest-*.jar /usr/local/tomee/webapps/MetFragRest.jar
-RUN printf '#!/bin/sh \n\
-if [ -f "/resources/settings.properties" ] \n\
-then \n\
-	zip -u /usr/local/tomee/webapps/MetFragRest.jar /resources/settings.properties \n\  
-fi \n\
-if ! [ -z ${WEBPREFIX} ] \n\
-then \n\
-	mv /usr/local/tomee/webapps/MetFragRest.jar /usr/local/tomee/webapps/${WEBPREFIX}.jar \n\
-fi \n\
-catalina.sh run' > /start.sh
+COPY --from=builder /MetFragRelaunched/MetFragRest/target/MetFragRest-*.jar /usr/local/MetFragRest.jar
+#RUN printf '#!/bin/sh \n\
+#if [ -f "/resources/settings.properties" ] \n\
+#then \n\
+#	zip -u /usr/local/tomee/webapps/MetFragRest.jar /resources/settings.properties \n\
+#fi \n\
+#if ! [ -z ${WEBPREFIX} ] \n\
+#then \n\
+#	mv /usr/local/tomee/webapps/MetFragRest.jar /usr/local/tomee/webapps/${WEBPREFIX}.jar \n\
+#fi \n\
+#catalina.sh run' > /start.sh
 
 #CMD [ "sh", "/start.sh" ]
 
 EXPOSE 8080
-CMD [ "java", "-Dserver.port=8080", "-jar", "/usr/local/tomee/webapps/MetFragRest.jar" ]
+CMD [ "java", "-Dserver.port=8080", "-jar", "/usr/local/MetFragRest.jar" ]
