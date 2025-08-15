@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.ipbhalle.metfrag</groupId>
 	<artifactId>MetFrag</artifactId>
-	<version>2.6.7</version>
+	<version>2.6.8-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>MetFrag</name>
 	<modules>
@@ -43,7 +43,7 @@
             <dependency>
 				<groupId>de.ipbhalle.metfraglib</groupId>
 				<artifactId>MetFragLib</artifactId>
-				<version>2.6.7</version>
+				<version>2.6.8-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.httpcomponents.client5</groupId>
