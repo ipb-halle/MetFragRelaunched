@@ -29,6 +29,29 @@ public class CheckParameterDataType_Test {
 		}
 	}
 	
+	@Test
+	public void testSplitSmartsList() {
+		/*
+		 * check SMARTS list string splitting
+		 */
+		try {
+			String[] smartsListExpected = {
+					"C(=O)-O", // no comma in SMARTS
+					"[C,O]-c1ccccc1", // comma in a pair of square brackets 
+					"C-,=C@,!-N", // comma between bond primitives and not operator "!"
+					"[$(c1(-[O,N])ccccc1),$(c1c(-[O,N])cccc1)]-C(=O)-O", // comma in nested square brackets
+			};
+			String smartsListString = String.join(",", smartsListExpected);
+			String[] smartsListActual = (String[]) ParameterDataTypes.getParameter(smartsListString,
+					VariableNames.PRE_CANDIDATE_FILTER_SMARTS_INCLUSION_LIST_NAME);
+			assertArrayEquals("\"" + smartsListString + "\" " + VariableNames.PRE_CANDIDATE_FILTER_SMARTS_INCLUSION_LIST_NAME + " was wrongly split",
+					smartsListExpected,
+					smartsListActual);
+		} catch (ParameterNotKnownException e) {
+			fail(e.getMessage());
+		}
+	}
+
 	/**
 	 * check exception
 	 * 
