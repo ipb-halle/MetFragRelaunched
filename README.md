@@ -5,7 +5,7 @@ MetFrag relaunched
 ==================
 
 ##### Requirements
-- Java 17
+- Java 21
 - Apache Maven 3.8
 
 ##### Sources
@@ -27,7 +27,7 @@ This container packages the MetFrag (https://github.com/ipb-halle/MetFragRelaunc
 ##### Examples:
 Run MetFrag at http://localhost:8888/MetFragWeb
 ```
-docker run -it --rm -p 8888:8080 ipb-halle/metfragweb
+docker run -it --rm -p 8888:8080 ipbhalle/metfragweb
 ```
 Run Metfrag at http://localhost:8888/mymetfrag with 4GB JVM size using a settings file from `./settings.properties`
 ```
