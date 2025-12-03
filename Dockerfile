@@ -56,10 +56,10 @@ RUN cd /vol/file_databases && \
     touch NPAtlas_2024_03.csv && \
     wget -q https://zenodo.org/records/13854577/files/CyanoMetDB_V03_2024_MetFrag.csv && \
     touch CyanoMetDB_V03_2024_MetFrag.csv && \
-    wget -q https://zenodo.org/records/17076905/files/PubChemLite_CCSbase_20250905.csv && \
-    touch PubChemLite_CCSbase_20250905.csv && \
-    wget -q https://zenodo.org/records/17205446/files/PubChemLite_exposomics_20250926.csv && \
-    touch PubChemLite_exposomics_20250926.csv
+    wget -q https://zenodo.org/records/17775114/files/PubChemLite_CCSbase_20251128.csv && \
+    touch PubChemLite_CCSbase_20251128.csv && \
+    wget -q https://zenodo.org/records/17751750/files/PubChemLite_exposomics_20251128.csv && \
+    touch PubChemLite_exposomics_20251128.csv
 
 FROM tomee:10-jre21-Temurin-microprofile
 
