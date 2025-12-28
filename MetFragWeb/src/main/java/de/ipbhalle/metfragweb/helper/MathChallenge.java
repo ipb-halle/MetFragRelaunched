@@ -49,7 +49,15 @@ public class MathChallenge {
                     operator = '-';
                     // Ensure difference is between 1 and 20
                     number1 = random.nextInt(20) + 1; // 1-20
-                    number2 = random.nextInt(number1); // 0 to number1-1, but we need result >= 1
+                    // Ensure result is at least 1, so number2 must be at most number1-1
+                    if (number1 > 1) {
+                        number2 = random.nextInt(number1 - 1) + 1; // 1 to number1-1
+                    } else {
+                        // If number1 is 1, we can't subtract anything positive
+                        // So regenerate with a larger number1
+                        number1 = random.nextInt(19) + 2; // 2-20
+                        number2 = random.nextInt(number1 - 1) + 1; // 1 to number1-1
+                    }
                     correctAnswer = number1 - number2;
                     validChallenge = (correctAnswer >= 1 && correctAnswer <= 20);
                     break;
