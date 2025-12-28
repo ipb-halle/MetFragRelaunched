@@ -71,6 +71,7 @@ import de.ipbhalle.metfragweb.datatype.ScoreSummary;
 import de.ipbhalle.metfragweb.datatype.SuspectListFileContainer;
 import de.ipbhalle.metfragweb.datatype.Weight;
 import de.ipbhalle.metfragweb.helper.FileStorer;
+import de.ipbhalle.metfragweb.helper.MathChallenge;
 import de.ipbhalle.metfragweb.helper.ProcessCompoundsThreadRunner;
 import de.ipbhalle.metfragweb.helper.RetrieveCompoundsThreadRunner;
 import de.ipbhalle.metfragweb.validator.ElementsValidator;
@@ -3072,7 +3073,9 @@ public class MetFragWebBean implements Serializable {
 	protected String feedbackEmail;
 	protected String dataStorePermission;
     protected String feedbackType;
-	protected boolean isFeedbackDialogVisible; 
+	protected boolean isFeedbackDialogVisible;
+	protected MathChallenge mathChallenge;
+	protected String mathChallengeUserAnswer; 
 	
 	public String getFeedbackComment() {
 		return this.feedbackComment;
@@ -3108,16 +3111,36 @@ public class MetFragWebBean implements Serializable {
         return this.feedbackType;
     }
 	
+	public String getMathChallengeQuestion() {
+		if(this.mathChallenge == null) {
+			this.mathChallenge = new MathChallenge();
+		}
+		return this.mathChallenge.getQuestion();
+	}
+	
+	public String getMathChallengeUserAnswer() {
+		return this.mathChallengeUserAnswer;
+	}
+	
+	public void setMathChallengeUserAnswer(String answer) {
+		this.mathChallengeUserAnswer = answer;
+	}
+	
 	public void feedbackButtonListener(ActionEvent actionEvent) {
 		this.infoMessages.removeKey("feedbackSubmitButtonInfo");
     	this.errorMessages.removeKey("selectPermitDataStoreError");
     	this.errorMessages.removeKey("selectTypeError");
     	this.errorMessages.removeKey("inputCommentError");
     	this.errorMessages.removeKey("inputEmailError");
+    	this.errorMessages.removeKey("mathChallengeError");
+		this.mathChallenge = new MathChallenge();
+		this.mathChallengeUserAnswer = "";
 		this.isFeedbackDialogVisible = true;
 	}
 
 	public void feedbackButton() {
+		this.mathChallenge = new MathChallenge();
+		this.mathChallengeUserAnswer = "";
 		this.isFeedbackDialogVisible = true;
 	}
 	
@@ -3131,6 +3154,9 @@ public class MetFragWebBean implements Serializable {
     	this.errorMessages.removeKey("selectTypeError");
     	this.errorMessages.removeKey("inputCommentError");
     	this.errorMessages.removeKey("inputEmailError");
+    	this.errorMessages.removeKey("mathChallengeError");
+		this.mathChallenge = null;
+		this.mathChallengeUserAnswer = "";
 		this.isFeedbackDialogVisible = false;
 	}
 	
@@ -3155,6 +3181,14 @@ public class MetFragWebBean implements Serializable {
 	    	//nothing to check
 	    //dataStorePermission
 			//nothing to check
+		//math challenge
+		if(this.mathChallenge == null || !this.mathChallenge.validateAnswer(this.mathChallengeUserAnswer)) {
+			this.errorMessages.setMessage("mathChallengeError", "Please provide the correct answer to the math question.");
+			checksFine = false;
+		}
+		else {
+			this.errorMessages.removeKey("mathChallengeError");
+		}
 	    return checksFine;
 	}
 	
@@ -3266,7 +3300,9 @@ public class MetFragWebBean implements Serializable {
 		this.feedbackComment = "";
 		this.feedbackEmail = "";
 		this.feedbackType = "issue";
-		this.dataStorePermission = "no"; 
+		this.dataStorePermission = "no";
+		this.mathChallenge = null;
+		this.mathChallengeUserAnswer = "";
 	}
 	
 	public String getServerName() {
