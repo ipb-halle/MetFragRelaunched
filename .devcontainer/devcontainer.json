@@ -1,0 +1,27 @@
+{
+	"name": "Java 17",
+	"image": "mcr.microsoft.com/devcontainers/java:17",
+	"features": {
+		"ghcr.io/devcontainers/features/git:1": {},
+		"ghcr.io/devcontainers/features/github-cli:1": {},
+		"ghcr.io/devcontainers/features/maven:1": {}
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"vscjava.vscode-java-pack",
+				"vscjava.vscode-maven"
+			],
+			"settings": {
+				"java.configuration.runtimes": [
+					{
+						"name": "JavaSE-17",
+						"path": "/usr/local/sdkman/candidates/java/current",
+						"default": true
+					}
+				]
+			}
+		}
+	},
+	"postCreateCommand": "java -version && mvn -v && gh --version && git --version && node -v && npm -v"
+}
