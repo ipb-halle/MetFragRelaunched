@@ -82,7 +82,7 @@
 				<h:outputText value="Math Question:" id="mathQuestionLabel" />
 				<h:panelGrid columns="1">
 					<h:outputText value="#{metFragWebBean.mathChallengeQuestion}" style="font-weight: bold;" />
-					<p:inputText id="mathAnswer" required="false" size="10"
+					<p:inputText id="mathAnswer" required="true" size="10"
 						value="#{metFragWebBean.mathChallengeUserAnswer}" />
 					<h:panelGroup id="mathChallengeError" style="padding-top: 10px"
 						layout="block" styleClass="ui-messages ui-widget"

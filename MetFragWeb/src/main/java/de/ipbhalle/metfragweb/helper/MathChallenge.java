@@ -48,7 +48,8 @@ public class MathChallenge {
                 case 1: // Subtraction
                     operator = '-';
                     // Ensure difference is between 1 and 20
-                    number1 = random.nextInt(20) + 2; // 2-21
+                    // number1 must be at least 2 to allow subtraction with result >= 1
+                    number1 = random.nextInt(19) + 2; // 2-20
                     number2 = random.nextInt(number1 - 1) + 1; // 1 to number1-1
                     correctAnswer = number1 - number2;
                     validChallenge = (correctAnswer >= 1 && correctAnswer <= 20);
