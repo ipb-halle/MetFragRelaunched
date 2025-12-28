@@ -9,6 +9,13 @@ import java.util.Random;
  */
 public class MathChallenge {
     
+    private static final int MIN_NUMBER = 1;
+    private static final int MAX_NUMBER = 20;
+    private static final int MIN_RESULT = 1;
+    private static final int MAX_RESULT = 20;
+    private static final int MAX_ADDITION_OPERAND = 10;
+    private static final int MAX_MULTIPLICATION_OPERAND = 5;
+    
     private int number1;
     private int number2;
     private char operator;
@@ -38,32 +45,31 @@ public class MathChallenge {
             switch (operatorChoice) {
                 case 0: // Addition
                     operator = '+';
-                    // Ensure sum is between 1 and 20
-                    number1 = random.nextInt(10) + 1; // 1-10
-                    number2 = random.nextInt(20 - number1) + 1; // ensures sum <= 20
+                    // Ensure sum is between MIN_RESULT and MAX_RESULT
+                    number1 = random.nextInt(MAX_ADDITION_OPERAND) + MIN_NUMBER; // 1-10
+                    number2 = random.nextInt(MAX_RESULT - number1) + MIN_NUMBER; // ensures sum <= MAX_RESULT
                     correctAnswer = number1 + number2;
-                    validChallenge = (correctAnswer >= 1 && correctAnswer <= 20);
+                    validChallenge = (correctAnswer >= MIN_RESULT && correctAnswer <= MAX_RESULT);
                     break;
                     
                 case 1: // Subtraction
                     operator = '-';
-                    // Ensure difference is between 1 and 20
-                    // number1 must be at least 2 to allow subtraction with result >= 1
-                    number1 = random.nextInt(19) + 2; // 2-20
-                    number2 = random.nextInt(number1 - 1) + 1; // 1 to number1-1
+                    // Ensure difference is between MIN_RESULT and MAX_RESULT
+                    // number1 must be at least 2 to allow subtraction with result >= MIN_RESULT
+                    number1 = random.nextInt(MAX_NUMBER - 1) + 2; // 2-20
+                    number2 = random.nextInt(number1 - 1) + MIN_NUMBER; // 1 to number1-1
                     correctAnswer = number1 - number2;
-                    validChallenge = (correctAnswer >= 1 && correctAnswer <= 20);
+                    validChallenge = (correctAnswer >= MIN_RESULT && correctAnswer <= MAX_RESULT);
                     break;
                     
                 case 2: // Multiplication
                     operator = '*';
-                    // Ensure product is between 1 and 20
-                    // Possible pairs: 1*1..1*20, 2*1..2*10, 3*1..3*6, 4*1..4*5, 5*1..5*4
-                    number1 = random.nextInt(5) + 1; // 1-5
-                    int maxMultiplier = 20 / number1;
-                    number2 = random.nextInt(maxMultiplier) + 1;
+                    // Ensure product is between MIN_RESULT and MAX_RESULT
+                    number1 = random.nextInt(MAX_MULTIPLICATION_OPERAND) + MIN_NUMBER; // 1-5
+                    int maxMultiplier = MAX_RESULT / number1;
+                    number2 = random.nextInt(maxMultiplier) + MIN_NUMBER;
                     correctAnswer = number1 * number2;
-                    validChallenge = (correctAnswer >= 1 && correctAnswer <= 20);
+                    validChallenge = (correctAnswer >= MIN_RESULT && correctAnswer <= MAX_RESULT);
                     break;
             }
         }

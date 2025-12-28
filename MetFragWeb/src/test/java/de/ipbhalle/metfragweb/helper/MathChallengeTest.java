@@ -8,6 +8,8 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class MathChallengeTest {
     
+    private static final String QUESTION_FORMAT_PATTERN = "\\d+ [+\\-*] \\d+ = \\?";
+    
     @Test
     public void testChallengeGeneration() {
         MathChallenge challenge = new MathChallenge();
@@ -95,7 +97,7 @@ public class MathChallengeTest {
         String question = challenge.getQuestion();
         
         // Question should match pattern: "number operator number = ?"
-        assertTrue(question.matches("\\d+ [+\\-*] \\d+ = \\?"),
+        assertTrue(question.matches(QUESTION_FORMAT_PATTERN),
                 "Question should match format 'number operator number = ?', got: " + question);
     }
     
