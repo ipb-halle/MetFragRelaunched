@@ -3126,6 +3126,11 @@ public class MetFragWebBean implements Serializable {
 		this.mathChallengeUserAnswer = answer;
 	}
 	
+	private void initializeMathChallenge() {
+		this.mathChallenge = new MathChallenge();
+		this.mathChallengeUserAnswer = "";
+	}
+	
 	public void feedbackButtonListener(ActionEvent actionEvent) {
 		this.infoMessages.removeKey("feedbackSubmitButtonInfo");
     	this.errorMessages.removeKey("selectPermitDataStoreError");
@@ -3133,14 +3138,12 @@ public class MetFragWebBean implements Serializable {
     	this.errorMessages.removeKey("inputCommentError");
     	this.errorMessages.removeKey("inputEmailError");
     	this.errorMessages.removeKey("mathChallengeError");
-		this.mathChallenge = new MathChallenge();
-		this.mathChallengeUserAnswer = "";
+		initializeMathChallenge();
 		this.isFeedbackDialogVisible = true;
 	}
 
 	public void feedbackButton() {
-		this.mathChallenge = new MathChallenge();
-		this.mathChallengeUserAnswer = "";
+		initializeMathChallenge();
 		this.isFeedbackDialogVisible = true;
 	}
 	
