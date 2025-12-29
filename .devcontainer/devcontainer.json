@@ -11,11 +11,12 @@
 			"installMaven": "true",
 			"installGradle": "false"
 		},
-		"ghcr.io/devcontainers/features/github-cli:1": {}
-	}
+		"ghcr.io/devcontainers/features/github-cli:1": {},
+	    "ghcr.io/devcontainers/features/git-lfs:1": {}
+	},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	"forwardPorts": [8080],
+	"forwardPorts": [8080]
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// "postCreateCommand": "java -version",
