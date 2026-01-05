@@ -21,7 +21,7 @@
 				<version>1.10.22</version>
 				<configuration>
 					<container>
-						<containerId>tomee8x</containerId>
+						<containerId>tomee10x</containerId>
 					</container>
 					<deployables>
 						<deployable>
