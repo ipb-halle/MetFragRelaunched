@@ -78,6 +78,25 @@
 						</h:panelGroup>
 					</h:panelGroup>
 				</h:panelGrid>
+
+				<h:outputText value="Antispam Question:" id="mathQuestionLabel" />
+				<h:panelGrid columns="1">
+					<h:outputText value="#{metFragWebBean.mathChallengeQuestion}" style="font-weight: bold;" />
+					<p:inputText id="mathAnswer" required="true" size="10"
+						value="#{metFragWebBean.mathChallengeUserAnswer}" />
+					<h:panelGroup id="mathChallengeError" style="padding-top: 10px"
+						layout="block" styleClass="ui-messages ui-widget"
+						rendered="#{metFragWebBean.isErrorMessage('mathChallengeError')}">
+						<h:panelGroup styleClass="ui-messages-error-user ui-corner-all"
+							layout="block">
+							<h:panelGrid columns="2">
+								<h:panelGroup styleClass="ui-messages-error-icon-user" />
+								<h:outputText styleClass="ui-messages-error-detail-user"
+									value="#{metFragWebBean.getErrorMessage('mathChallengeError')}" />
+							</h:panelGrid>
+						</h:panelGroup>
+					</h:panelGroup>
+				</h:panelGrid>
 			</h:panelGrid>
 			<h:panelGrid columns="1" style="vertical-align:top;" cellspacing="4"
 				cellpadding="4">

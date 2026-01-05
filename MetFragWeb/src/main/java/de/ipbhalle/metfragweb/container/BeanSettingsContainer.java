@@ -22,6 +22,7 @@ import de.ipbhalle.metfragweb.helper.UserOutputDataHandler;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.model.SelectItem;
 import jakarta.servlet.ServletContext;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Level;
 import org.primefaces.model.chart.AxisType;
 import org.primefaces.model.chart.LineChartModel;
@@ -371,7 +372,8 @@ public class BeanSettingsContainer {
 			}
 			
 			java.io.BufferedReader breader = new java.io.BufferedReader(new java.io.FileReader(configFile));
-			MetFragGlobalSettings settings = MetFragGlobalSettings.readSettings(configFile, null);
+			org.apache.logging.log4j.Logger logger = LogManager.getLogger(BeanSettingsContainer.class);
+			MetFragGlobalSettings settings = MetFragGlobalSettings.readSettings(configFile, logger);
 			breader.close();
 			/*
 			 * do the work
@@ -1935,7 +1937,8 @@ public class BeanSettingsContainer {
 			ServletContext servletContext = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
 			this.bondEnergyLipidMapsFilePath = servletContext.getRealPath("/resources/BondEnergiesLipidMaps.txt");
 			String pathToProperties = servletContext.getRealPath("/resources/settings.properties");
-			MetFragGlobalSettings settings = MetFragGlobalSettings.readSettings(new java.io.File(pathToProperties), null);
+			org.apache.logging.log4j. Logger logger = LogManager.getLogger(BeanSettingsContainer.class);
+			MetFragGlobalSettings settings = MetFragGlobalSettings.readSettings(new java.io.File(pathToProperties), logger);
 			// check local database settings within the settings file
 			if(settings.containsKey(VariableNames.LOCAL_KEGG_DATABASE_NAME) && settings.get(VariableNames.LOCAL_KEGG_DATABASE_NAME) != null) this.localKeggDatabase = true;
 			if(settings.containsKey(VariableNames.LOCAL_PUBCHEM_DATABASE_NAME) && settings.get(VariableNames.LOCAL_PUBCHEM_DATABASE_NAME) != null) this.localPubChemDatabase = true;
