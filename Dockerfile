@@ -15,50 +15,49 @@ RUN --mount=type=cache,target=/root/.m2 mvn -f MetFragRelaunched clean package -
 
 FROM alpine:latest AS downloader
 
-RUN mkdir -p /vol/file_databases; cd /vol/file_databases && \
-    wget -q https://zenodo.org/records/3548461/files/NORMANSusDat_20Nov2019.csv && \
-    touch NORMANSusDat_20Nov2019.csv && \
-    wget -q https://zenodo.org/records/3364464/files/CompTox_07March19_SmokingMetaData.csv && \
-    touch CompTox_07March19_SmokingMetaData.csv && \
-    wget -q https://zenodo.org/records/6475906/files/CompTox_07March19_SelectMetaData.csv && \
-    touch CompTox_07March19_SelectMetaData.csv && \
-    wget -q https://zenodo.org/records/3472781/files/CompTox_07March19_WWMetaData.csv && \
-    touch CompTox_07March19_WWMetaData.csv && \
-    wget -q https://zenodo.org/records/14561114/files/Zebrafish_Metabolites_20241220.csv && \
-    touch Zebrafish_Metabolites_20241220.csv && \
-    wget -q https://zenodo.org/records/3735703/files/EColiMDB_11Nov2019.csv && \
-    touch EColiMDB_11Nov2019.csv && \
-    wget -q https://zenodo.org/records/3434579/files/YMDB2_17Sept2019.csv && \
-    touch YMDB2_17Sept2019.csv && \
-    wget -q https://zenodo.org/records/3403530/files/WormJam_10Sept19.csv && \
-    touch WormJam_10Sept19.csv && \
-    wget -q https://zenodo.org/records/3375500/files/HMDB4_23Aug19.csv && \
-    touch HMDB4_23Aug19.csv && \
-    wget -q https://zenodo.org/records/3564602/files/BloodExposomeDB_03Dec2019.csv && \
+RUN mkdir -p /vol/file_databases
+WORKDIR /vol/file_databases
+RUN wget -q https://zenodo.org/records/3548461/files/NORMANSusDat_20Nov2019.csv && \
+    touch NORMANSusDat_20Nov2019.csv
+RUN wget -q https://zenodo.org/records/3364464/files/CompTox_07March19_SmokingMetaData.csv && \
+    touch CompTox_07March19_SmokingMetaData.csv
+RUN wget -q https://zenodo.org/records/6475906/files/CompTox_07March19_SelectMetaData.csv && \
+    touch CompTox_07March19_SelectMetaData.csv
+RUN wget -q https://zenodo.org/records/3472781/files/CompTox_07March19_WWMetaData.csv && \
+    touch CompTox_07March19_WWMetaData.csv
+RUN wget -q https://zenodo.org/records/14561114/files/Zebrafish_Metabolites_20241220.csv && \
+    touch Zebrafish_Metabolites_20241220.csv
+RUN wget -q https://zenodo.org/records/3735703/files/EColiMDB_11Nov2019.csv && \
+    touch EColiMDB_11Nov2019.csv
+RUN wget -q https://zenodo.org/records/3434579/files/YMDB2_17Sept2019.csv && \
+    touch YMDB2_17Sept2019.csv
+RUN wget -q https://zenodo.org/records/3403530/files/WormJam_10Sept19.csv && \
+    touch WormJam_10Sept19.csv
+RUN wget -q https://zenodo.org/records/3375500/files/HMDB4_23Aug19.csv && \
+    touch HMDB4_23Aug19.csv
+RUN wget -q https://zenodo.org/records/3564602/files/BloodExposomeDB_03Dec2019.csv && \
     touch BloodExposomeDB_03Dec2019.csv
-
-RUN cd /vol/file_databases && \
-    wget -q https://zenodo.org/records/3957497/files/HBM4EU_CECscreen_MF_1Jul2020_plusTPs.csv && \
-    touch HBM4EU_CECscreen_MF_1Jul2020_plusTPs.csv && \
-    wget -q https://zenodo.org/records/3957497/files/HBM4EU_CECscreen_MF_1Jul2020.csv && \
-    touch HBM4EU_CECscreen_MF_1Jul2020.csv && \
-    wget -q https://zenodo.org/records/6474542/files/OntoChem_PFAS_Patents_20220420.csv && \
-    touch OntoChem_PFAS_Patents_20220420.csv && \
-    wget -q https://zenodo.org/records/6474542/files/OntoChem_PFAS_CORE_20220420.csv && \
-    touch OntoChem_PFAS_CORE_20220420.csv && \
-    wget -q https://zenodo.org/records/5336447/files/COCONUT4MetFrag_april.csv && \
-    touch COCONUT4MetFrag_april.csv && \
-    wget -q https://zenodo.org/records/8144127/files/LIPIDMAPS_20230712.csv && \
-    touch LIPIDMAPS_20230712.csv && \
-    wget -q https://zenodo.org/records/14738325/files/PubChem_OECDPFAS_largerPFASparts_20250125.csv && \
-    touch PubChem_OECDPFAS_largerPFASparts_20250125.csv && \
-    wget -q https://zenodo.org/records/13148840/files/NPAtlas_2024_03.csv && \
-    touch NPAtlas_2024_03.csv && \
-    wget -q https://zenodo.org/records/13854577/files/CyanoMetDB_V03_2024_MetFrag.csv && \
-    touch CyanoMetDB_V03_2024_MetFrag.csv && \
-    wget -q https://zenodo.org/records/17775114/files/PubChemLite_CCSbase_20251128.csv && \
-    touch PubChemLite_CCSbase_20251128.csv && \
-    wget -q https://zenodo.org/records/17751750/files/PubChemLite_exposomics_20251128.csv && \
+RUN wget -q https://zenodo.org/records/3957497/files/HBM4EU_CECscreen_MF_1Jul2020_plusTPs.csv && \
+    touch HBM4EU_CECscreen_MF_1Jul2020_plusTPs.csv
+RUN wget -q https://zenodo.org/records/3957497/files/HBM4EU_CECscreen_MF_1Jul2020.csv && \
+    touch HBM4EU_CECscreen_MF_1Jul2020.csv
+RUN wget -q https://zenodo.org/records/6474542/files/OntoChem_PFAS_Patents_20220420.csv && \
+    touch OntoChem_PFAS_Patents_20220420.csv
+RUN wget -q https://zenodo.org/records/6474542/files/OntoChem_PFAS_CORE_20220420.csv && \
+    touch OntoChem_PFAS_CORE_20220420.csv
+RUN wget -q https://zenodo.org/records/5336447/files/COCONUT4MetFrag_april.csv && \
+    touch COCONUT4MetFrag_april.csv
+RUN wget -q https://zenodo.org/records/8144127/files/LIPIDMAPS_20230712.csv && \
+    touch LIPIDMAPS_20230712.csv
+RUN wget -q https://zenodo.org/records/14738325/files/PubChem_OECDPFAS_largerPFASparts_20250125.csv && \
+    touch PubChem_OECDPFAS_largerPFASparts_20250125.csv
+RUN wget -q https://zenodo.org/records/13148840/files/NPAtlas_2024_03.csv && \
+    touch NPAtlas_2024_03.csv
+RUN wget -q https://zenodo.org/records/13854577/files/CyanoMetDB_V03_2024_MetFrag.csv && \
+    touch CyanoMetDB_V03_2024_MetFrag.csv
+RUN wget -q https://zenodo.org/records/17775114/files/PubChemLite_CCSbase_20251128.csv && \
+    touch PubChemLite_CCSbase_20251128.csv
+RUN wget -q https://zenodo.org/records/17751750/files/PubChemLite_exposomics_20251128.csv && \
     touch PubChemLite_exposomics_20251128.csv
 
 FROM tomee:10-jre21-Temurin-microprofile
