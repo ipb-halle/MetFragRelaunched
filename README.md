@@ -181,3 +181,29 @@ References
 ----------
 
 Ruttkies C., Schymanski E.L. et al, MetFrag relaunched: incorporating strategies beyond in silico fragmentation. Journal of Cheminformatics, 2016, 8:3. http://jcheminf.springeropen.com/articles/10.1186/s13321-016-0115-9
+
+----------
+
+<a href="https://www.surveymonkey.de/r/denbi-service?sc=cibi&tool=metfrag" target="_blank" rel="noopener noreferrer" style=" display: inline-flex; align-items: center; gap: 15px; padding: 12px 18px; background-color: #14387F; color: #ffffff; font-family: Arial, sans-serif; text-decoration: none; border-radius: 10px; border-bottom: 4px solid #009BD9; box-shadow: 0 3px 8px rgba(0,0,0,0.15); box-sizing: border-box; ">
+
+<!-- de.NBI Logo -->
+<img src="https://www.denbi.de/templates/nbimaster/img/denbi-logo-color.svg" alt="de.NBI Logo" width="110" style=" display: block; width: 110px; height: auto; padding: 8px; background-color: #ffffff; border-radius: 6px; box-sizing: border-box; ">
+
+<span style="
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: #8DDEFF;
+">
+  ✓ Approved de.NBI Service
+</span>
+
+<span style="
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  white-space: nowrap;
+">
+  Share your feedback ↗
+</span>
